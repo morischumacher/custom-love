@@ -8,7 +8,7 @@ Feedback to presentation:
  * Functionality of algorithms must be transparent and shown in tests
  * Provide notifications in the web browser
 
-## 23.10.2023, 18:00 - ?: Weekly Meeting
+## 23.10.2023, 18:00 - 19:00: Weekly Meeting
 
 Present: All, Place: Zoom-Meeting
 
@@ -41,7 +41,7 @@ Initiating first issues:
  * CI/CD 
 
 #### Commit convention
- * Create Branches with the same name, as made by GitLab under "Issues"
+ * Create Branches with the same name, as made by GitLab under "Issues".
 
 ```
 [issue-<issue_nr>] short summary
