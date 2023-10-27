@@ -98,21 +98,19 @@ Technology transfer suggestion:
  * Backend using Java, could be also Python (Flask, FastAPI)
  * Frontend using React, Angular, Svelte, etc.
 
-Bei der Implementierung 
-
 MR1 Project Contract
  * Presentation of each team member
  * Present each point in the project contract in a PowerPoint presentation
 
-MR2 2/3 der Projektes sollte fertig sein
+MR2: 2/3 of the project should be finished
 
-MR3 Das ganze Projekt soll fertig und präsentiert werden
+MR3: The whole project should be finished and presentable.
 
-Montag, 30.10 - Freitag 03.11
-Montag bis Donnerstag ab 18 Uhr, Freitag ab 15 Uhr
-Vorgeschlagener Termin: Freitag 17 - 19 Uhr
-1. Ersatztermin:	Freitag 15 - 17 Uhr
-2. Ersatztermin:	Montag	18 - 20 Uhr
+Monday, 30.10 - Friday 03.11
+Monday till Thursday from 18 o'clock, Friday from 15 o'clock
+Official date: Friday 17 - 19 o'clock
+1. Alternative date:	Friday 15 - 17 o'clock
+2. Alternative date:	Monday	18 - 20 o'clock
 
 ### Dates
 
@@ -131,3 +129,65 @@ MR3 22.01 - 25.01
 
 #### New TODO's
  * Slides
+
+## 27.10.2023, 14:00 - 15:15: Weekly Meeting
+
+Present: All, Place: Zoom-Meeting
+
+### Topics
+
+* Tech Stack
+* Strategies / Algorithms
+* Project Contract
+
+#### Tech Stack
+
+* **Backend: Python FastAPI**
+  * Python Pro's: Simplicity, tutor can help out quickly
+  * Python Con's: Potential Spaghetti code
+  * Java SpringBoot Pro's: Everyone is familiar with it
+  * Java SpringBoot Con's: Over the top complicated
+  * Kotlin Pro's: Standard in mobile app development? 
+  * Kotlin Con's: Only 1/5 team members familiar with Kotlin 
+* **Frontend (mobile + web app): Flutter**
+* **Database: PostgreSQL**
+
+##### Responsibilities of Backend & Frontend
+* **Backend**
+  * Returns a list of people based on the location
+  * Retrieves the amount of swipes left for the user
+* **Frontend** 
+  * Calls for the swipes and the data from the data and would calculate and sort
+
+Querying people based on location has to be done in the database.
+
+Location would be set by the users in the settings
+
+#### Strategies
+
+3 strategies:
+1. Distance based strategy (always applied)
+2. Interest based strategy
+   * For every person we would calculate the preference 
+3. Decision based strategy
+   * Based on the swipes of a user
+   * Would be computed based on, for example, text length, the preferences, etc.
+
+The order in which the people would appear in your area would be randomized.
+
+In order to prove, the tutor suggested that we could use dev mode to have a clearer view of the utilized strategies.
+* For now will be omitted for now.
+
+#### Database
+
+User
+* Each user has 5 pictures
+
+### TODO's
+
+* Team members should suggest additional attributes or objects
+* Project Contract: 
+  * Do the part they have been assigned to in the project in the corresponding Latex Project
+  * Each team member should add their part to the presentation, after everything is added then finish
+    the design
+* Python backbone + Flutter frontend to be pushed onto Git
