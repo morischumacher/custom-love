@@ -114,10 +114,10 @@ Official date: Friday 17 - 19 o'clock
 
 ### Dates
 
-IR1 20.11 - 24.11
-MR2 11.12 - 15.12
-IR2 08.01 - 12.01
-MR3 22.01 - 25.01
+* IR1 20.11 - 24.11
+* MR2 11.12 - 15.12
+* IR2 08.01 - 12.01
+* MR3 22.01 - 25.01
 
 ### TODO's
  * Bartek:
@@ -191,3 +191,40 @@ User
   * Each team member should add their part to the presentation, after everything is added then finish
     the design
 * Python backbone + Flutter frontend to be pushed onto Git
+
+## 30.10.2023, 18:00 - 19:00: Weekly Meeting
+
+Present: All, Place: Zoom-Meeting
+
+### Topics
+
+* User Stories
+* Database Design
+* Project Contract
+
+#### User Stories
+* Should the functionality to report a user be omitted?
+* What is the rating system?
+  * A user could rate another user, e.g., from 1-5 stars
+  * Should it be left out? Might be challenging to implement
+
+Advanced features:
+* Chat
+* Algorithms (counts as two)
+* Rating
+* Mobile App
+* Kubernetes Deployment
+
+#### Functional vs. Non-functional requirements
+Keep it simple and generic, instead of going too much into detail
+
+#### Implementations by Bartek
+##### ingres.yaml
+Works like an nginx, is a router. We will have a develop and release version.
+
+### TODO's:
+* Everyone writes down within the "Iceberg" section within the Project Contract until Tuesday
+
+### Next meeting
+
+Tuesday, 31.10.2023 during the meeting with the tutor at 16:15, and if necessary, afterwards
