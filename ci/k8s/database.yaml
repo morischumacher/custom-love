@@ -18,6 +18,15 @@ spec:
       containers:
         - name: postgres
           image: postgres:latest
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+              ephemeral-storage: "100Mi"
+            limits:
+              memory: "512Mi"
+              cpu: "250m"
+              ephemeral-storage: "100Mi"
           ports:
             - containerPort: 5432
           env:
@@ -34,6 +43,15 @@ spec:
               - "\\c"
         - name: adminer
           image: adminer:latest
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+              ephemeral-storage: "100Mi"
+            limits:
+              memory: "512Mi"
+              cpu: "250m"
+              ephemeral-storage: "100Mi"
           ports:
           - containerPort: 8080
   strategy:
