@@ -5,7 +5,7 @@ stages:
   - build-frontend
   - package-frontend
   - build-backend
-  #- deploy
+  - deploy
 
 build-frontend:
   stage: build-frontend
