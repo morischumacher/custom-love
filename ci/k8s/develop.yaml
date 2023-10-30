@@ -18,6 +18,15 @@ spec:
       containers:
         - name: develop-frontend
           image: registry.reset.inso-w.at/2023ws-ase-pr-group/23ws-ase-pr-inso-06/develop-frontend:latest
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "50m"
+              ephemeral-storage: "100Mi"
+            limits:
+              memory: "512Mi"
+              cpu: "250m"
+              ephemeral-storage: "100Mi"
           ports:
             - containerPort: 80
   strategy:
@@ -45,6 +54,15 @@ spec:
       containers:
         - name: develop-backend
           image: registry.reset.inso-w.at/2023ws-ase-pr-group/23ws-ase-pr-inso-06/develop-backend:latest
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "100m"
+              ephemeral-storage: "100Mi"
+            limits:
+              memory: "1000Mi"
+              cpu: "500m"
+              ephemeral-storage: "100Mi"
           ports:
             - containerPort: 80
           readinessProbe:
