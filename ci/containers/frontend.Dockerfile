@@ -8,6 +8,6 @@
 #RUN flutter build web --base-href ${BASE_HREF}
 
 FROM ghcr.io/brotholomew/httpd-non-root:latest
-COPY . /usr/local/apache2/htdocs/
+COPY frontend/build/web /usr/local/apache2/htdocs/
 RUN ls -la /usr/local/apache2/htdocs/
 #COPY --from=builder /var/inso_06/build/web /usr/local/apache2/htdocs/

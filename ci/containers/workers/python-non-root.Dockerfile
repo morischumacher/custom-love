@@ -1,8 +1,8 @@
-FROM python:3.12.0-alpine
+FROM python:3.12.0-slim-bookworm
 
-RUN pip install --upgrade pip
+#RUN pip install --upgrade pip
 
-RUN adduser -D worker
+RUN useradd -m worker
 USER worker
 WORKDIR /home/worker
 

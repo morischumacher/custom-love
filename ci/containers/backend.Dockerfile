@@ -1,4 +1,4 @@
-FROM ghcr.io/brotholomew/python-non-root:3.12.0-alpine
+FROM ghcr.io/brotholomew/python-non-root:3.12.0-bookworm
 
 COPY requirements.txt /var/requirements.txt
 COPY backend /var/inso_06
