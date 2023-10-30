@@ -1,0 +1,55 @@
+variables:
+  GIT_STRATEGY: "clone"
+
+stages:
+  - sanitycheck
+  - build
+  - deploy
+
+sanitycheck:
+  stage: sanitycheck
+  image:
+    name: gcr.io/kaniko-project/executor:v1.17.0-debug
+    entrypoint: [""]
+  script:
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(printf "%s:%s" "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"},\"$CI_DEPENDENCY_PROXY_SERVER\":{\"auth\":\"$(printf "%s:%s" ${CI_DEPENDENCY_PROXY_USER} "${CI_DEPENDENCY_PROXY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
+    - /kaniko/executor
+      --context "${CI_PROJECT_DIR}"
+      --dockerfile "ci/containers/test.Dockerfile"
+      --destination "registry.reset.inso-w.at/2023ws-ase-pr-group/23ws-ase-pr-inso-06/test:$CI_PIPELINE_ID"
+    - /kaniko/executor
+      --context "${CI_PROJECT_DIR}"
+      --dockerfile "ci/containers/backend.Dockerfile"
+      --destination "registry.reset.inso-w.at/2023ws-ase-pr-group/23ws-ase-pr-inso-06/develop-backend:$CI_PIPELINE_ID"
+  only:
+    - develop
+
+build-image:
+  stage: build
+  image:
+    name: gcr.io/kaniko-project/executor:v1.17.0-debug
+    entrypoint: [""]
+  script:
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(printf "%s:%s" "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"},\"$CI_DEPENDENCY_PROXY_SERVER\":{\"auth\":\"$(printf "%s:%s" ${CI_DEPENDENCY_PROXY_USER} "${CI_DEPENDENCY_PROXY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
+    - /kaniko/executor
+      --context "${CI_PROJECT_DIR}"
+      --build-arg BASE_HREF="/develop/app/"
+      --dockerfile "ci/containers/frontend.Dockerfile"
+      --destination "registry.reset.inso-w.at/2023ws-ase-pr-group/23ws-ase-pr-inso-06/develop-frontend:$CI_PIPELINE_ID"
+    - /kaniko/executor
+      --context "${CI_PROJECT_DIR}"
+      --dockerfile "ci/containers/backend.Dockerfile"
+      --destination "registry.reset.inso-w.at/2023ws-ase-pr-group/23ws-ase-pr-inso-06/develop-backend:$CI_PIPELINE_ID"
+  only:
+    - develop
+
+deploy-qa:
+  stage: deploy
+  image: bitnami/kubectl
+  script:
+    - kubectl apply -f ci/k8s/ingress.yaml
+    - sed -i 's/:latest/:'$CI_PIPELINE_ID'/g' ci/k8s/develop.yaml
+    - cat ci/k8s/develop.yaml
+    - kubectl apply -f ci/k8s/develop.yaml
+  only:
+    - develop
