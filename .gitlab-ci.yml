@@ -1,5 +1,3 @@
-image: registry.reset.inso-w.at/pub/docker/mvn-non-root-17
-
 variables:
   GIT_STRATEGY: "clone"
 
