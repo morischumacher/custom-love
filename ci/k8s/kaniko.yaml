@@ -29,7 +29,6 @@ spec:
               memory: "280Mi"
               cpu: "500m"
               ephemeral-storage: "100Mi"
-          imagePullPolicy: Never
           volumeMounts:
           - mountPath: "/kaniko/.docker"
             name: kaniko
