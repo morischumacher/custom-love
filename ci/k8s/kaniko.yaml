@@ -19,7 +19,7 @@ spec:
           secretName: kaniko
       containers:
         - name: develop-kaniko
-          image: gcr.io/kaniko-project/executor:v1.17.0-debug
+          image: ghcr.io/brotholomew/kaniko:latest
           imagePullPolicy: Never
           ports:
             - containerPort: 80
