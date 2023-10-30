@@ -55,6 +55,9 @@ package-frontend:
     --context "${CI_PROJECT_DIR}"
     --dockerfile "ci/containers/frontend.Dockerfile"
     --destination "registry.reset.inso-w.at/2023ws-ase-pr-group/23ws-ase-pr-inso-06/develop-frontend:$CI_PIPELINE_ID"
+  only:
+  - develop
+  - release*
 
 build-backend:
   stage: build-backend
@@ -71,6 +74,9 @@ build-backend:
     --context "${CI_PROJECT_DIR}"
     --dockerfile "ci/containers/backend.Dockerfile"
     --destination "registry.reset.inso-w.at/2023ws-ase-pr-group/23ws-ase-pr-inso-06/develop-backend:$CI_PIPELINE_ID"
+  only:
+  - develop
+  - release*
 
 deploy-qa:
   stage: deploy
@@ -84,3 +90,6 @@ deploy-qa:
     - sed -i 's/:latest/:'$CI_PIPELINE_ID'/g' ci/k8s/develop.yaml
     - cat ci/k8s/develop.yaml
     - kubectl apply -f ci/k8s/develop.yaml
+  only:
+  - develop
+  - release*
