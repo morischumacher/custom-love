@@ -13,10 +13,11 @@ spec:
       labels:
         app: 23ws-ase-pr-inso-06-release-frontend
     spec:
+      imagePullSecrets:
+      - name: secret-dockercfg
       containers:
         - name: release-frontend
           image: registry.reset.inso-w.at/2023ws-ase-pr-group/23ws-ase-pr-inso-06-release-frontend:latest
-          imagePullPolicy: Never
           ports:
             - containerPort: 80
   strategy:
@@ -39,10 +40,11 @@ spec:
       labels:
         app: 23ws-ase-pr-inso-06-release-backend
     spec:
+      imagePullSecrets:
+      - name: secret-dockercfg
       containers:
         - name: release-backend
           image: registry.reset.inso-w.at/2023ws-ase-pr-group/23ws-ase-pr-inso-06-release-backend:latest
-          imagePullPolicy: Never
           ports:
             - containerPort: 80
           readinessProbe:

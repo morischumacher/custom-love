@@ -13,6 +13,8 @@ spec:
       labels:
         app: 23ws-ase-pr-inso-06-db
     spec:
+      imagePullSecrets:
+      - name: secret-dockercfg
       containers:
         - name: postgres
           image: postgres:latest
