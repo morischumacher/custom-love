@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: 23ws-ase-pr-inso-06-develop-kaniko
+  namespace: 23ws-ase-pr-inso-06
+spec:
+  selector:
+    matchLabels:
+      app: 23ws-ase-pr-inso-06-develop-kaniko
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: 23ws-ase-pr-inso-06-develop-kaniko
+    spec:
+      containers:
+        - name: develop-kaniko
+          image: gcr.io/kaniko-project/executor:v1.17.0-debug
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 80
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 2
