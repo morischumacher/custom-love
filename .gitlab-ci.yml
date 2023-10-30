@@ -34,8 +34,8 @@ package-frontend:
       --dockerfile "ci/containers/frontend.Dockerfile"
       --destination "registry.reset.inso-w.at/2023ws-ase-pr-group/23ws-ase-pr-inso-06/develop-frontend:$CI_PIPELINE_ID"
 
-build:
-  stage: build
+build-backend:
+  stage: build-backend
   image:
     name: gcr.io/kaniko-project/executor:v1.17.0-debug
     entrypoint: [""]
