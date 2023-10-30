@@ -26,7 +26,7 @@ build-frontend:
   image: ghcr.io/cirruslabs/flutter:3.13.9
   rules:
   - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    when: Never
+    when: "never"
   - if: $CI_PIPELINE_SOURCE == "push"
   script:
   - "pwd"
@@ -45,7 +45,7 @@ package-frontend:
     entrypoint: [""]
   rules:
   - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    when: Never
+    when: "never"
   - if: $CI_PIPELINE_SOURCE == "push"
   script: 
   - "pwd"
@@ -63,7 +63,7 @@ build-backend:
     entrypoint: [""]
   rules:
   - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    when: Never
+    when: "never"
   - if: $CI_PIPELINE_SOURCE == "push"
   script:
   - echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(printf "%s:%s" "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"},\"$CI_DEPENDENCY_PROXY_SERVER\":{\"auth\":\"$(printf "%s:%s" ${CI_DEPENDENCY_PROXY_USER} "${CI_DEPENDENCY_PROXY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
@@ -77,7 +77,7 @@ deploy-qa:
   image: bitnami/kubectl
   rules:
   - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    when: Never
+    when: "never"
   - if: $CI_PIPELINE_SOURCE == "push"
   script:
     - kubectl apply -f ci/k8s/ingress.yaml
