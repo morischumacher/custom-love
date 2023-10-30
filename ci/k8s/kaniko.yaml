@@ -14,9 +14,9 @@ spec:
         app: 23ws-ase-pr-inso-06-develop-kaniko
     spec:
       volumes:
-      - name: kaniko-config
+      - name: kaniko
         secret:
-          secretName: kaniko_auth
+          secretName: kaniko
       containers:
         - name: develop-kaniko
           image: gcr.io/kaniko-project/executor:v1.17.0-debug
@@ -25,7 +25,7 @@ spec:
             - containerPort: 80
           volumeMounts:
           - mountPath: "/kaniko/.docker"
-            name: kaniko_auth
+            name: kaniko
             readOnly: true
   strategy:
     rollingUpdate:
