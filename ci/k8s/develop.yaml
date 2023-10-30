@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: develop-frontend
-          image: registry.reset.inso-w.at/2023ws-ase-pr-group/23ws-ase-pr-inso-06-develop-frontend:latest
+          image: registry.reset.inso-w.at/2023ws-ase-pr-group/23ws-ase-pr-inso-06/develop-frontend:latest
           imagePullPolicy: Never
           ports:
             - containerPort: 80
@@ -41,7 +41,7 @@ spec:
     spec:
       containers:
         - name: develop-backend
-          image: registry.reset.inso-w.at/2023ws-ase-pr-group/23ws-ase-pr-inso-06-develop-backend:latest
+          image: registry.reset.inso-w.at/2023ws-ase-pr-group/23ws-ase-pr-inso-06/develop-backend:latest
           imagePullPolicy: Never
           ports:
             - containerPort: 80

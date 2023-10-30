@@ -16,11 +16,11 @@ build-image:
       --context "${CI_PROJECT_DIR}"
       --build-arg BASE_HREF="/develop/app/"
       --dockerfile "ci/containers/frontend.Dockerfile"
-      --destination "registry.reset.inso-w.at/2023ws-ase-pr-group/23ws-ase-pr-inso-06-develop-frontend:$CI_PIPELINE_ID"
+      --destination "registry.reset.inso-w.at/2023ws-ase-pr-group/23ws-ase-pr-inso-06/develop-frontend:$CI_PIPELINE_ID"
     - /kaniko/executor
       --context "${CI_PROJECT_DIR}"
       --dockerfile "ci/containers/backend.Dockerfile"
-      --destination "registry.reset.inso-w.at/2023ws-ase-pr-group/23ws-ase-pr-inso-06-develop-backend:$CI_PIPELINE_ID"
+      --destination "registry.reset.inso-w.at/2023ws-ase-pr-group/23ws-ase-pr-inso-06/develop-backend:$CI_PIPELINE_ID"
   only:
     - develop
 
