@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: 23ws-ase-pr-inso-06-db
+  namespace: 23ws-ase-pr-inso-06
+spec:
+  selector:
+    matchLabels:
+      app: 23ws-ase-pr-inso-06-db
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: 23ws-ase-pr-inso-06-db
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:latest
+          ports:
+            - containerPort: 5432
+          env:
+          - name: POSTGRES_PASSWORD
+            value: "example"
+          livenessProbe:
+            initialDelaySeconds: 10
+            exec:
+              command:
+              - "psql"
+              - "-U"
+              - "postgres"
+              - "-c"
+              - "\\c"
+        - name: adminer
+          image: adminer:latest
+          ports:
+          - containerPort: 8080
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 2
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: s-23ws-ase-pr-inso-06-db-service
+  namespace: 23ws-ase-pr-inso-06
+spec:
+  type: ClusterIP
+  clusterIP: None
+  selector:
+    app: 23ws-ase-pr-inso-06-db
+  ports:
+    - port: 8080
+      name: "adminer"
+    - port: 5432
+      name: "postgresql"

@@ -1,0 +1,27 @@
+image: registry.reset.inso-w.at/pub/docker/mvn-non-root-17
+
+variables:
+  GIT_STRATEGY: "clone"
+
+stages:
+  - build
+  - deploy
+
+build-image:
+  stage: build
+  script:
+    - docker build -t registry.reset.inso-w.at/2023ws-ase-pr-group/23ws-ase-pr-inso-06-develop-frontend:$CI_PIPELINE_ID --build-arg BASE_HREF="/develop/app/" -f ci/containers/frontend.Dockerfile .
+    - docker build -t registry.reset.inso-w.at/2023ws-ase-pr-group/23ws-ase-pr-inso-06-develop-backend:$CI_PIPELINE_ID -f ci/containers/backend.Dockerfile .
+  only:
+    - develop
+
+deploy-qa:
+  stage: deploy
+  image: bitnami/kubectl
+  script:
+    - kubectl apply -f ci/k8s/ingress.yaml
+    - sed -i 's/:latest/:'$CI_PIPELINE_ID'/g' ci/k8s/develop.yaml
+    - cat ci/k8s/develop.yaml
+    - kubectl apply -f ci/k8s/develop.yaml
+  only:
+    - develop
