@@ -7,12 +7,19 @@ stages:
 
 build-image:
   stage: build
-  image: buildah/buildah
+  image:
+    name: gcr.io/kaniko-project/executor:v1.9.0-debug
+    entrypoint: [""]
   script:
-    - buildah bud -t registry.reset.inso-w.at/2023ws-ase-pr-group/23ws-ase-pr-inso-06-develop-frontend:$CI_PIPELINE_ID --build-arg BASE_HREF="/develop/app/" -f ci/containers/frontend.Dockerfile .
-    - buildah bud -t registry.reset.inso-w.at/2023ws-ase-pr-group/23ws-ase-pr-inso-06-develop-backend:$CI_PIPELINE_ID -f ci/containers/backend.Dockerfile .
-    - buildah push registry.reset.inso-w.at/2023ws-ase-pr-group/23ws-ase-pr-inso-06-develop-frontend:$CI_PIPELINE_ID
-    - buildah push registry.reset.inso-w.at/2023ws-ase-pr-group/23ws-ase-pr-inso-06-develop-backend:$CI_PIPELINE_ID
+    - /kaniko/executor
+      --context "${CI_PROJECT_DIR}"
+      --build-arg BASE_HREF="/develop/app/"
+      --dockerfile "ci/containers/frontend.Dockerfile"
+      --destination "registry.reset.inso-w.at/2023ws-ase-pr-group/23ws-ase-pr-inso-06-develop-frontend:$CI_PIPELINE_ID"
+    - /kaniko/executor
+      --context "${CI_PROJECT_DIR}"
+      --dockerfile "ci/containers/backend.Dockerfile"
+      --destination "registry.reset.inso-w.at/2023ws-ase-pr-group/23ws-ase-pr-inso-06-develop-backend:$CI_PIPELINE_ID"
   only:
     - develop
 
