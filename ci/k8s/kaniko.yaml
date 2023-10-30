@@ -13,12 +13,20 @@ spec:
       labels:
         app: 23ws-ase-pr-inso-06-develop-kaniko
     spec:
+      volumes:
+      - name: kaniko-config
+        secret:
+          secretName: kaniko_auth
       containers:
         - name: develop-kaniko
           image: gcr.io/kaniko-project/executor:v1.17.0-debug
           imagePullPolicy: Never
           ports:
             - containerPort: 80
+          volumeMounts:
+          - mountPath: "/kaniko/.docker"
+            name: kaniko_auth
+            readOnly: true
   strategy:
     rollingUpdate:
       maxUnavailable: 1
