@@ -23,7 +23,7 @@ build-frontend:
   script:
     - "pwd"
     - "ls -la"
-    - "cd frontend; flutter pub get; flutter build web --base-href /develop/app"
+    - "cd frontend; flutter pub get; flutter build web --base-href /develop/app/"
   artifacts:
     name: "frontend-$CI_JOB_NAME"
     expire_in: 1 day
