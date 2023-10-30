@@ -12,11 +12,12 @@ update-db:
   stage: update-db
   image: bitnami/kubectl
   rules:
-  - when: manual
   - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    when: Never
+    when: manual
+    allow_failure: true
   - if: $CI_PIPELINE_SOURCE == "push"
-    when: Never
+    when: manual
+    allow_failure: true
   script:
   - kubectl apply -f ci/k8s/database.yaml
 
