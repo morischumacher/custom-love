@@ -228,3 +228,77 @@ Works like an nginx, is a router. We will have a develop and release version.
 ### Next meeting
 
 Tuesday, 31.10.2023 during the meeting with the tutor at 16:15, and if necessary, afterwards
+
+## 31.10.2023, 16:15 - 17:15: Weekly Meeting with the tutor
+
+Present: All, Place: In person
+
+### Topics
+* How will the presentation occur
+* Algorithms
+* Which features ought to be pushed to the optional section
+
+#### Presentation
+* Not all User Stories should be added to the presentation
+* Figma mockups would be greatly appreciated (in other words: a must)
+* **IMPORTANT:** How will the rating be in detail?
+
+#### Implementation
+* Functionalities such as "filtering messages", whereby they are not a high priority, should be put into a section such
+  as "Optional functionalities"
+* Careful when defining features:
+  * "Easy to use UI" is vague, e.g., just because something is easy for an IT student, does not mean it is going to be 
+     for an 80-year old person.
+    * Therefore, define what as "easy to use" means, such as we are following standards and which groups of people are expected to be used. 
+* Iceberg list should refer to app-relevant features
+
+#### Algorithms
+Distance based algorithm: Radius within which people are chosen, the user can pick the radius
+* THEN: User can omit other algorithms or add additional algorithms, meaning:
+  * Interest-based algorithm: How many interests are the same?
+  * Decision-based algorithm: Matching based on what others like
+* WHEN algorithms switched is undecided yet, meaning if it is just on one day or one week
+* Tutor: Combining interest-based and decision-based might become a bit convoluted
+
+Location would be roughly saved using Google API's for the latitude and longitude, and based on the radius that the user
+has provided we would write a query for the longitude and latitude.
+* The user would only switch location manually, unlike Tinder, where
+* **Tutor:** Add dynamic location as an optional feature
+
+#### How will the MR's influence the grades?
+* MR1: 10-20%
+* MR2: Slightly more than MR1
+* MR3: 50%
+
+#### Branches
+One branch per person, meaning you should if more than 1 person is expected to work on a feature, then it should be
+divided into further branches.
+
+#### Rating
+* Each user could rate another user (e.g., with 1-5 stars), or one could also split the rating system?
+* The rating of another person will only occur after the two matched persons have met.
+
+#### Optional features
+* Reporting: Could be a simple database entry.
+  * Admin feature might be needed to check it out.
+  * Could also include a security feature
+* **Tutor:** Add dynamic location as an optional feature
+* Filtering messages within a chat
+
+#### Does Python/FastAPI have the risk of turning code into spaghetti code quickly?
+FastAPI is very good with Dependency Management, as long as object-oriented coding guidelines are upheld it should be fine.
+* For Unit-Tests, OOP is required anyway.
+
+### TODO's
+* **Tobias:** Wiki + domain model
+* **Bartosz, Christoph, Anna:** Figma - Ideally mobile app 
+  * Does not have to be Figma, can be PowerPoint too
+* **Moritz:** Presentation
+* **Together:** Proofread project contract + presentation
+
+#### Plus
+Look at SQL model for OEM
+* Recommended:AsyncPG, PsychoPG bit more "boring"
+
+### Presentation
+Friday, 17:00 o'clock at usual place as the Weekly Meetings with the Tutor
