@@ -44,7 +44,7 @@ spec:
               port: 80
               path: /health
           volumeMounts:
-            - mountPath: /var/inso_06
+            - mountPath: /var/backend
               name: release-database-connection-string
               readOnly: true
   strategy:
