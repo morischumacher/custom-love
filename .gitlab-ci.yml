@@ -14,11 +14,10 @@ update-db:
   stage: update-db
   image: bitnami/kubectl
   rules:
-  - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    when: manual
+  - changes:
+    - ci/k8s/database.yaml
     allow_failure: true
-  - if: $CI_PIPELINE_SOURCE == "push"
-    when: manual
+  - when: manual
     allow_failure: true
   script:
   - kubectl apply -f ci/k8s/database.yaml
@@ -27,11 +26,10 @@ update-ingress:
   stage: update-ingress
   image: bitnami/kubectl
   rules:
-  - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    when: manual
+  - changes:
+    - ci/k8s/ingress.yaml
     allow_failure: true
-  - if: $CI_PIPELINE_SOURCE == "push"
-    when: manual
+  - when: manual
     allow_failure: true
   script:
   - kubectl apply -f ci/k8s/ingress.yaml
@@ -39,6 +37,11 @@ update-ingress:
 build-frontend:
   stage: build-frontend
   image: ghcr.io/cirruslabs/flutter:3.13.9
+  rules:
+  - changes:
+    - frontend/*
+    - ci/k8s/develop/frontend.yaml
+    - ci/k8s/release/frontend.yaml
   script:
   - |
     if [ $CI_COMMIT_BRANCH = "develop" ]; then TARGET=develop; else TARGET=release; fi
@@ -56,19 +59,25 @@ package-frontend:
   image:     
     name: gcr.io/kaniko-project/executor:v1.17.0-debug
     entrypoint: [""]
+  rules:
+  - if: $CI_COMMIT_BRANCH =~ /^release*/ || $CI_COMMIT_BRANCH == develop
+    changes:
+    - frontend/*
+    - ci/k8s/develop/frontend.yaml
+    - ci/k8s/release/frontend.yaml
   script:
   - echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(printf "%s:%s" "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"},\"$CI_DEPENDENCY_PROXY_SERVER\":{\"auth\":\"$(printf "%s:%s" ${CI_DEPENDENCY_PROXY_USER} "${CI_DEPENDENCY_PROXY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
   - /kaniko/executor
     --context "${CI_PROJECT_DIR}"
     --dockerfile "ci/containers/frontend.Dockerfile"
     --destination "registry.reset.inso-w.at/2023ws-ase-pr-group/23ws-ase-pr-inso-06/develop-frontend:$CI_PIPELINE_ID"
-  only:
-  - develop
-  - release*
 
 unittest-backend:
   stage: test-backend
   image: ghcr.io/brotholomew/python-non-root:3.12.0-bookworm-fast-circle
+  rules:
+  - changes:
+    - backend/*
   script:
   - pip install --user -r ./requirements.txt
   - pytest --rootdir backend/test/unit backend/test/unit/sample_test.py
@@ -78,32 +87,67 @@ build-backend:
   image:
     name: gcr.io/kaniko-project/executor:v1.17.0-debug
     entrypoint: [""]
+  rules:
+  - if: $CI_COMMIT_BRANCH =~ /^release*/ || $CI_COMMIT_BRANCH == develop
+    changes:
+    - backend/*
+    - ci/k8s/develop/backend.yaml
+    - ci/k8s/release/backend.yaml
   script:
   - echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(printf "%s:%s" "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"},\"$CI_DEPENDENCY_PROXY_SERVER\":{\"auth\":\"$(printf "%s:%s" ${CI_DEPENDENCY_PROXY_USER} "${CI_DEPENDENCY_PROXY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
   - /kaniko/executor
     --context "${CI_PROJECT_DIR}"
     --dockerfile "ci/containers/backend.Dockerfile"
     --destination "registry.reset.inso-w.at/2023ws-ase-pr-group/23ws-ase-pr-inso-06/develop-backend:$CI_PIPELINE_ID"
-  only:
-  - develop
-  - release*
 
-deploy-develop:
+deploy-develop-frontend:
   stage: deploy
   image: bitnami/kubectl
+  rules:
+  - if: $CI_COMMIT_BRANCH == develop
+    changes:
+    - frontend/*
+    - ci/k8s/develop/frontend.yaml
   script:
-  - sed -i 's/:latest/:'$CI_PIPELINE_ID'/g' ci/k8s/develop.yaml
-  - cat ci/k8s/develop.yaml
-  - kubectl apply -f ci/k8s/develop.yaml
-  only:
-  - develop
+  - sed -i 's/:latest/:'$CI_PIPELINE_ID'/g' ci/k8s/develop/frontend.yaml
+  - cat ci/k8s/develop/frontend.yaml
+  - kubectl apply -f ci/k8s/develop/frontend.yaml
 
-deploy-release:
+deploy-develop-backend:
   stage: deploy
   image: bitnami/kubectl
+  rules:
+  - if: $CI_COMMIT_BRANCH == develop
+    changes:
+    - backend/*
+    - ci/k8s/develop/backend.yaml
   script:
-  - sed -i 's/:latest/:'$CI_PIPELINE_ID'/g' ci/k8s/release.yaml
-  - cat ci/k8s/release.yaml
-  - kubectl apply -f ci/k8s/release.yaml
-  only:
-  - release*
+  - sed -i 's/:latest/:'$CI_PIPELINE_ID'/g' ci/k8s/develop/backend.yaml
+  - cat ci/k8s/develop/backend.yaml
+  - kubectl apply -f ci/k8s/develop/backend.yaml
+
+deploy-release-frontend:
+  stage: deploy
+  image: bitnami/kubectl
+  rules:
+  - if: $CI_COMMIT_BRANCH =~ /^release*/
+    changes:
+    - frontend/*
+    - ci/k8s/release/frontend.yaml
+  script:
+  - sed -i 's/:latest/:'$CI_PIPELINE_ID'/g' ci/k8s/release/frontend.yaml
+  - cat ci/k8s/release/frontend.yaml
+  - kubectl apply -f ci/k8s/release/frontend.yaml
+
+deploy-release-backend:
+  stage: deploy
+  image: bitnami/kubectl
+  rules:
+  - if: $CI_COMMIT_BRANCH =~ /^release*/
+    changes:
+    - backend/*
+    - ci/k8s/release/backend.yaml
+  script:
+  - sed -i 's/:latest/:'$CI_PIPELINE_ID'/g' ci/k8s/release/backend.yaml
+  - cat ci/k8s/release/backend.yaml
+  - kubectl apply -f ci/k8s/release/backend.yaml
