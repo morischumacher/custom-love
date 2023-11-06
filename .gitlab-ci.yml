@@ -68,7 +68,7 @@ package-frontend:
 
 unittest-backend:
   stage: test-backend
-  image: ghcr.io/brotholomew/python-non-root:3.12.0-bookworm
+  image: ghcr.io/brotholomew/python-non-root:3.12.0-bookworm-fast-circle
   script:
   - pip install --user -r ./requirements.txt
   - pytest --rootdir backend/test/unit backend/test/unit/sample_test.py
