@@ -2,4 +2,3 @@
 .venv
 venv
 inso_06/__pycache__
-/backend/database.json
