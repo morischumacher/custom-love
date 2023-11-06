@@ -60,7 +60,7 @@ package-frontend:
     name: gcr.io/kaniko-project/executor:v1.17.0-debug
     entrypoint: [""]
   rules:
-  - if: $CI_COMMIT_BRANCH =~ /^release*/ || $CI_COMMIT_BRANCH == develop
+  - if: $CI_COMMIT_BRANCH =~ /^release*/ || $CI_COMMIT_BRANCH == "develop"
     changes:
     - frontend/*
     - ci/k8s/develop/frontend.yaml
@@ -88,7 +88,7 @@ build-backend:
     name: gcr.io/kaniko-project/executor:v1.17.0-debug
     entrypoint: [""]
   rules:
-  - if: $CI_COMMIT_BRANCH =~ /^release*/ || $CI_COMMIT_BRANCH == develop
+  - if: $CI_COMMIT_BRANCH =~ /^release*/ || $CI_COMMIT_BRANCH == "develop"
     changes:
     - backend/*
     - ci/k8s/develop/backend.yaml
@@ -104,7 +104,7 @@ deploy-develop-frontend:
   stage: deploy
   image: bitnami/kubectl
   rules:
-  - if: $CI_COMMIT_BRANCH == develop
+  - if: $CI_COMMIT_BRANCH == "develop"
     changes:
     - frontend/*
     - ci/k8s/develop/frontend.yaml
@@ -117,7 +117,7 @@ deploy-develop-backend:
   stage: deploy
   image: bitnami/kubectl
   rules:
-  - if: $CI_COMMIT_BRANCH == develop
+  - if: $CI_COMMIT_BRANCH == "develop"
     changes:
     - backend/*
     - ci/k8s/develop/backend.yaml
