@@ -49,6 +49,10 @@ spec:
       labels:
         app: 23ws-ase-pr-inso-06-develop-backend
     spec:
+      volumes:
+        - name: develop-database-connection-string
+          secret:
+            secretName: develop-database-connection-string
       imagePullSecrets:
       - name: secret-dockercfg
       containers:
