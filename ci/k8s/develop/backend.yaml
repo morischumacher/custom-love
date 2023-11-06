@@ -44,9 +44,10 @@ spec:
               port: 80
               path: /health
           volumeMounts:
-            - mountPath: /var/backend
+            - mountPath: /var/backend/database.json
               name: develop-database-connection-string
               readOnly: true
+              subPath: database.json
   strategy:
     rollingUpdate:
       maxUnavailable: 1
