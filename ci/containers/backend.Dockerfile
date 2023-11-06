@@ -6,4 +6,5 @@ COPY backend /var/backend
 RUN pip install --user -r /var/requirements.txt
 
 WORKDIR /var
-CMD ["uvicorn", "backend.main:app", "--proxy-headers", "--host", "0.0.0.0", "--port", "80"]
+CMD [ "tail", "-f", "/dev/null" ]
+#CMD ["uvicorn", "backend.main:app", "--proxy-headers", "--host", "0.0.0.0", "--port", "80"]
