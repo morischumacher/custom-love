@@ -3,8 +3,10 @@ variables:
 
 stages:
 - update-db
+- update-ingress
 - build-frontend
 - package-frontend
+- test-backend
 - build-backend
 - deploy
 
@@ -21,17 +23,28 @@ update-db:
   script:
   - kubectl apply -f ci/k8s/database.yaml
 
+update-ingress:
+  stage: update-ingress
+  image: bitnami/kubectl
+  rules:
+  - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    when: manual
+    allow_failure: true
+  - if: $CI_PIPELINE_SOURCE == "push"
+    when: manual
+    allow_failure: true
+  script:
+  - kubectl apply -f ci/k8s/ingress.yaml
+
 build-frontend:
   stage: build-frontend
   image: ghcr.io/cirruslabs/flutter:3.13.9
-  rules:
-  - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    when: "never"
-  - if: $CI_PIPELINE_SOURCE == "push"
   script:
-  - "pwd"
-  - "ls -la"
-  - "cd frontend; flutter pub get; flutter build web --base-href /develop/app/"
+  - |
+    if [ $CI_COMMIT_BRANCH = "develop" ]; then TARGET=develop; else TARGET=release; fi
+    cd frontend
+    flutter pub get
+    flutter build web --base-href /$TARGET/app/
   artifacts:
     name: "frontend-$CI_JOB_NAME"
     expire_in: 1 day
@@ -43,44 +56,54 @@ package-frontend:
   image:     
     name: gcr.io/kaniko-project/executor:v1.17.0-debug
     entrypoint: [""]
-  rules:
-  - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    when: "never"
-  - if: $CI_PIPELINE_SOURCE == "push"
-  script: 
-  - "pwd"
-  - "ls -la"
+  script:
   - echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(printf "%s:%s" "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"},\"$CI_DEPENDENCY_PROXY_SERVER\":{\"auth\":\"$(printf "%s:%s" ${CI_DEPENDENCY_PROXY_USER} "${CI_DEPENDENCY_PROXY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
   - /kaniko/executor
     --context "${CI_PROJECT_DIR}"
     --dockerfile "ci/containers/frontend.Dockerfile"
     --destination "registry.reset.inso-w.at/2023ws-ase-pr-group/23ws-ase-pr-inso-06/develop-frontend:$CI_PIPELINE_ID"
+  only:
+  - develop
+  - release*
+
+unittest-backend:
+  stage: test-backend
+  image: ghcr.io/brotholomew/python-non-root:3.12.0-bookworm-fast-circle
+  script:
+  - pip install --user -r ./requirements.txt
+  - pytest --rootdir backend/test/unit backend/test/unit/sample_test.py
 
 build-backend:
   stage: build-backend
   image:
     name: gcr.io/kaniko-project/executor:v1.17.0-debug
     entrypoint: [""]
-  rules:
-  - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    when: "never"
-  - if: $CI_PIPELINE_SOURCE == "push"
   script:
   - echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(printf "%s:%s" "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"},\"$CI_DEPENDENCY_PROXY_SERVER\":{\"auth\":\"$(printf "%s:%s" ${CI_DEPENDENCY_PROXY_USER} "${CI_DEPENDENCY_PROXY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
   - /kaniko/executor
     --context "${CI_PROJECT_DIR}"
     --dockerfile "ci/containers/backend.Dockerfile"
     --destination "registry.reset.inso-w.at/2023ws-ase-pr-group/23ws-ase-pr-inso-06/develop-backend:$CI_PIPELINE_ID"
+  only:
+  - develop
+  - release*
 
-deploy-qa:
+deploy-develop:
   stage: deploy
   image: bitnami/kubectl
-  rules:
-  - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    when: "never"
-  - if: $CI_PIPELINE_SOURCE == "push"
   script:
-    - kubectl apply -f ci/k8s/ingress.yaml
-    - sed -i 's/:latest/:'$CI_PIPELINE_ID'/g' ci/k8s/develop.yaml
-    - cat ci/k8s/develop.yaml
-    - kubectl apply -f ci/k8s/develop.yaml
+  - sed -i 's/:latest/:'$CI_PIPELINE_ID'/g' ci/k8s/develop.yaml
+  - cat ci/k8s/develop.yaml
+  - kubectl apply -f ci/k8s/develop.yaml
+  only:
+  - develop
+
+deploy-release:
+  stage: deploy
+  image: bitnami/kubectl
+  script:
+  - sed -i 's/:latest/:'$CI_PIPELINE_ID'/g' ci/k8s/release.yaml
+  - cat ci/k8s/release.yaml
+  - kubectl apply -f ci/k8s/release.yaml
+  only:
+  - release*
