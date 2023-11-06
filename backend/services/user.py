@@ -6,7 +6,6 @@ from backend.models.user import User
 
 
 def get_user(user_id, db: Annotated[Session, Depends(create_session)]):
-    print(user_id)
     return db.exec(select(User)).all()
 
 
