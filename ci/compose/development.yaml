@@ -1,6 +1,7 @@
 version: "3.1"
 services:
   db:
+    container_name: postgres
     image: postgres
     restart: always
     environment:
@@ -8,13 +9,14 @@ services:
     networks:
     - backbone
     ports:
-    - 5432:5432
+    - 127.0.0.1:5432:5432
 
   adminer:
+    container_name: adminer
     image: adminer
     restart: always
     ports:
-      - 8080:8080
+      - 127.0.0.1:8080:8080
     networks:
     - backbone
 

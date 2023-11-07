@@ -19,8 +19,8 @@ spec:
                 name: s-23ws-ase-pr-inso-06-develop-frontend-service
                 port:
                   number: 80
-          - path: /develop/backend
-            pathType: Prefix
+          - path: /develop/backend/?(.*)
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: s-23ws-ase-pr-inso-06-develop-backend-service
@@ -33,3 +33,17 @@ spec:
                 name: s-23ws-ase-pr-inso-06-db-service
                 port:
                   number: 8080
+          - path: /release/app/?(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: s-23ws-ase-pr-inso-06-release-frontend-service
+                port:
+                  number: 80
+          - path: /release/backend/?(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: s-23ws-ase-pr-inso-06-develop-release-service
+                port:
+                  number: 80

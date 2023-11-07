@@ -1,6 +1,7 @@
 FROM python:3.12.0-slim-bookworm
 
-#RUN pip install --upgrade pip
+RUN apt-get update -y
+RUN apt-get install -y libpq-dev gcc
 
 RUN useradd -m worker
 USER worker
