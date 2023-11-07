@@ -1,9 +1,10 @@
 import json
 
+from sqlalchemy.engine import Engine
 from sqlmodel import create_engine, Session, SQLModel
 
 
-def get_engine():
+def get_engine() -> Engine:
     with open('backend/database.json') as file:
         connection_string = json.load(file)
 
