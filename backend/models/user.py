@@ -1,6 +1,12 @@
-from typing import Optional, Any
+from datetime import datetime
+from typing import TYPE_CHECKING, Optional, List
 
-from sqlmodel import SQLModel, Field
+from sqlmodel import SQLModel, Field, Relationship
+
+from backend.models.connectors.user_has_language import UserHasLanguage
+
+if TYPE_CHECKING:
+    from .language import Language
 
 
 class User(SQLModel, table=True):
@@ -10,5 +16,10 @@ class User(SQLModel, table=True):
     email: str
     tel: str
     bio: str
-    # dob: datetime
+    date_of_birth: datetime
     job: str
+    search_radius: int
+    swipes_left: int
+
+    languages: Optional["Language"] = Relationship(back_populates="users", link_model=UserHasLanguage)
+
