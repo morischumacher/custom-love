@@ -5,7 +5,6 @@ from sqlmodel import select, Session
 from sqlmodel.sql.expression import SelectOfScalar
 from starlette import status
 
-from backend.models.language import Language
 from backend.models.user import User
 from backend.repository.repository import get_engine
 from backend.services.user import get_user, post_user
