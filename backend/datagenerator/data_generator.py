@@ -4,8 +4,11 @@ from sqlalchemy.engine import Engine
 from sqlmodel import Session, select
 
 from backend.models.address import Address
+# from backend.models.gender_identity import GenderIdentity
+from backend.models.interest import Interest
 from backend.models.language import Language
 from backend.models.preference import Preference
+from backend.models.rating import Rating
 from backend.models.user import User
 
 
@@ -53,7 +56,19 @@ class DataGenerator:
                 longitude_southwest=65.0
             )
 
-            print(" * Generating users")
+            # Gender Identity
+            # hetero = GenderIdentity(name="hetero-sexual")
+            # homo = GenderIdentity(name="homo-sexual")
+            # bi = GenderIdentity(name="bi-sexual")
+
+            # Interest
+            sports = Interest(name="sports", icon="icon1")
+            movies = Interest(name="movies", icon="icon2")
+            travel = Interest(name="travel", icon="icon3")
+            books = Interest(name="books", icon="icon4")
+            science = Interest(name="science", icon="icon5")
+
+            # Users
             user_alfa = User(
                 first_name='Alfa',
                 last_name='Alfonson',
@@ -66,7 +81,9 @@ class DataGenerator:
                 swipes_left=10,
                 languages=[english],
                 preferences=[preference_1],
-                address=vienna
+                address=vienna,
+                # gender_identity=hetero,
+                interests=[sports, movies]
             )
             user_bravo = User(
                 first_name='Bravo',
@@ -80,8 +97,14 @@ class DataGenerator:
                 swipes_left=5,
                 languages=[english, french, german],
                 preferences=[preference_2, preference_1],
-                address=ulm
+                address=ulm,
+                # gender_identity=homo,
+                interests=[travel, books, science]
             )
+
+            # Rating
+            # alfa_bravo_rating = Rating(rating_user=user_alfa, rated_user=user_bravo)
+
             session.add(user_alfa)
             session.add(user_bravo)
             session.commit()
