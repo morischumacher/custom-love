@@ -4,7 +4,7 @@ from sqlalchemy.engine import Engine
 from sqlmodel import Session, select
 
 from backend.models.address import Address
-# from backend.models.gender_identity import GenderIdentity
+from backend.models.gender_identity import GenderIdentity
 from backend.models.interest import Interest
 from backend.models.language import Language
 from backend.models.preference import Preference
@@ -57,8 +57,8 @@ class DataGenerator:
             )
 
             # Gender Identity
-            # hetero = GenderIdentity(name="hetero-sexual")
-            # homo = GenderIdentity(name="homo-sexual")
+            hetero = GenderIdentity(name="hetero-sexual")
+            homo = GenderIdentity(name="homo-sexual")
             # bi = GenderIdentity(name="bi-sexual")
 
             # Interest
@@ -82,7 +82,7 @@ class DataGenerator:
                 languages=[english],
                 preferences=[preference_1],
                 address=vienna,
-                # gender_identity=hetero,
+                gender_identity=hetero,
                 interests=[sports, movies]
             )
             user_bravo = User(
@@ -98,7 +98,7 @@ class DataGenerator:
                 languages=[english, french, german],
                 preferences=[preference_2, preference_1],
                 address=ulm,
-                # gender_identity=homo,
+                gender_identity=homo,
                 interests=[travel, books, science]
             )
 

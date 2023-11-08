@@ -6,8 +6,8 @@ if TYPE_CHECKING:
     from .user import User
 
 
-# class GenderIdentity(SQLModel, table=True):
-class GenderIdentity:
+class GenderIdentity(SQLModel, table=True):
+    __tablename__ = "gender_identity"
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str
 

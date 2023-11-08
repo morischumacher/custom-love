@@ -28,10 +28,10 @@ class User(SQLModel, table=True):
     search_radius: int
     swipes_left: int
 
-    # gender_identity_id: Optional[int] = Field(default=None, foreign_key="gender_identity.id")
+    gender_identity_id: Optional[int] = Field(default=None, foreign_key="gender_identity.id")
     address_id: Optional[int] = Field(default=None, foreign_key="address.id")
 
-    # gender_identity: Optional["GenderIdentity"] = Relationship(back_populates="users")
+    gender_identity: Optional["GenderIdentity"] = Relationship(back_populates="users")
     address: Optional["Address"] = Relationship(back_populates="users")
     languages: Optional["Language"] = Relationship(back_populates="users", link_model=UserHasLanguage)
     preferences: Optional["Preference"] = Relationship(back_populates="users", link_model=UserHasPreference)

@@ -7,6 +7,7 @@ from sqlmodel.pool import StaticPool
 
 from backend.main import app
 from backend.models.address import Address
+from backend.models.gender_identity import GenderIdentity
 from backend.models.interest import Interest
 from backend.models.language import Language
 from backend.models.preference import Preference
@@ -58,6 +59,8 @@ def test_sample_user_get(client: TestClient, session: Session):
     sports = Interest(name="sports", icon="icon1")
     movies = Interest(name="movies", icon="icon2")
 
+    hetero = GenderIdentity(name="hetero-sexual")
+
     # Users
     user_1 = User(
         first_name='Alfa',
@@ -72,7 +75,7 @@ def test_sample_user_get(client: TestClient, session: Session):
         languages=[english],
         preferences=[preference_1],
         address=vienna,
-        # gender_identity=hetero,
+        gender_identity=hetero,
         interests=[sports, movies]
     )
 
