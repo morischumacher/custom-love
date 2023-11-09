@@ -3,8 +3,8 @@ from fastapi import Depends
 from sqlmodel import Session, select
 from sqlmodel.sql.expression import SelectOfScalar
 
-from backend.exceptions.FatalException import FatalException
-from backend.exceptions.NotFoundException import NotFoundException
+from backend.exceptions.fatal_exception import FatalException
+from backend.exceptions.not_found_exception import NotFoundException
 from backend.repository.repository import create_session, get_engine
 from backend.models.user import User
 

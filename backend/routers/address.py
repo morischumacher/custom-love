@@ -2,9 +2,9 @@ from fastapi import APIRouter, HTTPException
 from starlette import status
 
 from backend import services
-from backend.exceptions import ValidationException
-from backend.exceptions.FatalException import FatalException
-from backend.exceptions.NotFoundException import NotFoundException
+from backend.exceptions.fatal_exception import FatalException
+from backend.exceptions.not_found_exception import NotFoundException
+from backend.exceptions.validation_exception import ValidationException
 from backend.services.address import get_address
 from backend.models.address import Address
 

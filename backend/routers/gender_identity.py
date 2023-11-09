@@ -6,9 +6,9 @@ from starlette import status
 from backend import services
 from backend.models.gender_identity import GenderIdentity
 from backend.services.gender_identity import get_gender_identity, get_gender_identities, post_gender_identity
-from backend.exceptions import ValidationException
-from backend.exceptions.FatalException import FatalException
-from backend.exceptions.NotFoundException import NotFoundException
+from backend.exceptions.validation_exception import ValidationException
+from backend.exceptions.fatal_exception import FatalException
+from backend.exceptions.not_found_exception import NotFoundException
 
 router = APIRouter(prefix='/gender-identities', tags=['gender-identities'], responses={404: {"description": "Not found"}})
 

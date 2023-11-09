@@ -1,11 +1,9 @@
-from typing import Annotated
-from fastapi import Depends
 from sqlmodel import Session, select
 from sqlmodel.sql.expression import SelectOfScalar
 
-from backend.exceptions.FatalException import FatalException
-from backend.exceptions.NotFoundException import NotFoundException
-from backend.exceptions.ValidationException import ValidationException
+from backend.exceptions.fatal_exception import FatalException
+from backend.exceptions.not_found_exception import NotFoundException
+from backend.exceptions.validation_exception import ValidationException
 from backend.models.address import Address
 from backend.repository.repository import get_engine
 
@@ -24,8 +22,8 @@ def get_address(address_id: int):
 def get_addresses():
     with Session(get_engine()) as session:
         statement: SelectOfScalar[Address] = select(Address)
-        users: list[Address] = session.exec(statement).all()
-    return users
+        addresses: list[Address] = session.exec(statement).all()
+    return addresses
 
 
 def post_address(address: Address):

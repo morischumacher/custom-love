@@ -5,8 +5,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from starlette import status
 
 from backend import services
-from backend.exceptions.FatalException import FatalException
-from backend.exceptions.NotFoundException import NotFoundException
+from backend.exceptions.fatal_exception import FatalException
+from backend.exceptions.not_found_exception import NotFoundException
 from backend.models.user import User
 from backend.services.user import get_user, post_user
 
@@ -25,7 +25,7 @@ def get_user(user_id: int):
     except NotFoundException as e:
         raise HTTPException(status_code=404, detail=e.message)
     except FatalException as e:
-        raise HTTPException(status_code=40, detail=e.message)
+        raise HTTPException(status_code=400, detail=e.message)
 
 
 @router.post('/', tags=['post'])

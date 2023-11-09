@@ -6,9 +6,9 @@ from starlette import status
 from backend import services
 from backend.models.preference import Preference
 from backend.services.preference import get_preference, get_preferences, post_preference
-from backend.exceptions import ValidationException
-from backend.exceptions.FatalException import FatalException
-from backend.exceptions.NotFoundException import NotFoundException
+from backend.exceptions.validation_exception import ValidationException
+from backend.exceptions.fatal_exception import FatalException
+from backend.exceptions.not_found_exception import NotFoundException
 
 router = APIRouter(prefix='/preferences', tags=['preferences'], responses={404: {"description": "Not found"}})
 

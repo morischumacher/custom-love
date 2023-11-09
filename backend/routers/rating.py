@@ -6,9 +6,9 @@ from starlette import status
 from backend import services
 from backend.models.rating import Rating
 from backend.services.rating import get_rating, get_ratings, post_rating
-from backend.exceptions import ValidationException
-from backend.exceptions.FatalException import FatalException
-from backend.exceptions.NotFoundException import NotFoundException
+from backend.exceptions.validation_exception import ValidationException
+from backend.exceptions.fatal_exception import FatalException
+from backend.exceptions.not_found_exception import NotFoundException
 
 router = APIRouter(prefix='/ratings', tags=['ratings'], responses={404: {"description": "Not found"}})
 

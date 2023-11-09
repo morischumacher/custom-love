@@ -6,9 +6,9 @@ from starlette import status
 from backend import services
 from backend.models.interest import Interest
 from backend.services.interest import get_interest, get_interests, post_interest
-from backend.exceptions import ValidationException
-from backend.exceptions.FatalException import FatalException
-from backend.exceptions.NotFoundException import NotFoundException
+from backend.exceptions.validation_exception import ValidationException
+from backend.exceptions.fatal_exception import FatalException
+from backend.exceptions.not_found_exception import NotFoundException
 
 router = APIRouter(prefix='/interests', tags=['interests'], responses={404: {"description": "Not found"}})
 

@@ -60,7 +60,7 @@ class DataGenerator:
             # Gender Identity
             hetero = GenderIdentity(name="hetero-sexual")
             homo = GenderIdentity(name="homo-sexual")
-            # bi = GenderIdentity(name="bi-sexual")
+            bi = GenderIdentity(name="bi-sexual")
 
             # Interest
             sports = Interest(name="sports", icon="icon1")
@@ -84,7 +84,7 @@ class DataGenerator:
                 languages=[english],
                 preferences=[preference_1],
                 address=vienna,
-                gender_identity=hetero,
+                gender_identity=homo,
                 interests=[sports, movies]
             )
             user_bravo = User(
@@ -104,12 +104,30 @@ class DataGenerator:
                 gender_identity=homo,
                 interests=[travel, books, science]
             )
+            user_charlie = User(
+                id=3,
+                first_name='Charlie',
+                last_name='Charlieson',
+                email='charlie.charlieson@email.com',
+                tel='+92 231 023 342',
+                bio='Test subject 3',
+                date_of_birth=datetime.today(),
+                job='Civil Engineer',
+                search_radius=20,
+                swipes_left=2,
+                languages=[french, german],
+                preferences=[preference_2],
+                address=ulm,
+                gender_identity=bi,
+                interests=[science]
+            )
 
             # Rating
             alfa_bravo_rating = Rating(id=1, rating_user_id=user_alfa.id, rated_user_id=user_bravo.id, rating=10)
 
             #Match
             alfa_bravo_matching = Match(id=1, match_user1_id=user_alfa.id, match_user2_id=user_bravo.id, is_match=True)
+            alfa_charlie_matching = Match(id=2, match_user1_id=user_alfa.id, match_user2_id=user_charlie.id, is_match=False)
 
             session.add(user_alfa)
             session.add(user_bravo)
@@ -120,6 +138,10 @@ class DataGenerator:
 
             session.add(alfa_bravo_rating)
             session.add(alfa_bravo_matching)
+            session.add(alfa_charlie_matching)
+            session.add(alfa_charlie_matching)
             session.commit()
             session.refresh(alfa_bravo_rating)
             session.refresh(alfa_bravo_matching)
+            session.refresh(alfa_charlie_matching)
+            session.refresh(alfa_charlie_matching)
