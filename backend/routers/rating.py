@@ -1,29 +1,26 @@
-from typing import List, Annotated
+from typing import List
 
-from fastapi import APIRouter, Depends
-from sqlmodel import select, Session
-from sqlmodel.sql.expression import SelectOfScalar
+from fastapi import APIRouter
 from starlette import status
 
+from backend import services
 from backend.models.rating import Rating
-from backend.repository.repository import get_engine
-
-router = APIRouter(prefix='/rating', tags=['rating'], responses={404: {"description": "Not found"}})
-
-@router.get('/', tags=['get'])
-async def get_rating():
-    return {"rating status": "alive"}
+from backend.services.rating import get_rating, get_ratings, post_rating
 
 
-@router.get('/{rating_id}', tags=['get'])
-def get_rating(commons: Annotated[dict, Depends(get_rating)]):
-    return commons
+router = APIRouter(prefix='/ratings', tags=['ratings'], responses={404: {"description": "Not found"}})
 
 
-@router.get("/all", response_model=List[Rating], status_code=status.HTTP_200_OK)
+@router.get("/", tags=['get'], response_model=List[Rating], status_code=status.HTTP_200_OK)
 async def get_ratings():
-    with Session(get_engine()) as session:
-        statement: SelectOfScalar[Rating] = select(Rating)
-        ratings: List[Rating] = session.exec(statement).all()
+    return services.rating.get_ratings()
 
-    return ratings
+
+@router.get('/{rating_id}', tags=['get'], status_code=status.HTTP_200_OK)
+def get_rating(rating_id: int):
+    return services.rating.get_rating(rating_id)
+
+
+@router.post("/", tags=['post'], response_model=Rating, status_code=status.HTTP_200_OK)
+def post_rating(rating: Rating):
+    return services.rating.post_rating(rating)

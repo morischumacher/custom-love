@@ -1,30 +1,26 @@
-from typing import List, Annotated
+from typing import List
 
-from fastapi import APIRouter, Depends
-from sqlmodel import select, Session
-from sqlmodel.sql.expression import SelectOfScalar
+from fastapi import APIRouter
 from starlette import status
 
+from backend import services
 from backend.models.preference import Preference
-from backend.repository.repository import get_engine
+from backend.services.preference import get_preference, get_preferences, post_preference
 
-router = APIRouter(prefix='/preference', tags=['preference'], responses={404: {"description": "Not found"}})
-
-
-@router.get('/', tags=['get'])
-async def get_preference():
-    return {"language status": "alive"}
+router = APIRouter(prefix='/preferences', tags=['preferences'], responses={404: {"description": "Not found"}})
 
 
-@router.get('/{preference_id}', tags=['get'])
-def get_preference(commons: Annotated[dict, Depends(get_preference)]):
-    return commons
-
-
-@router.get("/all", response_model=List[Preference], status_code=status.HTTP_200_OK)
+@router.get("/", tags=['get'], response_model=List[Preference], status_code=status.HTTP_200_OK)
 async def get_preferences():
-    with Session(get_engine()) as session:
-        statement: SelectOfScalar[Preference] = select(Preference)
-        preferences: List[Preference] = session.exec(statement).all()
+    return services.preference.get_preferences()
 
-    return preferences
+
+@router.get('/{preference_id}', tags=['get'], status_code=status.HTTP_200_OK)
+def get_preference(preference_id: int):
+    return services.preference.get_preference(preference_id)
+
+
+@router.post("/", tags=['post'], response_model=Preference, status_code=status.HTTP_200_OK)
+def post_preference(preference: Preference):
+    return services.preference.post_preference(preference)
+

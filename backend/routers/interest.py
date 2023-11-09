@@ -1,30 +1,26 @@
-from typing import List, Annotated
+from typing import List
 
-from fastapi import APIRouter, Depends
-from sqlmodel import select, Session
-from sqlmodel.sql.expression import SelectOfScalar
+from fastapi import APIRouter
 from starlette import status
 
+from backend import services
 from backend.models.interest import Interest
-from backend.repository.repository import get_engine
-
-router = APIRouter(prefix='/interest', tags=['interest'], responses={404: {"description": "Not found"}})
+from backend.services.interest import get_interest, get_interests, post_interest
 
 
-@router.get('/', tags=['get'])
-async def get_interest():
-    return {"interest status": "alive"}
+router = APIRouter(prefix='/interests', tags=['interests'], responses={404: {"description": "Not found"}})
 
 
-@router.get('/{interest_id}', tags=['get'])
-def get_interest(commons: Annotated[dict, Depends(get_interest)]):
-    return commons
-
-
-@router.get("/all", response_model=List[Interest], status_code=status.HTTP_200_OK)
+@router.get("/", tags=['get'], response_model=List[Interest], status_code=status.HTTP_200_OK)
 async def get_interests():
-    with Session(get_engine()) as session:
-        statement: SelectOfScalar[Interest] = select(Interest)
-        interests: List[Interest] = session.exec(statement).all()
+    return services.interest.get_interests()
 
-    return interests
+
+@router.get('/{interest_id}', tags=['get'], status_code=status.HTTP_200_OK)
+def get_interest(interest_id: int):
+    return services.interest.get_interest(interest_id)
+
+
+@router.post("/", tags=['post'], response_model=Interest, status_code=status.HTTP_200_OK)
+def post_interest(interest: Interest):
+    return services.interest.post_interest(interest)
