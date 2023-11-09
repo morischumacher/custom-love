@@ -56,11 +56,11 @@ class _LoginState extends State<Login> {
                 // Handle successful login
                 print('Login successful');
               },
-              child: const Text('Login'),
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all(
                     Colors.pink[800]), // Set your desired button color here
               ),
+              child: const Text('Login'),
             ),
           ],
         ),
