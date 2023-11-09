@@ -1,6 +1,6 @@
-from typing import List
+from typing import List, Annotated
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from sqlmodel import select, Session
 from sqlmodel.sql.expression import SelectOfScalar
 from starlette import status
@@ -14,6 +14,11 @@ router = APIRouter(prefix='/language', tags=['language'], responses={404: {"desc
 @router.get('/', tags=['get'])
 async def get_language():
     return {"language status": "alive"}
+
+
+@router.get('/{language_id}', tags=['get'])
+def get_language(commons: Annotated[dict, Depends(get_language)]):
+    return commons
 
 
 @router.get("/all", response_model=List[Language], status_code=status.HTTP_200_OK)

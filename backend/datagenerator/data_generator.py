@@ -9,6 +9,7 @@ from backend.models.interest import Interest
 from backend.models.language import Language
 from backend.models.preference import Preference
 from backend.models.rating import Rating
+from backend.models.match import Match
 from backend.models.user import User
 
 
@@ -70,6 +71,7 @@ class DataGenerator:
 
             # Users
             user_alfa = User(
+                id=1,
                 first_name='Alfa',
                 last_name='Alfonson',
                 email='alfa.alfonson@email.com',
@@ -86,6 +88,7 @@ class DataGenerator:
                 interests=[sports, movies]
             )
             user_bravo = User(
+                id=2,
                 first_name='Bravo',
                 last_name='Bravonson',
                 email='bravo.bravonson@email.com',
@@ -103,7 +106,10 @@ class DataGenerator:
             )
 
             # Rating
-            # alfa_bravo_rating = Rating(rating_user=user_alfa, rated_user=user_bravo)
+            alfa_bravo_rating = Rating(id=1, rating_user_id=user_alfa.id, rated_user_id=user_bravo.id, rating=10)
+
+            #Match
+            alfa_bravo_matching = Match(id=1, match_user1_id=user_alfa.id, match_user2_id=user_bravo.id, is_match=True)
 
             session.add(user_alfa)
             session.add(user_bravo)
@@ -111,3 +117,9 @@ class DataGenerator:
 
             session.refresh(user_alfa)
             session.refresh(user_bravo)
+
+            session.add(alfa_bravo_rating)
+            session.add(alfa_bravo_matching)
+            session.commit()
+            session.refresh(alfa_bravo_rating)
+            session.refresh(alfa_bravo_matching)

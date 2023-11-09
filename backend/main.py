@@ -2,13 +2,16 @@ from fastapi import FastAPI
 
 from backend.datagenerator.data_generator import DataGenerator
 from backend.repository.repository import create_db, get_engine
-from backend.routers import user, language, preference, address
+from backend.routers import user, language, preference, address, rating, match, interest
 
 app = FastAPI()
 app.include_router(user.router)
 app.include_router(language.router)
 app.include_router(preference.router)
 app.include_router(address.router)
+app.include_router(rating.router)
+app.include_router(match.router)
+app.include_router(interest.router)
 
 
 @app.on_event("startup")

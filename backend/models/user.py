@@ -13,8 +13,6 @@ if TYPE_CHECKING:
     from .address import Address
     from .gender_identity import GenderIdentity
     from .interest import Interest
-    from .rating import Rating
-
 
 class User(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -37,5 +35,4 @@ class User(SQLModel, table=True):
     preferences: Optional["Preference"] = Relationship(back_populates="users", link_model=UserHasPreference)
     interests: Optional["Interest"] = Relationship(back_populates="users", link_model=UserHasInterest)
 
-    # ratings_given: List["Rating"] = Relationship(back_populates="rating_user")
-    # ratings_received: List["Rating"] = Relationship(back_populates="rated_user")
+

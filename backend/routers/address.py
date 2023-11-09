@@ -1,6 +1,6 @@
-from typing import List
+from typing import Annotated, List
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from sqlmodel import select, Session
 from sqlmodel.sql.expression import SelectOfScalar
 from starlette import status
@@ -14,6 +14,11 @@ router = APIRouter(prefix='/address', tags=['address'], responses={404: {"descri
 @router.get('/', tags=['get'])
 async def get_address():
     return {"address status": "alive"}
+
+
+@router.get('/{address_id}', tags=['get'])
+def get_address(commons: Annotated[dict, Depends(get_address)]):
+    return commons
 
 
 @router.get("/all", response_model=List[Address], status_code=status.HTTP_200_OK)
