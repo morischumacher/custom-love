@@ -10,7 +10,7 @@ class UserService {
     try {
       final users = _userRepository.getUsers();
       return users;
-    } on Exception catch (e) {
+    } on Exception {
       rethrow;
     }
   }
