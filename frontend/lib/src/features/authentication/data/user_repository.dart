@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:frontend/src/features/authentication/domain/user_model.dart';
 import 'package:http/http.dart' as http;
+import 'package:frontend/src/config/api_config.dart';
 
 class UserRepository {
   final http.Client httpClient;
@@ -9,8 +10,8 @@ class UserRepository {
   UserRepository({required this.httpClient});
 
   Future<List<User>> getUsers() async {
-    final response = await httpClient.get(
-        Uri.parse('http://127.0.0.1:8000/user/all')); // TODO: outsource uri
+    final response =
+        await httpClient.get(Uri.parse('${ApiConfig.baseUrl}/user/all'));
 
     if (response.statusCode == 200) {
       final List<dynamic> jsonList = json.decode(response.body);
