@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/src/features/authentication/application/user_service.dart';
-import 'package:frontend/src/features/authentication/data/user_repository.dart';
 import 'package:frontend/src/features/authentication/domain/user_model.dart';
 
 class Profile extends StatefulWidget {
@@ -40,7 +39,7 @@ class _ProfileState extends State<Profile> {
                         },
                       ),
                     )
-                  : Text('No Users');
+                  : const Text('No Users');
             } else {
               return const Text('No data available.');
             }
