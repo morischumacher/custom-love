@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/src/config/theme.dart';
 import 'package:frontend/src/features/authentication/application/user_service.dart';
 import 'package:frontend/src/features/matches/presentation/matches.dart';
 import 'package:frontend/src/features/profile/presentation/profile.dart';
@@ -16,14 +17,15 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  AppPage _currentPage = AppPage.Swipe; // Default page
+  AppPage _currentPage = AppPage.Swipe;
+  final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Custom Love App'),
-        backgroundColor: Colors.pink[800],
+        backgroundColor: _customLoveTheme.primaryColor,
       ),
       body: getPage(_currentPage),
       bottomNavigationBar: BottomNavigationBar(
@@ -34,7 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
           });
         },
         unselectedItemColor: Colors.grey,
-        selectedItemColor: Colors.pink[800],
+        selectedItemColor: _customLoveTheme.primaryColor,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.person),

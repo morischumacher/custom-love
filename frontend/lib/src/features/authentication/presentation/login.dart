@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/src/config/theme.dart';
 import 'login_controller.dart';
 
 class Login extends StatefulWidget {
@@ -10,6 +11,7 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   final LoginController _controller = LoginController();
+  final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
 
   double inputWidth = 327;
   double inputHeight = 56;
@@ -19,7 +21,7 @@ class _LoginState extends State<Login> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Custom Love App'),
-        backgroundColor: Colors.pink[800],
+        backgroundColor: _customLoveTheme.primaryColor,
       ),
       body: Column(
         children: <Widget>[
@@ -72,8 +74,8 @@ class _LoginState extends State<Login> {
                     child: FilledButton(
                       onPressed: () => _controller.handleLogin(context),
                       style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.all(Colors.pink[800]),
+                        backgroundColor: MaterialStateProperty.all(
+                            _customLoveTheme.primaryColor),
                       ),
                       child: const Text(
                         'Login',
