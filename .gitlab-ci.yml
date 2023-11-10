@@ -86,7 +86,7 @@ build-frontend:
   - |
     cd frontend
     flutter pub get
-    flutter build web --base-href /$TARGET/app/
+    flutter build web --base-href /$TARGET/app/ -t lib/src/main.dart
   artifacts:
     name: "frontend-$CI_JOB_NAME"
     expire_in: 1 day
