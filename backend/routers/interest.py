@@ -1,36 +1,24 @@
-from typing import List
+from typing import List, Annotated
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends
 from starlette import status
 
-from backend import services
 from backend.models.interest import Interest
 from backend.services.interest import get_interest, get_interests, post_interest
-from backend.exceptions.validation_exception import ValidationException
-from backend.exceptions.fatal_exception import FatalException
-from backend.exceptions.not_found_exception import NotFoundException
 
 router = APIRouter(prefix='/interests', tags=['interests'], responses={404: {"description": "Not found"}})
 
 
-@router.get("/", tags=['get'], response_model=List[Interest], status_code=status.HTTP_200_OK)
-async def get_interests():
-    return services.interest.get_interests()
+@router.get("/", response_model=List[Interest], status_code=status.HTTP_200_OK)
+async def get_interests(commons: Annotated[dict, Depends(get_interests)]):
+    return commons
 
 
-@router.get('/{interest_id}', tags=['get'], status_code=status.HTTP_200_OK)
-async def get_interest(interest_id: int):
-    try:
-        return services.interest.get_interest(interest_id)
-    except NotFoundException as e:
-        raise HTTPException(status_code=404, detail=e.message)
-    except FatalException as e:
-        raise HTTPException(status_code=400, detail=e.message)
+@router.get('/{interest_id}', tags=['get'], response_model=Interest, status_code=status.HTTP_200_OK)
+def get_interest(commons: Annotated[dict, Depends(get_interest)]):
+    return commons
 
 
-@router.post("/", tags=['post'], response_model=Interest, status_code=status.HTTP_200_OK)
-async def post_interest(interest: Interest):
-    try:
-        return services.interest.post_interest(interest)
-    except ValidationException as e:
-        raise HTTPException(status_code=422, detail=e.message)
+@router.post('/', tags=['post'], status_code=status.HTTP_200_OK)
+def post_interest(interest: Interest, commons: Annotated[dict, Depends(post_interest)]):
+    return commons

@@ -1,33 +1,25 @@
+from typing import Annotated
+from fastapi import Depends, HTTPException
 from sqlmodel import Session, select
-from sqlmodel.sql.expression import SelectOfScalar
 
-from backend.exceptions.fatal_exception import FatalException
-from backend.exceptions.not_found_exception import NotFoundException
-from backend.repository.repository import get_engine
 from backend.models.rating import Rating
+from backend.repository.repository import create_session
 
 
-def get_rating(rating_id: int):
-    with Session(get_engine()) as session:
-        statement = select(Rating).where(Rating.id == rating_id)
-        rating: list[Rating] = session.exec(statement).all()
-        if len(rating) == 0:
-            raise NotFoundException(f"Could not find users with id = {rating_id}")
-        elif len(rating) > 1:
-            raise FatalException(f"More than one user for id = {rating_id} was found")
+def get_ratings(db: Annotated[Session, Depends(create_session)]):
+    return db.exec(select(Rating)).all()
+
+
+def get_rating(rating_id, db: Annotated[Session, Depends(create_session)]):
+    rating = db.exec(select(Rating).where(Rating.id == rating_id)).first()
+    if rating is None:
+        raise HTTPException(status_code=404, detail=f"Could not find rating with id = {rating_id}")
+
     return rating
 
 
-def get_ratings():
-    with Session(get_engine()) as session:
-        statement: SelectOfScalar[Rating] = select(Rating)
-        ratings: list[Rating] = session.exec(statement).all()
-    return ratings
-
-
-def post_rating(rating: Rating):
-    with Session(get_engine()) as session:
-        session.add(rating)
-        session.commit()
-        session.refresh(rating)
+def post_rating(rating: Rating, db: Annotated[Session, Depends(create_session)]):
+    db.add(rating)
+    db.commit()
+    db.refresh(rating)
     return rating

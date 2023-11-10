@@ -1,33 +1,25 @@
+from typing import Annotated
+from fastapi import Depends, HTTPException
 from sqlmodel import Session, select
-from sqlmodel.sql.expression import SelectOfScalar
 
-from backend.exceptions.fatal_exception import FatalException
-from backend.exceptions.not_found_exception import NotFoundException
-from backend.repository.repository import get_engine
 from backend.models.gender_identity import GenderIdentity
+from backend.repository.repository import create_session
 
 
-def get_gender_identity(gender_identity_id: int):
-    with Session(get_engine()) as session:
-        statement = select(GenderIdentity).where(GenderIdentity.id == gender_identity_id)
-        gender_identity: list[GenderIdentity] = session.exec(statement).all()
-        if len(gender_identity) == 0:
-            raise NotFoundException(f"Could not find users with id = {gender_identity_id}")
-        elif len(gender_identity) > 1:
-            raise FatalException(f"More than one user for id = {gender_identity_id} was found")
+def get_gender_identities(db: Annotated[Session, Depends(create_session)]):
+    return db.exec(select(GenderIdentity)).all()
+
+
+def get_gender_identity(gender_identity_id, db: Annotated[Session, Depends(create_session)]):
+    gender_identity = db.exec(select(GenderIdentity).where(GenderIdentity.id == gender_identity_id)).first()
+    if gender_identity is None:
+        raise HTTPException(status_code=404, detail=f"Could not find gender_identity with id = {gender_identity_id}")
+
     return gender_identity
 
 
-def get_gender_identities():
-    with Session(get_engine()) as session:
-        statement: SelectOfScalar[GenderIdentity] = select(GenderIdentity)
-        gender_identities: list[GenderIdentity] = session.exec(statement).all()
-    return gender_identities
-
-
-def post_gender_identity(gender_identity: GenderIdentity):
-    with Session(get_engine()) as session:
-        session.add(gender_identity)
-        session.commit()
-        session.refresh(gender_identity)
+def post_gender_identity(gender_identity: GenderIdentity, db: Annotated[Session, Depends(create_session)]):
+    db.add(gender_identity)
+    db.commit()
+    db.refresh(gender_identity)
     return gender_identity

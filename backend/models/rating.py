@@ -10,7 +10,7 @@ class Rating(SQLModel, table=True):
     id: Optional[int] = Field(primary_key=True)
     rating_user_id: Optional[int] = Field(default=None, foreign_key="user.id")
     rated_user_id: Optional[int] = Field(default=None, foreign_key="user.id")
-    rating: int
+    is_safe: bool
 
     ratings_given: "User" = Relationship(sa_relationship_kwargs={
         "primaryjoin": "Rating.rating_user_id==User.id",

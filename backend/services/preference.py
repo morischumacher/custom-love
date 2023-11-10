@@ -1,33 +1,25 @@
+from typing import Annotated
+from fastapi import Depends, HTTPException
 from sqlmodel import Session, select
-from sqlmodel.sql.expression import SelectOfScalar
 
-from backend.exceptions.fatal_exception import FatalException
-from backend.exceptions.not_found_exception import NotFoundException
-from backend.repository.repository import get_engine
 from backend.models.preference import Preference
+from backend.repository.repository import create_session
 
 
-def get_preference(preference_id: int):
-    with Session(get_engine()) as session:
-        statement = select(Preference).where(Preference.id == preference_id)
-        preference: list[Preference] = session.exec(statement).all()
-        if len(preference) == 0:
-            raise NotFoundException(f"Could not find users with id = {preference_id}")
-        elif len(preference) > 1:
-            raise FatalException(f"More than one user for id = {preference_id} was found")
+def get_preferences(db: Annotated[Session, Depends(create_session)]):
+    return db.exec(select(Preference)).all()
+
+
+def get_preference(preference_id, db: Annotated[Session, Depends(create_session)]):
+    preference = db.exec(select(Preference).where(Preference.id == preference_id)).first()
+    if preference is None:
+        raise HTTPException(status_code=404, detail=f"Could not find preference with id = {preference_id}")
+
     return preference
 
 
-def get_preferences():
-    with Session(get_engine()) as session:
-        statement: SelectOfScalar[Preference] = select(Preference)
-        preferences: list[Preference] = session.exec(statement).all()
-    return preferences
-
-
-def post_preference(preference: Preference):
-    with Session(get_engine()) as session:
-        session.add(preference)
-        session.commit()
-        session.refresh(preference)
+def post_preference(preference: Preference, db: Annotated[Session, Depends(create_session)]):
+    db.add(preference)
+    db.commit()
+    db.refresh(preference)
     return preference

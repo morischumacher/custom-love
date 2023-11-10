@@ -47,8 +47,12 @@ def test_sample_user_get(client: TestClient, session: Session):
     french: Language = Language(id=3, name="French")
 
     # Preferences
-    preference_1: Preference = Preference(id=1, feature_1_level="Feature 1", feature_2_level="Feature 2")
-    preference_2: Preference = Preference(id=2, feature_1_level="Feature 3", feature_2_level="Feature 4")
+    preference_1: Preference = Preference(feature_1_level="Feature 1", feature_2_level="Feature 2")
+    preference_2: Preference = Preference(feature_1_level="Feature 3", feature_2_level="Feature 4")
+
+    session.add(preference_1)
+    session.add(preference_2)
+    session.commit()
 
     # Addresses
     ulm: Address = Address(
@@ -75,14 +79,24 @@ def test_sample_user_get(client: TestClient, session: Session):
     # Gender Identity
     hetero = GenderIdentity(name="hetero-sexual")
     homo = GenderIdentity(name="homo-sexual")
-    # bi = GenderIdentity(name="bi-sexual")
+
+    session.add(hetero)
+    session.add(homo)
+    session.commit()
 
     # Interest
-    sports = Interest(id=1, name="sports", icon="icon1")
-    movies = Interest(id=2, name="movies", icon="icon2")
-    travel = Interest(id=3, name="travel", icon="icon3")
-    books = Interest(id=4, name="books", icon="icon4")
-    science = Interest(id=5, name="science", icon="icon5")
+    sports = Interest(name="sports", icon="icon1")
+    movies = Interest(name="movies", icon="icon2")
+    travel = Interest(name="travel", icon="icon3")
+    books = Interest(name="books", icon="icon4")
+    science = Interest(name="science", icon="icon5")
+
+    session.add(sports)
+    session.add(movies)
+    session.add(travel)
+    session.add(books)
+    session.add(science)
+    session.commit()
 
     # Users
     user_alfa = User(
@@ -121,8 +135,12 @@ def test_sample_user_get(client: TestClient, session: Session):
     )
 
     # Rating
-    alfa_bravo_rating = Rating(id=1, rating_user_id=user_alfa.id, rated_user_id=user_bravo.id, rating=10)
+    alfa_bravo_rating = Rating(rating_user_id=user_alfa.id, rated_user_id=user_bravo.id, is_safe=True)
 
+    session.add(alfa_bravo_rating)
+    session.commit()
+
+    """
     # Match
     alfa_bravo_matching = Match(id=1, match_user1_id=user_alfa.id, match_user2_id=user_bravo.id, is_match=True)
 
@@ -137,33 +155,81 @@ def test_sample_user_get(client: TestClient, session: Session):
     session.add(alfa_bravo_matching)
     session.commit()
     session.refresh(alfa_bravo_rating)
-    session.refresh(alfa_bravo_matching)
+    session.refresh(alfa_bravo_matching)"""
 
-    response = client.get("/user/1")
+    """response = client.get("/users/1")
     print(f"got user: {response.json()}")
-    assert response.status_code == 200
+    assert response.status_code == 200"""
 
-    response = client.get("/address/1")
+    """response = client.get("/addresses/1")
     print(f"got address: {response.json()}")
-    assert response.status_code == 200
+    assert response.status_code == 200"""
 
-    response = client.get("/language/1")
+    """response = client.get("/language/1")
     print(f"got language: {response.json()}")
-    assert response.status_code == 200
+    assert response.status_code == 200"""
 
-    response = client.get("/preference/4")
-    print(f"got preference: {response.json()}")
-    assert response.status_code == 200
-
-    response = client.get("/match/1")
+    """response = client.get("/match/1")
     print(f"got match: {response.json()}")
-    assert response.status_code == 200
+    assert response.status_code == 200"""
 
-    response = client.get("/rating/1")
-    print(f"got rating: {response.json()}")
-    assert response.status_code == 200
-
-    response = client.get("/interest/3")
+    #Interest getById
+    response = client.get("/interests/1")
     print(f"got interest: {response.json()}")
     assert response.status_code == 200
 
+    #Interest create
+    response = client.post("/interests/", json={"name": "theater", "icon": "icon6"})
+    print(f"got interest: {response.json()}")
+    assert response.status_code == 200
+
+    # Interest getAll
+    response = client.get("/interests/")
+    print(f"got interest: {response.json()}")
+    assert response.status_code == 200
+
+    # Preference getById
+    response = client.get("/preferences/1")
+    print(f"got preference: {response.json()}")
+    assert response.status_code == 200
+
+    # Preference create
+    response = client.post("/preferences/", json={"feature_1_level": "Feature 10", "feature_2_level": "Feature 4"})
+    print(f"got preference: {response.json()}")
+    assert response.status_code == 200
+
+    # Preference getAll
+    response = client.get("/preferences/")
+    print(f"got preference: {response.json()}")
+    assert response.status_code == 200
+
+    # Rating getById
+    response = client.get("/ratings/1")
+    print(f"got rating: {response.json()}")
+    assert response.status_code == 200
+
+    # Rating create
+    response = client.post("/ratings/", json={"rating_user_id": user_alfa.id, "rated_user_id": user_bravo.id, "is_safe": True})
+    print(f"got rating: {response.json()}")
+    assert response.status_code == 200
+
+    # Rating getAll
+    response = client.get("/ratings/")
+    print(f"got rating: {response.json()}")
+    assert response.status_code == 200
+
+    # GenderIdentity getById
+    response = client.get("/gender-identities/1")
+    print(f"got gender-identity: {response.json()}")
+    assert response.status_code == 200
+
+    # GenderIdentity create
+    response = client.post("/gender-identities/",
+                           json={"name": "bi-sexual"})
+    print(f"got gender-identity: {response.json()}")
+    assert response.status_code == 200
+
+    # GenderIdentity getAll
+    response = client.get("/gender-identities/")
+    print(f"got gender-identity: {response.json()}")
+    assert response.status_code == 200
