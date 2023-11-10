@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'login_controller.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -8,8 +9,7 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
+  final LoginController _controller = LoginController();
 
   double inputWidth = 327;
   double inputHeight = 56;
@@ -24,12 +24,12 @@ class _LoginState extends State<Login> {
       body: Column(
         children: <Widget>[
           const Padding(
-            padding: EdgeInsets.all(16.0), // Add padding for spacing
+            padding: EdgeInsets.all(16.0),
             child: Text(
               'Welcome to Custom Love App',
               style: TextStyle(
-                fontSize: 24, // Adjust the font size as needed
-                fontWeight: FontWeight.bold, // Add bold styling if desired
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ),
@@ -42,7 +42,8 @@ class _LoginState extends State<Login> {
                     width: inputWidth,
                     height: inputHeight,
                     child: TextField(
-                      controller: emailController,
+                      key: const Key('emailTextField'),
+                      controller: _controller.emailController,
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
                         labelText: 'Enter your email address',
@@ -54,7 +55,8 @@ class _LoginState extends State<Login> {
                     width: inputWidth,
                     height: inputHeight,
                     child: TextField(
-                      controller: passwordController,
+                      key: const Key('passwordTextField'),
+                      controller: _controller.passwordController,
                       obscureText: true,
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
@@ -68,20 +70,7 @@ class _LoginState extends State<Login> {
                     width: 327,
                     height: 56,
                     child: FilledButton(
-                      onPressed: () {
-                        // Handle login with email and password
-                        String email = emailController.text;
-                        String password = passwordController.text;
-                        if (email.isNotEmpty && password.isNotEmpty) {
-                          // Valid email and password, proceed with login
-                          print('Login successful');
-                          Navigator.pushNamed(context, '/home');
-                        } else {
-                          // Display an error message or validation
-                          print(
-                              'Login failed. Please enter a valid email and password.');
-                        }
-                      },
+                      onPressed: () => _controller.handleLogin(context),
                       style: ButtonStyle(
                         backgroundColor:
                             MaterialStateProperty.all(Colors.pink[800]),
@@ -99,12 +88,5 @@ class _LoginState extends State<Login> {
         ],
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    emailController.dispose();
-    passwordController.dispose();
-    super.dispose();
   }
 }
