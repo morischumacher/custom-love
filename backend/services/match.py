@@ -5,7 +5,6 @@ from backend.exceptions.fatal_exception import FatalException
 from backend.exceptions.not_found_exception import NotFoundException
 from backend.exceptions.validation_exception import ValidationException
 from backend.models.match import Match
-from backend.models.user import User
 from backend.repository.repository import get_engine
 
 
