@@ -4,12 +4,12 @@ from typing import TYPE_CHECKING, Optional, List
 from sqlmodel import SQLModel, Field, Relationship
 
 from .connectors.user_has_language import UserHasLanguage
-from .connectors.user_has_preference import UserHasPreference
+from .connectors.user_has_gender_preference import UserHasGenderPreference
 from .connectors.user_has_interest import UserHasInterest
 
 if TYPE_CHECKING:
     from .language import Language
-    from .preference import Preference
+    from .gender_preference import GenderPreference
     from .address import Address
     from .gender_identity import GenderIdentity
     from .interest import Interest
@@ -33,7 +33,6 @@ class User(SQLModel, table=True):
     gender_identity: Optional["GenderIdentity"] = Relationship(back_populates="users")
     address: Optional["Address"] = Relationship(back_populates="users")
     languages: Optional["Language"] = Relationship(back_populates="users", link_model=UserHasLanguage)
-    preferences: Optional["Preference"] = Relationship(back_populates="users", link_model=UserHasPreference)
+    gender_preferences: Optional["GenderPreference"] = Relationship(back_populates="users",
+                                                                    link_model=UserHasGenderPreference)
     interests: Optional["Interest"] = Relationship(back_populates="users", link_model=UserHasInterest)
-
-

@@ -11,7 +11,7 @@ from backend.models.gender_identity import GenderIdentity
 from backend.models.interest import Interest
 from backend.models.language import Language
 from backend.models.match import Match
-from backend.models.preference import Preference
+from backend.models.gender_preference import GenderPreference
 from backend.models.rating import Rating
 from backend.models.user import User
 from backend.repository.repository import create_session
@@ -47,11 +47,11 @@ def test_sample_user_get(client: TestClient, session: Session):
     french: Language = Language(id=3, name="French")
 
     # Preferences
-    preference_1: Preference = Preference(feature_1_level="Feature 1", feature_2_level="Feature 2")
-    preference_2: Preference = Preference(feature_1_level="Feature 3", feature_2_level="Feature 4")
+    gender_preference_1: GenderPreference = GenderPreference(name="women")
+    gender_preference_2: GenderPreference = GenderPreference(name="men")
 
-    session.add(preference_1)
-    session.add(preference_2)
+    session.add(gender_preference_1)
+    session.add(gender_preference_2)
     session.commit()
 
     # Addresses
@@ -77,11 +77,11 @@ def test_sample_user_get(client: TestClient, session: Session):
     )
 
     # Gender Identity
-    hetero = GenderIdentity(name="hetero-sexual")
-    homo = GenderIdentity(name="homo-sexual")
+    man = GenderIdentity(name="man")
+    woman = GenderIdentity(name="woman")
 
-    session.add(hetero)
-    session.add(homo)
+    session.add(man)
+    session.add(woman)
     session.commit()
 
     # Interest
@@ -111,9 +111,9 @@ def test_sample_user_get(client: TestClient, session: Session):
         search_radius=200,
         swipes_left=10,
         languages=[english],
-        preferences=[preference_1],
+        gender_preferences=[gender_preference_1],
         address=vienna,
-        gender_identity=hetero,
+        gender_identity=man,
         interests=[sports, movies]
     )
     user_bravo = User(
@@ -128,9 +128,9 @@ def test_sample_user_get(client: TestClient, session: Session):
         search_radius=50,
         swipes_left=5,
         languages=[english, french, german],
-        preferences=[preference_2, preference_1],
+        gender_preferences=[gender_preference_2, gender_preference_1],
         address=ulm,
-        gender_identity=homo,
+        gender_identity=woman,
         interests=[travel, books, science]
     )
 
@@ -173,36 +173,6 @@ def test_sample_user_get(client: TestClient, session: Session):
     print(f"got match: {response.json()}")
     assert response.status_code == 200"""
 
-    #Interest getById
-    response = client.get("/interests/1")
-    print(f"got interest: {response.json()}")
-    assert response.status_code == 200
-
-    #Interest create
-    response = client.post("/interests/", json={"name": "theater", "icon": "icon6"})
-    print(f"got interest: {response.json()}")
-    assert response.status_code == 200
-
-    # Interest getAll
-    response = client.get("/interests/")
-    print(f"got interest: {response.json()}")
-    assert response.status_code == 200
-
-    # Preference getById
-    response = client.get("/preferences/1")
-    print(f"got preference: {response.json()}")
-    assert response.status_code == 200
-
-    # Preference create
-    response = client.post("/preferences/", json={"feature_1_level": "Feature 10", "feature_2_level": "Feature 4"})
-    print(f"got preference: {response.json()}")
-    assert response.status_code == 200
-
-    # Preference getAll
-    response = client.get("/preferences/")
-    print(f"got preference: {response.json()}")
-    assert response.status_code == 200
-
     # Rating getById
     response = client.get("/ratings/1")
     print(f"got rating: {response.json()}")
@@ -218,18 +188,106 @@ def test_sample_user_get(client: TestClient, session: Session):
     print(f"got rating: {response.json()}")
     assert response.status_code == 200
 
-    # GenderIdentity getById
+
+def test_get_interest_by_id(client: TestClient, session: Session):
+    sports = Interest(name="sports", icon="icon1")
+    movies = Interest(name="movies", icon="icon2")
+    travel = Interest(name="travel", icon="icon3")
+
+    session.add(sports)
+    session.add(movies)
+    session.add(travel)
+    session.commit()
+
+    response = client.get("/interests/3")
+    print(f"got interest: {response.json()}")
+    assert response.status_code == 200
+
+
+def test_get_interests(client: TestClient, session: Session):
+    sports = Interest(name="sports", icon="icon1")
+    movies = Interest(name="movies", icon="icon2")
+    travel = Interest(name="travel", icon="icon3")
+    books = Interest(name="books", icon="icon4")
+    science = Interest(name="science", icon="icon5")
+
+    session.add(sports)
+    session.add(movies)
+    session.add(travel)
+    session.add(books)
+    session.add(science)
+    session.commit()
+
+    response = client.get("/interests/")
+    print(f"got interest: {response.json()}")
+    assert response.status_code == 200
+
+
+def test_create_interest(client: TestClient, session: Session):
+    response = client.post("/interests/", json={"name": "theater", "icon": "icon6"})
+    print(f"got interest: {response.json()}")
+    assert response.status_code == 200
+
+
+def test_get_gender_preference_by_id(client: TestClient, session: Session):
+    gender_preference_1: GenderPreference = GenderPreference(name="women")
+    gender_preference_2: GenderPreference = GenderPreference(name="men")
+
+    session.add(gender_preference_1)
+    session.add(gender_preference_2)
+    session.commit()
+
+    response = client.get("/gender-preferences/1")
+    print(f"got gender preference: {response.json()}")
+    assert response.status_code == 200
+
+
+def test_get_gender_preferences(client: TestClient, session: Session):
+    gender_preference_1: GenderPreference = GenderPreference(name="women")
+    gender_preference_2: GenderPreference = GenderPreference(name="men")
+
+    session.add(gender_preference_1)
+    session.add(gender_preference_2)
+    session.commit()
+
+    response = client.get("/gender-preferences/")
+    print(f"got gender preference: {response.json()}")
+    assert response.status_code == 200
+
+
+def test_create_gender_preference(client: TestClient, session: Session):
+    response = client.post("/gender-preferences/", json={"name": "women and men"})
+    print(f"got gender preferences: {response.json()}")
+    assert response.status_code == 200
+
+def test_get_gender_identity_by_id(client: TestClient, session: Session):
+    man = GenderIdentity(name="man")
+    woman = GenderIdentity(name="woman")
+
+    session.add(man)
+    session.add(woman)
+    session.commit()
+
     response = client.get("/gender-identities/1")
     print(f"got gender-identity: {response.json()}")
     assert response.status_code == 200
 
-    # GenderIdentity create
-    response = client.post("/gender-identities/",
-                           json={"name": "bi-sexual"})
+
+def test_get_gender_identities(client: TestClient, session: Session):
+    man = GenderIdentity(name="man")
+    woman = GenderIdentity(name="woman")
+
+    session.add(man)
+    session.add(woman)
+    session.commit()
+
+    response = client.get("/gender-identities/")
     print(f"got gender-identity: {response.json()}")
     assert response.status_code == 200
 
-    # GenderIdentity getAll
-    response = client.get("/gender-identities/")
+
+def test_create_gender_identity(client: TestClient, session: Session):
+    response = client.post("/gender-identities/",
+                           json={"name": "divers"})
     print(f"got gender-identity: {response.json()}")
     assert response.status_code == 200

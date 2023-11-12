@@ -7,7 +7,7 @@ from backend.models.address import Address
 from backend.models.gender_identity import GenderIdentity
 from backend.models.interest import Interest
 from backend.models.language import Language
-from backend.models.preference import Preference
+from backend.models.gender_preference import GenderPreference
 from backend.models.rating import Rating
 from backend.models.match import Match
 from backend.models.user import User
@@ -34,8 +34,8 @@ class DataGenerator:
             french: Language = Language(name="French")
 
             # Preferences
-            preference_1: Preference = Preference(feature_1_level="Feature 1", feature_2_level="Feature 2")
-            preference_2: Preference = Preference(feature_1_level="Feature 3", feature_2_level="Feature 4")
+            gender_preference_1: GenderPreference = GenderPreference(name="women")
+            gender_preference_2: GenderPreference = GenderPreference(name="men")
 
             # Addresses
             ulm: Address = Address(
@@ -58,9 +58,9 @@ class DataGenerator:
             )
 
             # Gender Identity
-            hetero = GenderIdentity(name="hetero-sexual")
-            homo = GenderIdentity(name="homo-sexual")
-            bi = GenderIdentity(name="bi-sexual")
+            man = GenderIdentity(name="man")
+            woman = GenderIdentity(name="woman")
+            divers = GenderIdentity(name="divers")
 
             # Interest
             sports = Interest(name="sports", icon="icon1")
@@ -82,9 +82,9 @@ class DataGenerator:
                 search_radius=200,
                 swipes_left=10,
                 languages=[english],
-                preferences=[preference_1],
+                preferences=[gender_preference_1],
                 address=vienna,
-                gender_identity=homo,
+                gender_identity=man,
                 interests=[sports, movies]
             )
             user_bravo = User(
@@ -99,9 +99,9 @@ class DataGenerator:
                 search_radius=50,
                 swipes_left=5,
                 languages=[english, french, german],
-                preferences=[preference_2, preference_1],
+                gender_preferences=[gender_preference_2, gender_preference_1],
                 address=ulm,
-                gender_identity=homo,
+                gender_identity=woman,
                 interests=[travel, books, science]
             )
             user_charlie = User(
@@ -116,14 +116,14 @@ class DataGenerator:
                 search_radius=20,
                 swipes_left=2,
                 languages=[french, german],
-                preferences=[preference_2],
+                gender_preferences=[gender_preference_2],
                 address=ulm,
-                gender_identity=bi,
+                gender_identity=divers,
                 interests=[science]
             )
 
             # Rating
-            alfa_bravo_rating = Rating(id=1, rating_user_id=user_alfa.id, rated_user_id=user_bravo.id, rating=10)
+            alfa_bravo_rating = Rating(id=1, rating_user_id=user_alfa.id, rated_user_id=user_bravo.id, is_safe=True)
 
             #Match
             alfa_bravo_matching = Match(id=1, match_user1_id=user_alfa.id, match_user2_id=user_bravo.id, is_match=True)
