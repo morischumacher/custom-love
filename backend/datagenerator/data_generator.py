@@ -7,7 +7,7 @@ from backend.models.address import Address
 from backend.models.gender_identity import GenderIdentity
 from backend.models.interest import Interest
 from backend.models.language import Language
-from backend.models.gender_preference import GenderPreference
+from backend.models.preference import Preference
 from backend.models.rating import Rating
 from backend.models.match import Match
 from backend.models.user import User
@@ -34,8 +34,10 @@ class DataGenerator:
             french: Language = Language(name="French")
 
             # Preferences
-            gender_preference_1: GenderPreference = GenderPreference(name="women")
-            gender_preference_2: GenderPreference = GenderPreference(name="men")
+            preference_1: Preference = Preference(property_1="property1", property_2="property4", decision="decision1",
+                                                  date=datetime.today())
+            preference_2: Preference = Preference(property_1="property2", property_2="property5", decision="decision2",
+                                                  date=datetime.today())
 
             # Addresses
             ulm: Address = Address(
@@ -82,7 +84,8 @@ class DataGenerator:
                 search_radius=200,
                 swipes_left=10,
                 languages=[english],
-                preferences=[gender_preference_1],
+                preferences=[preference_1],
+                gender_preferences=[woman],
                 address=vienna,
                 gender_identity=man,
                 interests=[sports, movies]
@@ -99,7 +102,8 @@ class DataGenerator:
                 search_radius=50,
                 swipes_left=5,
                 languages=[english, french, german],
-                gender_preferences=[gender_preference_2, gender_preference_1],
+                preferences=[preference_1, preference_2],
+                gender_preferences=[woman, man],
                 address=ulm,
                 gender_identity=woman,
                 interests=[travel, books, science]
@@ -116,7 +120,8 @@ class DataGenerator:
                 search_radius=20,
                 swipes_left=2,
                 languages=[french, german],
-                gender_preferences=[gender_preference_2],
+                gender_preferences=[woman],
+                preferences=[preference_2],
                 address=ulm,
                 gender_identity=divers,
                 interests=[science]

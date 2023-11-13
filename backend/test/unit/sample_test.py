@@ -11,7 +11,7 @@ from backend.models.gender_identity import GenderIdentity
 from backend.models.interest import Interest
 from backend.models.language import Language
 from backend.models.match import Match
-from backend.models.gender_preference import GenderPreference
+from backend.models.preference import Preference
 from backend.models.rating import Rating
 from backend.models.user import User
 from backend.repository.repository import create_session
@@ -47,11 +47,11 @@ def test_sample_user_get(client: TestClient, session: Session):
     french: Language = Language(id=3, name="French")
 
     # Preferences
-    gender_preference_1: GenderPreference = GenderPreference(name="women")
-    gender_preference_2: GenderPreference = GenderPreference(name="men")
+    preference_1: Preference = Preference(property_1="property1", property_2="property4", decision="decision1", date=datetime.today())
+    preference_2: Preference = Preference(property_1="property2", property_2="property5", decision="decision2", date=datetime.today())
 
-    session.add(gender_preference_1)
-    session.add(gender_preference_2)
+    session.add(preference_1)
+    session.add(preference_2)
     session.commit()
 
     # Addresses
@@ -111,7 +111,8 @@ def test_sample_user_get(client: TestClient, session: Session):
         search_radius=200,
         swipes_left=10,
         languages=[english],
-        gender_preferences=[gender_preference_1],
+        gender_preferences=[woman],
+        preferences=[preference_2],
         address=vienna,
         gender_identity=man,
         interests=[sports, movies]
@@ -128,7 +129,8 @@ def test_sample_user_get(client: TestClient, session: Session):
         search_radius=50,
         swipes_left=5,
         languages=[english, french, german],
-        gender_preferences=[gender_preference_2, gender_preference_1],
+        gender_preferences=[man, woman],
+        preferences=[preference_1],
         address=ulm,
         gender_identity=woman,
         interests=[travel, books, science]
@@ -229,37 +231,6 @@ def test_create_interest(client: TestClient, session: Session):
     assert response.status_code == 200
 
 
-def test_get_gender_preference_by_id(client: TestClient, session: Session):
-    gender_preference_1: GenderPreference = GenderPreference(name="women")
-    gender_preference_2: GenderPreference = GenderPreference(name="men")
-
-    session.add(gender_preference_1)
-    session.add(gender_preference_2)
-    session.commit()
-
-    response = client.get("/gender-preferences/1")
-    print(f"got gender preference: {response.json()}")
-    assert response.status_code == 200
-
-
-def test_get_gender_preferences(client: TestClient, session: Session):
-    gender_preference_1: GenderPreference = GenderPreference(name="women")
-    gender_preference_2: GenderPreference = GenderPreference(name="men")
-
-    session.add(gender_preference_1)
-    session.add(gender_preference_2)
-    session.commit()
-
-    response = client.get("/gender-preferences/")
-    print(f"got gender preference: {response.json()}")
-    assert response.status_code == 200
-
-
-def test_create_gender_preference(client: TestClient, session: Session):
-    response = client.post("/gender-preferences/", json={"name": "women and men"})
-    print(f"got gender preferences: {response.json()}")
-    assert response.status_code == 200
-
 def test_get_gender_identity_by_id(client: TestClient, session: Session):
     man = GenderIdentity(name="man")
     woman = GenderIdentity(name="woman")
@@ -291,3 +262,42 @@ def test_create_gender_identity(client: TestClient, session: Session):
                            json={"name": "divers"})
     print(f"got gender-identity: {response.json()}")
     assert response.status_code == 200
+
+
+def test_get_preference_by_id(client: TestClient, session: Session):
+    preference_1: Preference = Preference(property_1="property1", property_2="property4", decision="decision1",
+                                          date=datetime.today())
+    preference_2: Preference = Preference(property_1="property2", property_2="property5", decision="decision2",
+                                          date=datetime.today())
+
+    session.add(preference_1)
+    session.add(preference_2)
+    session.commit()
+
+    response = client.get("/preferences/1")
+    print(f"got gender-identity: {response.json()}")
+    assert response.status_code == 200
+
+
+def test_get_preferences(client: TestClient, session: Session):
+    preference_1: Preference = Preference(property_1="property1", property_2="property4", decision="decision1",
+                                          date=datetime.today())
+    preference_2: Preference = Preference(property_1="property2", property_2="property5", decision="decision2",
+                                          date=datetime.today())
+
+    session.add(preference_1)
+    session.add(preference_2)
+    session.commit()
+
+    response = client.get("/preferences/")
+    print(f"got gender-identity: {response.json()}")
+    assert response.status_code == 200
+
+
+def test_create_preference(client: TestClient, session: Session):
+    response = client.post("/preferences/",
+                           json={"property_1": "property2", "property_2": "property5", "decision": "decision2", "date": "2023-11-13T13:54:16.479289"})
+    print(f"got gender-identity: {response.json()}")
+    assert response.status_code == 200
+
+

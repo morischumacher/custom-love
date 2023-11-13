@@ -6,13 +6,14 @@ from sqlmodel import SQLModel, Field, Relationship
 from .connectors.user_has_language import UserHasLanguage
 from .connectors.user_has_gender_preference import UserHasGenderPreference
 from .connectors.user_has_interest import UserHasInterest
+from .connectors.user_has_preference import UserHasPreference
 
 if TYPE_CHECKING:
     from .language import Language
-    from .gender_preference import GenderPreference
     from .address import Address
     from .gender_identity import GenderIdentity
     from .interest import Interest
+    from .preference import Preference
 
 
 class User(SQLModel, table=True):
@@ -30,9 +31,9 @@ class User(SQLModel, table=True):
     gender_identity_id: Optional[int] = Field(default=None, foreign_key="gender_identity.id")
     address_id: Optional[int] = Field(default=None, foreign_key="address.id")
 
-    gender_identity: Optional["GenderIdentity"] = Relationship(back_populates="users")
+    gender_identity: Optional["GenderIdentity"] = Relationship(back_populates="user_gender_identity")
     address: Optional["Address"] = Relationship(back_populates="users")
     languages: Optional["Language"] = Relationship(back_populates="users", link_model=UserHasLanguage)
-    gender_preferences: Optional["GenderPreference"] = Relationship(back_populates="users",
-                                                                    link_model=UserHasGenderPreference)
+    gender_preferences: Optional["GenderIdentity"] = Relationship(back_populates="users", link_model=UserHasGenderPreference)
     interests: Optional["Interest"] = Relationship(back_populates="users", link_model=UserHasInterest)
+    preferences: Optional["Preference"] = Relationship(back_populates="users", link_model=UserHasPreference)
