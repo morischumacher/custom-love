@@ -1,44 +1,50 @@
-from typing import Annotated, List
+from typing import List
 
-from fastapi import APIRouter, Depends
-from sqlmodel import select, Session
-from sqlmodel.sql.expression import SelectOfScalar
+from fastapi import APIRouter, HTTPException
 from starlette import status
 
+from backend import services
+from backend.exceptions.fatal_exception import FatalException
+from backend.exceptions.not_found_exception import NotFoundException
+from backend.exceptions.validation_exception import ValidationException
 from backend.models.user import User
-from backend.repository.repository import get_engine
 from backend.services.user import get_user, post_user
 
-router = APIRouter(prefix='/user', tags=['user'], responses={404: {"description": "Not found"}})
+router = APIRouter(prefix='/users', tags=['users'], responses={404: {"description": "Not found"}})
 
 
-@router.get('/{user_id}', tags=['get'])
-def get_user(commons: Annotated[dict, Depends(get_user)]):
-    return commons
-
-
-@router.post('/', tags=['post'])
-def post_user(user: User, commons: Annotated[dict, Depends(post_user)]):
-    return commons
-
-
-@router.get("/all", response_model=List[User], status_code=status.HTTP_200_OK)
-async def get_users():
+@router.get("/", response_model=List[User], status_code=status.HTTP_200_OK)
+async def get_users() -> List[User]:
     """
-        user_alfa = User(
-            first_name='Alfa',
-            last_name ='Alfonson',
-            email='alfa.alfonson@email.com',
-            tel='+43 231 472 941',
-            bio='Test subject',
-            job='Software Engineer'
-        )
-        session.add(user_alfa)
-        session.commit()
+    Retrieves all users stored in the system.
+    :return: a list of users
     """
-    users: list[User] = []
-    with Session(get_engine()) as session:
-        statement: SelectOfScalar[User] = select(User)
-        users: list[User] = session.exec(statement).all()
+    return services.user.get_users()
 
-    return users
+
+@router.get('/{user_id}', tags=['get'], response_model=User)
+def get_user(user_id: int) -> User:
+    """
+    Retrieves a user.
+    :param user_id: id of the user
+    :return: a user with a corresponding id
+    """
+    try:
+        return services.user.get_user(user_id)
+    except NotFoundException as e:
+        raise HTTPException(status_code=404, detail=e.message)
+    except FatalException as e:
+        raise HTTPException(status_code=400, detail=e.message)
+
+
+@router.post('/', tags=['post'], response_model=User)
+def post_user(user: User) -> User:
+    """
+    Stores a new user.
+    :param user: registers user's credentials
+    :return: the user if stored successfully
+    """
+    try:
+        return services.user.post_user(user)
+    except ValidationException as e:
+        raise HTTPException(status_code=422, detail=e.message)
