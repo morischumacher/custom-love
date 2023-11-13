@@ -2,6 +2,7 @@ variables:
   GIT_STRATEGY: "clone"
 
 stages:
+- prepare-variables
 - update-db
 - update-ingress
 - build-frontend
@@ -9,6 +10,30 @@ stages:
 - test-backend
 - build-backend
 - deploy
+
+prepare-variables:
+  stage: prepare-variables
+  image: alpine:latest
+  script:
+  - |
+    echo $FORCE_DEPLOYMENT
+    if [ -z ${FORCE_DEPLOYMENT} ]
+    then 
+      if [ "$CI_COMMIT_BRANCH" = "develop" ]
+      then 
+        TARGET=develop
+      else 
+        TARGET=release
+      fi 
+    else 
+      TARGET=$FORCE_DEPLOYMENT
+    fi
+    echo $TARGET > gitlab_vars_target
+  artifacts:
+    name: "build_vars-$CI_JOB_NAME"
+    expire_in: 1 day
+    paths:
+      - gitlab_vars_target
 
 update-db:
   stage: update-db
@@ -45,9 +70,10 @@ build-frontend:
     - ci/containers/frontend.Dockerfile
   - when: manual
     allow_failure: true
+  before_script:
+  - export TARGET=`cat gitlab_vars_target`
   script:
   - |
-    if [ $CI_COMMIT_BRANCH = "develop" ]; then TARGET=develop; else TARGET=release; fi
     cd frontend
     flutter pub get
     flutter build web --base-href /$TARGET/app/
@@ -108,15 +134,15 @@ build-backend:
     allow_failure: true
   - if: $FORCE_DEPLOYMENT != null
     when: manual
+  before_script:
+    - export TARGET=`cat gitlab_vars_target`
   script:
-  - |
-    if [ $CI_COMMIT_BRANCH = "develop" ]; then TARGET=develop; else TARGET=release; fi
-    echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(printf "%s:%s" "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"},\"$CI_DEPENDENCY_PROXY_SERVER\":{\"auth\":\"$(printf "%s:%s" ${CI_DEPENDENCY_PROXY_USER} "${CI_DEPENDENCY_PROXY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
-    /kaniko/executor
-    --context "${CI_PROJECT_DIR}"
-    --build-arg "ROOT_PATH=/$TARGET/backend"
-    --dockerfile "ci/containers/backend.Dockerfile"
-    --destination "registry.reset.inso-w.at/2023ws-ase-pr-group/23ws-ase-pr-inso-06/develop-backend:$CI_PIPELINE_ID"
+    - echo $TARGET
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(printf "%s:%s" "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"},\"$CI_DEPENDENCY_PROXY_SERVER\":{\"auth\":\"$(printf "%s:%s" ${CI_DEPENDENCY_PROXY_USER} "${CI_DEPENDENCY_PROXY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
+    - /kaniko/executor
+      --context "${CI_PROJECT_DIR}"
+      --dockerfile "ci/containers/backend.Dockerfile"
+      --destination "registry.reset.inso-w.at/2023ws-ase-pr-group/23ws-ase-pr-inso-06/develop-backend:$CI_PIPELINE_ID"
 
 deploy-develop-frontend:
   stage: deploy
