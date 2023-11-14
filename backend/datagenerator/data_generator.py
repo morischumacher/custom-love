@@ -11,6 +11,7 @@ from backend.models.preference import Preference
 from backend.models.rating import Rating
 from backend.models.match import Match
 from backend.models.user import User
+from backend.security.passwords import hash_pwd
 
 
 class DataGenerator:
@@ -77,7 +78,6 @@ class DataGenerator:
                 first_name='Alfa',
                 last_name='Alfonson',
                 email='alfa.alfonson@email.com',
-                tel='+43 231 472 941',
                 bio='Test subject',
                 date_of_birth=datetime.today(),
                 job='Software Engineer',
@@ -88,14 +88,14 @@ class DataGenerator:
                 gender_preferences=[woman],
                 address=vienna,
                 gender_identity=man,
-                interests=[sports, movies]
+                interests=[sports, movies],
+                password=hash_pwd("pass1")
             )
             user_bravo = User(
                 id=2,
                 first_name='Bravo',
                 last_name='Bravonson',
                 email='bravo.bravonson@email.com',
-                tel='+92 231 023 953',
                 bio='Test subject 2',
                 date_of_birth=datetime.today(),
                 job='Data Scientist',
@@ -106,14 +106,14 @@ class DataGenerator:
                 gender_preferences=[woman, man],
                 address=ulm,
                 gender_identity=woman,
-                interests=[travel, books, science]
+                interests=[travel, books, science],
+                password=hash_pwd("pass1")
             )
             user_charlie = User(
                 id=3,
                 first_name='Charlie',
                 last_name='Charlieson',
                 email='charlie.charlieson@email.com',
-                tel='+92 231 023 342',
                 bio='Test subject 3',
                 date_of_birth=datetime.today(),
                 job='Civil Engineer',
@@ -124,7 +124,8 @@ class DataGenerator:
                 preferences=[preference_2],
                 address=ulm,
                 gender_identity=divers,
-                interests=[science]
+                interests=[science],
+                password=hash_pwd("pass1")
             )
 
             # Rating

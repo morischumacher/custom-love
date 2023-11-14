@@ -1,10 +1,12 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends
+from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_pagination import Page, paginate
 from starlette import status
 from backend.models.user import User
 from backend.responses.error_response import ErrorResponse
-from backend.services.user import get_user, post_user, get_users
+from backend.security.token import Token
+from backend.services.user import get_user, post_user, get_users, login
 
 router = APIRouter(prefix='/users', tags=['users'], responses={status.HTTP_200_OK: {"description": "Success"}})
 
@@ -38,4 +40,9 @@ def post_user(commons: Annotated[dict, Depends(post_user)]):
     Stores a new user.
     :return: the user if stored successfully
     """
+    return commons
+
+
+@router.post("/login", response_model=Token)
+def login(commons: Annotated[Token, Depends(login)]):
     return commons
