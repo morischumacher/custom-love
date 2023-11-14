@@ -1,3 +1,17 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: database-config
+stringData:
+  database-startup.sh: |
+    #!/bin/bash
+    set -e
+    
+    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
+      CREATE DATABASE develop;
+      CREATE DATABASE release;
+    EOSQL
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -15,6 +29,10 @@ spec:
     spec:
       imagePullSecrets:
       - name: secret-dockercfg
+      volumes:
+      - name: database-config
+        secret:
+          secretName: database-config
       containers:
         - name: postgres
           image: postgres:latest
@@ -41,6 +59,9 @@ spec:
               - "postgres"
               - "-c"
               - "\\c"
+          volumeMounts:
+          - name: database-config
+            mountPath: /docker-entrypoint-initdb.d
         - name: adminer
           image: adminer:latest
           resources:
