@@ -31,7 +31,7 @@ spec:
       - name: secret-dockercfg
       volumes:
       - name: database-config
-      - secret:
+        secret:
           secretName: database-config
       containers:
         - name: postgres
