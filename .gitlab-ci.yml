@@ -22,8 +22,6 @@ prepare-variables:
   image: alpine:latest
   script:
   - |
-    echo $CI_PIPELINE_SOURCE
-    echo $CI_PIPELINE_SOURCE
     echo $FORCE_DEPLOYMENT
     if [ -z ${FORCE_DEPLOYMENT} ]
     then 
