@@ -45,6 +45,8 @@ update-db:
   - when: manual
     allow_failure: true
   script:
+  - kubectl create configmap database-script --from-file=
+  - kubectl scale --replicas=0 -f ci/k8s/database.yaml
   - kubectl apply -f ci/k8s/database.yaml
 
 update-ingress:
@@ -98,6 +100,9 @@ package-frontend:
   - if: $CI_COMMIT_BRANCH =~ /^release*/ || $CI_COMMIT_BRANCH == "develop"
     when: manual
     allow_failure: true
+  - when: manual
+    if: $FORCE_DEPLOYMENT != null
+    allow_failure: true
   script:
   - echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(printf "%s:%s" "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"},\"$CI_DEPENDENCY_PROXY_SERVER\":{\"auth\":\"$(printf "%s:%s" ${CI_DEPENDENCY_PROXY_USER} "${CI_DEPENDENCY_PROXY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
   - /kaniko/executor
@@ -134,6 +139,7 @@ build-backend:
     allow_failure: true
   - when: manual
     if: $FORCE_DEPLOYMENT != null
+    allow_failure: true
   before_script:
     - export TARGET=`cat gitlab_vars_target`
   script:
@@ -158,6 +164,7 @@ deploy-develop-frontend:
     allow_failure: true
   - when: manual
     if: $FORCE_DEPLOYMENT == "all" || $FORCE_DEPLOYMENT == "develop"
+    allow_failure: true
   script:
   - sed -i 's/:latest/:'$CI_PIPELINE_ID'/g' ci/k8s/develop/frontend.yaml
   - cat ci/k8s/develop/frontend.yaml
@@ -177,6 +184,7 @@ deploy-develop-backend:
     allow_failure: true
   - when: manual
     if: $FORCE_DEPLOYMENT == "all" || $FORCE_DEPLOYMENT == "develop"
+    allow_failure: true
   script:
   - sed -i 's/:latest/:'$CI_PIPELINE_ID'/g' ci/k8s/develop/backend.yaml
   - cat ci/k8s/develop/backend.yaml
@@ -196,6 +204,7 @@ deploy-release-frontend:
     allow_failure: true
   - when: manual
     if: $FORCE_DEPLOYMENT == "all" || $FORCE_DEPLOYMENT == "release"
+    allow_failure: true
   script:
   - sed -i 's/:latest/:'$CI_PIPELINE_ID'/g' ci/k8s/release/frontend.yaml
   - cat ci/k8s/release/frontend.yaml
@@ -215,6 +224,7 @@ deploy-release-backend:
     allow_failure: true
   - when: manual
     if: $FORCE_DEPLOYMENT == "all" || $FORCE_DEPLOYMENT == "release"
+    allow_failure: true
   script:
   - sed -i 's/:latest/:'$CI_PIPELINE_ID'/g' ci/k8s/release/backend.yaml
   - cat ci/k8s/release/backend.yaml
