@@ -1,14 +1,19 @@
 from typing import List, Annotated
 
 from fastapi import APIRouter, Depends
+from fastapi_pagination import Page, paginate
 from starlette import status
 
 from backend.services.language import get_languages
 from backend.models.language import Language
 
-router = APIRouter(prefix='/languages', tags=['languages'], responses={404: {"description": "Not found"}})
+router = APIRouter(prefix='/languages', tags=['languages'], responses={status.HTTP_200_OK: {"description": "Success"}})
 
 
-@router.get("/", response_model=List[Language], status_code=status.HTTP_200_OK)
+@router.get("/", response_model=Page[Language])
 async def get_languages(commons: Annotated[dict, Depends(get_languages)]):
-    return commons
+    """
+    Return a paginated list of languages
+    :return: a paginated list of languages
+    """
+    return paginate(commons)

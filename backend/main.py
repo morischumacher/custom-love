@@ -3,9 +3,11 @@ from fastapi import FastAPI
 from backend.datagenerator.data_generator import DataGenerator
 from backend.repository.repository import create_db, get_engine
 from backend.routers import user, language, preference, address, rating, match, interest, gender_identity
+from fastapi_pagination import add_pagination
 
 app = FastAPI()
-app.include_router(user.router)
+add_pagination(app)
+app.include_router(userqq.router)
 app.include_router(language.router)
 app.include_router(preference.router)
 app.include_router(address.router)

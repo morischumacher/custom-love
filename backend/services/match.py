@@ -4,7 +4,7 @@ from fastapi import Depends
 from sqlmodel import Session, select
 from sqlmodel.sql.expression import SelectOfScalar
 
-from backend.exceptions.fatal_exception import FatalException
+from backend.exceptions.bad_request_exception import BadRequestException
 from backend.exceptions.not_found_exception import NotFoundException
 from backend.exceptions.validation_exception import ValidationException
 from backend.models.match import Match
@@ -23,7 +23,7 @@ def get_match(db: Annotated[Session, Depends(create_session)], match_id: int):
     if len(match) == 0:
         raise NotFoundException(f"Could not find match with id = {match_id}")
     elif len(match) > 1:
-        raise FatalException(f"More than one match with id = {match_id} was found")
+        raise BadRequestException(f"More than one match with id = {match_id} was found")
     return match
 
 
@@ -71,7 +71,7 @@ def get_matches(db: Annotated[Session, Depends(create_session)], user_id: int | 
         return matches
 
 
-def post_match(db: Annotated[Session, Depends(create_session)], match: Match):
+def post_match(match: Match, db: Annotated[Session, Depends(create_session)]):
     """
     Stores a model object in the database.
     :param db: database provided through dependency injection
