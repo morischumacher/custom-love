@@ -16,6 +16,8 @@ prepare-variables:
   image: alpine:latest
   rules:
   - if: $CI_PIPELINE_SOURCE == "push"
+  - when: manual
+    allow_failure: true
   script:
   - |
     echo $FORCE_DEPLOYMENT
