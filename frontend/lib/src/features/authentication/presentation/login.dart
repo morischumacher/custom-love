@@ -43,29 +43,31 @@ class _LoginState extends State<Login> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     SizedBox(
-                      width: inputWidth,
-                      height: inputHeight,
+                      width: _customLoveTheme.inputWidth,
+                      height: _customLoveTheme.inputHeight,
                       child: TextField(
                         key: const Key('emailTextField'),
                         controller: _controller.emailController,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Enter your email address',
-                        ),
+                        decoration: _customLoveTheme.textFieldDecoration ??
+                            const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'Enter your email address',
+                            ),
                       ),
                     ),
                     const SizedBox(height: 10),
                     SizedBox(
-                      width: inputWidth,
-                      height: inputHeight,
+                      width: _customLoveTheme.inputWidth,
+                      height: _customLoveTheme.inputHeight,
                       child: TextField(
                         key: const Key('passwordTextField'),
                         controller: _controller.passwordController,
                         obscureText: true,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Enter your password',
-                        ),
+                        decoration: _customLoveTheme.textFieldDecoration ??
+                            const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'Enter your password',
+                            ),
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -74,10 +76,11 @@ class _LoginState extends State<Login> {
                       height: 56,
                       child: FilledButton(
                         onPressed: () => _controller.handleLogin(context),
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all(
-                              _customLoveTheme.primaryColor),
-                        ),
+                        style: _customLoveTheme.buttonStyle ??
+                            ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all(
+                                  _customLoveTheme.primaryColor),
+                            ),
                         child: const Text(
                           'Login',
                           style: TextStyle(fontSize: 18),
