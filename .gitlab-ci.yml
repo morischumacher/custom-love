@@ -45,8 +45,7 @@ update-db:
   - when: manual
     allow_failure: true
   script:
-  - kubectl create configmap database-script --from-file=
-  - kubectl scale --replicas=0 -f ci/k8s/database.yaml
+  - kubectl delete deploy 23ws-ase-pr-inso-06-db | echo true
   - kubectl apply -f ci/k8s/database.yaml
 
 update-ingress:
