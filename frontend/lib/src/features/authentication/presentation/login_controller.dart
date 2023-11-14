@@ -10,7 +10,7 @@ class LoginController {
     String email = emailController.text;
     String password = passwordController.text;
     if (email.isNotEmpty && password.isNotEmpty) {
-      logger.i('Login was successfull');
+      logger.i('Login was successful');
       Navigator.of(context).pushNamed('/home');
     } else {
       logger.i('Login failed.');

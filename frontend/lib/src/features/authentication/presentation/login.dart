@@ -23,71 +23,73 @@ class _LoginState extends State<Login> {
         title: const Text('Custom Love App'),
         backgroundColor: _customLoveTheme.primaryColor,
       ),
-      body: Column(
-        children: <Widget>[
-          const Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Text(
-              'Welcome to Custom Love App',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
+      body: Theme(
+        data: _customLoveTheme.toThemeData(),
+        child: Column(
+          children: <Widget>[
+            const Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Text(
+                'Welcome to Custom Love App',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-          ),
-          Expanded(
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  SizedBox(
-                    width: inputWidth,
-                    height: inputHeight,
-                    child: TextField(
-                      key: const Key('emailTextField'),
-                      controller: _controller.emailController,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Enter your email address',
+            Expanded(
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    SizedBox(
+                      width: inputWidth,
+                      height: inputHeight,
+                      child: TextField(
+                        key: const Key('emailTextField'),
+                        controller: _controller.emailController,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'Enter your email address',
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  SizedBox(
-                    width: inputWidth,
-                    height: inputHeight,
-                    child: TextField(
-                      key: const Key('passwordTextField'),
-                      controller: _controller.passwordController,
-                      obscureText: true,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Enter your password',
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      width: inputWidth,
+                      height: inputHeight,
+                      child: TextField(
+                        key: const Key('passwordTextField'),
+                        controller: _controller.passwordController,
+                        obscureText: true,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'Enter your password',
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(
-                      height: 20), // Add spacing between form and button
-                  SizedBox(
-                    width: 327,
-                    height: 56,
-                    child: FilledButton(
-                      onPressed: () => _controller.handleLogin(context),
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all(
-                            _customLoveTheme.primaryColor),
-                      ),
-                      child: const Text(
-                        'Login',
-                        style: TextStyle(fontSize: 18),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: 327,
+                      height: 56,
+                      child: FilledButton(
+                        onPressed: () => _controller.handleLogin(context),
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all(
+                              _customLoveTheme.primaryColor),
+                        ),
+                        child: const Text(
+                          'Login',
+                          style: TextStyle(fontSize: 18),
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
