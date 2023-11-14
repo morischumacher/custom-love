@@ -45,7 +45,7 @@ update-db:
   - when: manual
     allow_failure: true
   script:
-  - kubectl delete deploy 23ws-ase-pr-inso-06-db | echo true
+  - kubectl delete deploy 23ws-ase-pr-inso-06-db || echo true
   - kubectl apply -f ci/k8s/database.yaml
 
 update-ingress:
