@@ -3,7 +3,7 @@ variables:
 
 workflow:
   rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_PIPELINE_SOURCE == "push"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
     - when: always
 
@@ -22,6 +22,8 @@ prepare-variables:
   image: alpine:latest
   script:
   - |
+    echo $CI_PIPELINE_SOURCE
+    echo $CI_PIPELINE_SOURCE
     echo $FORCE_DEPLOYMENT
     if [ -z ${FORCE_DEPLOYMENT} ]
     then 
