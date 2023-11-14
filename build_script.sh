@@ -1,0 +1,1 @@
+/kaniko/executor --build-arg ROOT_PATH=develop --context "" --dockerfile "ci/containers/backend.Dockerfile" --destination "registry.reset.inso-w.at/2023ws-ase-pr-group/23ws-ase-pr-inso-06/develop-backend:"
