@@ -1,6 +1,12 @@
 variables:
   GIT_STRATEGY: "clone"
 
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "push"
+
 stages:
 - prepare-variables
 - update-db
@@ -100,7 +106,6 @@ package-frontend:
     when: manual
     allow_failure: true
   - when: manual
-    if: $FORCE_DEPLOYMENT != null
     allow_failure: true
   script:
   - echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(printf "%s:%s" "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"},\"$CI_DEPENDENCY_PROXY_SERVER\":{\"auth\":\"$(printf "%s:%s" ${CI_DEPENDENCY_PROXY_USER} "${CI_DEPENDENCY_PROXY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
@@ -137,7 +142,6 @@ build-backend:
     when: manual
     allow_failure: true
   - when: manual
-    if: $FORCE_DEPLOYMENT != null
     allow_failure: true
   before_script:
     - export TARGET=`cat gitlab_vars_target`
@@ -148,6 +152,7 @@ build-backend:
   script:
     - echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(printf "%s:%s" "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"},\"$CI_DEPENDENCY_PROXY_SERVER\":{\"auth\":\"$(printf "%s:%s" ${CI_DEPENDENCY_PROXY_USER} "${CI_DEPENDENCY_PROXY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
     - ./build_script.sh
+
 deploy-develop-frontend:
   stage: deploy
   image: bitnami/kubectl
