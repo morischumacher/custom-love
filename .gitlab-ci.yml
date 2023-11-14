@@ -14,10 +14,6 @@ stages:
 prepare-variables:
   stage: prepare-variables
   image: alpine:latest
-  rules:
-  - if: $CI_PIPELINE_SOURCE == "push"
-  - when: manual
-    allow_failure: true
   script:
   - |
     echo $FORCE_DEPLOYMENT
@@ -46,7 +42,6 @@ update-db:
   - changes:
     - ci/k8s/database.yaml
     allow_failure: true
-    if: $CI_PIPELINE_SOURCE == "push"
   - when: manual
     allow_failure: true
   script:
@@ -60,7 +55,6 @@ update-ingress:
   - changes:
     - ci/k8s/ingress.yaml
     allow_failure: true
-    if: $CI_PIPELINE_SOURCE == "push"
   - when: manual
     allow_failure: true
   script:
@@ -75,7 +69,6 @@ build-frontend:
     - ci/k8s/develop/frontend.yaml
     - ci/k8s/release/frontend.yaml
     - ci/containers/frontend.Dockerfile
-    if: $CI_PIPELINE_SOURCE == "push"
   - when: manual
     allow_failure: true
   before_script:
@@ -97,7 +90,7 @@ package-frontend:
     name: gcr.io/kaniko-project/executor:v1.17.0-debug
     entrypoint: [""]
   rules:
-  - if: ($CI_COMMIT_BRANCH =~ /^release*/ || $CI_COMMIT_BRANCH == "develop") && $CI_PIPELINE_SOURCE == "push"
+  - if: $CI_COMMIT_BRANCH =~ /^release*/ || $CI_COMMIT_BRANCH == "develop"
     changes:
     - frontend/*
     - ci/k8s/develop/frontend.yaml
@@ -122,7 +115,6 @@ unittest-backend:
   rules:
   - changes:
     - backend/*
-    if: $CI_PIPELINE_SOURCE == "push"
   - when: manual
     allow_failure: true
   script:
@@ -135,7 +127,7 @@ build-backend:
     name: gcr.io/kaniko-project/executor:v1.17.0-debug
     entrypoint: [""]
   rules:
-  - if: ($CI_COMMIT_BRANCH =~ /^release*/ || $CI_COMMIT_BRANCH == "develop") && $CI_PIPELINE_SOURCE == "push"
+  - if: $CI_COMMIT_BRANCH =~ /^release*/ || $CI_COMMIT_BRANCH == "develop"
     changes:
     - backend/*
     - ci/k8s/develop/backend.yaml
@@ -161,7 +153,7 @@ deploy-develop-frontend:
   stage: deploy
   image: bitnami/kubectl
   rules:
-  - if: $CI_COMMIT_BRANCH == "develop" && $CI_PIPELINE_SOURCE == "push"
+  - if: $CI_COMMIT_BRANCH == "develop"
     changes:
     - frontend/*
     - ci/k8s/develop/frontend.yaml
@@ -181,7 +173,7 @@ deploy-develop-backend:
   stage: deploy
   image: bitnami/kubectl
   rules:
-  - if: $CI_COMMIT_BRANCH == "develop" && $CI_PIPELINE_SOURCE == "push"
+  - if: $CI_COMMIT_BRANCH == "develop"
     changes:
     - backend/*
     - ci/k8s/develop/backend.yaml
@@ -201,7 +193,7 @@ deploy-release-frontend:
   stage: deploy
   image: bitnami/kubectl
   rules:
-  - if: $CI_COMMIT_BRANCH =~ /^release*/ && $CI_PIPELINE_SOURCE == "push"
+  - if: $CI_COMMIT_BRANCH =~ /^release*/
     changes:
     - frontend/*
     - ci/k8s/release/frontend.yaml
@@ -221,7 +213,7 @@ deploy-release-backend:
   stage: deploy
   image: bitnami/kubectl
   rules:
-  - if: $CI_COMMIT_BRANCH =~ /^release*/ && $CI_PIPELINE_SOURCE == "push"
+  - if: $CI_COMMIT_BRANCH =~ /^release*/
     changes:
     - backend/*
     - ci/k8s/release/backend.yaml
