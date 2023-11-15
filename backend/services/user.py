@@ -1,10 +1,8 @@
 from typing import List, Annotated
-
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import Session, select
 from sqlmodel.sql.expression import SelectOfScalar
-
 from backend.security import passwords
 from backend.exceptions.credentials_exception import CredentialsException
 from backend.exceptions.bad_request_exception import BadRequestException

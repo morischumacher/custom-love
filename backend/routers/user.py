@@ -1,6 +1,5 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends
-from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_pagination import Page, paginate
 from starlette import status
 from backend.models.user import User
