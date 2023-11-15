@@ -1,4 +1,5 @@
 from fastapi import HTTPException
+from starlette import status
 
 
 class ValidationException(HTTPException):
@@ -8,4 +9,4 @@ class ValidationException(HTTPException):
     Contains a list of all validations that failed when validating the piece of data in question.
     """
     def __init__(self, message=""):
-        super(ValidationException, self).__init__(status_code=422, detail=message)
+        super(ValidationException, self).__init__(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=message)
