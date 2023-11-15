@@ -39,9 +39,11 @@ if __name__ == "__main__":
         description='INSO_06 project backend')
     parser.add_argument('--production', action='store_true')
     parser.add_argument('--proxy-headers', action='store_true')
+    parser.add_argument('--reload', action='store_true')
     parser.add_argument('--host', default="127.0.0.1")
     parser.add_argument('--port', default=8000)
     parser.add_argument('--root-path', default="/")
     args = parser.parse_args()
     print(args.proxy_headers)
-    uvicorn.run(app, host=args.host, port=int(args.port), root_path=args.root_path, proxy_headers=args.proxy_headers)
+    uvicorn.run("backend.main:app", host=args.host, port=int(args.port), root_path=args.root_path, proxy_headers=args.proxy_headers,
+                reload=args.reload)
