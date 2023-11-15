@@ -6,14 +6,17 @@ from starlette import status
 
 from backend.exceptions.bad_request_exception import BadRequestException
 from backend.exceptions.not_found_exception import NotFoundException
-from backend.services.match import get_match, get_matches, post_match
+from backend.responses.error_response import ErrorResponse
+from backend.services.match import get_match, get_matches, post_match, get_all_user_matches
 from backend.models.match import Match
 
 router = APIRouter(prefix='/matches', tags=['matches'], responses={status.HTTP_200_OK: {"description": "Success"}})
 
 
-@router.get("/", response_model=Page[Match])
-async def get_matches(commons: Annotated[dict, Depends(get_matches)]):
+@router.get("/", response_model=Page[Match], responses={
+    status.HTTP_401_UNAUTHORIZED: {"description": "Error: Unauthorized", "model": ErrorResponse}
+})
+async def get_matches(commons: Annotated[dict, Depends(get_all_user_matches)]):
     """
     Get a paginated list of matches
     :return: a paginated list of matches

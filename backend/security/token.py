@@ -11,7 +11,7 @@ from backend.repository.repository import create_session
 
 SECRET_KEY = "2c0fb37921906f1614f8f5905af837942b4672aa82943ac5058591a130a2a4aa"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 60
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="users/login")
 
 
@@ -47,8 +47,8 @@ def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db: Annotate
         if username is None:
             raise CredentialsException("Corrupted access token")
 
-    except JWTError:
-        raise CredentialsException("Corrupted access token")
+    except JWTError as e:
+        raise CredentialsException(f"Corrupted access token: {e}")
 
     user = db.exec(select(User).where(User.email == username)).first()
     if user is None:

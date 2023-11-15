@@ -8,7 +8,9 @@ from backend.exceptions.bad_request_exception import BadRequestException
 from backend.exceptions.not_found_exception import NotFoundException
 from backend.exceptions.validation_exception import ValidationException
 from backend.models.match import Match
+from backend.models.user import User
 from backend.repository.repository import create_session
+from backend.security.token import get_current_user
 
 
 def get_match(db: Annotated[Session, Depends(create_session)], match_id: int):
@@ -27,15 +29,17 @@ def get_match(db: Annotated[Session, Depends(create_session)], match_id: int):
     return match
 
 
-def get_all_user_matches(db: Annotated[Session, Depends(create_session)], user_id: int, is_match: bool | None = None):
+def get_all_user_matches(db: Annotated[Session, Depends(create_session)],
+                         user: Annotated[User, Depends(get_current_user)]):
     """
     Retrieves all matches belonging to a user.
+    :param user: user extracted from a token
     :param db: database provided through dependency injection
-    :param user_id: id of the user whose matches are searched for
-    :param is_match: Filters matches which correspond to the provided boolean value
     :return: list of matches
     """
-    if is_match is None:
+
+    # TODO: changes in matching
+    """if is_match is None:
         statement1 = select(Match).where(
             Match.match_user1_id == user_id, Match.match_user2_id != user_id
         )
@@ -50,10 +54,13 @@ def get_all_user_matches(db: Annotated[Session, Depends(create_session)], user_i
             Match.match_user1_id != user_id, Match.match_user2_id == user_id, Match.is_match == is_match
         )
     match: list[Match] = db.exec(statement1).all() + db.exec(statement2).all()
-    return match
+    return match"""
+    return db.exec(select(Match).
+                   where(Match.match_user1_id == user.id or Match.match_user2_id == user.id)).all()
 
 
-def get_matches(db: Annotated[Session, Depends(create_session)], user_id: int | None = None, is_match: bool | None = None):
+def get_matches(db: Annotated[Session, Depends(create_session)], user_id: int | None = None,
+                is_match: bool | None = None):
     """
     Retrieves all matches contained within the database.
     :param db: database provided through dependency injection
