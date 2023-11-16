@@ -1,50 +1,47 @@
-from typing import List
-
-from fastapi import APIRouter, HTTPException
+from typing import Annotated
+from fastapi import APIRouter, Depends
+from fastapi_pagination import Page, paginate
 from starlette import status
-
-from backend import services
-from backend.exceptions.fatal_exception import FatalException
-from backend.exceptions.not_found_exception import NotFoundException
-from backend.exceptions.validation_exception import ValidationException
 from backend.models.user import User
-from backend.services.user import get_user, post_user
+from backend.responses.error_response import ErrorResponse
+from backend.security.token import Token
+from backend.services.user import get_user, post_user, get_users, login
 
-router = APIRouter(prefix='/users', tags=['users'], responses={404: {"description": "Not found"}})
+router = APIRouter(prefix='/users', tags=['users'], responses={status.HTTP_200_OK: {"description": "Success"}})
 
 
-@router.get("/", response_model=List[User], status_code=status.HTTP_200_OK)
-async def get_users() -> List[User]:
+@router.get("/", response_model=Page[User])
+async def get_users(commons: Annotated[dict, Depends(get_users)]):
     """
     Retrieves all users stored in the system.
     :return: a list of users
     """
-    return services.user.get_users()
+    return paginate(commons)
 
 
-@router.get('/{user_id}', tags=['get'], response_model=User)
-def get_user(user_id: int) -> User:
+@router.get('/{user_id}', response_model=User, responses={
+    status.HTTP_404_NOT_FOUND: {"description": "Not Found", "model": ErrorResponse},
+    status.HTTP_400_BAD_REQUEST: {"description": "Bad Request", "model": ErrorResponse},
+})
+def get_user(commons: Annotated[dict, Depends(get_user)]):
     """
     Retrieves a user.
-    :param user_id: id of the user
     :return: a user with a corresponding id
     """
-    try:
-        return services.user.get_user(user_id)
-    except NotFoundException as e:
-        raise HTTPException(status_code=404, detail=e.message)
-    except FatalException as e:
-        raise HTTPException(status_code=400, detail=e.message)
+    return commons
 
 
-@router.post('/', tags=['post'], response_model=User)
-def post_user(user: User) -> User:
+@router.post('/', response_model=User, responses={
+    status.HTTP_422_UNPROCESSABLE_ENTITY: {"description": "Validation Error", "model": ErrorResponse}
+})
+def post_user(commons: Annotated[dict, Depends(post_user)]):
     """
     Stores a new user.
-    :param user: registers user's credentials
     :return: the user if stored successfully
     """
-    try:
-        return services.user.post_user(user)
-    except ValidationException as e:
-        raise HTTPException(status_code=422, detail=e.message)
+    return commons
+
+
+@router.post("/login", response_model=Token)
+def login(commons: Annotated[Token, Depends(login)]):
+    return commons
