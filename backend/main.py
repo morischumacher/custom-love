@@ -1,8 +1,6 @@
 import argparse
 import uvicorn
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-
 from backend.datagenerator.data_generator import DataGenerator
 from backend.repository.repository import create_db, get_engine
 from backend.routers import user, language, preference, address, rating, match, interest, gender_identity
@@ -29,6 +27,9 @@ def on_startup():
 
 @app.get("/health")
 def read_root():
+    """
+    kubernetes liveness probe
+    """
     return {"status": "application_alive"}
 
 
