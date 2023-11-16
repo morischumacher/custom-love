@@ -10,7 +10,7 @@ from backend.models.address import Address
 from backend.models.gender_identity import GenderIdentity
 from backend.models.interest import Interest
 from backend.models.language import Language
-from backend.models.match import Match
+from backend.models.swipe_status import SwipeStatus
 from backend.models.preference import Preference
 from backend.models.rating import Rating
 from backend.models.user import User
