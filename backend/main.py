@@ -1,12 +1,23 @@
 import argparse
 import uvicorn
 from fastapi import FastAPI
+from starlette.middleware.cors import CORSMiddleware
+
 from backend.datagenerator.data_generator import DataGenerator
 from backend.repository.repository import create_db, get_engine
 from backend.routers import user, language, preference, address, rating, match, interest, gender_identity
 from fastapi_pagination import add_pagination
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 add_pagination(app)
 app.include_router(user.router)
 app.include_router(language.router)
