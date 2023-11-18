@@ -21,7 +21,7 @@ class User(SQLModel, table=True):
     first_name: str
     last_name: str
     email: str
-    tel: str
+    password: str
     bio: str
     date_of_birth: datetime
     job: str

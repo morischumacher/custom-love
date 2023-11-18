@@ -1,6 +1,6 @@
-from typing import List
+from typing import List, Annotated
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from starlette import status
 
 from backend import services
@@ -8,7 +8,8 @@ from backend.exceptions.fatal_exception import FatalException
 from backend.exceptions.not_found_exception import NotFoundException
 from backend.exceptions.validation_exception import ValidationException
 from backend.models.user import User
-from backend.services.user import get_user, post_user
+from backend.security.token import Token
+from backend.services.user import get_user, post_user, login
 
 router = APIRouter(prefix='/users', tags=['users'], responses={404: {"description": "Not found"}})
 
@@ -48,3 +49,8 @@ def post_user(user: User) -> User:
         return services.user.post_user(user)
     except ValidationException as e:
         raise HTTPException(status_code=422, detail=e.message)
+
+
+@router.post("/login", response_model=Token)
+def login(commons: Annotated[Token, Depends(login)]):
+    return commons
