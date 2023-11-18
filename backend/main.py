@@ -56,6 +56,5 @@ if __name__ == "__main__":
     parser.add_argument('--port', default=8000)
     parser.add_argument('--root-path', default="/")
     args = parser.parse_args()
-    print(args.proxy_headers)
     uvicorn.run("backend.main:app", host=args.host, port=int(args.port), root_path=args.root_path, proxy_headers=args.proxy_headers,
                 reload=args.reload)
