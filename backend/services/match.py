@@ -10,7 +10,7 @@ from backend.exceptions.validation_exception import ValidationException
 from backend.models.match import Match
 from backend.models.user import User
 from backend.repository.repository import create_session
-from backend.security.token import get_current_user
+from backend.utils.token import get_current_user
 
 
 def get_match(db: Annotated[Session, Depends(create_session)], match_id: int):

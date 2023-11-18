@@ -5,7 +5,7 @@ from starlette.middleware.cors import CORSMiddleware
 
 from backend.datagenerator.data_generator import DataGenerator
 from backend.repository.repository import create_db, get_engine
-from backend.routers import user, language, preference, address, rating, match, interest, gender_identity
+from backend.routers import user, language, preference, address, rating, match, interest, gender_identity, message
 from fastapi_pagination import add_pagination
 
 app = FastAPI()
@@ -27,6 +27,7 @@ app.include_router(rating.router)
 app.include_router(match.router)
 app.include_router(interest.router)
 app.include_router(gender_identity.router)
+app.include_router(message.router)
 
 
 @app.on_event("startup")

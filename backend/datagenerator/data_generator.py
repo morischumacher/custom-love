@@ -11,7 +11,7 @@ from backend.models.preference import Preference
 from backend.models.rating import Rating
 from backend.models.match import Match
 from backend.models.user import User
-from backend.security.passwords import hash_pwd
+from backend.utils.passwords import hash_pwd
 
 
 class DataGenerator:
