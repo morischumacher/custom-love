@@ -1,5 +1,4 @@
 from typing import TYPE_CHECKING, Optional
-
 from sqlmodel import SQLModel, Field, Relationship
 
 if TYPE_CHECKING:
