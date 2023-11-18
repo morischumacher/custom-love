@@ -126,7 +126,7 @@ unittest-backend:
     - backend/*
   script:
   - pip install --user -r ./requirements.txt
-  - pytest --rootdir backend/test/unit backend/test/unit/sample_test.py
+  - pytest backend/test/integration/
 
 build-backend:
   stage: build-backend
