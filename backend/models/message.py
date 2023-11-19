@@ -4,6 +4,7 @@ from typing import Optional, Any
 from typing import TYPE_CHECKING
 from sqlmodel import SQLModel, Field, Relationship
 from .conversation import Conversation
+from .user import User
 
 
 class Message(SQLModel, table=True):
@@ -19,9 +20,21 @@ class Message(SQLModel, table=True):
         "lazy": "joined",
     })
 
-    def __init__(self, _json: json, **data: Any):
-        super().__init__(**data)
-        self.conversation_id = _json['conversation_id']
-        self.sender_id = _json['sender_id']
-        self.receiver_id = _json['receiver_id']
-        self.message = _json['message']
+    sender: User = Relationship(sa_relationship_kwargs={
+        "primaryjoin": "Message.sender_id==User.id",
+        "lazy": "joined",
+    })
+
+    receiver: User = Relationship(sa_relationship_kwargs={
+        "primaryjoin": "Message.receiver_id==User.id",
+        "lazy": "joined",
+    })
+
+
+def message_factory(_json: json):
+    return Message(
+        conversation_id=_json['conversation_id'],
+        sender_id=_json['sender_id'],
+        receiver_id=_json['receiver_id'],
+        message=_json['message'],
+    )

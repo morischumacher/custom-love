@@ -3,9 +3,10 @@ from fastapi import APIRouter, Depends
 from fastapi_pagination import Page
 from fastapi_pagination.ext.async_sqlmodel import paginate
 from starlette import status
+from starlette.responses import HTMLResponse
 from backend.models.message import Message
 from backend.responses.error_response import ErrorResponse
-from backend.services.message import websocket_connect, get_messages
+from backend.services.message import websocket_connect, get_messages, sockets_test
 
 router = APIRouter(prefix='/messages', tags=['messages'], responses={status.HTTP_200_OK: {"description": "Success"}})
 
@@ -20,3 +21,15 @@ async def socket(commons: Annotated[dict, Depends(websocket_connect)]):
 })
 def get_messages(commons: Annotated[List[Message], Depends(get_messages)]):
     return paginate(commons)
+
+
+#  region sockets_test: this will be deleted as soon as the frontend-chat functionality is ready
+@router.get("/socket/test")
+def sockets_test(commons: Annotated[dict, Depends(sockets_test)]):
+    """
+    this is just for texting, will be deleted as soon as the frontend-chat functionality is ready
+    """
+
+    return commons
+
+# endregion

@@ -1,9 +1,8 @@
 from datetime import datetime
-
 from sqlalchemy.engine import Engine
 from sqlmodel import Session, select
-
 from backend.models.address import Address
+from backend.models.conversation import Conversation
 from backend.models.gender_identity import GenderIdentity
 from backend.models.interest import Interest
 from backend.models.language import Language
@@ -111,7 +110,7 @@ class DataGenerator:
             )
             user_charlie = User(
                 id=3,
-                first_name='Charlie',
+                first_name='Charliez',
                 last_name='Charlieson',
                 email='charlie.charlieson@email.com',
                 bio='Test subject 3',
@@ -142,6 +141,9 @@ class DataGenerator:
             session.refresh(user_alfa)
             session.refresh(user_bravo)
 
+            session.add(Conversation(user1_id=user_alfa.id, user2_id=user_bravo.id))
+            session.add(Conversation(user1_id=user_charlie.id, user2_id=user_bravo.id))
+            session.add(Conversation(user1_id=user_charlie.id, user2_id=user_alfa.id))
             session.add(alfa_bravo_rating)
             session.add(alfa_bravo_matching)
             session.add(alfa_charlie_matching)

@@ -1,15 +1,19 @@
+import json
 from typing import Annotated
 from fastapi import Depends
+from sqlalchemy import or_
 from sqlmodel import Session, select, col
+from starlette.responses import HTMLResponse
 from starlette.websockets import WebSocket, WebSocketDisconnect
 from backend.exceptions.credentials_exception import CredentialsException
+from backend.exceptions.not_found_exception import NotFoundException
 from backend.models.conversation import Conversation
-from backend.models.message import Message
+from backend.models.message import Message, message_factory
 from backend.repository.repository import create_session
 from backend.models.user import User
 from backend.utils.connection_manager import ConnectionManager
 from backend.utils.logger import Logger
-from backend.utils.token import get_current_user
+from backend.utils.token import get_current_user, create_access_token
 
 connection_manager = ConnectionManager()
 
@@ -21,7 +25,7 @@ async def websocket_connect(websocket: WebSocket, user_token: str, db: Annotated
     await connection_manager.connect(websocket, user.id)
     try:
         while True:
-            data: Message = Message(await websocket.receive_json())
+            data: Message = message_factory(await websocket.receive_json())
             Logger.debug(f"[websocket_connect]: received a message from: user #{user.id}, contents: {data}")
             data = _save_message(data, db)
             await connection_manager.send_message(data.receiver_id, data)
@@ -57,6 +61,85 @@ def _save_message(message: Message, db: Annotated[Session, Depends(create_sessio
         raise CredentialsException('Unauthorized')
 
     db.add(message)
-    db.refresh(message)
     db.commit()
+    db.refresh(message)
     return message
+
+
+# region sockets_test: this will be deleted as soon as the frontend-chat functionality is ready
+def sockets_test(username: str, receiver_username: str, db: Annotated[Session, Depends(create_session)]):
+    """
+    this is just for texting, will be deleted as soon as the frontend-chat functionality is ready
+    """
+    user = db.exec(select(User).where(User.email == username)).first()
+    if user is None:
+        raise CredentialsException('User not found')
+
+    receiver = db.exec(select(User).where(User.email == receiver_username)).first()
+    if receiver is None:
+        raise CredentialsException('Receiver not found')
+
+    access_token = create_access_token(data={"sub": username})
+    conversation = db.exec(select(Conversation).
+                           where(or_((Conversation.user1_id == user.id and Conversation.user2_id == receiver.id),
+                                     (
+                                                 Conversation.user1_id == receiver.id and Conversation.user2_id == user.id)))).first()
+    if conversation is None:
+        raise NotFoundException(f"No conversations between {user.email} and {receiver.email} found")
+
+    html = """
+    <!DOCTYPE html>
+    <html>
+        <head>
+            <title>Chat</title>
+        </head>
+        <body>
+            <h1>WebSocket Chat</h1>
+            <h2>Your ID: <span id="ws-id">%%SENDER_ID%%</span></h2>
+            <form action="" onsubmit="sendMessage(event)">
+                <input type="text" id="messageText" autocomplete="off"/>
+                <button>Send</button>
+            </form>
+            <ul id='messages'>
+            </ul>
+            <script>
+                var ws = new WebSocket("%%URL%%/messages/socket/%%TOKEN%%");
+                ws.onmessage = function(event) {
+                    var messages = document.getElementById('messages')
+                    var message = document.createElement('li')
+                    var content = document.createTextNode(event.data)
+                    message.appendChild(content)
+                    messages.appendChild(message)
+                };
+                function sendMessage(event) {
+                    var input = document.getElementById("messageText")
+                    var content = JSON.stringify({
+                        "conversation_id": %%CONVERSATION_ID%%,
+                        "sender_id": %%SENDER_ID%%, 
+                        "receiver_id": %%RECEIVER_ID%%, 
+                        "message": input.value
+                    })
+                    console.log(content)
+                    ws.send(content)
+                    input.value = ''
+                    event.preventDefault()
+                }
+            </script>
+        </body>
+    </html>
+    """
+
+    url = "wss://23ws-ase-pr-inso-06.apps.student.inso-w.at/develop/backend"
+    with open('backend/database.json') as file:
+        connection_string = json.load(file)
+        if "127.0.0.1" in connection_string['address'] or "localhost" in connection_string['address']:
+            url = "ws://127.0.0.1:8000"
+
+    return HTMLResponse(html.
+                        replace("%%SENDER_ID%%", str(user.id)).
+                        replace("%%RECEIVER_ID%%", str(receiver.id)).
+                        replace("%%CONVERSATION_ID%%", str(conversation.id)).
+                        replace("%%URL%%", url).
+                        replace("%%TOKEN%%", access_token))
+
+# endregion
