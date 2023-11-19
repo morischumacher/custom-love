@@ -2,6 +2,7 @@ from datetime import datetime
 
 import pytest
 from fastapi.testclient import TestClient
+from fastapi_pagination import add_pagination
 from sqlmodel import Session, SQLModel, create_engine
 from sqlmodel.pool import StaticPool
 
@@ -35,6 +36,7 @@ def client_fixture(session: Session):
         return session
 
     app.dependency_overrides[create_session] = create_session_override
+    add_pagination(app)
     client = TestClient(app)
     yield client
     app.dependency_overrides.clear()
@@ -115,7 +117,8 @@ def test_sample_user_get(client: TestClient, session: Session):
         preferences=[preference_2],
         address=vienna,
         gender_identity=man,
-        interests=[sports, movies]
+        interests=[sports, movies],
+        password="pass1"
     )
     user_bravo = User(
         id=2,
@@ -133,7 +136,8 @@ def test_sample_user_get(client: TestClient, session: Session):
         preferences=[preference_1],
         address=ulm,
         gender_identity=woman,
-        interests=[travel, books, science]
+        interests=[travel, books, science],
+        password="pass1"
     )
 
     # Rating
