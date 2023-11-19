@@ -2,7 +2,6 @@ from typing import Annotated
 from fastapi import Depends
 from sqlmodel import Session, select, col
 from starlette.websockets import WebSocket, WebSocketDisconnect
-
 from backend.exceptions.credentials_exception import CredentialsException
 from backend.models.conversation import Conversation
 from backend.models.message import Message
@@ -24,6 +23,7 @@ async def websocket_connect(websocket: WebSocket, user_token: str, db: Annotated
         while True:
             data: Message = Message(await websocket.receive_json())
             Logger.debug(f"[websocket_connect]: received a message from: user #{user.id}, contents: {data}")
+            data = _save_message(data, db)
             await connection_manager.send_message(data.receiver_id, data)
     except WebSocketDisconnect:
         connection_manager.disconnect(websocket, user.id)
@@ -32,7 +32,7 @@ async def websocket_connect(websocket: WebSocket, user_token: str, db: Annotated
 def get_messages(conversation_id: int, db: Annotated[Session, Depends(create_session)],
                  user: Annotated[User, Depends(get_current_user)]):
     conversation = db.exec(select(Conversation).
-                           where(Conversation == conversation_id)).first()
+                           where(Conversation.id == conversation_id)).first()
 
     # raise exception if the user is unauthorized for that conversation
     if conversation.user1_id != user.id and conversation.user2_id != user.id:
@@ -42,3 +42,21 @@ def get_messages(conversation_id: int, db: Annotated[Session, Depends(create_ses
     return db.exec(select(Message).
                    where(Message.conversation_id == conversation.id).
                    order_by(col(Message.timestamp).desc()))
+
+
+def _save_message(message: Message, db: Annotated[Session, Depends(create_session)]):
+    """
+    to be used only in the websockets flow
+    """
+    conversation = db.exec(select(Conversation).
+                           where(Conversation.id == message.conversation_id)).first()
+
+    # raise exception if one of the users is unauthorized for that conversation
+    if (conversation.user1_id != message.sender_id and conversation.user2_id != message.sender_id) or \
+            (conversation.user1_id != message.receiver_id and conversation.user2_id != message.receiver_id):
+        raise CredentialsException('Unauthorized')
+
+    db.add(message)
+    db.refresh(message)
+    db.commit()
+    return message
