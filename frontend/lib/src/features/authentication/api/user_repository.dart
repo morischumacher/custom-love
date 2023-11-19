@@ -11,7 +11,7 @@ class UserRepository {
 
   Future<List<User>> getUsers() async {
     final response =
-        await httpClient.get(Uri.parse('${ApiConfig.baseUrl}/user/all'));
+        await httpClient.get(Uri.parse('${ApiConfig.baseUrl}/users'));
 
     if (response.statusCode == 200) {
       final List<dynamic> jsonList = json.decode(response.body);
