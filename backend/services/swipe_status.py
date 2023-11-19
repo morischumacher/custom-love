@@ -7,7 +7,6 @@ from sqlmodel.sql.expression import SelectOfScalar
 from backend.exceptions.fatal_exception import FatalException
 from backend.exceptions.not_found_exception import NotFoundException
 from backend.exceptions.validation_exception import ValidationException
-from backend.models.dto.swipe_status.swipe_status_like import PostSwipeStatus
 from backend.models.swipe_status import SwipeStatus, SwipeStatusType
 from backend.models.user import User
 from backend.repository.repository import create_session

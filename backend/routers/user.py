@@ -1,6 +1,7 @@
-from typing import List, Annotated
+from typing import Annotated
 
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, Depends
+from fastapi_pagination import Page, paginate
 from starlette import status
 from backend.models.user import User
 from backend.responses.error_response import ErrorResponse

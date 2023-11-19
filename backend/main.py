@@ -3,7 +3,6 @@ import uvicorn
 from fastapi import FastAPI
 from backend.datagenerator.data_generator import DataGenerator
 from backend.repository.repository import create_db, get_engine
-from backend.routers import user, language, preference, address, rating, match, interest, gender_identity
 from fastapi_pagination import add_pagination
 from backend.routers import user, language, preference, address, rating, swipe_status, interest, gender_identity
 
