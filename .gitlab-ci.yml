@@ -51,6 +51,7 @@ update-db:
   - changes:
     - ci/k8s/database.yaml
     allow_failure: true
+    when: always
   script:
   - kubectl delete deploy 23ws-ase-pr-inso-06-db || echo true
   - kubectl apply -f ci/k8s/database.yaml
@@ -65,6 +66,7 @@ update-ingress:
   - changes:
     - ci/k8s/ingress.yaml
     allow_failure: true
+    when: always
   script:
   - kubectl apply -f ci/k8s/ingress.yaml
 
@@ -80,6 +82,7 @@ build-frontend:
     - ci/k8s/develop/frontend.yaml
     - ci/k8s/release/frontend.yaml
     - ci/containers/frontend.Dockerfile
+    when: always
   before_script:
   - export TARGET=`cat gitlab_vars_target`
   script:
@@ -108,6 +111,7 @@ package-frontend:
     - ci/k8s/develop/frontend.yaml
     - ci/k8s/release/frontend.yaml
     - ci/containers/frontend.Dockerfile
+    when: always
   script:
   - echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(printf "%s:%s" "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"},\"$CI_DEPENDENCY_PROXY_SERVER\":{\"auth\":\"$(printf "%s:%s" ${CI_DEPENDENCY_PROXY_USER} "${CI_DEPENDENCY_PROXY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
   - /kaniko/executor
@@ -124,9 +128,10 @@ unittest-backend:
     allow_failure: true
   - changes:
     - backend/*
+    when: always
   script:
   - pip install --user -r ./requirements.txt
-  - pytest --rootdir backend/test/unit backend/test/unit/sample_test.py
+  - pytest backend/test/integration/
 
 build-backend:
   stage: build-backend
@@ -143,6 +148,7 @@ build-backend:
     - ci/k8s/develop/backend.yaml
     - ci/k8s/release/backend.yaml
     - ci/containers/backend.Dockerfile
+    when: always
   before_script:
     - export TARGET=`cat gitlab_vars_target`
     - export BUILD_ARG="--build-arg ROOT_PATH=/$TARGET/backend"
@@ -162,6 +168,7 @@ deploy-develop-frontend:
     - frontend/*
     - ci/k8s/develop/frontend.yaml
     - ci/containers/frontend.Dockerfile
+    when: always
   - if: $CI_COMMIT_BRANCH == "develop"
     when: manual
     allow_failure: true
@@ -182,6 +189,7 @@ deploy-develop-backend:
     - backend/*
     - ci/k8s/develop/backend.yaml
     - ci/containers/backend.Dockerfile
+    when: always
   - if: $CI_COMMIT_BRANCH == "develop"
     when: manual
     allow_failure: true
@@ -202,6 +210,7 @@ deploy-release-frontend:
     - frontend/*
     - ci/k8s/release/frontend.yaml
     - ci/containers/frontend.Dockerfile
+    when: always
   - if: $CI_COMMIT_BRANCH =~ /^release*/
     when: manual
     allow_failure: true
@@ -222,6 +231,7 @@ deploy-release-backend:
     - backend/*
     - ci/k8s/release/backend.yaml
     - ci/containers/backend.Dockerfile
+    when: always
   - if: $CI_COMMIT_BRANCH =~ /^release*/
     when: manual
     allow_failure: true

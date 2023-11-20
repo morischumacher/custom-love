@@ -39,7 +39,6 @@ class DataGenerator:
             preference_2: Preference = Preference(property_1="property2", property_2="property5", decision="decision2",
                                                   date=datetime.today())
 
-            # Addresses
             ulm: Address = Address(
                 country="Germany",
                 city="Ulm",
@@ -73,7 +72,6 @@ class DataGenerator:
 
             # Users
             user_alfa = User(
-                id=1,
                 first_name='Alfa',
                 last_name='Alfonson',
                 email='alfa.alfonson@email.com',
@@ -91,7 +89,6 @@ class DataGenerator:
                 password=hash_pwd("pass1")
             )
             user_bravo = User(
-                id=2,
                 first_name='Bravo',
                 last_name='Bravonson',
                 email='bravo.bravonson@email.com',
@@ -109,8 +106,7 @@ class DataGenerator:
                 password=hash_pwd("pass1")
             )
             user_charlie = User(
-                id=3,
-                first_name='Charliez',
+                first_name='Charlie',
                 last_name='Charlieson',
                 email='charlie.charlieson@email.com',
                 bio='Test subject 3',
@@ -127,13 +123,6 @@ class DataGenerator:
                 password=hash_pwd("pass1")
             )
 
-            # Rating
-            alfa_bravo_rating = Rating(id=1, rating_user_id=user_alfa.id, rated_user_id=user_bravo.id, is_safe=True)
-
-            #Match
-            alfa_bravo_matching = Match(id=1, match_user1_id=user_alfa.id, match_user2_id=user_bravo.id, is_match=True)
-            alfa_charlie_matching = Match(id=2, match_user1_id=user_alfa.id, match_user2_id=user_charlie.id, is_match=False)
-
             session.add(user_alfa)
             session.add(user_bravo)
             session.commit()
@@ -141,9 +130,18 @@ class DataGenerator:
             session.refresh(user_alfa)
             session.refresh(user_bravo)
 
+            # Conversations
             session.add(Conversation(user1_id=user_alfa.id, user2_id=user_bravo.id))
             session.add(Conversation(user1_id=user_charlie.id, user2_id=user_bravo.id))
             session.add(Conversation(user1_id=user_charlie.id, user2_id=user_alfa.id))
+
+            # Rating
+            alfa_bravo_rating = Rating(rating_user_id=user_alfa.id, rated_user_id=user_bravo.id, is_safe=True)
+
+            # Match
+            alfa_bravo_matching = Match(match_user1_id=user_alfa.id, match_user2_id=user_bravo.id, is_match=True)
+            alfa_charlie_matching = Match(match_user1_id=user_alfa.id, match_user2_id=user_charlie.id, is_match=False)
+
             session.add(alfa_bravo_rating)
             session.add(alfa_bravo_matching)
             session.add(alfa_charlie_matching)
