@@ -40,7 +40,6 @@ class DataGenerator:
             preference_2: Preference = Preference(property_1="property2", property_2="property5", decision="decision2",
                                                   date=datetime.today())
 
-            # Addresses
             ulm: Address = Address(
                 country="Germany",
                 city="Ulm",
