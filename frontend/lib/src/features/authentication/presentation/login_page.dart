@@ -4,6 +4,7 @@ import 'package:frontend/src/features/authentication/application/login_service.d
 import 'package:frontend/src/features/authentication/presentation/components/login_textfield.dart';
 import 'package:frontend/src/features/authentication/presentation/components/sign_in_button.dart';
 import 'package:frontend/src/features/authentication/presentation/login_controller.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key, required LoginService loginService})
@@ -27,21 +28,39 @@ class _LoginPageState extends State<LoginPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SizedBox(height: 50),
-
-                Text(
-                  'CUSTOMLOVE',
-                  style: TextStyle(
-                    color: _customLoveTheme.primaryColor,
-                    fontSize: 60,
-                  ),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      'CUSTOMLOVE',
+                      style: GoogleFonts.teko(
+                        textStyle: TextStyle(
+                          height: 0.6,
+                          color: _customLoveTheme.primaryColor,
+                          fontSize: 60,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      'Next Level Dating for Everybody',
+                      style: GoogleFonts.teko(
+                        textStyle: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 20,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
 
                 // logo
-                // tddo insert actual logo
-                const Icon(
-                  Icons.lock,
-                  size: 100,
+                Container(
+                  height: 100,
+                  child: Image.asset(
+                    'lib/src/icons/handshake.png',
+                    color: _customLoveTheme.primaryColor,
+                  ),
                 ),
 
                 const SizedBox(height: 50),
