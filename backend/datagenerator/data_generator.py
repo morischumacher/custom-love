@@ -129,8 +129,8 @@ class DataGenerator:
             alfa_bravo_rating = Rating(id=1, rating_user_id=user_alfa.id, rated_user_id=user_bravo.id, is_safe=True)
 
             #Match
-            alfa_bravo_matching = SwipeStatus(user1_id=user_alfa.id, user2_id=user_bravo.id, status=SwipeStatusType.match)
-            alfa_charlie_matching = SwipeStatus(user1_id=user_alfa.id, user2_id=user_charlie.id, status=SwipeStatusType.view)
+            # alfa_bravo_matching = SwipeStatus(user1_id=user_alfa.id, user2_id=user_bravo.id, status=SwipeStatusType.match)
+            # alfa_charlie_matching = SwipeStatus(user1_id=user_alfa.id, user2_id=user_charlie.id, status=SwipeStatusType.view)
 
             session.add(user_alfa)
             session.add(user_bravo)
@@ -139,7 +139,7 @@ class DataGenerator:
             session.refresh(user_alfa)
             session.refresh(user_bravo)
 
-            session.add(alfa_bravo_rating)
+"""            session.add(alfa_bravo_rating)
             session.add(alfa_bravo_matching)
             session.add(alfa_charlie_matching)
             session.add(alfa_charlie_matching)
@@ -147,4 +147,4 @@ class DataGenerator:
             session.refresh(alfa_bravo_rating)
             session.refresh(alfa_bravo_matching)
             session.refresh(alfa_charlie_matching)
-            session.refresh(alfa_charlie_matching)
+            session.refresh(alfa_charlie_matching)"""
