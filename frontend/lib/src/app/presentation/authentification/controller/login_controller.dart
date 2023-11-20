@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/src/config/exceptions.dart';
 import 'package:frontend/src/config/theme.dart';
+import 'package:frontend/src/app/service/login_service.dart';
 import 'package:logger/logger.dart';
-import 'package:frontend/src/features/authentication/application/login_service.dart';
 import 'package:provider/provider.dart';
 
 class LoginController {

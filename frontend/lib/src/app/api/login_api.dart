@@ -3,10 +3,10 @@ import 'package:frontend/src/config/exceptions.dart';
 import 'package:http/http.dart' as http;
 import 'package:frontend/src/config/api_config.dart';
 
-class LoginRepository {
+class LoginApi {
   final http.Client httpClient;
 
-  LoginRepository({required this.httpClient});
+  LoginApi({required this.httpClient});
 
   Future<Map<String, dynamic>> loginUser(
       String username, String password) async {
@@ -19,14 +19,13 @@ class LoginRepository {
       'client_secret': '',
     };
 
-    final response = await httpClient.post(
-      Uri.parse('${ApiConfig.baseUrl}/users/login'),
-      headers: {
-        'accept': 'application/json',
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: body,
-    );
+    final response =
+        await httpClient.post(Uri.parse('${ApiConfig.baseUrl}/users/login'),
+            headers: {
+              'accept': 'application/json',
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: body);
 
     if (response.statusCode == 200) {
       // Successful login, return the response body as a map

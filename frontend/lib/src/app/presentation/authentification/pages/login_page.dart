@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/src/config/theme.dart';
-import 'package:frontend/src/features/authentication/application/login_service.dart';
-import 'package:frontend/src/features/authentication/presentation/components/login_textfield.dart';
-import 'package:frontend/src/features/authentication/presentation/components/sign_in_button.dart';
-import 'package:frontend/src/features/authentication/presentation/login_controller.dart';
+import 'package:frontend/src/app/presentation/authentification/components/login_textfield.dart';
+import 'package:frontend/src/app/presentation/authentification/components/sign_in_button.dart';
+import 'package:frontend/src/app/presentation/authentification/controller/login_controller.dart';
+import 'package:frontend/src/app/service/login_service.dart';
+
 import 'package:google_fonts/google_fonts.dart';
 
 class LoginPage extends StatefulWidget {

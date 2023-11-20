@@ -1,13 +1,13 @@
 import 'dart:convert';
 
-import 'package:frontend/src/features/authentication/domain/user_model.dart';
+import 'package:frontend/src/app/model/user_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:frontend/src/config/api_config.dart';
 
-class UserRepository {
+class UserApi {
   final http.Client httpClient;
 
-  UserRepository({required this.httpClient});
+  UserApi({required this.httpClient});
 
   Future<List<User>> getUsers() async {
     final response =
