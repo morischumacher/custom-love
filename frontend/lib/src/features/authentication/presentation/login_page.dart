@@ -78,6 +78,7 @@ class _LoginPageState extends State<LoginPage> {
 
                 // email textfield
                 LoginTextField(
+                  key: const Key('emailTextField'),
                   controller: _controller.emailController,
                   hintText: 'Email',
                   obscureText: false,
@@ -87,6 +88,7 @@ class _LoginPageState extends State<LoginPage> {
 
                 // password textfield
                 LoginTextField(
+                  key: const Key('passwordTextField'),
                   controller: _controller.passwordController,
                   hintText: 'Password',
                   obscureText: true,
