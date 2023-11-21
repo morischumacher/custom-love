@@ -73,16 +73,6 @@ update-ingress:
 build-frontend:
   stage: build-frontend
   image: ghcr.io/cirruslabs/flutter:3.13.9
-  rules:
-  - if: $CI_PIPELINE_SOURCE == "web"
-    when: manual
-    allow_failure: true
-  - changes:
-    - frontend/*
-    - ci/k8s/develop/frontend.yaml
-    - ci/k8s/release/frontend.yaml
-    - ci/containers/frontend.Dockerfile
-    when: always
   before_script:
   - export TARGET=`cat gitlab_vars_target`
   script:
@@ -101,17 +91,6 @@ package-frontend:
   image:     
     name: gcr.io/kaniko-project/executor:v1.17.0-debug
     entrypoint: [""]
-  rules:
-  - if: $CI_PIPELINE_SOURCE == "web"
-    when: manual
-    allow_failure: true
-  - if: $CI_COMMIT_BRANCH =~ /^release*/ || $CI_COMMIT_BRANCH == "develop"
-    changes:
-    - frontend/*
-    - ci/k8s/develop/frontend.yaml
-    - ci/k8s/release/frontend.yaml
-    - ci/containers/frontend.Dockerfile
-    when: always
   script:
   - echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(printf "%s:%s" "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"},\"$CI_DEPENDENCY_PROXY_SERVER\":{\"auth\":\"$(printf "%s:%s" ${CI_DEPENDENCY_PROXY_USER} "${CI_DEPENDENCY_PROXY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
   - /kaniko/executor
@@ -122,13 +101,6 @@ package-frontend:
 unittest-backend:
   stage: test-backend
   image: ghcr.io/brotholomew/python-non-root:3.12.0-bookworm-fast-circle
-  rules:
-  - if: $CI_PIPELINE_SOURCE == "web"
-    when: manual
-    allow_failure: true
-  - changes:
-    - backend/*
-    when: always
   script:
   - pip install --user -r ./requirements.txt
   - pytest backend/test/integration/
@@ -138,17 +110,6 @@ build-backend:
   image:
     name: gcr.io/kaniko-project/executor:v1.17.0-debug
     entrypoint: [""]
-  rules:
-  - if: $CI_PIPELINE_SOURCE == "web"
-    when: manual
-    allow_failure: true
-  - if: $CI_COMMIT_BRANCH =~ /^release*/ || $CI_COMMIT_BRANCH == "develop"
-    changes:
-    - backend/*
-    - ci/k8s/develop/backend.yaml
-    - ci/k8s/release/backend.yaml
-    - ci/containers/backend.Dockerfile
-    when: always
   before_script:
     - export TARGET=`cat gitlab_vars_target`
     - export BUILD_ARG="--build-arg ROOT_PATH=/$TARGET/backend"
@@ -168,8 +129,9 @@ deploy-develop-frontend:
     - frontend/*
     - ci/k8s/develop/frontend.yaml
     - ci/containers/frontend.Dockerfile
+    - .gitlab-ci.yml
     when: always
-  - if: $CI_COMMIT_BRANCH == "develop"
+  - if: $CI_COMMIT_BRANCH == "develop" && $CI_PIPELINE_SOURCE == "web"
     when: manual
     allow_failure: true
   - when: manual
@@ -189,8 +151,9 @@ deploy-develop-backend:
     - backend/*
     - ci/k8s/develop/backend.yaml
     - ci/containers/backend.Dockerfile
+    - .gitlab-ci.yml
     when: always
-  - if: $CI_COMMIT_BRANCH == "develop"
+  - if: $CI_COMMIT_BRANCH == "develop" && $CI_PIPELINE_SOURCE == "web"
     when: manual
     allow_failure: true
   - when: manual
@@ -210,8 +173,9 @@ deploy-release-frontend:
     - frontend/*
     - ci/k8s/release/frontend.yaml
     - ci/containers/frontend.Dockerfile
+    - .gitlab-ci.yml
     when: always
-  - if: $CI_COMMIT_BRANCH =~ /^release*/
+  - if: $CI_COMMIT_BRANCH =~ /^release*/ && $CI_PIPELINE_SOURCE == "web"
     when: manual
     allow_failure: true
   - when: manual
@@ -231,8 +195,9 @@ deploy-release-backend:
     - backend/*
     - ci/k8s/release/backend.yaml
     - ci/containers/backend.Dockerfile
+    - .gitlab-ci.yml
     when: always
-  - if: $CI_COMMIT_BRANCH =~ /^release*/
+  - if: $CI_COMMIT_BRANCH =~ /^release*/ && $CI_PIPELINE_SOURCE == "web"
     when: manual
     allow_failure: true
   - when: manual
