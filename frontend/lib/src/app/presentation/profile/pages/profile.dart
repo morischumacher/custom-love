@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/src/features/authentication/application/user_service.dart';
-import 'package:frontend/src/features/authentication/domain/user_model.dart';
+import 'package:frontend/src/app/model/user_model.dart';
+import 'package:frontend/src/app/service/user_service.dart';
 
 class Profile extends StatefulWidget {
   final UserService userService;
