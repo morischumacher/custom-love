@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/src/config/theme.dart';
-import 'package:frontend/src/features/authentication/application/user_service.dart';
-import 'package:frontend/src/features/matches/presentation/matches.dart';
-import 'package:frontend/src/features/profile/presentation/profile.dart';
-import 'package:frontend/src/features/swipe/presentation/swipe.dart';
+import 'package:frontend/src/app/presentation/match/pages/matches.dart';
+import 'package:frontend/src/app/presentation/profile/pages/profile.dart';
+import 'package:frontend/src/app/presentation/swipe/pages/swipe.dart';
+import 'package:frontend/src/app/service/user_service.dart';
+
 import 'package:provider/provider.dart';
 
 enum AppPage { Profile, Swipe, Matches }
