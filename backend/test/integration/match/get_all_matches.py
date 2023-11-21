@@ -6,7 +6,7 @@ from backend.models.interest import Interest
 from backend.models.language import Language
 from backend.models.match import Match
 from backend.models.user import User
-from backend.security.passwords import hash_pwd
+from backend.utils.passwords import hash_pwd
 from backend.test.integration.fixtures import client_fixture as client, session_fixture as session
 from backend.models.preference import Preference
 from urllib.parse import urlencode
