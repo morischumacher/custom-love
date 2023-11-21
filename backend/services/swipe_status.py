@@ -16,7 +16,8 @@ def get_matches(
         user: Annotated[User, Depends(get_current_user)],
 ):
     matches: List[SwipeStatus] = db.exec(select(SwipeStatus).where(
-        SwipeStatus.status == SwipeStatusType.match, SwipeStatus.user1_id == user.id
+        SwipeStatus.status == SwipeStatusType.match,
+        or_(SwipeStatus.user1_id == user.id, SwipeStatus.user2_id == user.id)
     )).all()
     return matches
 
@@ -90,16 +91,6 @@ def post_like(
 
     # If there already exists a swipe with status "like" for user_2, the swipe_status is turned to match for both
     if len(user_2_swipe) > 0:
-        # Create a swipe_status of type "match" for user_1
-        user_1_swipe = SwipeStatus(
-            user1_id=user.id,
-            user2_id=user_id,
-            status=SwipeStatusType.match
-        )
-        db.add(user_1_swipe)
-        db.commit()
-        db.refresh(user_1_swipe)
-
         # Update user_2 swipe_status to match
         user_2_swipe_obj = user_2_swipe[0]
         user_2_swipe_obj.status = SwipeStatusType.match
