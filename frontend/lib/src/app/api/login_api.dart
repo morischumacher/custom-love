@@ -30,9 +30,12 @@ class LoginApi {
     if (response.statusCode == 200) {
       // Successful login, return the response body as a map
       return json.decode(response.body);
-    } else if (response.statusCode == 401 || response.statusCode == 404) {
+    } else if (response.statusCode == 401) {
       // Unauthorized (wrong credentials), throw a custom exception
-      throw UnauthorizedException("Wrong Credentials");
+      throw WrongPasswordException();
+    } else if (response.statusCode == 404) {
+      // Unauthorized (wrong credentials), throw a custom exception
+      throw WrongEmailException();
     } else {
       throw Exception('Error during Authentification');
     }

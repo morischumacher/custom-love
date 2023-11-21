@@ -28,7 +28,11 @@ class LoginController {
         }
       } catch (e) {
         // Handle different exceptions
-        if (e is UnauthorizedException) {
+        if (e is WrongEmailException) {
+          if (context.mounted) {
+            errorMessage(context, e.message);
+          }
+        } else if (e is WrongPasswordException) {
           if (context.mounted) {
             errorMessage(context, e.message);
           }
