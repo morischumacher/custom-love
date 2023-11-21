@@ -1,9 +1,7 @@
 from typing import Annotated
-
 from fastapi import APIRouter, Depends
-from fastapi_pagination import Page
+from backend.utils.pagination import Page
 from starlette import status
-
 from backend.models.preference import Preference
 from backend.responses.error_response import ErrorResponse
 from backend.services.preference import get_preference, get_preferences, post_preference

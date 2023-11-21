@@ -1,6 +1,6 @@
 from typing import List, Annotated
 from fastapi import APIRouter, Depends
-from fastapi_pagination import Page, paginate
+from backend.utils.pagination import Page
 from starlette import status
 from backend.models.gender_identity import GenderIdentity
 from backend.responses.error_response import ErrorResponse

@@ -1,21 +1,22 @@
 from typing import Annotated
 from fastapi import Depends, HTTPException
-from fastapi_pagination import Params
 from fastapi_pagination.ext.sqlmodel import paginate
 from sqlmodel import Session, select
 from starlette.requests import Request
 from backend.models.rating import Rating
 from backend.repository.repository import create_session
+from backend.utils.pagination import PaginationParams
 
 
 def get_ratings(db: Annotated[Session, Depends(create_session)], request: Request):
     """
     Return a list of all ratings
+    :param request: injected request
     :param db: injected database
     :return: a list of all ratings
     """
-    return paginate(db, select(Rating), Params(size=request.query_params.get("size"),
-                                               page=request.query_params.get("page")))
+    return paginate(db, select(Rating), PaginationParams(size=request.query_params.get("size"),
+                                                         page=request.query_params.get("page")))
 
 
 def get_rating(rating_id, db: Annotated[Session, Depends(create_session)]):

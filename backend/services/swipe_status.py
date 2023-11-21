@@ -1,25 +1,26 @@
-from typing import Annotated, List
-
+from typing import Annotated
 from fastapi import Depends
+from fastapi_pagination.ext.sqlmodel import paginate
 from sqlmodel import Session, select, or_
-
+from starlette.requests import Request
 from backend.exceptions.fatal_exception import FatalException
 from backend.exceptions.validation_exception import ValidationException
 from backend.models.swipe_status import SwipeStatus, SwipeStatusType
 from backend.models.user import User
 from backend.repository.repository import create_session
-from backend.security.token import get_current_user
+from backend.utils.pagination import PaginationParams
+from backend.utils.token import get_current_user
 
 
 def get_matches(
         db: Annotated[Session, Depends(create_session)],
         user: Annotated[User, Depends(get_current_user)],
+        request: Request
 ):
-    matches: List[SwipeStatus] = db.exec(select(SwipeStatus).where(
+    return paginate(db, select(SwipeStatus).where(
         SwipeStatus.status == SwipeStatusType.match,
         or_(SwipeStatus.user1_id == user.id, SwipeStatus.user2_id == user.id)
-    )).all()
-    return matches
+    ), PaginationParams(size=request.query_params.get("size"), page=request.query_params.get("page")))
 
 
 def post_view(

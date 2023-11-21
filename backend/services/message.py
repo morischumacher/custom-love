@@ -1,7 +1,6 @@
 import json
 from typing import Annotated
 from fastapi import Depends
-from fastapi_pagination import Params
 from fastapi_pagination.ext.sqlmodel import paginate
 from sqlalchemy import or_
 from sqlmodel import Session, select, col
@@ -16,6 +15,7 @@ from backend.repository.repository import create_session
 from backend.models.user import User
 from backend.utils.connection_manager import ConnectionManager
 from backend.utils.logger import Logger
+from backend.utils.pagination import PaginationParams
 from backend.utils.token import get_current_user, create_access_token
 
 connection_manager = ConnectionManager()
@@ -50,7 +50,7 @@ def get_messages(conversation_id: int, db: Annotated[Session, Depends(create_ses
 
     # return the messages in descending order
     return paginate(db, select(Message).where(Message.conversation_id == conversation.id).order_by(
-        col(Message.timestamp).desc()), Params(size=request.query_params.get("size"),
+        col(Message.timestamp).desc()), PaginationParams(size=request.query_params.get("size"),
                                                page=request.query_params.get("page")))
 
 

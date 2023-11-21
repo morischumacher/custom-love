@@ -1,10 +1,9 @@
 from typing import Annotated
-
 from fastapi import APIRouter, Depends
-from fastapi_pagination import Page, paginate
 from starlette import status
 from backend.models.user import User
 from backend.responses.error_response import ErrorResponse
+from backend.utils.pagination import Page
 from backend.utils.token import Token
 from backend.services.user import get_user, post_user, get_users, login
 

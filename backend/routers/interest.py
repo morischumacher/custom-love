@@ -1,6 +1,6 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends
-from fastapi_pagination import Page
+from backend.utils.pagination import Page
 from starlette import status
 from backend.models.interest import Interest
 from backend.responses.error_response import ErrorResponse
