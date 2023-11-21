@@ -12,7 +12,7 @@ from backend.exceptions.credentials_exception import CredentialsException
 from backend.exceptions.bad_request_exception import BadRequestException
 from backend.exceptions.not_found_exception import NotFoundException
 from backend.exceptions.validation_exception import ValidationException
-from backend.repository.repository import create_session
+from backend.repository.repository import get_engine, create_session
 from backend.models.user import User
 from backend.utils.token import create_access_token
 from backend.services.validation.user_validation import validate_new_user

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/src/features/authentication/application/user_service.dart';
-import 'package:frontend/src/features/authentication/presentation/login.dart';
-import 'package:frontend/src/features/home/presentation/home.dart';
-import 'package:frontend/src/features/authentication/data/user_repository.dart';
+import 'package:frontend/src/config/theme.dart';
+import 'package:frontend/src/app/presentation/authentification/pages/login_page.dart';
+import 'package:frontend/src/app/presentation/home/pages/home.dart';
 import 'package:http/http.dart' as http;
-
 import 'package:provider/provider.dart';
+import 'app/api/login_api.dart';
+import 'app/api/user_api.dart';
+import 'app/service/login_service.dart';
+import 'app/service/user_service.dart';
 
 void main() {
   runApp(const CustomLove());
@@ -13,6 +15,7 @@ void main() {
 
 class CustomLove extends StatelessWidget {
   const CustomLove({Key? key}) : super(key: key);
+  final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
 
   @override
   Widget build(BuildContext context) {
@@ -20,17 +23,27 @@ class CustomLove extends StatelessWidget {
     return MultiProvider(
       providers: [
         Provider<http.Client>.value(value: httpClient),
-        ProxyProvider<http.Client, UserRepository>(
-          update: (_, httpClient, __) => UserRepository(httpClient: httpClient),
+        ProxyProvider<http.Client, UserApi>(
+          update: (_, httpClient, __) => UserApi(httpClient: httpClient),
         ),
-        ProxyProvider<UserRepository, UserService>(
-          update: (_, userRepository, __) => UserService(userRepository),
+        ProxyProvider<UserApi, UserService>(
+          update: (_, userApi, __) => UserService(userApi),
+        ),
+        ProxyProvider<http.Client, LoginApi>(
+          update: (_, httpClient, __) => LoginApi(httpClient: httpClient),
+        ),
+        ProxyProvider<LoginApi, LoginService>(
+          update: (_, loginApi, __) => LoginService(loginApi),
         ),
       ],
       child: MaterialApp(
+        theme: _customLoveTheme.toThemeData(),
         initialRoute: '/',
         routes: {
-          '/': (context) => const Login(),
+          '/': (context) {
+            final loginService = Provider.of<LoginService>(context);
+            return LoginPage(loginService: loginService);
+          },
           '/home': (context) {
             final userService = Provider.of<UserService>(context);
             return HomeScreen(userService: userService);

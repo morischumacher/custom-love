@@ -8,7 +8,7 @@ from backend.models.interest import Interest
 from backend.models.language import Language
 from backend.models.preference import Preference
 from backend.models.rating import Rating
-from backend.models.match import Match
+from backend.models.swipe_status import SwipeStatus, SwipeStatusType
 from backend.models.user import User
 from backend.utils.passwords import hash_pwd
 
@@ -123,6 +123,9 @@ class DataGenerator:
                 password=hash_pwd("pass1")
             )
 
+            # Rating
+            alfa_bravo_rating = Rating(id=1, rating_user_id=user_alfa.id, rated_user_id=user_bravo.id, is_safe=True)
+
             session.add(user_alfa)
             session.add(user_bravo)
             session.commit()
@@ -134,20 +137,11 @@ class DataGenerator:
             session.add(Conversation(user1_id=user_alfa.id, user2_id=user_bravo.id))
             session.add(Conversation(user1_id=user_charlie.id, user2_id=user_bravo.id))
             session.add(Conversation(user1_id=user_charlie.id, user2_id=user_alfa.id))
+            session.commit()
 
             # Rating
             alfa_bravo_rating = Rating(rating_user_id=user_alfa.id, rated_user_id=user_bravo.id, is_safe=True)
-
-            # Match
-            alfa_bravo_matching = Match(match_user1_id=user_alfa.id, match_user2_id=user_bravo.id, is_match=True)
-            alfa_charlie_matching = Match(match_user1_id=user_alfa.id, match_user2_id=user_charlie.id, is_match=False)
-
             session.add(alfa_bravo_rating)
-            session.add(alfa_bravo_matching)
-            session.add(alfa_charlie_matching)
-            session.add(alfa_charlie_matching)
+            session.add(alfa_bravo_rating)
             session.commit()
             session.refresh(alfa_bravo_rating)
-            session.refresh(alfa_bravo_matching)
-            session.refresh(alfa_charlie_matching)
-            session.refresh(alfa_charlie_matching)

@@ -1,4 +1,5 @@
 from typing import Annotated
+
 from fastapi import APIRouter, Depends
 from fastapi_pagination import Page, paginate
 from starlette import status
