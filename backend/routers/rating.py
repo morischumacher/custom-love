@@ -12,13 +12,13 @@ router = APIRouter(prefix='/ratings', tags=['ratings'], responses={status.HTTP_2
 
 
 @router.get("/", response_model=Page[Rating])
-async def get_ratings(commons: Annotated[dict, Depends(get_ratings)]):
+async def get_ratings(commons: Annotated[Page[Rating], Depends(get_ratings)]):
     """
     Return a paginated list of ratings
     :param commons:
     :return:
     """
-    return paginate(commons)
+    return commons
 
 
 @router.get('/{rating_id}', response_model=Rating, responses={

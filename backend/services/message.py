@@ -1,8 +1,11 @@
 import json
 from typing import Annotated
 from fastapi import Depends
+from fastapi_pagination import Params
+from fastapi_pagination.ext.sqlmodel import paginate
 from sqlalchemy import or_
 from sqlmodel import Session, select, col
+from starlette.requests import Request
 from starlette.responses import HTMLResponse
 from starlette.websockets import WebSocket, WebSocketDisconnect
 from backend.exceptions.credentials_exception import CredentialsException
@@ -34,18 +37,21 @@ async def websocket_connect(websocket: WebSocket, user_token: str, db: Annotated
 
 
 def get_messages(conversation_id: int, db: Annotated[Session, Depends(create_session)],
-                 user: Annotated[User, Depends(get_current_user)]):
-    conversation = db.exec(select(Conversation).
-                           where(Conversation.id == conversation_id)).first()
+                 user: Annotated[User, Depends(get_current_user)], request: Request):
+    conversation = (db.exec(select(Conversation).
+                            where(Conversation.id == conversation_id))).first()
+
+    if conversation is None:
+        raise NotFoundException(f"Conversation #{conversation_id} not found")
 
     # raise exception if the user is unauthorized for that conversation
     if conversation.user1_id != user.id and conversation.user2_id != user.id:
         raise CredentialsException('Unauthorized')
 
     # return the messages in descending order
-    return db.exec(select(Message).
-                   where(Message.conversation_id == conversation.id).
-                   order_by(col(Message.timestamp).desc()))
+    return paginate(db, select(Message).where(Message.conversation_id == conversation.id).order_by(
+        col(Message.timestamp).desc()), Params(size=request.query_params.get("size"),
+                                               page=request.query_params.get("page")))
 
 
 def _save_message(message: Message, db: Annotated[Session, Depends(create_session)]):
@@ -83,7 +89,7 @@ def sockets_test(username: str, receiver_username: str, db: Annotated[Session, D
     conversation = db.exec(select(Conversation).
                            where(or_((Conversation.user1_id == user.id and Conversation.user2_id == receiver.id),
                                      (
-                                                 Conversation.user1_id == receiver.id and Conversation.user2_id == user.id)))).first()
+                                             Conversation.user1_id == receiver.id and Conversation.user2_id == user.id)))).first()
     if conversation is None:
         raise NotFoundException(f"No conversations between {user.email} and {receiver.email} found")
 

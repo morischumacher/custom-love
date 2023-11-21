@@ -11,12 +11,12 @@ router = APIRouter(prefix='/users', tags=['users'], responses={status.HTTP_200_O
 
 
 @router.get("/", response_model=Page[User])
-async def get_users(commons: Annotated[dict, Depends(get_users)]):
+async def get_users(commons: Annotated[Page[User], Depends(get_users)]):
     """
     Retrieves all users stored in the system.
     :return: a list of users
     """
-    return paginate(commons)
+    return commons
 
 
 @router.get('/{user_id}', response_model=User, responses={

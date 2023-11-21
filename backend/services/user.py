@@ -1,8 +1,12 @@
 from typing import List, Annotated
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordRequestForm
+from fastapi_pagination import Params
+from fastapi_pagination.ext.sqlmodel import paginate
 from sqlmodel import Session, select
 from sqlmodel.sql.expression import SelectOfScalar
+from starlette.requests import Request
+
 from backend.utils import passwords
 from backend.exceptions.credentials_exception import CredentialsException
 from backend.exceptions.bad_request_exception import BadRequestException
@@ -45,15 +49,13 @@ def get_user_by_email(user_email: str, db: Annotated[Session, Depends(create_ses
     return user
 
 
-def get_users(db: Annotated[Session, Depends(create_session)]) -> List[User]:
+def get_users(db: Annotated[Session, Depends(create_session)], request: Request) -> List[User]:
     """
     Returns a list of users
     :return: a list of users
     """
-    statement: SelectOfScalar[User] = select(User)
-    users: list[User] = db.exec(statement).all()
-
-    return users
+    return paginate(db, select(User), Params(size=request.query_params.get("size"),
+                                             page=request.query_params.get("page")))
 
 
 def post_user(user: User, db: Annotated[Session, Depends(create_session)]) -> User:

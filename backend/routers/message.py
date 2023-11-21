@@ -19,8 +19,8 @@ async def socket(commons: Annotated[dict, Depends(websocket_connect)]):
 @router.get("/{conversation_id}", response_model=Page[Message], responses={
     status.HTTP_401_UNAUTHORIZED: {"description": "unauthorized", "model": ErrorResponse}
 })
-def get_messages(commons: Annotated[List[Message], Depends(get_messages)]):
-    return paginate(commons)
+def get_messages(commons: Annotated[Page[Message], Depends(get_messages)]):
+    return commons
 
 
 #  region sockets_test: this will be deleted as soon as the frontend-chat functionality is ready

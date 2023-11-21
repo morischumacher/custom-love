@@ -13,7 +13,7 @@ class Message(SQLModel, table=True):
     sender_id: int = Field(foreign_key="user.id")
     receiver_id: int = Field(foreign_key="user.id")
     message: str = Field(default=None)
-    timestamp: Optional[datetime] = Field(default=datetime.now())
+    timestamp: Optional[datetime] = Field(default=None)
 
     conversation: Conversation = Relationship(sa_relationship_kwargs={
         "primaryjoin": "Message.conversation_id==Conversation.id",
@@ -37,4 +37,5 @@ def message_factory(_json: json):
         sender_id=_json['sender_id'],
         receiver_id=_json['receiver_id'],
         message=_json['message'],
+        timestamp=datetime.now()
     )

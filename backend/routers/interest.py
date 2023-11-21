@@ -1,9 +1,7 @@
-from typing import List, Annotated
-
+from typing import Annotated
 from fastapi import APIRouter, Depends
-from fastapi_pagination import paginate, Page
+from fastapi_pagination import Page
 from starlette import status
-
 from backend.models.interest import Interest
 from backend.responses.error_response import ErrorResponse
 from backend.services.interest import get_interest, get_interests, post_interest
@@ -12,12 +10,12 @@ router = APIRouter(prefix='/interests', tags=['interests'], responses={status.HT
 
 
 @router.get("/", response_model=Page[Interest])
-async def get_interests(commons: Annotated[dict, Depends(get_interests)]):
+async def get_interests(commons: Annotated[Page[Interest], Depends(get_interests)]):
     """
     Return a paginated list of interests
     :return: a paginated list of interests
     """
-    return paginate(commons)
+    return commons
 
 
 @router.get('/{interest_id}', response_model=Interest, responses={

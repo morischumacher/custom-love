@@ -12,12 +12,12 @@ router = APIRouter(prefix='/gender-identities', tags=['gender-identities'], resp
 
 
 @router.get("/", response_model=Page[GenderIdentity])
-async def get_gender_identities(commons: Annotated[dict, Depends(get_gender_identities)]):
+async def get_gender_identities(commons: Annotated[Page[GenderIdentity], Depends(get_gender_identities)]):
     """
     Get all Gender Identities in the db
     :return: paginated list of gender identities
     """
-    return paginate(commons)
+    return commons
 
 
 @router.get('/{gender_identity_id}', response_model=GenderIdentity, responses={

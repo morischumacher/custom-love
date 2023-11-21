@@ -1,18 +1,23 @@
 from typing import Annotated
 from fastapi import Depends, HTTPException
+from fastapi_pagination import Params
+from fastapi_pagination.ext.sqlmodel import paginate
 from sqlmodel import Session, select
+from starlette.requests import Request
 
 from backend.models.gender_identity import GenderIdentity
 from backend.repository.repository import create_session
 
 
-def get_gender_identities(db: Annotated[Session, Depends(create_session)]):
+def get_gender_identities(db: Annotated[Session, Depends(create_session)], request: Request):
     """
     Return all gender identities
+    :param request: injected request
     :param db: injected database
     :return: a paginated list of gender identities
     """
-    return db.exec(select(GenderIdentity)).all()
+    return paginate(db, select(GenderIdentity), Params(size=request.query_params.get("size"),
+                                                       page=request.query_params.get("page")))
 
 
 def get_gender_identity(gender_identity_id, db: Annotated[Session, Depends(create_session)]):
