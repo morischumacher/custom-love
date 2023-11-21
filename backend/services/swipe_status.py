@@ -41,7 +41,7 @@ def post_view(
     existing_entry = db.exec(select(SwipeStatus).where(
         SwipeStatus.user1_id == user.id, SwipeStatus.user2_id == user_id)).all()
 
-    if len(existing_entry) > 0 or len(existing_entry) > 0:
+    if len(existing_entry) > 0:
         raise ValidationException("Swipe already exists")
 
     new_swipe_status = SwipeStatus(
@@ -54,58 +54,6 @@ def post_view(
     db.commit()
     db.refresh(new_swipe_status)
     return new_swipe_status
-
-
-"""def post_like(
-        db: Annotated[Session, Depends(create_session)],
-        user: Annotated[User, Depends(get_current_user)],
-        user_id: int
-):
-    if user.id == user_id:
-        raise ValidationException("Cannot match a person with itself")
-
-    check_for_entry = db.exec(select(SwipeStatus).where(
-        SwipeStatus.user1_id == user.id, SwipeStatus.user2_id == user_id
-    )).all()
-
-    existing_entry = db.exec(select(SwipeStatus).where(or_(
-        SwipeStatus.user1_id == user.id, SwipeStatus.user2_id == user_id,
-        SwipeStatus.user2_id == user.id, SwipeStatus.user1_id == user_id
-    ), or_(SwipeStatus.status == SwipeStatusType.like, SwipeStatus.status == SwipeStatusType.match))).all()
-
-    existing_entry_1 = db.exec(select(SwipeStatus).where(
-        SwipeStatus.user1_id == user.id, SwipeStatus.user2_id == user_id,
-        or_(SwipeStatus.status == SwipeStatusType.like, SwipeStatus.status == SwipeStatusType.match))).all()
-
-    existing_entry_2 = db.exec(select(SwipeStatus).where(
-        SwipeStatus.user2_id == user.id, SwipeStatus.user2_id == user_id,
-        or_(SwipeStatus.status == SwipeStatusType.like, SwipeStatus.status == SwipeStatusType.match))).all()
-
-    # If same object we are trying to add is already in db (user_1, user_2, 'like')
-    if len(check_for_entry) > 0:
-        
-
-    if len(existing_entry_1) > 1:
-        raise ValidationException("Too many swipe-statuses for the same pair")
-
-    if len(existing_entry_1) > 0:
-        new_swipe_status = existing_entry[0]
-        if new_swipe_status.status == SwipeStatusType.match:
-            raise ValidationException("Already stored as a match")
-        new_swipe_status.status = SwipeStatusType.match
-    else:
-        new_swipe_status = SwipeStatus(
-            user1_id=user.id,
-            user2_id=user_id,
-            status=SwipeStatusType.like
-        )
-
-    db.add(new_swipe_status)
-    db.commit()
-    db.refresh(new_swipe_status)
-
-    return new_swipe_status
-"""
 
 
 def post_like(
