@@ -129,6 +129,7 @@ deploy-develop-frontend:
     - frontend/*
     - ci/k8s/develop/frontend.yaml
     - ci/containers/frontend.Dockerfile
+    - .gitlab-ci.yml
     when: always
   - if: $CI_COMMIT_BRANCH == "develop" && $CI_PIPELINE_SOURCE == "web"
     when: manual
@@ -150,6 +151,7 @@ deploy-develop-backend:
     - backend/*
     - ci/k8s/develop/backend.yaml
     - ci/containers/backend.Dockerfile
+    - .gitlab-ci.yml
     when: always
   - if: $CI_COMMIT_BRANCH == "develop" && $CI_PIPELINE_SOURCE == "web"
     when: manual
@@ -171,6 +173,7 @@ deploy-release-frontend:
     - frontend/*
     - ci/k8s/release/frontend.yaml
     - ci/containers/frontend.Dockerfile
+    - .gitlab-ci.yml
     when: always
   - if: $CI_COMMIT_BRANCH =~ /^release*/ && $CI_PIPELINE_SOURCE == "web"
     when: manual
@@ -192,6 +195,7 @@ deploy-release-backend:
     - backend/*
     - ci/k8s/release/backend.yaml
     - ci/containers/backend.Dockerfile
+    - .gitlab-ci.yml
     when: always
   - if: $CI_COMMIT_BRANCH =~ /^release*/ && $CI_PIPELINE_SOURCE == "web"
     when: manual
