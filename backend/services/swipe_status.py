@@ -16,8 +16,7 @@ def get_matches(
         user: Annotated[User, Depends(get_current_user)],
 ):
     matches: List[SwipeStatus] = db.exec(select(SwipeStatus).where(
-        SwipeStatus.status == SwipeStatusType.match,
-        or_(SwipeStatus.user1_id == user.id, SwipeStatus.user2_id == user.id)
+        SwipeStatus.status == SwipeStatusType.match, SwipeStatus.user1_id == user.id
     )).all()
     return matches
 
