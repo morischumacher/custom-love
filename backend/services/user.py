@@ -1,8 +1,11 @@
 from typing import List, Annotated
+
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_pagination.ext.sqlmodel import paginate
+from sqlalchemy import func
 from sqlmodel import Session, select
+from geoalchemy2 import Geography
 from starlette.requests import Request
 from backend.utils import passwords
 from backend.exceptions.credentials_exception import CredentialsException
@@ -84,3 +87,25 @@ def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: Annota
 
     access_token = create_access_token(data={"sub": user.email})
     return {"access_token": access_token, "token_type": "bearer"}
+
+
+def get_nearest_users(user_id: int, db: Annotated[Session, Depends(create_session)], request: Request) -> List[User]:
+    distance_in_meters = 5000  # TODO: This should be set to the current users search radius
+
+    subquery = (
+        select([User.location])
+        .where(User.id == user_id)
+    ).alias("user_location")
+
+    query = (
+        select([User])
+        .where(
+            func.ST_DWithin(
+                User.location.cast(Geography),
+                subquery.c.location.cast(Geography),
+                distance_in_meters
+            )
+        )
+        .where(User.id != user_id)
+    )
+    return paginate(db, query, PaginationParams(size=request.query_params.get("size"), page=request.query_params.get("page")))

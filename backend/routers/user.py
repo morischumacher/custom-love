@@ -5,7 +5,7 @@ from backend.models.user import User
 from backend.responses.error_response import ErrorResponse
 from backend.utils.pagination import Page
 from backend.utils.token import Token
-from backend.services.user import get_user, post_user, get_users, login
+from backend.services.user import get_user, post_user, get_users, login, get_nearest_users
 
 router = APIRouter(prefix='/users', tags=['users'], responses={status.HTTP_200_OK: {"description": "Success"}})
 
@@ -44,4 +44,16 @@ def post_user(commons: Annotated[dict, Depends(post_user)]):
 
 @router.post("/login", response_model=Token)
 def login(commons: Annotated[Token, Depends(login)]):
+    return commons
+
+
+@router.get('/{user_id}/1', response_model=Page[User], responses={
+    status.HTTP_404_NOT_FOUND: {"description": "Not Found", "model": ErrorResponse},
+    status.HTTP_400_BAD_REQUEST: {"description": "Bad Request", "model": ErrorResponse},
+})
+def get_nearest_users(commons: Annotated[Page[User], Depends(get_nearest_users)]):
+    """
+    Retrieves all users in a given search radius
+    :return: a user with a corresponding id which is in the search radius
+    """
     return commons

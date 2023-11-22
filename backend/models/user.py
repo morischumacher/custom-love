@@ -10,7 +10,6 @@ from .connectors.user_has_preference import UserHasPreference
 
 if TYPE_CHECKING:
     from .language import Language
-    from .address import Address
     from .gender_identity import GenderIdentity
     from .interest import Interest
     from .preference import Preference
@@ -27,12 +26,13 @@ class User(SQLModel, table=True):
     job: str
     search_radius: int
     swipes_left: int
+    latitude: Optional[float]
+    longitude: Optional[float]
+    location: Optional[str]
 
     gender_identity_id: Optional[int] = Field(default=None, foreign_key="gender_identity.id")
-    address_id: Optional[int] = Field(default=None, foreign_key="address.id")
 
     gender_identity: Optional["GenderIdentity"] = Relationship(back_populates="user_gender_identity")
-    address: Optional["Address"] = Relationship(back_populates="users")
     languages: Optional["Language"] = Relationship(back_populates="users", link_model=UserHasLanguage)
     gender_preferences: Optional["GenderIdentity"] = Relationship(back_populates="users", link_model=UserHasGenderPreference)
     interests: Optional["Interest"] = Relationship(back_populates="users", link_model=UserHasInterest)
