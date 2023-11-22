@@ -4,9 +4,12 @@ from backend.models.conversation import Conversation
 from backend.models.message import Message, message_factory
 from backend.test.integration.test_utils import user_alfa, user_beta, load_entities, login, RAW_PASSWORD
 from backend.test.integration.fixtures import client_fixture as client, session_fixture as session
+import pytest
+import asyncio
 
 
-def test_ws_messages_save_in_the_db(client: TestClient, session: Session):
+@pytest.mark.asyncio
+async def test_ws_messages_save_in_the_db(client: TestClient, session: Session):
     users = [user_alfa(), user_beta()]
     load_entities(users, session)
 
@@ -21,6 +24,7 @@ def test_ws_messages_save_in_the_db(client: TestClient, session: Session):
                                   f"\"sender_id\": \"{str(users[0].id)}\", "
                                   f"\"receiver_id\": \"{str(users[1].id)}\", "
                                   f"\"message\": \"test_message\"" + "}")
+        await asyncio.sleep(5)
 
         message = session.exec(select(Message)).first()
         assert message is not None
