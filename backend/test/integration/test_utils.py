@@ -3,7 +3,6 @@ from typing import List, Any
 from sqlmodel import Session
 from starlette.testclient import TestClient
 
-from backend.models.address import Address
 from backend.models.gender_identity import GenderIdentity
 from backend.models.interest import Interest
 from backend.models.language import Language
@@ -35,31 +34,6 @@ def random_preferences(num):
 
     return preferences
 
-
-def vienna():
-    return Address(
-        country="Austria",
-        city="Vienna",
-        district="10",
-        latitude_northeast=39.4,
-        latitude_southwest=30.2,
-        longitude_northeast=23.2,
-        longitude_southwest=65.0
-    )
-
-
-def ulm():
-    return Address(
-        country="Germany",
-        city="Ulm",
-        district="Kesselbronn",
-        latitude_northeast=2.1,
-        latitude_southwest=10.2,
-        longitude_northeast=20.7,
-        longitude_southwest=80.9
-    )
-
-
 def user_alfa():
     return User(
         first_name='Alfa',
@@ -74,7 +48,6 @@ def user_alfa():
         languages=[language("english")],
         gender_preferences=[gender_identity("woman")],
         preferences=random_preferences(5),
-        address=vienna(),
         gender_identity=gender_identity("woman"),
         interests=[interest("sports"), interest("movies")],
         password=hash_pwd(RAW_PASSWORD)
@@ -95,7 +68,6 @@ def user_beta():
         languages=[language("english"), language("french"), language("german")],
         gender_preferences=[gender_identity("man"), gender_identity("woman")],
         preferences=random_preferences(2),
-        address=ulm(),
         gender_identity=gender_identity("woman"),
         interests=[interest("travel"), interest("books"), interest("science")],
         password=hash_pwd(RAW_PASSWORD)

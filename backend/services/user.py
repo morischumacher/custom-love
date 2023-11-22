@@ -85,7 +85,12 @@ def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: Annota
     if not passwords.verify_pwd(form_data.password, user.password):
         raise CredentialsException("Wrong Password")
 
-    access_token = create_access_token(data={"sub": user.email})
+    payload = {
+        "sub": user.id,
+        "email": user.email
+    }
+
+    access_token = create_access_token(payload)
     return {"access_token": access_token, "token_type": "bearer"}
 
 
