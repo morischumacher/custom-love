@@ -8,7 +8,6 @@ from sqlmodel import Session, SQLModel, create_engine
 from sqlmodel.pool import StaticPool
 
 from backend.main import app
-from backend.models.address import Address
 from backend.models.gender_identity import GenderIdentity
 from backend.models.interest import Interest
 from backend.models.language import Language
