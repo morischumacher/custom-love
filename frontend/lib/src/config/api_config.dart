@@ -1,5 +1,8 @@
 import 'package:frontend/src/config/connection.dart';
 
+// Comment out the above import and use this when running on emulator:
+// import 'package:frontend/src/config/connection_emulator.dart';
+
 class ApiConfig {
   String _baseUrl = "";
   String _socketsUrl = "";
