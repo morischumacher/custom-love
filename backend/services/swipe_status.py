@@ -1,6 +1,7 @@
 from typing import Annotated
 from fastapi import Depends
 from fastapi_pagination.ext.sqlmodel import paginate
+from sqlalchemy import and_
 from sqlmodel import Session, select, or_
 from starlette.requests import Request
 from backend.exceptions.fatal_exception import FatalException
@@ -74,20 +75,27 @@ def post_like(
         raise ValidationException("Cannot match a person with itself")
 
     # If entry (user_1, user_2, 'like') exists, corrupt db
-    # If the match already exists - again something is corrupt
     user_1_swipe = db.exec(select(SwipeStatus).where(
         SwipeStatus.user1_id == user.id,
         SwipeStatus.user2_id == user_id,
-        or_(SwipeStatus.status == SwipeStatusType.like, SwipeStatus.status == SwipeStatusType.match)
+        SwipeStatus.status == SwipeStatusType.like
     )).all()
 
     if len(user_1_swipe) > 0:
         raise FatalException("Like/match for user1 to user2 already exists")
 
+    # if a match between user1 and user2 already exists - the db is corrupt
+    if db.exec(select(SwipeStatus).where(or_(
+            and_(SwipeStatus.user1_id == user_id, SwipeStatus.user2_id == user.id),
+            and_(SwipeStatus.user1_id == user.id, SwipeStatus.user2_id == user_id)
+    )
+            , SwipeStatus.status == SwipeStatusType.match)).first() is not None:
+        raise FatalException("a match for user1 to user2 already exists")
+
     user_2_swipe = db.exec(select(SwipeStatus).where(
-        SwipeStatus.user1_id == user_id and
-        SwipeStatus.user2_id == user.id and
-        SwipeStatus.status == SwipeStatusType.like
+        and_(SwipeStatus.user1_id == user_id,
+             SwipeStatus.user2_id == user.id,
+             SwipeStatus.status == SwipeStatusType.like)
     )).all()
 
     # If there already exists a swipe with status "like" for user_2, the swipe_status is turned to match for both
@@ -100,7 +108,7 @@ def post_like(
         db.commit()
         db.refresh(user_2_swipe_obj)
 
-        return user_1_swipe
+        return user_2_swipe_obj
     else:
         new_swipe_status = SwipeStatus(
             user1_id=user.id,

@@ -121,5 +121,4 @@ def login(email: str, pwd: str, client):
 def authorized_request(token, client: TestClient, method, url, **kwargs):
     headers = {"accept": "application/json", "Content-Type": "application/x-www-form-urlencoded",
                "Authorization": f"Bearer {token}"}
-    client.post(url)
     return method(client)(url, headers=headers, **kwargs)

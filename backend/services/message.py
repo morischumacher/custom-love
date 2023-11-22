@@ -2,7 +2,7 @@ import json
 from typing import Annotated
 from fastapi import Depends
 from fastapi_pagination.ext.sqlmodel import paginate
-from sqlalchemy import or_
+from sqlalchemy import or_, and_
 from sqlmodel import Session, select, col
 from starlette.requests import Request
 from starlette.responses import HTMLResponse
@@ -87,9 +87,8 @@ def sockets_test(username: str, receiver_username: str, db: Annotated[Session, D
 
     access_token = create_access_token(data={"sub": username})
     conversation = db.exec(select(Conversation).
-                           where(or_((Conversation.user1_id == user.id and Conversation.user2_id == receiver.id),
-                                     (
-                                             Conversation.user1_id == receiver.id and Conversation.user2_id == user.id)))).first()
+                           where(or_(and_(Conversation.user1_id == user.id, Conversation.user2_id == receiver.id),
+                                     and_(Conversation.user1_id == receiver.id, Conversation.user2_id == user.id)))).first()
     if conversation is None:
         raise NotFoundException(f"No conversations between {user.email} and {receiver.email} found")
 
