@@ -85,7 +85,6 @@ def post_user(user: User, db: Annotated[Session, Depends(create_session)]) -> Us
     return user
 
 
-# TODO: Currently only location gets updated
 def patch_user(updated_user: UserUpdate, user: Annotated[User, Depends(get_current_user)],
                db: Annotated[Session, Depends(create_session)]) -> User:
     """
