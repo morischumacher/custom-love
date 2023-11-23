@@ -1,23 +1,22 @@
 from typing import Annotated
-
 from fastapi import APIRouter, Depends
-from fastapi_pagination import Page, paginate
 from starlette import status
 from backend.models.user import User
 from backend.responses.error_response import ErrorResponse
-from backend.security.token import Token
+from backend.utils.pagination import Page
+from backend.utils.token import Token
 from backend.services.user import get_user, post_user, get_users, login
 
 router = APIRouter(prefix='/users', tags=['users'], responses={status.HTTP_200_OK: {"description": "Success"}})
 
 
 @router.get("/", response_model=Page[User])
-async def get_users(commons: Annotated[dict, Depends(get_users)]):
+async def get_users(commons: Annotated[Page[User], Depends(get_users)]):
     """
     Retrieves all users stored in the system.
     :return: a list of users
     """
-    return paginate(commons)
+    return commons
 
 
 @router.get('/{user_id}', response_model=User, responses={

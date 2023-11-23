@@ -1,18 +1,21 @@
 from typing import Annotated
 from fastapi import Depends, HTTPException
+from fastapi_pagination.ext.sqlmodel import paginate
 from sqlmodel import Session, select
-
+from starlette.requests import Request
 from backend.models.preference import Preference
 from backend.repository.repository import create_session
+from backend.utils.pagination import PaginationParams
 
 
-def get_preferences(db: Annotated[Session, Depends(create_session)]):
+def get_preferences(db: Annotated[Session, Depends(create_session)], request: Request):
     """
     Return a list of all preferences
     :param db: injected database
     :return: a list of preferences
     """
-    return db.exec(select(Preference)).all()
+    return paginate(db, select(Preference), PaginationParams(size=request.query_params.get("size"),
+                                                             page=request.query_params.get("page")))
 
 
 def get_preference(preference_id, db: Annotated[Session, Depends(create_session)]):
