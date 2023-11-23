@@ -10,9 +10,10 @@ class ApiConfig {
   ApiConfig() {
     String urlPrefix = config['use_tls'] ? "https" : "http";
     String socketsPrefix = config['use_tls'] ? "wss" : "ws";
+    String port = config['port'] != '' ? ":${config['port']}" : "";
 
-    _baseUrl = "$urlPrefix://${config['server']}:${config['port']}";
-    _socketsUrl = "$socketsPrefix://${config['server']}:${config['port']}";
+    _baseUrl = "$urlPrefix://${config['server']}$port";
+    _socketsUrl = "$socketsPrefix://${config['server']}$port";
   }
 
   static ApiConfig? _instance;
