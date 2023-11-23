@@ -1,3 +1,6 @@
+from datetime import datetime
+from urllib.parse import urlencode
+
 import pytest
 from fastapi.testclient import TestClient
 from fastapi_pagination import add_pagination
@@ -5,7 +8,14 @@ from sqlmodel import Session, SQLModel, create_engine
 from sqlmodel.pool import StaticPool
 
 from backend.main import app
+from backend.models.address import Address
+from backend.models.gender_identity import GenderIdentity
+from backend.models.interest import Interest
+from backend.models.language import Language
+from backend.models.preference import Preference
+from backend.models.user import User
 from backend.repository.repository import create_session
+from backend.utils.passwords import hash_pwd
 
 
 @pytest.fixture(name="session")
@@ -18,6 +28,8 @@ def session_fixture():
     SQLModel.metadata.create_all(engine)
     with Session(engine) as session:
         yield session
+
+    engine.dispose()
 
 
 @pytest.fixture(name="client")

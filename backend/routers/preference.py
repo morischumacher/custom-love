@@ -1,9 +1,7 @@
-from typing import List, Annotated
-
+from typing import Annotated
 from fastapi import APIRouter, Depends
-from fastapi_pagination import Page, paginate
+from backend.utils.pagination import Page
 from starlette import status
-
 from backend.models.preference import Preference
 from backend.responses.error_response import ErrorResponse
 from backend.services.preference import get_preference, get_preferences, post_preference
@@ -12,12 +10,12 @@ router = APIRouter(prefix='/preferences', tags=['preferences'], responses={statu
 
 
 @router.get("/", response_model=Page[Preference])
-async def get_preferences(commons: Annotated[dict, Depends(get_preferences)]):
+async def get_preferences(commons: Annotated[Page[Preference], Depends(get_preferences)]):
     """
     Return a paginated list of preferences
     :return: a paginated list of preferences
     """
-    return paginate(commons)
+    return commons
 
 
 @router.get('/{preference_id}', response_model=Preference, responses={

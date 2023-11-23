@@ -1,19 +1,21 @@
-from datetime import datetime
-
+from sqlmodel import Session
+from starlette import status
+from starlette.testclient import TestClient
 from backend.test.integration.fixtures import client_fixture as client, session_fixture as session
-from backend.models.preference import Preference
+from backend.test.integration.test_utils import load_entities, random_preferences
 
 
-def test_get_preference_by_id(client, session):
-    preference_1: Preference = Preference(property_1="property1", property_2="property4", decision="decision1",
-                                          date=datetime.today())
-    preference_2: Preference = Preference(property_1="property2", property_2="property5", decision="decision2",
-                                          date=datetime.today())
+def test_get_preference_by_id(client: TestClient, session: Session):
+    preferences = random_preferences(1)
+    load_entities(preferences, session)
 
-    session.add(preference_1)
-    session.add(preference_2)
-    session.commit()
+    response = client.get(f"/preferences/{preferences[0].id}")
 
-    response = client.get("/preferences/1")
-    print(f"got preference: {response.json()}")
-    assert response.status_code == 200
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json()['id'] == preferences[0].id
+
+
+def test_get_preference_by_id_non_existent(client: TestClient, session: Session):
+    response = client.get(f"/preferences/1")
+
+    assert response.status_code == status.HTTP_404_NOT_FOUND
