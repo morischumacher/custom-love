@@ -34,6 +34,7 @@ class User(SQLModel, table=True):
 
     gender_identity: Optional["GenderIdentity"] = Relationship(back_populates="user_gender_identity")
     languages: Optional["Language"] = Relationship(back_populates="users", link_model=UserHasLanguage)
-    gender_preferences: Optional["GenderIdentity"] = Relationship(back_populates="users", link_model=UserHasGenderPreference)
+    gender_preferences: Optional["GenderIdentity"] = Relationship(back_populates="users",
+                                                                  link_model=UserHasGenderPreference)
     interests: Optional["Interest"] = Relationship(back_populates="users", link_model=UserHasInterest)
     preferences: Optional["Preference"] = Relationship(back_populates="users", link_model=UserHasPreference)

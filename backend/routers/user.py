@@ -5,7 +5,8 @@ from backend.models.user import User
 from backend.responses.error_response import ErrorResponse
 from backend.utils.pagination import Page
 from backend.utils.token import Token
-from backend.services.user import get_user, post_user, get_users, login, get_random_users_in_radius
+from backend.services.user import get_user, post_user, patch_user, get_users, login, get_random_users_in_radius, \
+    UserUpdate
 
 router = APIRouter(prefix='/users', tags=['users'], responses={status.HTTP_200_OK: {"description": "Success"}})
 
@@ -38,6 +39,19 @@ def post_user(commons: Annotated[dict, Depends(post_user)]):
     """
     Stores a new user.
     :return: the user if stored successfully
+    """
+    return commons
+
+
+@router.patch('/', response_model=User, responses={
+    status.HTTP_404_NOT_FOUND: {"description": "User not found", "model": ErrorResponse},
+    status.HTTP_422_UNPROCESSABLE_ENTITY: {"description": "Validation Error", "model": ErrorResponse}
+})
+def patch_user(commons: Annotated[UserUpdate, Depends(patch_user)]):
+    """
+    Update current user information.
+    :param db: Database session dependency.
+    :return: Updated user.
     """
     return commons
 

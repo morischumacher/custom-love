@@ -4,6 +4,8 @@ from fastapi import Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_pagination.ext.sqlmodel import paginate
 from geoalchemy2 import Geography
+from pydantic import BaseModel, Field
+from shapely.geometry import Point
 from sqlalchemy import func
 from sqlmodel import Session, select
 from starlette.requests import Request
@@ -18,6 +20,11 @@ from backend.services.validation.user_validation import validate_new_user
 from backend.utils import passwords
 from backend.utils.pagination import PaginationParams
 from backend.utils.token import create_access_token, get_current_user
+
+
+class UserUpdate(BaseModel):
+    latitude: float = Field(None, title="Latitude")
+    longitude: float = Field(None, title="Longitude")
 
 
 def get_user(user_id: int, db: Annotated[Session, Depends(create_session)]) -> User:
@@ -72,6 +79,30 @@ def post_user(user: User, db: Annotated[Session, Depends(create_session)]) -> Us
         raise ValidationException(user_validation)
 
     db.add(user)
+    db.commit()
+    db.refresh(user)
+
+    return user
+
+
+# TODO: Currently only location gets updated
+def patch_user(updated_user: UserUpdate, user: Annotated[User, Depends(get_current_user)],
+               db: Annotated[Session, Depends(create_session)]) -> User:
+    """
+        Update a user
+        :param db: injected database
+        :param user: a user object
+        :return: a user object
+    """
+
+    user.latitude = updated_user.latitude
+    user.longitude = updated_user.longitude
+
+    location_point = Point(user.latitude, user.longitude)
+    wkb_point = location_point.wkb_hex
+
+    user.location = wkb_point
+
     db.commit()
     db.refresh(user)
 
