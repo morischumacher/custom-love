@@ -1,3 +1,4 @@
+import 'dart:html';
 import 'package:flutter/material.dart';
 import 'package:frontend/src/config/exceptions.dart';
 import 'package:frontend/src/config/theme.dart';
@@ -22,8 +23,12 @@ class LoginController {
         Map<String, dynamic> loginResult =
             await loginService.loginTo(email, password);
 
+        var accessToken = loginResult["access_token"];
+
         // If login is successful, navigate to '/home'
         if (context.mounted) {
+          window.localStorage["csrf"] = accessToken;
+
           Navigator.of(context).pushNamed('/home');
         }
       } catch (e) {
