@@ -78,6 +78,7 @@ build-frontend:
   script:
   - |
     cd frontend
+    mv lib/src/config/connection_$TARGET.dart lib/src/config/connection.dart
     flutter pub get
     flutter build web --base-href /$TARGET/app/ -t lib/src/main.dart
   artifacts:
