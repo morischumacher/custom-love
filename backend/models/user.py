@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import TYPE_CHECKING, Optional
 from typing import TYPE_CHECKING, Optional, Any
 
 from geoalchemy2 import Geometry
@@ -6,6 +7,7 @@ from shapely import geometry, wkt
 from sqlalchemy import Column
 from sqlmodel import SQLModel, Field, Relationship
 
+from .connectors.user_has_language import UserHasLanguage
 from .connectors.user_has_gender_preference import UserHasGenderPreference
 from .connectors.user_has_interest import UserHasInterest
 from .connectors.user_has_language import UserHasLanguage
@@ -16,6 +18,7 @@ if TYPE_CHECKING:
     from .gender_identity import GenderIdentity
     from .interest import Interest
     from .preference import Preference
+    from .expert_system import ExpertSystem
 
 
 class User(SQLModel, table=True):
@@ -42,6 +45,10 @@ class User(SQLModel, table=True):
                                                                   link_model=UserHasGenderPreference)
     interests: Optional["Interest"] = Relationship(back_populates="users", link_model=UserHasInterest)
     preferences: Optional["Preference"] = Relationship(back_populates="users", link_model=UserHasPreference)
+    expert_system: Optional["ExpertSystem"] = Relationship(back_populates="users")
+
+
+
 
     @property
     def generate_location(self):

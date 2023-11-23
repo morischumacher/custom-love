@@ -6,6 +6,7 @@ from backend.models.gender_identity import GenderIdentity
 from backend.models.interest import Interest
 from backend.models.language import Language
 from backend.models.preference import Preference
+from backend.models.expert_system import ExpertSystem
 from backend.models.rating import Rating
 from backend.models.swipe_status import SwipeStatus, SwipeStatusType
 from backend.models.user import User
@@ -49,6 +50,12 @@ class DataGenerator:
             travel = Interest(name="travel", icon="icon3")
             books = Interest(name="books", icon="icon4")
             science = Interest(name="science", icon="icon5")
+
+            # Expert System
+            expert_system_1: ExpertSystem = ExpertSystem(model=None)
+            expert_system_2: ExpertSystem = ExpertSystem(model=None)
+            expert_system_3: ExpertSystem = ExpertSystem(model=None)
+
 
             # Users
             user_alfa = User(
