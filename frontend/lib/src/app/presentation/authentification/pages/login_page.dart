@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/src/app/service/user_service.dart';
 import 'package:frontend/src/config/theme.dart';
 import 'package:frontend/src/app/presentation/authentification/components/login_textfield.dart';
 import 'package:frontend/src/app/presentation/authentification/components/sign_in_button.dart';
@@ -8,7 +9,10 @@ import 'package:frontend/src/app/service/login_service.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key, required LoginService loginService})
+  const LoginPage(
+      {Key? key,
+      required LoginService loginService,
+      required UserService userService})
       : super(key: key);
 
   @override

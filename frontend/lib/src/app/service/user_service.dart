@@ -14,4 +14,13 @@ class UserService {
       rethrow;
     }
   }
+
+  Future<User> updateCurrentUserLocation() async {
+    try {
+      final updateUser = _userApi.updateUserLocation();
+      return updateUser;
+    } on Exception {
+      rethrow;
+    }
+  }
 }

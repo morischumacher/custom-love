@@ -1,5 +1,7 @@
 import 'dart:html';
 import 'package:flutter/material.dart';
+import 'package:frontend/src/app/service/location_service.dart';
+import 'package:frontend/src/app/service/user_service.dart';
 import 'package:frontend/src/config/exceptions.dart';
 import 'package:frontend/src/config/theme.dart';
 import 'package:frontend/src/app/service/login_service.dart';
@@ -16,6 +18,7 @@ class LoginController {
     String email = emailController.text;
     String password = passwordController.text;
     LoginService loginService = context.read<LoginService>();
+    UserService userService = context.read<UserService>();
 
     if (email.isNotEmpty && password.isNotEmpty) {
       try {
@@ -28,7 +31,7 @@ class LoginController {
         // If login is successful, navigate to '/home'
         if (context.mounted) {
           window.localStorage["csrf"] = accessToken;
-
+          userService.updateCurrentUserLocation();
           Navigator.of(context).pushNamed('/home');
         }
       } catch (e) {
