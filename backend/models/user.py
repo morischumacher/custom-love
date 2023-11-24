@@ -1,11 +1,13 @@
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional, Any
-from sqlmodel import SQLModel, Field, Column, Relationship
-from geoalchemy2 import Geometry
 
-from .connectors.user_has_language import UserHasLanguage
+from geoalchemy2 import Geometry
+from sqlalchemy import Column
+from sqlmodel import SQLModel, Field, Relationship
+
 from .connectors.user_has_gender_preference import UserHasGenderPreference
 from .connectors.user_has_interest import UserHasInterest
+from .connectors.user_has_language import UserHasLanguage
 from .connectors.user_has_preference import UserHasPreference
 
 if TYPE_CHECKING:
@@ -26,7 +28,10 @@ class User(SQLModel, table=True):
     job: str
     search_radius: int
     swipes_left: int
+    latitude: Optional[float]
+    longitude: Optional[float]
 
+    # Use Any type for the location field
     location: Optional[Any] = Field(sa_column=Column(Geometry('POINT')))
 
     gender_identity_id: Optional[int] = Field(default=None, foreign_key="gender_identity.id")
@@ -37,3 +42,6 @@ class User(SQLModel, table=True):
                                                                   link_model=UserHasGenderPreference)
     interests: Optional["Interest"] = Relationship(back_populates="users", link_model=UserHasInterest)
     preferences: Optional["Preference"] = Relationship(back_populates="users", link_model=UserHasPreference)
+
+    class Config:
+        arbitrary_types_allowed = True
