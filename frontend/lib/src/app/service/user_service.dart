@@ -1,5 +1,6 @@
 import 'package:frontend/src/app/api/user_api.dart';
 import 'package:frontend/src/app/model/user_model.dart';
+import 'package:geolocator/geolocator.dart';
 
 class UserService {
   final UserApi _userApi;
@@ -15,9 +16,9 @@ class UserService {
     }
   }
 
-  Future<User> updateCurrentUserLocation() async {
+  Future<User> updateCurrentUserLocation(Position userPosition) async {
     try {
-      final updateUser = _userApi.updateUserLocation();
+      final updateUser = _userApi.updateUserLocation(userPosition);
       return updateUser;
     } on Exception {
       rethrow;

@@ -5,11 +5,13 @@ import 'package:frontend/src/app/service/user_service.dart';
 import 'package:frontend/src/config/exceptions.dart';
 import 'package:frontend/src/config/theme.dart';
 import 'package:frontend/src/app/service/login_service.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 
 class LoginController {
   var logger = Logger();
+  Position? userLocation;
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
@@ -31,7 +33,7 @@ class LoginController {
         // If login is successful, navigate to '/home'
         if (context.mounted) {
           window.localStorage["csrf"] = accessToken;
-          userService.updateCurrentUserLocation();
+          userService.updateCurrentUserLocation(userLocation!);
           Navigator.of(context).pushNamed('/home');
         }
       } catch (e) {

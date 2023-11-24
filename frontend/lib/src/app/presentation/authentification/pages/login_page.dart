@@ -1,12 +1,17 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:frontend/src/app/service/location_service.dart';
 import 'package:frontend/src/app/service/user_service.dart';
 import 'package:frontend/src/config/theme.dart';
 import 'package:frontend/src/app/presentation/authentification/components/login_textfield.dart';
 import 'package:frontend/src/app/presentation/authentification/components/sign_in_button.dart';
 import 'package:frontend/src/app/presentation/authentification/controller/login_controller.dart';
 import 'package:frontend/src/app/service/login_service.dart';
+import 'package:geolocator/geolocator.dart';
 
 import 'package:google_fonts/google_fonts.dart';
+import 'package:logger/logger.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage(
@@ -22,6 +27,48 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
   final LoginController _controller = LoginController();
+  final LocationService _locationService = LocationService();
+  final logger = Logger();
+
+  @override
+  void initState() {
+    super.initState();
+    checkLocationPermission();
+  }
+
+  Future<void> checkLocationPermission() async {
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      await requestLocationPermission();
+    } else {
+      saveCurrentLocation();
+    }
+  }
+
+  Future<void> requestLocationPermission() async {
+    LocationPermission permission = await Geolocator.requestPermission();
+    if (permission == LocationPermission.whileInUse ||
+        permission == LocationPermission.always) {
+      saveCurrentLocation();
+    } else {
+      logger.e("Location permission is denied.");
+    }
+  }
+
+  Future<void> saveCurrentLocation() async {
+    try {
+      Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+
+      _controller.userLocation = position;
+
+      var location = await _locationService.getCurrentLocation(
+          position.latitude, position.longitude);
+      logger.i("Current user location: $location");
+    } catch (e) {
+      logger.e("Error getting current location: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

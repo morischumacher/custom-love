@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:html';
 
 import 'package:frontend/src/app/model/user_model.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:frontend/src/config/api_config.dart';
 import 'package:logger/logger.dart';
@@ -27,10 +28,10 @@ class UserApi {
     }
   }
 
-  Future<User> updateUserLocation() async {
+  Future<User> updateUserLocation(Position userPosition) async {
     final Map<String, dynamic> body = {
-      "latitude": 42.548462,
-      "longitude": 3.0779799,
+      "latitude": userPosition.latitude,
+      "longitude": userPosition.longitude,
     };
 
     var accessToken = window.localStorage.containsKey("csrf")
