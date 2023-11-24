@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Optional, Any
 
 from geoalchemy2 import Geometry
+from shapely import geometry, wkt
 from sqlalchemy import Column
 from sqlmodel import SQLModel, Field, Relationship
 
@@ -43,5 +44,23 @@ class User(SQLModel, table=True):
     interests: Optional["Interest"] = Relationship(back_populates="users", link_model=UserHasInterest)
     preferences: Optional["Preference"] = Relationship(back_populates="users", link_model=UserHasPreference)
 
+    @property
+    def generate_location(self):
+        if self.latitude is not None and self.longitude is not None:
+            point = geometry.Point(self.longitude, self.latitude)
+            return wkt.dumps(point)
+        else:
+            return None
+
+    def set_location(self):
+        self.location = self.generate_location
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        # Automatically set location when initializing the object
+        self.set_location()
+
     class Config:
         arbitrary_types_allowed = True
+
+

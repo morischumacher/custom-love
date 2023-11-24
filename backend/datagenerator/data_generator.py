@@ -67,8 +67,7 @@ class DataGenerator:
                 interests=[sports, movies],
                 password=hash_pwd("pass1"),
                 latitude=48.227982,
-                longitude=16.372316,
-                location="0101000020E6100000D009A1832E1D48400DC7F319505F3040"
+                longitude=16.372316
             )
             user_bravo = User(
                 first_name='Bravo',
@@ -85,9 +84,8 @@ class DataGenerator:
                 gender_identity=woman,
                 interests=[travel, books, science],
                 password=hash_pwd("pass1"),
-                latitude=48.227982,
-                longitude=16.372316,
-                location="0101000020E6100000D009A1832E1D48400DC7F319505F3040"
+                latitude=48.215178,
+                longitude=16.354447
             )
             user_charlie = User(
                 first_name='Charlie',
@@ -104,9 +102,8 @@ class DataGenerator:
                 gender_identity=divers,
                 interests=[science],
                 password=hash_pwd("pass1"),
-                latitude=48.227982,
-                longitude=16.372316,
-                location="0101000020E6100000D009A1832E1D48400DC7F319505F3040"
+                latitude=48.172097,
+                longitude=16.294326
             )
 
             # Rating
