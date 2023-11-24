@@ -1,7 +1,7 @@
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional, List
-
-from sqlmodel import SQLModel, Field, Relationship
+from typing import TYPE_CHECKING, Optional, Any
+from sqlmodel import SQLModel, Field, Column, Relationship
+from geoalchemy2 import Geometry
 
 from .connectors.user_has_language import UserHasLanguage
 from .connectors.user_has_gender_preference import UserHasGenderPreference
@@ -26,9 +26,8 @@ class User(SQLModel, table=True):
     job: str
     search_radius: int
     swipes_left: int
-    latitude: Optional[float]
-    longitude: Optional[float]
-    location: Optional[str]
+
+    location: Optional[Any] = Field(sa_column=Column(Geometry('POINT')))
 
     gender_identity_id: Optional[int] = Field(default=None, foreign_key="gender_identity.id")
 
