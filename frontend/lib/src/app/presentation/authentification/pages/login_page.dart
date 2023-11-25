@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/service/location_service.dart';
 import 'package:frontend/src/app/service/user_service.dart';

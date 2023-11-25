@@ -5,7 +5,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_pagination.ext.sqlmodel import paginate
 from geoalchemy2 import Geography
 from pydantic import BaseModel, Field
-from shapely.geometry import Point
+from shapely import geometry, wkt
 from sqlalchemy import func
 from sqlmodel import Session, select
 from starlette.requests import Request
@@ -14,6 +14,7 @@ from backend.exceptions.bad_request_exception import BadRequestException
 from backend.exceptions.credentials_exception import CredentialsException
 from backend.exceptions.not_found_exception import NotFoundException
 from backend.exceptions.validation_exception import ValidationException
+from backend.models.pydantic_user import UserBase
 from backend.models.user import User
 from backend.repository.repository import create_session
 from backend.services.validation.user_validation import validate_new_user
@@ -86,7 +87,7 @@ def post_user(user: User, db: Annotated[Session, Depends(create_session)]) -> Us
 
 
 def patch_user(updated_user: UserUpdate, user: Annotated[User, Depends(get_current_user)],
-               db: Annotated[Session, Depends(create_session)]) -> User:
+               db: Annotated[Session, Depends(create_session)]) -> UserBase:
     """
         Update a user
         :param db: injected database
@@ -97,15 +98,31 @@ def patch_user(updated_user: UserUpdate, user: Annotated[User, Depends(get_curre
     user.latitude = updated_user.latitude
     user.longitude = updated_user.longitude
 
-    location_point = Point(user.latitude, user.longitude)
-    wkb_point = location_point.wkb_hex
+    point = geometry.Point(user.longitude, user.latitude)
+    wkt_point = wkt.dumps(point)
 
-    user.location = wkb_point
+    user.location = wkt_point
 
     db.commit()
     db.refresh(user)
 
-    return user
+    # Create a new instance of UserBase with the data from the updated User instance
+    user_base = UserBase(
+        id=user.id,
+        first_name=user.first_name,
+        last_name=user.last_name,
+        email=user.email,
+        bio=user.bio,
+        date_of_birth=user.date_of_birth,
+        job=user.job,
+        search_radius=user.search_radius,
+        swipes_left=user.swipes_left,
+        latitude=user.latitude,
+        longitude=user.longitude,
+        gender_identity_id=user.gender_identity_id
+    )
+
+    return user_base
 
 
 def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: Annotated[Session, Depends(create_session)]):
@@ -133,7 +150,7 @@ def get_random_users_in_radius(user: Annotated[User, Depends(get_current_user)],
             func.ST_DWithin(
                 User.location.cast(Geography),
                 subquery.c.location.cast(Geography),
-                user.search_radius
+                user.search_radius * 1000  # Cast search radius to km
             )
         )
         .where(User.id != user.id)

@@ -31,8 +31,6 @@ class LocationService {
       var document = XmlDocument.parse(responseBody);
       var result = document.rootElement.findElements('result').first.innerText;
 
-      logger.i(responseBody);
-
       return result;
     } catch (error) {
       logger.e("Error while converting current location to Address.");

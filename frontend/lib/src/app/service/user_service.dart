@@ -16,9 +16,10 @@ class UserService {
     }
   }
 
-  Future<User> updateCurrentUserLocation(Position userPosition) async {
+  Future<User> updateCurrentUserLocation(
+      Position userPosition, var accessToken) async {
     try {
-      final updateUser = _userApi.updateUserLocation(userPosition);
+      final updateUser = _userApi.updateUserLocation(userPosition, accessToken);
       return updateUser;
     } on Exception {
       rethrow;

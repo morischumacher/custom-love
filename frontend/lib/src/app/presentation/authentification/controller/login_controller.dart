@@ -1,6 +1,4 @@
-import 'dart:html';
 import 'package:flutter/material.dart';
-import 'package:frontend/src/app/service/location_service.dart';
 import 'package:frontend/src/app/service/user_service.dart';
 import 'package:frontend/src/config/exceptions.dart';
 import 'package:frontend/src/config/theme.dart';
@@ -32,8 +30,7 @@ class LoginController {
 
         // If login is successful, navigate to '/home'
         if (context.mounted) {
-          window.localStorage["csrf"] = accessToken;
-          userService.updateCurrentUserLocation(userLocation!);
+          userService.updateCurrentUserLocation(userLocation!, accessToken);
           Navigator.of(context).pushNamed('/home');
         }
       } catch (e) {
