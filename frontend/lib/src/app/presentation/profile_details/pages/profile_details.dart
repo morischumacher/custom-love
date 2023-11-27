@@ -1,80 +1,123 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-const List<String> list = <String>['Male', 'Female', 'Other'];
-
 class ProfileDetails extends StatefulWidget {
-  _ProfileDetailsState createState() => _ProfileDetailsState();
+  const ProfileDetails({super.key});
+
+  @override
+  State<ProfileDetails> createState() => _ProfileDetailsState();
 }
 
 class _ProfileDetailsState extends State<ProfileDetails> {
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-        home: Scaffold(
-            body: SafeArea(
-                child: Center(
-                  child: Column(
-                      children: [
-                        Padding(
-                          padding:EdgeInsets.fromLTRB(0, 103, 0, 0),
-                          child: SizedBox(
-                              child: Text(
-                                  "Profile Details",
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 34.0
-                                  )
-                              )
-                          ),
-                        ),
-                        Padding(
-                          padding:EdgeInsets.fromLTRB(0, 10, 0, 0),
-                          child:                     SizedBox(
-                              child: Text(
-                                  "Provide some basic data about yourself",
-                                  style: TextStyle(
-                                      fontSize: 14.0,
-                                      color: Color(0xFF797C7B) // Colors.white70
-                                  )
-                              )
-                          ),
-                        ),
-                        DropdownMenuExample(),
-                        DropdownMenuExample()
-                      ]
-                  ),
-                )
-            )
-
-        )
-    );
+  _ProfileDetailsState() {
+    _selectedVal = _productSizesList[0];
+    _selectedGender = _genderList[0];
+    _selectedPreference = _genderList[0];
   }
-}
 
-class DropdownMenuExample extends StatefulWidget {
-  const DropdownMenuExample({super.key});
+  final _productSizesList = ["Small", "Medium", "Large", "Xlarge"];
+  String? _selectedVal = "";
 
-  @override
-  State<DropdownMenuExample> createState() => _DropdownMenuExampleState();
-}
-
-class _DropdownMenuExampleState extends State<DropdownMenuExample> {
-  String dropdownValue = list.first;
+  final _genderList = ["Male", "Female", "Other"];
+  String? _selectedGender = "";
+  String? _selectedPreference = "";
+  String? _selectedBirthdate = "";
 
   @override
   Widget build(BuildContext context) {
-    return DropdownMenu<String>(
-      initialSelection: list.first,
-      onSelected: (String? value) {
-        // This is called when the user selects an item.
-        setState(() {
-          dropdownValue = value!;
-        });
-      },
-      dropdownMenuEntries: list.map<DropdownMenuEntry<String>>((String value) {
-        return DropdownMenuEntry<String>(value: value, label: value);
-      }).toList(),
+    return Scaffold(
+        body: Container(
+            padding: EdgeInsets.fromLTRB(21.0, 0, 21.0, 0),
+            child: Center(
+              child: Column(
+                children: [
+                  const SizedBox(height: 51.0),
+                  SizedBox(
+                      child: Text("Profile Details",
+                          style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 34.0,
+                              color: Colors.black,
+                              decoration: TextDecoration.none))),
+                  SizedBox(
+                      child: Text("Provide some basic data about yourself",
+                          style: TextStyle(
+                            fontSize: 14.0,
+                            color: Color(0xFF797C7B), // Colors.white70
+                            decoration: TextDecoration.none,
+                            fontStyle: FontStyle.italic,
+                          ))),
+                  const SizedBox(height: 150.0),
+                  DropdownButtonFormField(
+                    value: _selectedGender,
+                    items: _genderList
+                        .map((e) => DropdownMenuItem(child: Text(e), value: e))
+                        .toList(),
+                    onChanged: (val) {
+                      setState(() {
+                        _selectedGender = val as String;
+                      });
+                    },
+                    icon: const Icon(
+                      Icons.arrow_drop_down,
+                      color: Colors.black,
+                    ),
+                    dropdownColor: Color(0xFFFFCCBC),
+                    decoration: InputDecoration(
+                        labelText: "Gender",
+                        border: OutlineInputBorder(),
+                        enabledBorder: const OutlineInputBorder(
+                            borderSide:
+                            const BorderSide(color: Color(0xFFE8E6EA)))),
+                  ),
+                  const SizedBox(height: 19.0),
+                  DropdownButtonFormField(
+                    value: _selectedPreference,
+                    items: _genderList
+                        .map((e) => DropdownMenuItem(child: Text(e), value: e))
+                        .toList(),
+                    onChanged: (val) {
+                      setState(() {
+                        _selectedGender = val as String;
+                      });
+                    },
+                    icon: const Icon(
+                      Icons.arrow_drop_down,
+                      color: Colors.black,
+                    ),
+                    dropdownColor: Color(0xFFFFCCBC),
+                    decoration: InputDecoration(
+                        labelText: "Preference",
+                        border: OutlineInputBorder(),
+                        enabledBorder: const OutlineInputBorder(
+                            borderSide:
+                            const BorderSide(color: Color(0xFFE8E6EA)))),
+                  ),
+                  const SizedBox(height: 19.0),
+                  TextField(
+                    readOnly: true,
+                    onTap: () {
+                      selectDate();
+                    },
+                    decoration: InputDecoration(
+                        suffixIcon: Icon(Icons.calendar_today),
+                        labelText: "Birthday",
+                        border: OutlineInputBorder(),
+                        enabledBorder: const OutlineInputBorder(
+                            borderSide:
+                            const BorderSide(color: Color(0xFFE8E6EA))
+                        )
+                    ),
+                  )
+                ],
+              ),
+            )));
+  }
+  Future<void> selectDate() async {
+    await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(1900),
+        lastDate: DateTime(DateTime.now().year)
     );
   }
 }
