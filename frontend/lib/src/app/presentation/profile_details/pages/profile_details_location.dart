@@ -42,7 +42,7 @@ class _ProfileDetailsLocationState extends State<ProfileDetailsLocation> {
   OutlinedButton prevBtn(BuildContext context) {
     return OutlinedButton(
       style: OutlinedButton.styleFrom(
-          backgroundColor: Color(0xFF953829),
+          backgroundColor: const Color(0xFF953829),
           minimumSize: const Size(156, 56)
       ),
       onPressed: () {
@@ -68,7 +68,7 @@ class _ProfileDetailsLocationState extends State<ProfileDetailsLocation> {
     return OutlinedButton(
       style: OutlinedButton.styleFrom(
           minimumSize: const Size(156, 56),
-          backgroundColor: Color(0xFF953829)
+          backgroundColor: const Color(0xFF953829)
       ),
       onPressed: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {

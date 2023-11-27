@@ -22,6 +22,105 @@ class _ProfileDetailsInterestsState extends State<ProfileDetailsInterests> {
                   title: "Your interests",
                   description: "Select a few interests and let everyone know what you're passionate about"
               ),
+              Center(
+                child: Row(
+                  children: [
+                    ElevatedButton.icon(
+                      // child: const Text("Shopping"),
+                        icon: const Icon(Icons.photo_camera),
+                        label: const Text("Photography"),
+                        onPressed: () {},
+                        style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.all(20.0),
+                            fixedSize: const Size(150, 60),
+                            backgroundColor: const Color(0xFF953829),
+                            foregroundColor: Colors.white,
+                            elevation: 15,
+                            shadowColor: Colors.black,
+                            alignment: Alignment.center,
+                            // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+                            shape: const StadiumBorder(),
+                            textStyle: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold
+                            )
+                        )
+                    ),
+                    const Spacer(),
+                    ElevatedButton.icon(
+                      // child: const Text("Shopping"),
+                      icon: const Icon(Icons.shopping_bag),
+                      label: const Text("Shopping"),
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.all(20.0),
+                        fixedSize: const Size(150, 60),
+                        backgroundColor: const Color(0xFF953829),
+                        foregroundColor: Colors.white,
+                        elevation: 15,
+                        shadowColor: Colors.black,
+                        alignment: Alignment.center,
+                        // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+                          shape: const StadiumBorder(),
+                        textStyle: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold
+                        )
+                      )
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 21.0),
+              Center(
+                child: Row(
+                  children: [
+                    ElevatedButton.icon(
+                      // child: const Text("Shopping"),
+                        icon: const Icon(Icons.mic_rounded),
+                        label: const Text("Karaoke"),
+                        onPressed: () {},
+                        style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.all(20.0),
+                            fixedSize: const Size(150, 60),
+                            backgroundColor: const Color(0xFF953829),
+                            foregroundColor: Colors.white,
+                            elevation: 15,
+                            shadowColor: Colors.black,
+                            alignment: Alignment.center,
+                            // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+                            shape: const StadiumBorder(),
+                            textStyle: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold
+                            )
+                        )
+                    ),
+                    const Spacer(),
+                    ElevatedButton.icon(
+                      // child: const Text("Shopping"),
+                        icon: const Icon(Icons.sports_tennis),
+                        label: const Text("Tenis"),
+                        onPressed: () {},
+                        style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.all(20.0),
+                            fixedSize: const Size(150, 60),
+                            backgroundColor: const Color(0xFF953829),
+                            foregroundColor: Colors.white,
+                            elevation: 15,
+                            shadowColor: Colors.black,
+                            alignment: Alignment.center,
+                            // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+                            shape: const StadiumBorder(),
+                            textStyle: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold
+                            )
+                        )
+                    ),
+                  ],
+                ),
+              ),
               const Spacer(),
               Center(
                 child: Row(
