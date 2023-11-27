@@ -8,7 +8,6 @@ from backend.models.language import Language
 from backend.models.preference import Preference
 from backend.models.expert_system import ExpertSystem
 from backend.models.rating import Rating
-from backend.models.swipe_status import SwipeStatus, SwipeStatusType
 from backend.models.user import User
 from backend.utils.passwords import hash_pwd
 
@@ -52,9 +51,9 @@ class DataGenerator:
             science = Interest(name="science", icon="icon5")
 
             # Expert System
-            expert_system_1: ExpertSystem = ExpertSystem(model=None)
-            expert_system_2: ExpertSystem = ExpertSystem(model=None)
-            expert_system_3: ExpertSystem = ExpertSystem(model=None)
+            expert_system_1: ExpertSystem = ExpertSystem(model=None, user_id=1)
+            expert_system_2: ExpertSystem = ExpertSystem(model=None, user_id=1)
+            expert_system_3: ExpertSystem = ExpertSystem(model=None, user_id=1)
 
 
             # Users
@@ -135,3 +134,9 @@ class DataGenerator:
             session.add(alfa_bravo_rating)
             session.commit()
             session.refresh(alfa_bravo_rating)
+
+            # Expert System
+            session.add(ExpertSystem(model=None, user_id=1))
+            session.add(ExpertSystem(model=None, user_id=2))
+            session.add(ExpertSystem(model=None, user_id=3))
+            session.commit()
