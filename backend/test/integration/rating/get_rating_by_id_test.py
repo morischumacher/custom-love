@@ -2,7 +2,6 @@ from datetime import datetime
 
 from starlette import status
 
-from backend.models.address import Address
 from backend.models.gender_identity import GenderIdentity
 from backend.models.interest import Interest
 from backend.models.language import Language
