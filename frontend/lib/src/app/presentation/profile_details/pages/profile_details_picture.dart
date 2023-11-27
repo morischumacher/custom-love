@@ -45,7 +45,8 @@ class _ProfileDetailsPictureState extends State<ProfileDetailsPicture> {
             children: [
               const PageTitle(
                   title: "Profile Pictures",
-                  description: "Provide up to five pictures of yourself"
+                  description: "Provide up to five pictures of yourself",
+                  bottomPadding: 150.0,
               ),
               const Spacer(),
               Center(

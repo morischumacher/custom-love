@@ -20,7 +20,8 @@ class _ProfileDetailsLocationState extends State<ProfileDetailsLocation> {
             children: [
               const PageTitle(
                   title: "Location",
-                  description: "Provide information about your location"
+                  description: "Provide information about your location",
+                  bottomPadding: 150.0,
               ),
               const Spacer(),
               Center(

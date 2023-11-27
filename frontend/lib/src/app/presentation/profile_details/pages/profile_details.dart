@@ -30,7 +30,8 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                 children: [
                   const PageTitle(
                       title: "Profile Details",
-                      description: "Provide some basic data about yourself"
+                      description: "Provide some basic data about yourself",
+                      bottomPadding: 150.0,
                   ),
                   DropdownButtonFormField(
                     value: _selectedGender,

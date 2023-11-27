@@ -20,7 +20,8 @@ class _ProfileDetailsInterestsState extends State<ProfileDetailsInterests> {
             children: [
               const PageTitle(
                   title: "Your interests",
-                  description: "Select a few interests and let everyone know what you're passionate about"
+                  description: "Select a few interests and let everyone know what you're passionate about",
+                  bottomPadding: 49.0
               ),
               Center(
                 child: Row(

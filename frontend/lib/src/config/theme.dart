@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 @immutable
 class CustomLoveTheme extends ThemeExtension<CustomLoveTheme> {
@@ -21,7 +22,10 @@ class CustomLoveTheme extends ThemeExtension<CustomLoveTheme> {
   final TextStyle defaultButtonTextStyle;
 
   ThemeData toThemeData() {
-    return ThemeData(useMaterial3: true);
+    return ThemeData(
+        useMaterial3: true,
+        fontFamily: GoogleFonts.roboto().fontFamily
+    );
   }
 
   @override
