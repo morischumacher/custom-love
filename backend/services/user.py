@@ -14,9 +14,9 @@ from backend.exceptions.bad_request_exception import BadRequestException
 from backend.exceptions.credentials_exception import CredentialsException
 from backend.exceptions.not_found_exception import NotFoundException
 from backend.exceptions.validation_exception import ValidationException
-from backend.responses.user_response import UserResponse
 from backend.models.user import User
 from backend.repository.repository import create_session
+from backend.responses.user_response import UserResponse
 from backend.services.validation.user_validation import validate_new_user
 from backend.utils import passwords
 from backend.utils.pagination import PaginationParams
@@ -137,23 +137,28 @@ def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: Annota
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-def get_random_users_in_radius(user: Annotated[User, Depends(get_current_user)],
-                               db: Annotated[Session, Depends(create_session)], request: Request) -> List[User]:
-    subquery = (
-        select([User.location])
-        .where(User.id == user.id)
-    ).alias("user_location")
+def get_algo_user(algoId: int, user: Annotated[User, Depends(get_current_user)],
+                  db: Annotated[Session, Depends(create_session)], request: Request) -> List[User]:
+    match algoId:
+        case 1:
+            subquery = (
+                select([User.location])
+                .where(User.id == user.id)
+            ).alias("user_location")
 
-    query = (
-        select([User])
-        .where(
-            func.ST_DWithin(
-                User.location.cast(Geography),
-                subquery.c.location.cast(Geography),
-                user.search_radius * 1000
+            query = (
+                select([User])
+                .where(
+                    func.ST_DWithin(
+                        User.location.cast(Geography),
+                        subquery.c.location.cast(Geography),
+                        user.search_radius * 1000
+                    )
+                )
+                .where(User.id != user.id)
             )
-        )
-        .where(User.id != user.id)
-    )
-    return paginate(db, query,
-                    PaginationParams(size=request.query_params.get("size"), page=request.query_params.get("page")))
+            return paginate(db, query,
+                            PaginationParams(size=request.query_params.get("size"),
+                                             page=request.query_params.get("page")))
+
+    return None

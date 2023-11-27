@@ -7,7 +7,7 @@ from backend.models.user import User
 from backend.responses.error_response import ErrorResponse
 from backend.utils.pagination import Page
 from backend.utils.token import Token
-from backend.services.user import get_user, post_user, patch_user, get_users, login, get_random_users_in_radius, \
+from backend.services.user import get_user, post_user, patch_user, get_users, login, get_algo_user, \
     UserUpdate
 
 router = APIRouter(prefix='/users', tags=['users'], responses={status.HTTP_200_OK: {"description": "Success"}})
@@ -63,13 +63,14 @@ def login(commons: Annotated[Token, Depends(login)]):
     return commons
 
 
-@router.get('/algo/random/', response_model=Page[User], responses={
+@router.get('/algo/{algo_id}', response_model=Page[User], responses={
     status.HTTP_404_NOT_FOUND: {"description": "Not Found", "model": ErrorResponse},
     status.HTTP_400_BAD_REQUEST: {"description": "Bad Request", "model": ErrorResponse},
 })
-def get_random_users_in_radius(commons: Annotated[Page[User], Depends(get_random_users_in_radius)]):
+def get_algo_user(commons: Annotated[Page[User], Depends(get_algo_user)]):
     """
-    Retrieves all users in a given search radius
+    Retrieves a user based on a given algorithm
+        1: random
     :return: a user with a corresponding id which is in the search radius
     """
     return commons
