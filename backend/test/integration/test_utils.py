@@ -50,7 +50,9 @@ def user_alfa():
         preferences=random_preferences(5),
         gender_identity=gender_identity("woman"),
         interests=[interest("sports"), interest("movies")],
-        password=hash_pwd(RAW_PASSWORD)
+        password=hash_pwd(RAW_PASSWORD),
+        latitude=48.227982,
+        longitude=16.372316
     )
 
 
@@ -70,7 +72,9 @@ def user_beta():
         preferences=random_preferences(2),
         gender_identity=gender_identity("woman"),
         interests=[interest("travel"), interest("books"), interest("science")],
-        password=hash_pwd(RAW_PASSWORD)
+        password=hash_pwd(RAW_PASSWORD),
+        latitude=48.227982,
+        longitude=16.372316
     )
 
 

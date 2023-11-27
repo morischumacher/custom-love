@@ -14,7 +14,7 @@ from backend.exceptions.bad_request_exception import BadRequestException
 from backend.exceptions.credentials_exception import CredentialsException
 from backend.exceptions.not_found_exception import NotFoundException
 from backend.exceptions.validation_exception import ValidationException
-from backend.models.pydantic_user import UserBase
+from backend.responses.user_response import UserResponse
 from backend.models.user import User
 from backend.repository.repository import create_session
 from backend.services.validation.user_validation import validate_new_user
@@ -87,7 +87,7 @@ def post_user(user: User, db: Annotated[Session, Depends(create_session)]) -> Us
 
 
 def patch_user(updated_user: UserUpdate, user: Annotated[User, Depends(get_current_user)],
-               db: Annotated[Session, Depends(create_session)]) -> UserBase:
+               db: Annotated[Session, Depends(create_session)]) -> UserResponse:
     """
         Update a user
         :param db: injected database
@@ -107,7 +107,7 @@ def patch_user(updated_user: UserUpdate, user: Annotated[User, Depends(get_curre
     db.refresh(user)
 
     # Create a new instance of UserBase with the data from the updated User instance
-    user_base = UserBase(
+    user_base = UserResponse(
         id=user.id,
         first_name=user.first_name,
         last_name=user.last_name,
@@ -150,7 +150,7 @@ def get_random_users_in_radius(user: Annotated[User, Depends(get_current_user)],
             func.ST_DWithin(
                 User.location.cast(Geography),
                 subquery.c.location.cast(Geography),
-                user.search_radius * 1000  # Cast search radius to km
+                user.search_radius * 1000
             )
         )
         .where(User.id != user.id)

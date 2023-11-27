@@ -1,8 +1,10 @@
 from datetime import datetime
-from typing import Optional, Tuple
+from typing import Optional
+
 from pydantic import BaseModel
 
-class UserBase(BaseModel):
+
+class UserResponse(BaseModel):
     id: Optional[int] = None
     first_name: str
     last_name: str

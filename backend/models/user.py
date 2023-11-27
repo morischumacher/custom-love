@@ -32,8 +32,7 @@ class User(SQLModel, table=True):
     latitude: Optional[float]
     longitude: Optional[float]
 
-    # Use Any type for the location field
-    location: Optional[Any] = Field(sa_column=Column(Geometry('POINT', srid=4326)))
+    location: Optional[str]
 
     gender_identity_id: Optional[int] = Field(default=None, foreign_key="gender_identity.id")
 
