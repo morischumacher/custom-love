@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/src/app/presentation/profile_details/pages/profile_details_picture.dart';
 
 class ProfileDetails extends StatefulWidget {
   const ProfileDetails({super.key});
@@ -9,13 +10,9 @@ class ProfileDetails extends StatefulWidget {
 
 class _ProfileDetailsState extends State<ProfileDetails> {
   _ProfileDetailsState() {
-    _selectedVal = _productSizesList[0];
     _selectedGender = _genderList[0];
     _selectedPreference = _genderList[0];
   }
-
-  final _productSizesList = ["Small", "Medium", "Large", "Xlarge"];
-  String? _selectedVal = "";
 
   final _genderList = ["Male", "Female", "Other"];
   String? _selectedGender = "";
@@ -107,7 +104,18 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                             const BorderSide(color: Color(0xFFE8E6EA))
                         )
                     ),
+                  ),
+                  const SizedBox(height: 38.0),
+                  Center(
+                    child: Row(
+                      children: [
+                        prevBtn(context),
+                        const Spacer(),
+                        nextBtn(context)
+                      ],
+                    ),
                   )
+
                 ],
               ),
             )));
@@ -118,6 +126,56 @@ class _ProfileDetailsState extends State<ProfileDetails> {
         initialDate: DateTime.now(),
         firstDate: DateTime(1900),
         lastDate: DateTime(DateTime.now().year)
+    );
+  }
+
+  OutlinedButton prevBtn(BuildContext context) {
+    return OutlinedButton(
+      style: OutlinedButton.styleFrom(
+          backgroundColor: Color(0xFF953829),
+          minimumSize: const Size(156, 56)
+      ),
+      onPressed: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return ProfileDetailsPicture(
+              gender: _selectedGender,
+              preference: _selectedPreference,
+              dob: _selectedBirthdate
+          );
+        }));
+      },
+      child: const Text(
+        "Previous",
+        style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white
+        ),
+      ),
+    );
+  }
+
+  OutlinedButton nextBtn(BuildContext context) {
+    return OutlinedButton(
+      style: OutlinedButton.styleFrom(
+          minimumSize: const Size(156, 56),
+          backgroundColor: Color(0xFF953829)
+      ),
+      onPressed: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return ProfileDetailsPicture(
+              gender: _selectedGender,
+              preference: _selectedPreference,
+              dob: _selectedBirthdate
+          );
+        }));
+      },
+      child: const Text(
+        "Next",
+        style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white
+        ),
+      ),
     );
   }
 }
