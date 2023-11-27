@@ -94,7 +94,7 @@ def patch_user(updated_user: UserUpdate, user: Annotated[User, Depends(get_curre
         :param user: a user object
         :return: a user object
     """
-
+    # TODO: check if the other fields should be updated
     user.latitude = updated_user.latitude
     user.longitude = updated_user.longitude
 
