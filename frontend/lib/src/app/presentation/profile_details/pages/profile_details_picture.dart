@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/presentation/profile_details/pages/profile_details.dart';
 import 'package:frontend/src/app/presentation/profile_details/pages/profile_details_location.dart';
+import 'package:frontend/src/app/presentation/profile_details/pages/widgets/page_title.dart';
 
 class ProfileDetailsPicture extends StatefulWidget {
   // const ProfileDetailsPicture({super.key});
@@ -42,24 +43,10 @@ class _ProfileDetailsPictureState extends State<ProfileDetailsPicture> {
         child: Center(
           child: Column(
             children: [
-              const SizedBox(height: 51.0),
-              SizedBox(
-                  child: Text("Profile Pictures",
-                      style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 34.0,
-                          color: Colors.black,
-                          decoration: TextDecoration.none))),
-              SizedBox(
-                  child: Text("Provide up to five pictures of yourself",
-                      style: TextStyle(
-                        fontSize: 14.0,
-                        color: Color(0xFF797C7B), // Colors.white70
-                        decoration: TextDecoration.none,
-                        fontStyle: FontStyle.italic,
-                      ))),
-              const SizedBox(height: 150.0),
-
+              const PageTitle(
+                  title: "Profile Pictures",
+                  description: "Provide up to five pictures of yourself"
+              ),
               Center(
                 child: Row(
                   children: [

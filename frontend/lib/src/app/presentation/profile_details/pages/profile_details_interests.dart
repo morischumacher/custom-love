@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/presentation/profile_details/pages/profile_details_location.dart';
+import 'package:frontend/src/app/presentation/profile_details/pages/widgets/page_title.dart';
 
 class ProfileDetailsInterests extends StatefulWidget {
   const ProfileDetailsInterests({super.key});
@@ -17,23 +18,10 @@ class _ProfileDetailsInterestsState extends State<ProfileDetailsInterests> {
         child: Center(
           child: Column(
             children: [
-              const SizedBox(height: 51.0),
-              SizedBox(
-                  child: Text("Your interests",
-                      style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 34.0,
-                          color: Colors.black,
-                          decoration: TextDecoration.none))),
-              SizedBox(
-                  child: Text("Select a few interests and let everyone know what you're passionate about",
-                      style: TextStyle(
-                        fontSize: 14.0,
-                        color: Color(0xFF797C7B), // Colors.white70
-                        decoration: TextDecoration.none,
-                        fontStyle: FontStyle.italic,
-                      ))),
-              const SizedBox(height: 150.0),
+              const PageTitle(
+                  title: "Your interests",
+                  description: "Select a few interests and let everyone know what you're passionate about"
+              ),
               Center(
                 child: Row(
                   children: [
