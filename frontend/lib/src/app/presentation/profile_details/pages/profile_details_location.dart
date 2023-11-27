@@ -23,6 +23,8 @@ class _ProfileDetailsLocationState extends State<ProfileDetailsLocation> {
   String? _selectedCity = "";
   String? _selectedDistrict = "";
 
+  double _radiusValue = 40;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -80,6 +82,22 @@ class _ProfileDetailsLocationState extends State<ProfileDetailsLocation> {
                       enabledBorder: const OutlineInputBorder(
                           borderSide:
                           const BorderSide(color: Color(0xFFE8E6EA)))),
+                ),
+
+                const SizedBox(height: 19.0),
+
+                Slider(
+                  activeColor: const Color(0xFF953829),
+                    min: 0,
+                    max: 80,
+                    divisions: 80,
+                    value: _radiusValue,
+                    label: _radiusValue.round().toString(),
+                    onChanged: (double value) {
+                      setState(() {
+                        _radiusValue = value;
+                      });
+                    }
                 ),
 
                 const Spacer(),
