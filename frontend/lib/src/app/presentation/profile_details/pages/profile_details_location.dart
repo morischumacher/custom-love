@@ -14,7 +14,7 @@ class _ProfileDetailsLocationState extends State<ProfileDetailsLocation> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        padding: EdgeInsets.fromLTRB(21.0, 0, 21.0, 0),
+        padding: const EdgeInsets.fromLTRB(21.0, 0, 21.0, 51.0),
         child: Center(
           child: Column(
             children: [
@@ -22,6 +22,7 @@ class _ProfileDetailsLocationState extends State<ProfileDetailsLocation> {
                   title: "Location",
                   description: "Provide information about your location"
               ),
+              const Spacer(),
               Center(
                 child: Row(
                   children: [
@@ -31,8 +32,6 @@ class _ProfileDetailsLocationState extends State<ProfileDetailsLocation> {
                   ],
                 ),
               )
-
-              // "Previous"- or "Next"-buttons
             ],
           ),
         )

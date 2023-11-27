@@ -39,7 +39,7 @@ class _ProfileDetailsPictureState extends State<ProfileDetailsPicture> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        padding: EdgeInsets.fromLTRB(21.0, 0, 21.0, 0),
+        padding: const EdgeInsets.fromLTRB(21.0, 0, 21.0, 51.0),
         child: Center(
           child: Column(
             children: [
@@ -47,6 +47,7 @@ class _ProfileDetailsPictureState extends State<ProfileDetailsPicture> {
                   title: "Profile Pictures",
                   description: "Provide up to five pictures of yourself"
               ),
+              const Spacer(),
               Center(
                 child: Row(
                   children: [
@@ -56,8 +57,6 @@ class _ProfileDetailsPictureState extends State<ProfileDetailsPicture> {
                   ],
                 ),
               )
-
-              // "Previous"- or "Next"-buttons
             ],
           ),
         )

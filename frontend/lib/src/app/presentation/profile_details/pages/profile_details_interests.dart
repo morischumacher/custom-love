@@ -14,7 +14,7 @@ class _ProfileDetailsInterestsState extends State<ProfileDetailsInterests> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        padding: EdgeInsets.fromLTRB(21.0, 0, 21.0, 0),
+        padding: const EdgeInsets.fromLTRB(21.0, 0, 21.0, 51.0),
         child: Center(
           child: Column(
             children: [
@@ -22,6 +22,7 @@ class _ProfileDetailsInterestsState extends State<ProfileDetailsInterests> {
                   title: "Your interests",
                   description: "Select a few interests and let everyone know what you're passionate about"
               ),
+              const Spacer(),
               Center(
                 child: Row(
                   children: [
@@ -31,8 +32,6 @@ class _ProfileDetailsInterestsState extends State<ProfileDetailsInterests> {
                   ],
                 ),
               )
-
-              // "Previous"- or "Next"-buttons
             ],
           ),
         )

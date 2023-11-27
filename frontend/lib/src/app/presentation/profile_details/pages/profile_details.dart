@@ -24,7 +24,7 @@ class _ProfileDetailsState extends State<ProfileDetails> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: Container(
-            padding: EdgeInsets.fromLTRB(21.0, 0, 21.0, 0),
+            padding: EdgeInsets.fromLTRB(21.0, 0, 21.0, 51.0),
             child: Center(
               child: Column(
                 children: [
@@ -93,7 +93,7 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                         )
                     ),
                   ),
-                  const SizedBox(height: 38.0),
+                  const Spacer(),
                   Center(
                     child: Row(
                       children: [
