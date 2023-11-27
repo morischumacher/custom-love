@@ -14,4 +14,14 @@ class UserService {
       rethrow;
     }
   }
+
+  Future<User> getUser() async {
+      try {
+        final user = _userApi.getUser();
+        return user;
+      } on Exception {
+        rethrow;
+      }
+  }
+
 }

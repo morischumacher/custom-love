@@ -27,6 +27,46 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text('Custom Love App'),
         backgroundColor: _customLoveTheme.primaryColor,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30),
+            child: PopupMenuButton(
+                icon: const Icon(Icons.tune, size: 20, color: Colors.black,),
+                itemBuilder: (BuildContext context) => [
+                  PopupMenuItem(
+                    value: "Random Algorithm",
+                    child: ListTile(
+                      title: const Text("Random Algorithm", style: TextStyle(fontSize: 13)),
+                      onTap: () {
+                        print("selected");
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: "Interest-based Algorithm",
+                    child: ListTile(
+                      title: const Text("Interest-based Algorithm", style: TextStyle(fontSize: 13)),
+                      onTap: () {
+                        print("selected");
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: "Preference-based Algorithm",
+                    child: ListTile(
+                      title: const Text("Preference-based Algorithm", style: TextStyle(fontSize: 13)),
+                      onTap: () {
+                        print("selected");
+                        Navigator.pop(context);
+                      },
+                    ),
+                  )
+                ]
+            ),
+          ),
+        ],
       ),
       body: getPage(_currentPage),
       bottomNavigationBar: BottomNavigationBar(
@@ -61,7 +101,7 @@ class _HomeScreenState extends State<HomeScreen> {
       case AppPage.Profile:
         return Profile(userService: context.read<UserService>());
       case AppPage.Swipe:
-        return const Swipe();
+        return Swipe(userService: context.read<UserService>());
       case AppPage.Matches:
         return const Matches();
     }
