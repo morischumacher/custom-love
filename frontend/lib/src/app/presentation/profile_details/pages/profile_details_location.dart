@@ -11,31 +11,91 @@ class ProfileDetailsLocation extends StatefulWidget {
 }
 
 class _ProfileDetailsLocationState extends State<ProfileDetailsLocation> {
+  _ProfileDetailsLocationState() {
+    _selectedCountry = _countryList[0];
+    _selectedCity = _cityList[0];
+    _selectedDistrict = _districtList[0];
+  }
+  final _countryList = ["Austria", "Germany", "France"];
+  final _cityList = ["Vienna", "Graz", "Innsbruck", "Salzburg"];
+  final _districtList = ["1", "2", "3"];
+  String? _selectedCountry = "";
+  String? _selectedCity = "";
+  String? _selectedDistrict = "";
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-        padding: const EdgeInsets.fromLTRB(21.0, 0, 21.0, 51.0),
-        child: Center(
-          child: Column(
-            children: [
-              const PageTitle(
-                  title: "Location",
-                  description: "Provide information about your location",
-                  bottomPadding: 150.0,
-              ),
-              const Spacer(),
-              Center(
-                child: Row(
-                  children: [
-                    prevBtn(context),
-                    const Spacer(),
-                    nextBtn(context)
-                  ],
+    return Scaffold(
+      body: Container(
+          padding: const EdgeInsets.fromLTRB(21.0, 0, 21.0, 51.0),
+          child: Center(
+            child: Column(
+              children: [
+                const PageTitle(
+                    title: "Location",
+                    description: "Provide information about your location",
+                    bottomPadding: 150.0,
                 ),
-              )
-            ],
-          ),
-        )
+                DropdownButtonFormField(
+                  value: _selectedCountry,
+                  items: _countryList
+                      .map((e) => DropdownMenuItem(child: Text(e), value: e))
+                      .toList(),
+                  onChanged: (val) {
+                    setState(() {
+                      _selectedCountry = val as String;
+                    });
+                  },
+                  icon: const Icon(
+                    Icons.arrow_drop_down,
+                    color: Colors.black,
+                  ),
+                  dropdownColor: Color(0xFFFFCCBC),
+                  decoration: InputDecoration(
+                      labelText: "Country",
+                      border: OutlineInputBorder(),
+                      enabledBorder: const OutlineInputBorder(
+                          borderSide:
+                          const BorderSide(color: Color(0xFFE8E6EA)))),
+                ),
+                const SizedBox(height: 19.0),
+                DropdownButtonFormField(
+                  value: _selectedCity,
+                  items: _cityList
+                      .map((e) => DropdownMenuItem(child: Text(e), value: e))
+                      .toList(),
+                  onChanged: (val) {
+                    setState(() {
+                      _selectedCity = val as String;
+                    });
+                  },
+                  icon: const Icon(
+                    Icons.arrow_drop_down,
+                    color: Colors.black,
+                  ),
+                  dropdownColor: Color(0xFFFFCCBC),
+                  decoration: InputDecoration(
+                      labelText: "City",
+                      border: OutlineInputBorder(),
+                      enabledBorder: const OutlineInputBorder(
+                          borderSide:
+                          const BorderSide(color: Color(0xFFE8E6EA)))),
+                ),
+
+                const Spacer(),
+                Center(
+                  child: Row(
+                    children: [
+                      prevBtn(context),
+                      const Spacer(),
+                      nextBtn(context)
+                    ],
+                  ),
+                )
+              ],
+            ),
+          )
+      ),
     );
 
   }
