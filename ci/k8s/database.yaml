@@ -35,7 +35,7 @@ spec:
           secretName: database-config
       containers:
         - name: postgres
-          image: postgres:latest
+          image: postgis/postgis:latest
           resources:
             requests:
               memory: "256Mi"
@@ -61,7 +61,9 @@ spec:
               - "\\c"
           volumeMounts:
           - name: database-config
-            mountPath: /docker-entrypoint-initdb.d
+            mountPath: /docker-entrypoint-initdb.d/database-startup.sh
+            readOnly: true
+            subPath: database-startup.sh
         - name: adminer
           image: adminer:latest
           resources:
