@@ -1,18 +1,22 @@
 from typing import Annotated
 from fastapi import Depends, HTTPException
+from fastapi_pagination.ext.sqlmodel import paginate
 from sqlmodel import Session, select
-
+from starlette.requests import Request
 from backend.models.interest import Interest
 from backend.repository.repository import create_session
+from backend.utils.pagination import PaginationParams
 
 
-def get_interests(db: Annotated[Session, Depends(create_session)]):
+def get_interests(db: Annotated[Session, Depends(create_session)], request: Request):
     """
     Return all interests
+    :param request: injected request
     :param db: injected database
     :return: a list of interests
     """
-    return db.exec(select(Interest)).all()
+    return paginate(db, select(Interest), PaginationParams(size=request.query_params.get("size"),
+                                                 page=request.query_params.get("page")))
 
 
 def get_interest(interest_id, db: Annotated[Session, Depends(create_session)]):

@@ -44,6 +44,6 @@ spec:
             pathType: ImplementationSpecific
             backend:
               service:
-                name: s-23ws-ase-pr-inso-06-develop-release-service
+                name: s-23ws-ase-pr-inso-06-release-backend-service
                 port:
                   number: 80

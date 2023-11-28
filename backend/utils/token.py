@@ -1,4 +1,4 @@
-from datetime import timedelta, datetime
+from datetime import timedelta, datetime, timezone
 from typing import Annotated
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
@@ -28,7 +28,7 @@ def create_access_token(data: dict, expiration_minutes=ACCESS_TOKEN_EXPIRE_MINUT
     :return: jwt token
     """
     to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(minutes=expiration_minutes)
+    expire = datetime.now(timezone.utc) + timedelta(minutes=expiration_minutes)
 
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)

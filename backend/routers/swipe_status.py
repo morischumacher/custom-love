@@ -1,20 +1,21 @@
 from typing import List, Annotated
-
 from fastapi import APIRouter, Depends
-from fastapi_pagination import Page
+from backend.utils.pagination import Page
 from starlette import status
 
 from backend.responses.error_response import ErrorResponse
 from backend.services.swipe_status import post_view, post_like, get_matches
 from backend.models.swipe_status import SwipeStatus
 
-router = APIRouter(prefix='/swipe_statuses', tags=['swipe_statuses'], responses={404: {"description": "Not found"}})
+router = APIRouter(prefix='/swipe_statuses', tags=['swipe_statuses'], responses={
+    status.HTTP_200_OK: {"description": "Success"}
+})
 
 
-@router.get("/matches", response_model=List[SwipeStatus], status_code=status.HTTP_200_OK, responses={
+@router.get("/matches", response_model=Page[SwipeStatus], responses={
     status.HTTP_401_UNAUTHORIZED: {"description": "Error: Unauthorized", "model": ErrorResponse}
 })
-async def get_matches(commons: Annotated[dict, Depends(get_matches)]):
+async def get_matches(commons: Annotated[Page[SwipeStatus], Depends(get_matches)]):
     return commons
 
 

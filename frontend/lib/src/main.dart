@@ -42,7 +42,9 @@ class CustomLove extends StatelessWidget {
         routes: {
           '/': (context) {
             final loginService = Provider.of<LoginService>(context);
-            return LoginPage(loginService: loginService);
+            final userService = Provider.of<UserService>(context);
+            return LoginPage(
+                loginService: loginService, userService: userService);
           },
           '/home': (context) {
             final userService = Provider.of<UserService>(context);

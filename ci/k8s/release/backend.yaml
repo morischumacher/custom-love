@@ -21,7 +21,7 @@ spec:
       - name: secret-dockercfg
       containers:
         - name: release-backend
-          image: registry.reset.inso-w.at/2023ws-ase-pr-group/23ws-ase-pr-inso-06-release-backend:latest
+          image: registry.reset.inso-w.at/2023ws-ase-pr-group/23ws-ase-pr-inso-06/release-backend:latest
           resources:
             requests:
               memory: "512Mi"

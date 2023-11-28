@@ -1,23 +1,25 @@
 from typing import Annotated
-
 from fastapi import APIRouter, Depends
-from fastapi_pagination import Page, paginate
 from starlette import status
+
+from backend.responses.user_response import UserResponse
 from backend.models.user import User
 from backend.responses.error_response import ErrorResponse
-from backend.security.token import Token
-from backend.services.user import get_user, post_user, get_users, login
+from backend.utils.pagination import Page
+from backend.utils.token import Token
+from backend.services.user import get_user, post_user, patch_user, get_users, login, get_algo_user, \
+    UserUpdate
 
 router = APIRouter(prefix='/users', tags=['users'], responses={status.HTTP_200_OK: {"description": "Success"}})
 
 
 @router.get("/", response_model=Page[User])
-async def get_users(commons: Annotated[dict, Depends(get_users)]):
+async def get_users(commons: Annotated[Page[User], Depends(get_users)]):
     """
     Retrieves all users stored in the system.
     :return: a list of users
     """
-    return paginate(commons)
+    return commons
 
 
 @router.get('/{user_id}', response_model=User, responses={
@@ -43,6 +45,32 @@ def post_user(commons: Annotated[dict, Depends(post_user)]):
     return commons
 
 
+@router.patch('/', response_model=UserResponse, responses={
+    status.HTTP_404_NOT_FOUND: {"description": "User not found", "model": ErrorResponse},
+    status.HTTP_422_UNPROCESSABLE_ENTITY: {"description": "Validation Error", "model": ErrorResponse}
+})
+def patch_user(commons: Annotated[UserUpdate, Depends(patch_user)]):
+    """
+    Update current user information.
+    :param db: Database session dependency.
+    :return: Updated user.
+    """
+    return commons
+
+
 @router.post("/login", response_model=Token)
 def login(commons: Annotated[Token, Depends(login)]):
+    return commons
+
+
+@router.get('/algo/{algo_id}', response_model=Page[User], responses={
+    status.HTTP_404_NOT_FOUND: {"description": "Not Found", "model": ErrorResponse},
+    status.HTTP_400_BAD_REQUEST: {"description": "Bad Request", "model": ErrorResponse},
+})
+def get_algo_user(commons: Annotated[Page[User], Depends(get_algo_user)]):
+    """
+    Retrieves a user based on a given algorithm
+        1: random
+    :return: a user with a corresponding id which is in the search radius
+    """
     return commons

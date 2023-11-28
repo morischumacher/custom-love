@@ -1,9 +1,7 @@
-from typing import List, Annotated
-
+from typing import Annotated
 from fastapi import APIRouter, Depends
-from fastapi_pagination import Page, paginate
+from backend.utils.pagination import Page
 from starlette import status
-
 from backend.models.rating import Rating
 from backend.responses.error_response import ErrorResponse
 from backend.services.rating import get_rating, get_ratings, post_rating
@@ -12,13 +10,13 @@ router = APIRouter(prefix='/ratings', tags=['ratings'], responses={status.HTTP_2
 
 
 @router.get("/", response_model=Page[Rating])
-async def get_ratings(commons: Annotated[dict, Depends(get_ratings)]):
+async def get_ratings(commons: Annotated[Page[Rating], Depends(get_ratings)]):
     """
     Return a paginated list of ratings
     :param commons:
     :return:
     """
-    return paginate(commons)
+    return commons
 
 
 @router.get('/{rating_id}', response_model=Rating, responses={

@@ -1,7 +1,27 @@
-class ApiConfig {
-  // Use this when runnung in browser
-  static const String baseUrl = 'http://127.0.0.1:8000';
+import 'package:frontend/src/config/connection.dart';
 
-  // Use this when running on emulator
-  //static const String baseUrl = 'http://10.0.2.2:8000';
+// Comment out the above import and use this when running on emulator:
+// import 'package:frontend/src/config/connection_emulator.dart';
+
+class ApiConfig {
+  String _baseUrl = "";
+  String _socketsUrl = "";
+
+  ApiConfig() {
+    String urlPrefix = config['use_tls'] ? "https" : "http";
+    String socketsPrefix = config['use_tls'] ? "wss" : "ws";
+    String port = config['port'] != '' ? ":${config['port']}" : "";
+
+    _baseUrl = "$urlPrefix://${config['server']}$port";
+    _socketsUrl = "$socketsPrefix://${config['server']}$port";
+  }
+
+  static ApiConfig? _instance;
+  static ApiConfig _getInstance() {
+    _instance ??= ApiConfig();
+    return _instance!;
+  }
+
+  static String get baseUrl => _getInstance()._baseUrl;
+  static String get socketsUrl => _getInstance()._socketsUrl;
 }

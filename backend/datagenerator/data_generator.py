@@ -1,9 +1,7 @@
 from datetime import datetime
-
 from sqlalchemy.engine import Engine
 from sqlmodel import Session, select
-
-from backend.models.address import Address
+from backend.models.conversation import Conversation
 from backend.models.gender_identity import GenderIdentity
 from backend.models.interest import Interest
 from backend.models.language import Language
@@ -11,7 +9,7 @@ from backend.models.preference import Preference
 from backend.models.rating import Rating
 from backend.models.swipe_status import SwipeStatus, SwipeStatusType
 from backend.models.user import User
-from backend.security.passwords import hash_pwd
+from backend.utils.passwords import hash_pwd
 
 
 class DataGenerator:
@@ -40,25 +38,6 @@ class DataGenerator:
             preference_2: Preference = Preference(property_1="property2", property_2="property5", decision="decision2",
                                                   date=datetime.today())
 
-            ulm: Address = Address(
-                country="Germany",
-                city="Ulm",
-                district="Kesselbronn",
-                latitude_northeast=2.1,
-                latitude_southwest=10.2,
-                longitude_northeast=20.7,
-                longitude_southwest=80.9
-            )
-            vienna: Address = Address(
-                country="Austria",
-                city="Vienna",
-                district="10",
-                latitude_northeast=39.4,
-                latitude_southwest=30.2,
-                longitude_northeast=23.2,
-                longitude_southwest=65.0
-            )
-
             # Gender Identity
             man = GenderIdentity(name="man")
             woman = GenderIdentity(name="woman")
@@ -84,10 +63,11 @@ class DataGenerator:
                 languages=[english],
                 preferences=[preference_1],
                 gender_preferences=[woman],
-                address=vienna,
                 gender_identity=man,
                 interests=[sports, movies],
-                password=hash_pwd("pass1")
+                password=hash_pwd("pass1"),
+                latitude=48.227982,
+                longitude=16.372316
             )
             user_bravo = User(
                 first_name='Bravo',
@@ -101,10 +81,11 @@ class DataGenerator:
                 languages=[english, french, german],
                 preferences=[preference_1, preference_2],
                 gender_preferences=[woman, man],
-                address=ulm,
                 gender_identity=woman,
                 interests=[travel, books, science],
-                password=hash_pwd("pass1")
+                password=hash_pwd("pass1"),
+                latitude=48.215178,
+                longitude=16.354447
             )
             user_charlie = User(
                 first_name='Charlie',
@@ -118,18 +99,15 @@ class DataGenerator:
                 languages=[french, german],
                 gender_preferences=[woman],
                 preferences=[preference_2],
-                address=ulm,
                 gender_identity=divers,
                 interests=[science],
-                password=hash_pwd("pass1")
+                password=hash_pwd("pass1"),
+                latitude=48.172097,
+                longitude=16.294326
             )
 
             # Rating
             alfa_bravo_rating = Rating(id=1, rating_user_id=user_alfa.id, rated_user_id=user_bravo.id, is_safe=True)
-
-            #Match
-            # alfa_bravo_matching = SwipeStatus(user1_id=user_alfa.id, user2_id=user_bravo.id, status=SwipeStatusType.match)
-            # alfa_charlie_matching = SwipeStatus(user1_id=user_alfa.id, user2_id=user_charlie.id, status=SwipeStatusType.view)
 
             session.add(user_alfa)
             session.add(user_bravo)
@@ -138,12 +116,15 @@ class DataGenerator:
             session.refresh(user_alfa)
             session.refresh(user_bravo)
 
-"""            session.add(alfa_bravo_rating)
-            session.add(alfa_bravo_matching)
-            session.add(alfa_charlie_matching)
-            session.add(alfa_charlie_matching)
+            # Conversations
+            session.add(Conversation(user1_id=user_alfa.id, user2_id=user_bravo.id))
+            session.add(Conversation(user1_id=user_charlie.id, user2_id=user_bravo.id))
+            session.add(Conversation(user1_id=user_charlie.id, user2_id=user_alfa.id))
+            session.commit()
+
+            # Rating
+            alfa_bravo_rating = Rating(rating_user_id=user_alfa.id, rated_user_id=user_bravo.id, is_safe=True)
+            session.add(alfa_bravo_rating)
+            session.add(alfa_bravo_rating)
             session.commit()
             session.refresh(alfa_bravo_rating)
-            session.refresh(alfa_bravo_matching)
-            session.refresh(alfa_charlie_matching)
-            session.refresh(alfa_charlie_matching)"""

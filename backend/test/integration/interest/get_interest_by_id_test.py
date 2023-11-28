@@ -1,17 +1,19 @@
+from starlette import status
 from backend.test.integration.fixtures import client_fixture as client, session_fixture as session
-from backend.models.interest import Interest
+from backend.test.integration.test_utils import interest, load_entities
 
 
 def test_get_interest_by_id(client, session):
-    sports = Interest(name="sports", icon="icon1")
-    movies = Interest(name="movies", icon="icon2")
-    travel = Interest(name="travel", icon="icon3")
+    sports = interest("sports")
+    load_entities([sports], session)
 
-    session.add(sports)
-    session.add(movies)
-    session.add(travel)
-    session.commit()
+    response = client.get(f"/interests/{sports.id}")
 
-    response = client.get("/interests/3")
-    print(f"got interest: {response.json()}")
-    assert response.status_code == 200
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json()['id'] == sports.id
+
+
+def test_get_interest_by_id_non_existent(client, session):
+    response = client.get(f"/interests/1")
+
+    assert response.status_code == status.HTTP_404_NOT_FOUND

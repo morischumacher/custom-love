@@ -78,6 +78,7 @@ build-frontend:
   script:
   - |
     cd frontend
+    mv lib/src/config/connection_$TARGET.dart lib/src/config/connection.dart
     flutter pub get
     flutter build web --base-href /$TARGET/app/ -t lib/src/main.dart
   artifacts:
@@ -91,12 +92,14 @@ package-frontend:
   image:     
     name: gcr.io/kaniko-project/executor:v1.17.0-debug
     entrypoint: [""]
+  before_script:
+  - export TARGET=`cat gitlab_vars_target`
   script:
   - echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(printf "%s:%s" "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"},\"$CI_DEPENDENCY_PROXY_SERVER\":{\"auth\":\"$(printf "%s:%s" ${CI_DEPENDENCY_PROXY_USER} "${CI_DEPENDENCY_PROXY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
   - /kaniko/executor
     --context "${CI_PROJECT_DIR}"
     --dockerfile "ci/containers/frontend.Dockerfile"
-    --destination "registry.reset.inso-w.at/2023ws-ase-pr-group/23ws-ase-pr-inso-06/develop-frontend:$CI_PIPELINE_ID"
+    --destination "registry.reset.inso-w.at/2023ws-ase-pr-group/23ws-ase-pr-inso-06/$TARGET-frontend:$CI_PIPELINE_ID"
 
 unittest-backend:
   stage: test-backend
@@ -113,7 +116,7 @@ build-backend:
   before_script:
     - export TARGET=`cat gitlab_vars_target`
     - export BUILD_ARG="--build-arg ROOT_PATH=/$TARGET/backend"
-    - echo "/kaniko/executor $BUILD_ARG --context \"${CI_PROJECT_DIR}\" --dockerfile \"ci/containers/backend.Dockerfile\" --destination \"registry.reset.inso-w.at/2023ws-ase-pr-group/23ws-ase-pr-inso-06/develop-backend:$CI_PIPELINE_ID\"" > build_script.sh
+    - echo "/kaniko/executor $BUILD_ARG --context \"${CI_PROJECT_DIR}\" --dockerfile \"ci/containers/backend.Dockerfile\" --destination \"registry.reset.inso-w.at/2023ws-ase-pr-group/23ws-ase-pr-inso-06/$TARGET-backend:$CI_PIPELINE_ID\"" > build_script.sh
     - chmod +x build_script.sh
     - cat build_script.sh
   script:
