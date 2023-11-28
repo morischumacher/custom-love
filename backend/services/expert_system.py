@@ -21,7 +21,7 @@ def get_expert_system_by_user_id(user_id, db: Annotated[Session, Depends(create_
     if len(expert_system) == 0:
         raise NotFoundException(f"Could not find expert system for  user with id = {user_id}")
     elif len(expert_system) > 1:
-        raise BadRequestException(f"More than one expert systems of user with Id = {user_id}")
+        raise BadRequestException(f"More than one expert systems of user with id = {user_id}")
     return expert_system[0]
 
 

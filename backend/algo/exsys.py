@@ -1,132 +1,140 @@
-from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score, classification_report
-import numpy as np
+from datetime import date
 import joblib
 from io import BytesIO
-from backend.models.expert_system import ExpertSystem
-from backend.routers.user import fetch_expert_system
+from typing import List
+from backend.models.user import User
 
 
 class ExSys:
-    def __init__(self, users, training_data):
-        self.users = users
-        self.training_data = training_data
-        self.model = None
-
-    def train_model(self, target_user_id):
-        X, y = self.prepare_data(target_user_id)
-        X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.8, random_state=42)
-
-        # Train logistic regression model
-        model = LogisticRegression()
-        model.fit(X_train, y_train)
-
-        # Evaluate the model
-        y_pred = model.predict(X_test)
-        print("Accuracy:", accuracy_score(y_test, y_pred))
-        print("Classification Report:\n", classification_report(y_test, y_pred))
-
+    """
+    X_train: The features on which we train our model (in our case: all user features despite like/dislike)
+    y_train: The target feature on which we train our model (in our case: like/dislike)
+    X_predict: The features on which we want to make a decision (in our case: all user features despite like/dislike)
+    y_predict: The decision (in our case: like/dislike)
+    """
+    def __init__(self, model):
         self.model = model
 
-    def prepare_data(self, target_user_id):
-        # Create feature matrix (X) and target vector (y) from training_data for the specified target_user
-        X = []
-        y = []
+    # TODO
+    def train_model(self, user_list: List[User], like_decisions: List[bool]):
+        """
+        Retrieves trainingsdata to train a model based on this. length(user_list)==length(like_decisions)
+        param: user_list, list of user to train the model
+        param: like_decisions, array of boolean which predict if the user liked(=1) or disliked(=0) the at the
+        corresponding index
+         return a model trained on the trainingsdata.
+        """
 
-        # Extract likes and dislikes for the target_user
-        likes = self.training_data.get(target_user_id, {})
+        # Creates a logic regression model
+        model = LogisticRegression()
 
-        for liked_user, like_probability in likes.items():
-            # Extract relevant features from users and construct feature vector
-            user_features = self.extract_features(self.users[target_user_id], self.users[liked_user])
-            X.append(user_features)
+        # Build input for model
+        X_train, y_train = users_and_likes_to_x_train_y_train(user_list, like_decisions)
 
-            # Binary label: 1 if liked, 0 if disliked
-            y.append(like_probability)
+        # Train model
+        model.fit(X_train, y_train)
 
-        return np.array(X), np.array(y)
+        # set the model of the exsys instance
+        self.model = model
 
-    def extract_features(self, user, liked_user):
-        # Extract relevant features from users and construct feature vector
-        # This is a simplified example; you may need to customize this based on your user model
-        user_features = [
-            user["biolenght"],
-            user["age"],
-            user["genderid"]
-            # Add more features as needed
-        ]
+        return model
 
-        liked_user_features = [
-            liked_user["biolenght"],
-            liked_user["age"],
-            liked_user["genderid"]
-            # Add more features as needed
-        ]
+    # TODO
+    def update_model(self, user_list: List[User], like_decisions: List[bool]):
+        """
+        Retrieves a model and trainingsdata to update the model with the data. length(user_list)==length(like_decisions)
+        param: model, existing logic regression model
+        param: user_list, list of user to train the model
+        param: like_decisions, array of boolean which predict if the user liked(=1) or disliked(=0) the at the
+        corresponding index
+         return the model updated with the trainingsdata.
+        """
 
-        return user_features + liked_user_features
+        # Build input for model
+        X_train, y_train = users_and_likes_to_x_train_y_train(user_list, like_decisions)
 
-    def predict_probability(self, target_user_id, liked_user):
-        # Predict the probability of the target_user liking the liked_user
-        features = self.extract_features(self.users[target_user_id], self.users[liked_user])
-        probability = self.model.predict_proba([features])[:, 1]  # Probability of class "1" (like)
-        return probability
+        # Update existing model
+        self.model.fit(X_train, y_train)
 
-    def order_users_by_probability(self, target_user_id):
-        # Order other users by the predicted probability of target_user liking them
-        if self.model is None:
-            raise ValueError("Model not trained. Please train the model first.")
+        return self.model
 
-        probabilities = []
-        for other_user in self.users:
-            if other_user != target_user_id:
-                probability = self.predict_probability(target_user_id, other_user)
-                probabilities.append((other_user, probability))
+    def serialize_model(self):
+        """
+        Retrieves a LogicRegression model
+        return a serialized object of the model to store in the database
+        """
+        # Create byte object
+        bytes_object = BytesIO()
+        # Dump model in byte object
+        joblib.dump(self.model, bytes_object)
+        # Get value of dump
+        serialized_model = bytes_object.getvalue()
 
-        # Sort users by probability in descending order
-        sorted_users = sorted(probabilities, key=lambda x: x[1], reverse=True)
-        return sorted_users
+        return serialized_model
 
-    def update_model(self, user_id):
+    def deserialize_and_set_model(self, serialized_model):
+        """
+        Retrieves a  serialized LogicRegression() model
+        returns a LogicRegression() model read to use
+        """
 
-        # Assuming 'self.model' is your scikit-learn model
-        serialized_model = BytesIO()
-        joblib.dump(self.model, serialized_model)
-        model_data = serialized_model.getvalue()
-        return fetch_expert_system(user_id, model_data)
+        # deserialize bytes object
+        loaded_model = joblib.load(BytesIO(serialized_model))
 
+        # set the model of the exsys instance
+        self.model = loaded_model
 
-# Initial Training Data
-user1 = {"id": 1, "biolenght": 25, "age": 10, "genderid": 1}
-user2 = {"id": 2, "biolenght": 30, "age": 15, "genderid": 2}
-user3 = {"id": 3, "biolenght": 28, "age": 12, "genderid": 2}
-user4 = {"id": 4, "biolenght": 32, "age": 18, "genderid": 1}
-user5 = {"id": 5, "biolenght": 22, "age": 8, "genderid": 2}
-user6 = {"id": 6, "biolenght": 35, "age": 20, "genderid": 1}
-user7 = {"id": 7, "biolenght": 29, "age": 14, "genderid": 2}
-user8 = {"id": 8, "biolenght": 27, "age": 16, "genderid": 1}
+        return self.model
 
-# Example Training Data
-# Updated Training Data
-training_data = {
-    user1["id"]: {user2["id"]: 1, user3["id"]: 0, user4["id"]: 1, user5["id"]: 0, user6["id"]: 1, user7["id"]: 0, user8["id"]: 1}
-}
+    def predict(self, user_list: List[User]):
+        """
+        Retrieves a list of users
+        returns a list with the probabilities for a like of the user.
+        y_predict[0]==0.8 ->  user at position user_list[0] will be liked with a probability of 80%
+        """
+        # Create list with predictions
+        y_predict = []
 
+        for user in user_list:
+            X_test = users_to_x_predict(user)
+            probability = self.model.predict_proba(X_test)[0, 1]  # Probability of class "1" (liked)
+            y_predict.append(probability)
 
-# Initialize and use the expert system for user1
-users = {user["id"]: user for user in [user1, user2, user3, user4, user5, user6, user7, user8]}
-exsys = ExSys(users, training_data)
+        return y_predict
 
 
-target_user = user1["id"]
-exsys.train_model(target_user)
+def users_and_likes_to_x_train_y_train(user_list: List[User], like_decisions: List[bool]):
+    # Mapping dictionary for encoding gender labels
+    gender_mapping = {"men": 1, "woman": 2, "divers": 3}
 
-# Now you can order users based on predicted probabilities for user1
-ordered_users = exsys.order_users_by_probability(target_user)
+    # Create training data
+    X_train = []
 
-# Print the ordered users based on predicted probabilities
-for user, probability in ordered_users:
-    print(f"User ID: {user}, Probability: {probability}")
+    # Target Data
+    y_train = like_decisions
 
-# Store model in database
-exsys.update_model(1)
+    #TODO Edit actual Mapping
+    for user in user_list:
+        X_train.append([calculate_age(user.date_of_birth), len(user.bio),
+                        gender_mapping.get(str(user.gender_identity))])
+
+    return X_train, y_train
+
+
+def users_to_x_predict(user: User):
+    # Mapping dictionary for encoding gender labels
+    gender_mapping = {"men": 1, "woman": 2, "divers": 3}
+
+    # TODO Edit actual Mapping
+    X_predict = [calculate_age(user.date_of_birth), len(user.bio), gender_mapping.get(str(user.gender_identity))]
+
+    return X_predict
+
+
+def calculate_age(date_of_birth):
+    today = date.today()
+    return today.year - date_of_birth.year - ((today.month, today.day) < (date_of_birth.month, date_of_birth.day))
+
+
+
