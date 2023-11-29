@@ -30,7 +30,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  swipe_cards: ^2.0.0+1
+  swipe_cards: 2.0.0+1
   flutter_secure_storage: 7.0.1
   event: 2.1.2
 

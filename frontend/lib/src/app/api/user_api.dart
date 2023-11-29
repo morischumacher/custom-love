@@ -30,9 +30,9 @@ class UserApi {
   }
 
   Future<User> getUser() async {
-    int number = random.nextInt(3) + 1;
+    int id = random.nextInt(3) + 1;
     final response =
-    await httpClient.get(Uri.parse('${ApiConfig.baseUrl}/users/$number'));
+    await httpClient.get(Uri.parse('${ApiConfig.baseUrl}/users/$id'));
 
     if (response.statusCode == 200) {
       print("RESPONSE: ${response.body}");
@@ -88,8 +88,8 @@ class UserApi {
     if (response.statusCode == 200) {
       final dynamic jsonItem = json.decode(response.body);
       var getItems = jsonItem["items"];
-      int id = random.nextInt(getItems.length-1) + 1;
-      final User user = User.fromJson(getItems[id]);
+      int number = random.nextInt(getItems.length-1);
+      final User user = User.fromJson(getItems[number]);
       return user;
     } else {
       // TODO: Add custom exception
