@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/src/app/presentation/chat/pages/conversation.dart';
 import 'package:frontend/src/config/theme.dart';
-import 'package:frontend/src/app/presentation/match/pages/matches.dart';
 import 'package:frontend/src/app/presentation/profile/pages/profile.dart';
 import 'package:frontend/src/app/presentation/swipe/pages/swipe.dart';
 import 'package:frontend/src/app/service/user_service.dart';
@@ -63,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
       case AppPage.Swipe:
         return const Swipe();
       case AppPage.Matches:
-        return const Matches();
+        return const ConversationsPage();
     }
   }
 }

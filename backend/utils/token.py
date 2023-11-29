@@ -18,6 +18,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="users/login")
 class Token(BaseModel):
     access_token: str
     token_type: str
+    user: User
 
 
 def create_access_token(data: dict, expiration_minutes=ACCESS_TOKEN_EXPIRE_MINUTES):

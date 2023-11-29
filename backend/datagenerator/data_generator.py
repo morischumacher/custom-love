@@ -5,6 +5,7 @@ from backend.models.conversation import Conversation
 from backend.models.gender_identity import GenderIdentity
 from backend.models.interest import Interest
 from backend.models.language import Language
+from backend.models.message import Message
 from backend.models.preference import Preference
 from backend.models.rating import Rating
 from backend.models.swipe_status import SwipeStatus, SwipeStatusType
@@ -105,6 +106,45 @@ class DataGenerator:
                 latitude=48.172097,
                 longitude=16.294326
             )
+            user4 = User(
+                first_name='user4_name',
+                last_name='user4_last_name',
+                email='user4@email.com',
+                bio='Test subject 4',
+                date_of_birth=datetime.today(),
+                job='Civil Engineer',
+                search_radius=20,
+                swipes_left=2,
+                languages=[french, german],
+                gender_preferences=[woman],
+                preferences=[preference_2],
+                gender_identity=divers,
+                interests=[science],
+                password=hash_pwd("pass1"),
+                latitude=48.172097,
+                longitude=16.294326
+            )
+
+            users = []
+            for i in range(25):
+                users.append(User(
+                    first_name=f"{chr(i + 65)}",
+                    last_name=f"{chr(90 - i)}",
+                    email=f"{chr(i + 41)}{chr(90 - i)}@email.com",
+                    bio=f'Test subject {i}',
+                    date_of_birth=datetime.today(),
+                    job='Civil Engineer',
+                    search_radius=20,
+                    swipes_left=2,
+                    languages=[french, german],
+                    gender_preferences=[woman],
+                    preferences=[preference_2],
+                    gender_identity=divers,
+                    interests=[science],
+                    password=hash_pwd("pass1"),
+                    latitude=48.172097,
+                    longitude=16.294326
+                ))
 
             # Rating
             alfa_bravo_rating = Rating(id=1, rating_user_id=user_alfa.id, rated_user_id=user_bravo.id, is_safe=True)
@@ -120,6 +160,10 @@ class DataGenerator:
             session.add(Conversation(user1_id=user_alfa.id, user2_id=user_bravo.id))
             session.add(Conversation(user1_id=user_charlie.id, user2_id=user_bravo.id))
             session.add(Conversation(user1_id=user_charlie.id, user2_id=user_alfa.id))
+            session.add(SwipeStatus(user1_id=user_alfa.id, user2_id=user_bravo.id, status=SwipeStatusType.match))
+            session.add(SwipeStatus(user1_id=user_alfa.id, user2_id=user_charlie.id, status=SwipeStatusType.match))
+            session.add(SwipeStatus(user1_id=user_bravo.id, user2_id=user_charlie.id, status=SwipeStatusType.match))
+            session.add(SwipeStatus(user1_id=user_alfa.id, user2_id=user4.id, status=SwipeStatusType.match))
             session.commit()
 
             # Rating
@@ -128,3 +172,24 @@ class DataGenerator:
             session.add(alfa_bravo_rating)
             session.commit()
             session.refresh(alfa_bravo_rating)
+
+            for user in users:
+                session.add(user)
+                session.commit()
+                session.refresh(user)
+                session.add(SwipeStatus(user1_id=user_alfa.id, user2_id=user.id, status=SwipeStatusType.match))
+                session.commit()
+
+            conversations = []
+
+            for i in range(10):
+                user = users[i]
+                c = Conversation(user1_id=user.id, user2_id=user_alfa.id)
+                conversations.append(c)
+                session.add(c)
+                session.commit()
+                session.refresh(c)
+
+            for c in conversations:
+                session.add(Message(conversation_id=c.id, sender_id=c.user1_id, receiver_id=c.user2_id, message=f"Hi user with id: {c.user2_id}", timestamp=datetime.now()))
+                session.commit()
