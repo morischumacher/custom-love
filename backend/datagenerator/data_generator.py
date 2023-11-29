@@ -9,7 +9,7 @@ from backend.models.expert_system import ExpertSystem
 from backend.models.rating import Rating
 from backend.models.user import User
 from backend.utils.passwords import hash_pwd
-from backend.datagenerator.data.interests import interests_dict
+from backend.datagenerator.data.features import interests_dict, language_dict
 from backend.datagenerator.data.exsys_training_data import exsys_trainings_data
 from backend.algo.exsys import ExSys
 
@@ -35,12 +35,6 @@ class DataGenerator:
     # TODO: Modularize Languages, Preferences etc.
     def __generate_users(self):
         with Session(self.engine) as session:
-            # Languages
-            language_dict = {
-                "english" : Language(name="english"),
-                "german": Language(name="german"),
-                "french": Language(name="french"),
-            }
             
 
             # Preferences

@@ -4,7 +4,7 @@ import joblib
 from io import BytesIO
 from typing import List
 from backend.models.user import User
-from backend.datagenerator.data.interests import interests_dict
+from backend.datagenerator.data.features import interests_dict
 
 
 class ExSys:

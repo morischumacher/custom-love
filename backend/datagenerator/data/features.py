@@ -1,4 +1,5 @@
 from backend.models.interest import Interest
+from backend.models.language import Language
 
 interests_dict = {
                 "sports": Interest(name="sports", icon="icon1"),
@@ -21,4 +22,11 @@ interests_dict = {
                 "gardening": Interest(name="gardening", icon="icon18"),
                 "philosophy": Interest(name="philosophy", icon="icon19"),
                 "coding": Interest(name="coding", icon="icon20")
+            }
+
+
+language_dict = {
+                "english" : Language(name="english"),
+                "german": Language(name="german"),
+                "french": Language(name="french"),
             }
