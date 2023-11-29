@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/src/app/presentation/swipe/util/shared_algorithm_event.dart';
 import 'package:frontend/src/config/theme.dart';
 import 'package:frontend/src/app/presentation/match/pages/matches.dart';
 import 'package:frontend/src/app/presentation/profile/pages/profile.dart';
@@ -6,6 +7,9 @@ import 'package:frontend/src/app/presentation/swipe/pages/swipe.dart';
 import 'package:frontend/src/app/service/user_service.dart';
 
 import 'package:provider/provider.dart';
+
+import '../../authentification/controller/login_controller.dart';
+
 
 enum AppPage { Profile, Swipe, Matches }
 
@@ -20,6 +24,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   AppPage _currentPage = AppPage.Swipe;
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
+  final LoginController _controller = LoginController();
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 30),
             child: PopupMenuButton(
-                icon: const Icon(Icons.tune, size: 20, color: Colors.black,),
+                icon: const Icon(Icons.tune, size: 28, color: Colors.black,),
                 itemBuilder: (BuildContext context) => [
                   PopupMenuItem(
                     value: "Random Algorithm",
@@ -40,6 +45,15 @@ class _HomeScreenState extends State<HomeScreen> {
                       onTap: () {
                         print("selected");
                         Navigator.pop(context);
+                        SharedAlgorithmEvent.algoId.changeAlgoId(1);
+                        print("broadcast happened");
+                        /*_controller.retrieveAccessToken().then((String? accessToken) {
+                            if (accessToken != null) {
+                               print("accessTOKEN: $accessToken");
+                            } else {
+                               print("accessTOKEN not available");
+                            }
+                        });*/
                       },
                     ),
                   ),

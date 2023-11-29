@@ -29,6 +29,7 @@ class LoginApi {
 
     if (response.statusCode == 200) {
       // Successful login, return the response body as a map
+      print("Login: " + response.body);
       return json.decode(response.body);
     } else if (response.statusCode == 401) {
       // Unauthorized (wrong credentials), throw a custom exception

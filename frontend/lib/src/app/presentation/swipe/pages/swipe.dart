@@ -1,10 +1,15 @@
+import 'dart:async';
+
 import 'package:frontend/src/app/model/user_model.dart';
 import 'package:frontend/src/app/presentation/swipe/util/content.dart';
 import 'package:flutter/material.dart';
 import 'package:swipe_cards/draggable_card.dart';
 import 'package:swipe_cards/swipe_cards.dart';
+import 'package:frontend/src/config/theme.dart';
+import 'package:frontend/src/app/presentation/authentification/controller/login_controller.dart';
 
 import '../../../service/user_service.dart';
+import '../util/shared_algorithm_event.dart';
 
 class Swipe extends StatefulWidget {
   final UserService userService;
@@ -17,40 +22,24 @@ class Swipe extends StatefulWidget {
 }
 
 class _SwipeState extends State<Swipe> {
-  List<SwipeItem> _swipeItems = <SwipeItem>[];
+  late SwipeItem _swipeItem;
   MatchEngine? _matchEngine;
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
   bool isLoading = false;
-
-  /*
-  user_bravo = User(
-        first_name='Bravo',
-        last_name='Bravonson',
-        email='bravo.bravonson@email.com',
-        tel='+92 231 023 953',
-        bio='Test subject 2',
-        date_of_birth=datetime.today(),
-        job='Data Scientist',
-        search_radius=50,
-        swipes_left=5,
-        languages=[english, french, german],
-        gender_preferences=[man, woman],
-        preferences=[preference_1],
-        address=ulm,
-        gender_identity=woman,
-        interests=[travel, books, science],
-        password="pass1"
-    )
-   */
+  bool swipeable = true;
+  final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
+  final LoginController _controller = LoginController();
 
   final List<Content> _cards = [
     Content(firstName: "Bravo", languages: ["english", "french"], bio: "hello,...", interests: ["sport", "reading", "movies", "IT"])];
 
-
   @override
   void initState() {
     super.initState();
-    _matchEngine = MatchEngine(swipeItems: _swipeItems);
+
+    SharedAlgorithmEvent.algoId.algoIdChanged.listen((int algoId) {
+      print("current algoID: $algoId");
+    });
 
     _loadNextUser();
   }
@@ -60,50 +49,77 @@ class _SwipeState extends State<Swipe> {
       isLoading = true;
     });
 
-    await widget.userService.getUser().then((User? user) {
-      if (user == null) {
-        setState(() {
-          _swipeItems.add(SwipeItem(
-            content: const Text("There's no user to show"),
-          ));
-        });
-      } else {
-        setState(() {
-          var firstName = user.firstName;
-          _swipeItems.add(SwipeItem(
-              content: Content(firstName: firstName, languages: _cards
-                  .elementAt(0)
-                  .languages, bio: user.bio, interests: _cards
-                  .elementAt(0)
-                  .interests),
-              likeAction: () {
-                /*ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text("Liked $firstName"),
-                  duration: const Duration(milliseconds: 500),
-                )); */
-                _loadNextUser();
-              },
-              nopeAction: () {
-                /*ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text("Disliked $firstName"),
-                  duration: const Duration(milliseconds: 500),
-                ));*/
-                _loadNextUser();
-              },
-              onSlideUpdate: (SlideRegion? region) async {
-                //print("Region $region");
-              }));
-        });
-        }
-      }).whenComplete(() {
-          isLoading = false;
+    int swipingAlgoId = await SharedAlgorithmEvent.algoId.getAlgoId();
+
+    if (swipingAlgoId == 0) {
+       print("No special swiping algorithm is used");
+       await widget.userService.getUser().then((User? user) {
+         _setSwipingCard(user);
+       }).whenComplete(() {
+         isLoading = false;
+       });
+    } else if (swipingAlgoId == 1) {
+       print("Random swiping algorithm is used");
+       String accessToken = await _controller.retrieveAccessToken() as String;
+       print("AccessToken from user logged in: $accessToken");
+       await widget.userService.getAlgoUser(accessToken).then((User? user) {
+         _setSwipingCard(user);
+       }).whenComplete(() {
+         isLoading = false;
+       });
+    }
+
+  }
+
+  void _setSwipingCard(User? user) {
+    if (user == null) {
+      setState(() {
+        _swipeItem = SwipeItem(
+          content: const Text("There's no user to show"),
+        );
       });
+    } else {
+      setState(() {
+        var firstName = user.firstName;
+
+        setState(() {
+          swipeable = false;
+        });
+
+        Timer(const Duration(seconds: 10), () {
+          setState(() {
+            swipeable = true;
+          });
+        });
+
+        print("user name: " + user.firstName);
+        _swipeItem = SwipeItem(
+          content: Content(firstName: firstName, languages: _cards
+              .elementAt(0)
+              .languages, bio: user.bio, interests: _cards
+              .elementAt(0)
+              .interests),
+          likeAction: () {
+            if (swipeable) {
+              _loadNextUser();
+            }
+          },
+          nopeAction: () {
+            if (swipeable) {
+              _loadNextUser();
+            }
+          },
+        );
+        _matchEngine = MatchEngine(swipeItems: [_swipeItem]);
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         key: _scaffoldKey,
+        backgroundColor: _customLoveTheme.neutralColor,
         body: isLoading
           ? const Center(
             child: CircularProgressIndicator(),
@@ -122,7 +138,7 @@ class _SwipeState extends State<Swipe> {
                     itemBuilder: (BuildContext context, int index) {
                       return Container(
                         alignment: Alignment.center,
-                        color: Colors.white38,
+                        color: _customLoveTheme.neutralBackgroundColor,
                         child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -130,7 +146,7 @@ class _SwipeState extends State<Swipe> {
                               Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 50),
                                 child: Text(
-                                  _swipeItems[index].content.firstName,
+                                  _swipeItem.content.firstName,
                                   style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                                 ),
                               ),
@@ -158,24 +174,24 @@ class _SwipeState extends State<Swipe> {
                                 child: Wrap(
                                   spacing: 25,
                                   runSpacing: 4,
-                                  children: List<Widget>.generate(_swipeItems[index].content.interests.length,
+                                  children: List<Widget>.generate(_swipeItem.content.interests.length,
                                       (int i) {
                                         var avatar;
-                                        if (_swipeItems[index].content.interests[i] == "sport") {
-                                          avatar = const Icon(Icons.sports_soccer, color: Colors.pink);
-                                        } else if (_swipeItems[index].content.interests[i] == "reading") {
-                                          avatar = const Icon(Icons.book, color: Colors.pink);
-                                        } else if (_swipeItems[index].content.interests[i] == "movies") {
-                                          avatar = const Icon(Icons.movie, color: Colors.pink);
-                                        } else if (_swipeItems[index].content.interests[i] == "IT") {
-                                          avatar = const Icon(Icons.laptop, color: Colors.pink);
+                                        if (_swipeItem.content.interests[i] == "sport") {
+                                          avatar = Icon(Icons.sports_soccer, color: _customLoveTheme.primaryColor);
+                                        } else if (_swipeItem.content.interests[i] == "reading") {
+                                          avatar = Icon(Icons.book, color: _customLoveTheme.primaryColor);
+                                        } else if (_swipeItem.content.interests[i] == "movies") {
+                                          avatar = Icon(Icons.movie, color: _customLoveTheme.primaryColor);
+                                        } else if (_swipeItem.content.interests[i] == "IT") {
+                                          avatar = Icon(Icons.laptop, color: _customLoveTheme.primaryColor);
                                         } else {
-                                          avatar = const Icon(Icons.favorite, color: Colors.pink);
+                                          avatar = Icon(Icons.favorite, color: _customLoveTheme.primaryColor);
                                         }
                                         return ActionChip(
-                                              side: const BorderSide(width: 1.5, color: Colors.pink),
+                                              side: BorderSide(width: 1.5, color: _customLoveTheme.primaryColor),
                                               avatar: avatar,
-                                              label: Text(_swipeItems[index].content.interests[i]),
+                                              label: Text(_swipeItem.content.interests[i]),
                                               onPressed: () {},
                                         );
                                     },
@@ -189,12 +205,12 @@ class _SwipeState extends State<Swipe> {
                                   width: MediaQuery.of(context).size.width * 0.53,
                                   margin: const EdgeInsets.symmetric(vertical: 40, horizontal: 35),
                                   decoration: BoxDecoration(
-                                  color: Colors.white,
+                                  color: _customLoveTheme.neutralBackgroundColor,
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.grey.withOpacity(0.5),
-                                      spreadRadius: 5,
-                                      blurRadius: 7,
+                                      color: _customLoveTheme.textColor.withOpacity(0.3),
+                                      spreadRadius: 3,
+                                      blurRadius: 10,
                                       offset: const Offset(0, 3), // changes position of shadow
                                     ),
                                   ],
@@ -203,7 +219,7 @@ class _SwipeState extends State<Swipe> {
                                   child: Padding(
                                     padding: const EdgeInsets.all(20),
                                     child: Text(
-                                        _swipeItems[index].content.bio,
+                                        _swipeItem.content.bio,
                                         style: const TextStyle(fontSize: 16),
                                         textAlign: TextAlign.left
                                     )
@@ -218,8 +234,8 @@ class _SwipeState extends State<Swipe> {
                     itemChanged: (SwipeItem item, int index) {
                       print("item: ${item.content.firstName}, index: $index");
                     },
-                    leftSwipeAllowed: true,
-                    rightSwipeAllowed: true,
+                    leftSwipeAllowed: swipeable,
+                    rightSwipeAllowed: swipeable,
                     //upSwipeAllowed: true,
                     fillSpace: true,
                     likeTag: Container(
@@ -227,7 +243,7 @@ class _SwipeState extends State<Swipe> {
                       padding: const EdgeInsets.all(3.0),
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: Colors.green)
+                          border: Border.all(color: _customLoveTheme.primaryColor)
                       ),
                       child: const Text('Like'),
                     ),
@@ -236,7 +252,7 @@ class _SwipeState extends State<Swipe> {
                       padding: const EdgeInsets.all(3.0),
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: Colors.red)
+                          border: Border.all(color: _customLoveTheme.primaryColor)
                       ),
                       child: const Text('Dislike'),
                     ),
@@ -251,23 +267,27 @@ class _SwipeState extends State<Swipe> {
                       children: [
                         ElevatedButton(
                             onPressed: () {
-                              _matchEngine!.currentItem?.nope();
+                              if(swipeable) {
+                                _matchEngine!.currentItem?.nope();
+                              }
                             },
                             style: ElevatedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 35, horizontal: 40),
-                              backgroundColor: Colors.pink,
+                              backgroundColor: _customLoveTheme.primaryColor,
                             ),
-                            child: const Icon(Icons.thumb_down_alt_outlined, size: 35, color: Colors.black)),
+                            child: Icon(Icons.close, size: 40, color: _customLoveTheme.textColor)),
                         const SizedBox(width: 25),
                         ElevatedButton(
                             onPressed: () {
-                              _matchEngine!.currentItem?.like();
+                              if(swipeable) {
+                                _matchEngine!.currentItem?.like();
+                              }
                             },
                             style: ElevatedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 35, horizontal: 40),
-                              backgroundColor: Colors.pink,
+                              backgroundColor: _customLoveTheme.primaryColor,
                             ),
-                            child: const Icon(Icons.thumb_up_alt_outlined, size: 35, color: Colors.black)),
+                            child: Icon(Icons.favorite_outline, size: 40, color: _customLoveTheme.textColor)),
                       ],
                     ),
                   )
