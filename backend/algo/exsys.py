@@ -4,6 +4,7 @@ import joblib
 from io import BytesIO
 from typing import List
 from backend.models.user import User
+from backend.datagenerator.data.interests import interests_dict
 
 
 class ExSys:
@@ -31,6 +32,26 @@ class ExSys:
 
         # Build input for model
         X_train, y_train = users_and_likes_to_x_train_y_train(user_list, like_decisions)
+
+        # Train model
+        model.fit(X_train, y_train)
+
+        # set the model of the exsys instance
+        self.model = model
+
+        return model
+
+    def train_model_for_test(self, X_train, y_train):
+        """
+        Retrieves trainingsdata to train a model based on this. length(user_list)==length(like_decisions)
+        param: user_list, list of user to train the model
+        param: like_decisions, array of boolean which predict if the user liked(=1) or disliked(=0) the at the
+        corresponding index
+         return a model trained on the trainingsdata.
+        """
+
+        # Creates a logic regression model
+        model = LogisticRegression()
 
         # Train model
         model.fit(X_train, y_train)
@@ -97,7 +118,7 @@ class ExSys:
         y_predict = []
 
         for user in user_list:
-            X_test = users_to_x_predict(user)
+            X_test = [user_to_x_predict(user)]
             probability = self.model.predict_proba(X_test)[0, 1]  # Probability of class "1" (liked)
             y_predict.append(probability)
 
@@ -105,8 +126,12 @@ class ExSys:
 
 
 def users_and_likes_to_x_train_y_train(user_list: List[User], like_decisions: List[bool]):
-    # Mapping dictionary for encoding gender labels
-    gender_mapping = {"men": 1, "woman": 2, "divers": 3}
+    """
+    Calculates X_train and y_train for a given user list and the like decision on them
+    param: user_list, a list of user recent swiped users
+    param: like_decisions, a list with the decisions (like/dislike) on the users in user_list
+    returns X_train, y_train
+    """
 
     # Create training data
     X_train = []
@@ -114,27 +139,73 @@ def users_and_likes_to_x_train_y_train(user_list: List[User], like_decisions: Li
     # Target Data
     y_train = like_decisions
 
-    #TODO Edit actual Mapping
     for user in user_list:
-        X_train.append([calculate_age(user.date_of_birth), len(user.bio),
-                        gender_mapping.get(str(user.gender_identity))])
+        # Add base user features
+        inner_X_train = calculate_user_base_list(user)
+
+        # Add users interests
+        inner_X_train.append(calculate_user_interests_list(user))
+
+        X_train.append(inner_X_train)
 
     return X_train, y_train
 
 
-def users_to_x_predict(user: User):
-    # Mapping dictionary for encoding gender labels
-    gender_mapping = {"men": 1, "woman": 2, "divers": 3}
+def user_to_x_predict(user: User):
+    """
+    Calculates X_predict for a given user
+    param: user
+    returns X_predict
+    """
+    # Add base user features
+    X_predict = calculate_user_base_list(user)
 
-    # TODO Edit actual Mapping
-    X_predict = [calculate_age(user.date_of_birth), len(user.bio), gender_mapping.get(str(user.gender_identity))]
+    # Add users interests
+    X_predict.append(calculate_user_interests_list(user))
 
     return X_predict
 
 
 def calculate_age(date_of_birth):
+    """
+    Calculates the users age by providing a datetime
+    param: user
+    returns users age
+    """
     today = date.today()
     return today.year - date_of_birth.year - ((today.month, today.day) < (date_of_birth.month, date_of_birth.day))
+
+
+def calculate_user_interests_list(user: User):
+    """
+    Calculates the user interests vector
+    param: user
+    returns a list with values 0 or 1 at position x if the user has interest interest_dict[x] or not
+    """
+    user_interests_list = []
+    for interest_string in interests_dict:
+        interest = interests_dict.get(interest_string)
+        if interest in user.interests:
+            user_interests_list.append(1)
+        else:
+            user_interests_list.append(0)
+    return user_interests_list
+
+
+def calculate_user_base_list(user: User):
+    """
+    Calculates the user base vector
+    param: user
+    returns a list with numerical values for the users base features
+    """
+    # Mapping dictionary for encoding gender labels
+    gender_mapping = {"men": 1, "woman": 2, "divers": 3}
+
+    user_base_list = [calculate_age(user.date_of_birth), len(user.bio), gender_mapping.get(user.gender_identity.name)]
+
+    return user_base_list
+
+
 
 
 
