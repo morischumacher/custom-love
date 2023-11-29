@@ -2,7 +2,7 @@ version: "3.1"
 services:
   db:
     container_name: postgres
-    image: postgres
+    image: postgis/postgis
     restart: always
     environment:
       POSTGRES_PASSWORD: example
@@ -10,6 +10,8 @@ services:
     - backbone
     ports:
     - 127.0.0.1:5432:5432
+    volumes:
+      - ./scripts/database-startup.sh:/docker-entrypoint-initdb.d/database-startup.sh
 
   adminer:
     container_name: adminer
