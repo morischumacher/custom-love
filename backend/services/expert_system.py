@@ -8,7 +8,6 @@ from backend.models.expert_system import ExpertSystem
 from backend.repository.repository import create_session
 
 
-# TODO: Check function.
 def get_expert_system_by_user_id(user_id, db: Annotated[Session, Depends(create_session)]):
     """
     Return the expert system from the given user
@@ -24,7 +23,7 @@ def get_expert_system_by_user_id(user_id, db: Annotated[Session, Depends(create_
         raise BadRequestException(f"More than one expert systems of user with id = {user_id}")
     return expert_system[0]
 
-
+# TODO Test in upcoming workflows
 def post_expert_system(expert_system: ExpertSystem, db: Annotated[Session, Depends(create_session)]):
     """
     Create an expert system, this function should be only used in sign up process
@@ -39,6 +38,7 @@ def post_expert_system(expert_system: ExpertSystem, db: Annotated[Session, Depen
     return expert_system
 
 
+# TODO Test in upcoming workflows
 def update_expert_system(user_id: int, new_model: bytes, db: Annotated[Session, Depends(create_session)]):
     """
     Update the given expert system, thw user is the same as in the old one

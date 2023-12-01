@@ -77,14 +77,3 @@ def get_algo_user(commons: Annotated[User, Depends(get_algo_user)]):
     return commons
 
 
-@router.get('/expertsystem/{user_id}', response_model=ExpertSystem, responses={
-    status.HTTP_404_NOT_FOUND: {"description": "Not Found", "model": ErrorResponse},
-    status.HTTP_400_BAD_REQUEST: {"description": "Bad Request", "model": ErrorResponse},
-})
-def get_expert_system(commons: Annotated[dict, Depends(get_expert_system_by_user_id)]):
-    return commons
-
-
-def fetch_expert_system(commons: Annotated[dict, Depends(update_expert_system)]):
-    return commons
-
