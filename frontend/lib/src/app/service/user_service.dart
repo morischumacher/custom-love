@@ -16,6 +16,15 @@ class UserService {
     }
   }
 
+  Future<User> getUser() async {
+    try {
+      final user = _userApi.getUser();
+      return user;
+    } on Exception {
+      rethrow;
+    }
+  }
+
   Future<User> updateCurrentUserLocation(
       Position userPosition, var accessToken) async {
     try {
@@ -25,4 +34,14 @@ class UserService {
       rethrow;
     }
   }
+
+  Future<User> getAlgoUser(var accessToken) async {
+    try {
+      final algoUser = _userApi.getAlgoUser(accessToken);
+      return algoUser;
+    } on Exception {
+      rethrow;
+    }
+  }
+
 }
