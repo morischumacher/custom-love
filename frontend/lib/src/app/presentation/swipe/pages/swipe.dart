@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:frontend/src/app/model/user_model.dart';
 import 'package:frontend/src/app/presentation/swipe/util/content.dart';
 import 'package:flutter/material.dart';
+import 'package:swipe_cards/draggable_card.dart';
 import 'package:swipe_cards/swipe_cards.dart';
 import 'package:frontend/src/config/theme.dart';
 import 'package:frontend/src/app/presentation/authentification/controller/login_controller.dart';
@@ -82,6 +83,15 @@ class _SwipeState extends State<Swipe> {
     } else {
       setState(() {
         var firstName = user.firstName;
+        var birthDate = DateTime.parse(user.date_of_birth);
+        var birthYear = birthDate.year;
+        var todayDate = DateTime.now();
+
+        int age = todayDate.year - birthYear;
+
+        if (birthDate.month > todayDate.month || (birthDate.month == todayDate.month && birthDate.day > todayDate.day)) {
+          age--;
+        }
 
         setState(() {
           swipeable = false;
@@ -93,9 +103,8 @@ class _SwipeState extends State<Swipe> {
           });
         });
 
-        print("user name: " + user.firstName);
         _swipeItem = SwipeItem(
-          content: Content(firstName: firstName, languages: _cards
+          content: Content(firstName: firstName, age: age, languages: _cards
               .elementAt(0)
               .languages, bio: user.bio, interests: _cards
               .elementAt(0)
@@ -130,5 +139,4 @@ class _SwipeState extends State<Swipe> {
             )
     );
   }
-
 }
