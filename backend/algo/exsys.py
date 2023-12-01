@@ -108,21 +108,25 @@ class ExSys:
 
         return self.model
 
-    def predict(self, user_list: List[User]):
+    def predict(self, user_list):
         """
         Retrieves a list of users
-        returns a list with the probabilities for a like of the user.
-        y_predict[0]==0.8 ->  user at position user_list[0] will be liked with a probability of 80%
+        returns the user id of the user with the highest prediction and the corresponding probability .
         """
         # Create list with predictions
         y_predict = []
+        highest_prediction = 0
+        highest_predicted_user = 0
 
         for user in user_list:
             X_test = [user_to_x_predict(user)]
             probability = self.model.predict_proba(X_test)[0, 1]  # Probability of class "1" (liked)
+            if probability > highest_prediction:
+                highest_prediction = probability
+                highest_predicted_user = user.id
             y_predict.append(probability)
 
-        return y_predict
+        return highest_predicted_user, highest_prediction
 
 
 def users_and_likes_to_x_train_y_train(user_list: List[User], like_decisions: List[bool]):
@@ -151,7 +155,7 @@ def users_and_likes_to_x_train_y_train(user_list: List[User], like_decisions: Li
     return X_train, y_train
 
 
-def user_to_x_predict(user: User):
+def user_to_x_predict(user):
     """
     Calculates X_predict for a given user
     param: user
@@ -161,8 +165,7 @@ def user_to_x_predict(user: User):
     X_predict = calculate_user_base_list(user)
 
     # Add users interests
-    X_predict.append(calculate_user_interests_list(user))
-
+    X_predict.extend(calculate_user_interests_list(user))
     return X_predict
 
 
@@ -176,7 +179,7 @@ def calculate_age(date_of_birth):
     return today.year - date_of_birth.year - ((today.month, today.day) < (date_of_birth.month, date_of_birth.day))
 
 
-def calculate_user_interests_list(user: User):
+def calculate_user_interests_list(user):
     """
     Calculates the user interests vector
     param: user
@@ -185,22 +188,24 @@ def calculate_user_interests_list(user: User):
     user_interests_list = []
     for interest_string in interests_dict:
         interest = interests_dict.get(interest_string)
-        if interest in user.interests:
-            user_interests_list.append(1)
-        else:
-            user_interests_list.append(0)
+        count = 0
+        for user_interest in user.interests:
+            if interest.name == user_interest.name:
+                count = count + 1
+            else:
+                continue
+        user_interests_list.append(count)
     return user_interests_list
 
 
-def calculate_user_base_list(user: User):
+def calculate_user_base_list(user):
     """
     Calculates the user base vector
     param: user
     returns a list with numerical values for the users base features
     """
     # Mapping dictionary for encoding gender labels
-    gender_mapping = {"men": 1, "woman": 2, "divers": 3}
-
+    gender_mapping = {"man": 1, "woman": 2, "divers": 3}
     user_base_list = [calculate_age(user.date_of_birth), len(user.bio), gender_mapping.get(user.gender_identity.name)]
 
     return user_base_list

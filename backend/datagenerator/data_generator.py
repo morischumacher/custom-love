@@ -65,7 +65,6 @@ class DataGenerator:
                     actual_user["age"],
                     actual_user["biolenght"],
                     actual_user["genderid"],
-                    actual_user["liked"],
                     actual_user["sports"],
                     actual_user["movies"],
                     actual_user["travel"],
@@ -556,5 +555,4 @@ class DataGenerator:
             session.add(ExpertSystem(model=serialized_model, user_id=19))
             session.add(ExpertSystem(model=serialized_model, user_id=20))
             session.add(ExpertSystem(model=serialized_model, user_id=21))
-            session.add(ExpertSystem(model=serialized_model, user_id=22))
             session.commit()

@@ -1,15 +1,16 @@
-from typing import List, Annotated
+import random
+from typing import List, Annotated, Any, Type
 
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_pagination.ext.sqlmodel import paginate
 from geoalchemy2 import Geography
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, json
 from shapely import geometry, wkt
 from sqlalchemy import func
 from sqlmodel import Session, select
 from starlette.requests import Request
-
+from backend.algo.exsys import ExSys
 from backend.exceptions.bad_request_exception import BadRequestException
 from backend.exceptions.credentials_exception import CredentialsException
 from backend.exceptions.not_found_exception import NotFoundException
@@ -21,6 +22,7 @@ from backend.services.validation.user_validation import validate_new_user
 from backend.utils import passwords
 from backend.utils.pagination import PaginationParams
 from backend.utils.token import create_access_token, get_current_user
+from backend.services.expert_system import get_expert_system_by_user_id
 
 
 class UserUpdate(BaseModel):
@@ -138,27 +140,57 @@ def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: Annota
 
 
 def get_algo_user(algoId: int, user: Annotated[User, Depends(get_current_user)],
-                  db: Annotated[Session, Depends(create_session)], request: Request) -> List[User]:
+                  db: Annotated[Session, Depends(create_session)], request: Request) -> list[Type[User]] | None | Any:
+
+    # Query to get all users in the given radius
+    subquery = (
+        select([User.location])
+        .where(User.id == user.id)
+    ).alias("user_location")
+
+    query = (
+        select([User])
+        .where(
+            func.ST_DWithin(
+                User.location.cast(Geography),
+                subquery.c.location.cast(Geography),
+                user.search_radius * 1000
+            )
+        )
+        .where(User.id != user.id)
+    )
+
+    # Execute the query
+    result = db.exec(query)
+
+    # Fetch the query
+    users_list = result.fetchall()
+
+
+
+
+
     match algoId:
         case 1:
-            subquery = (
-                select([User.location])
-                .where(User.id == user.id)
-            ).alias("user_location")
+            return random.choice(users_list)
+        case 2:
+            return None
+        case 3:
+            # Get expertsytem of current user
+            expert_system = get_expert_system_by_user_id(user.id, db)
 
-            query = (
-                select([User])
-                .where(
-                    func.ST_DWithin(
-                        User.location.cast(Geography),
-                        subquery.c.location.cast(Geography),
-                        user.search_radius * 1000
-                    )
-                )
-                .where(User.id != user.id)
-            )
-            return paginate(db, query,
-                            PaginationParams(size=request.query_params.get("size"),
-                                             page=request.query_params.get("page")))
+            # Get the model of the current user
+            current_model = expert_system.model
 
-    return None
+            # Initialize a Exsys for the current user and set the serialized model, retrieved from the database
+            exsys = ExSys(None)
+            exsys.deserialize_and_set_model(current_model)
+
+            # Compute the user_id with the highest prediction from the all users in the given radius
+            # TODO Use the prediction for something like: "Particularly Compatible! (#65)"
+            user_id_with_highest_prediction, prediction = exsys.predict(users_list)
+
+            #return the user with the user.id = user_id_with_highest_prediction
+            return [user for user in users_list if user.id == user_id_with_highest_prediction][0]
+        case _:
+            return None
