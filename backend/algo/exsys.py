@@ -17,7 +17,7 @@ class ExSys:
     def __init__(self, model):
         self.model = model
 
-    # TODO
+    # TODO Testing in comming Workflow
     def train_model(self, user_list: List[User], like_decisions: List[bool]):
         """
         Retrieves trainingsdata to train a model based on this. length(user_list)==length(like_decisions)
@@ -44,6 +44,7 @@ class ExSys:
     def train_model_for_test(self, X_train, y_train):
         """
         Retrieves trainingsdata to train a model based on this. length(user_list)==length(like_decisions)
+        (Only relevant for our trainingsdata form data_generator.py
         param: user_list, list of user to train the model
         param: like_decisions, array of boolean which predict if the user liked(=1) or disliked(=0) the at the
         corresponding index
@@ -61,7 +62,7 @@ class ExSys:
 
         return model
 
-    # TODO
+    # TODO Testing in comming Workflow
     def update_model(self, user_list: List[User], like_decisions: List[bool]):
         """
         Retrieves a model and trainingsdata to update the model with the data. length(user_list)==length(like_decisions)
