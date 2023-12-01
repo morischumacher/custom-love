@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from datetime import date
 from typing import TYPE_CHECKING, Optional, Any
 
 from geoalchemy2 import Geometry
@@ -70,3 +70,12 @@ class User(SQLModel, table=True):
         arbitrary_types_allowed = True
 
 
+    def get_age(self):
+        """
+        Calculates the users age by providing a datetime
+        param: user
+        returns users age
+        """
+        today = date.today()
+        return today.year - self.date_of_birth.year - ((today.month, today.day) < (self.date_of_birth.month,
+                                                                                   self.date_of_birth.day))

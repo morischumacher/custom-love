@@ -170,16 +170,6 @@ def user_to_x_predict(user):
     return X_predict
 
 
-def calculate_age(date_of_birth):
-    """
-    Calculates the users age by providing a datetime
-    param: user
-    returns users age
-    """
-    today = date.today()
-    return today.year - date_of_birth.year - ((today.month, today.day) < (date_of_birth.month, date_of_birth.day))
-
-
 def calculate_user_interests_list(user):
     """
     Calculates the user interests vector
@@ -207,8 +197,7 @@ def calculate_user_base_list(user):
     """
     # Mapping dictionary for encoding gender labels
     gender_mapping = {"man": 1, "woman": 2, "divers": 3}
-    user_base_list = [calculate_age(user.date_of_birth), len(user.bio), gender_mapping.get(user.gender_identity.name)]
-
+    user_base_list = [user.get_age(), len(user.bio), gender_mapping.get(user.gender_identity.name)]
     return user_base_list
 
 
