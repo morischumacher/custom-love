@@ -31,6 +31,7 @@ class _SwipeState extends State<Swipe> {
   bool swipeable = true;
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
   final LoginController _controller = LoginController();
+  late Timer timer;
 
   final List<Content> _cards = [
     Content(firstName: "Bravo", languages: ["english", "french"], bio: "hello,...", interests: ["sport", "reading", "movies", "IT"])];
@@ -97,7 +98,7 @@ class _SwipeState extends State<Swipe> {
           swipeable = false;
         });
 
-        Timer(const Duration(seconds: 10), () {
+        timer = Timer(const Duration(seconds: 10), () {
           setState(() {
             swipeable = true;
           });
@@ -138,5 +139,11 @@ class _SwipeState extends State<Swipe> {
               child: SwipingCard(matchEngine: _matchEngine, customLoveTheme: _customLoveTheme, swipeItem: _swipeItem, swipeable: swipeable),
             )
     );
+  }
+
+  @override
+  void dispose() {
+    timer.cancel();
+    super.dispose();
   }
 }

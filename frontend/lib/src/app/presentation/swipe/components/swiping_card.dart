@@ -27,157 +27,166 @@ class SwipingCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = min(MediaQuery.of(context).size.width, 750);
-    return Container(
-        alignment: Alignment.center,
-        height: height - kToolbarHeight,
-        width: !kIsWeb ? width * 0.90 : width * 0.65,
-        child: Stack(
-          children: [
-          Card(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            clipBehavior: Clip.hardEdge,
-            child: SwipeCards(
-              matchEngine: _matchEngine!,
-              itemBuilder: (BuildContext context, int index) {
-                return Container(
-                    height: double.infinity,
-                    width: double.infinity,
-                    alignment: Alignment.center,
-                    color: _customLoveTheme.neutralBackgroundColor,
-                    child: SingleChildScrollView(
-                      child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            SizedBox(height: height * 0.08),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: kIsWeb ? 50 : 40),
-                              child: Text(
-                                _swipeItem.content.firstName,
-                                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            SizedBox(height: height * 0.02),
-                             Row(
+    return SafeArea(
+      child: Container(
+          alignment: Alignment.center,
+          height: height - kToolbarHeight > 0 ? height - kToolbarHeight : height,
+          width: !kIsWeb ? width * 0.90 : width * 0.65,
+          child: Stack(
+            children: [
+            Card(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              clipBehavior: Clip.hardEdge,
+              child: SwipeCards(
+                matchEngine: _matchEngine!,
+                itemBuilder: (BuildContext context, int index) {
+                  return Container(
+                      height: double.infinity,
+                      width: double.infinity,
+                      alignment: Alignment.center,
+                      color: _customLoveTheme.neutralBackgroundColor,
+                      child: ClipRect(
+                        child: SingleChildScrollView(
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                  Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: kIsWeb ? 50 : 40),
-                                  child: Text(
-                                    "Age: ${_swipeItem.content.age}",
-                                    style: const TextStyle(fontSize: kIsWeb ? 16 : 14, fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                                SizedBox(width: kIsWeb ? width * 0.25 : width * 0.15),
-                                locationWidget(),
-                              ],
-                            ),
-                            SizedBox(height: height * 0.02),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: kIsWeb ? 50 : 40),
-                              child: FittedBox(
-                                child: Wrap(
-                                  spacing: 25,
-                                  runSpacing: 4,
-                                  children: List<Widget>.generate(_swipeItem.content.interests.length,
-                                        (int i) {
-                                      Icon avatar;
-                                      if (_swipeItem.content.interests[i] == "sport") {
-                                        avatar = Icon(Icons.sports_soccer, color: _customLoveTheme.primaryColor);
-                                      } else if (_swipeItem.content.interests[i] == "reading") {
-                                        avatar = Icon(Icons.book, color: _customLoveTheme.primaryColor);
-                                      } else if (_swipeItem.content.interests[i] == "movies") {
-                                        avatar = Icon(Icons.movie, color: _customLoveTheme.primaryColor);
-                                      } else if (_swipeItem.content.interests[i] == "IT") {
-                                        avatar = Icon(Icons.laptop, color: _customLoveTheme.primaryColor);
-                                      } else {
-                                        avatar = Icon(Icons.favorite, color: _customLoveTheme.primaryColor);
-                                      }
-                                      return ActionChip(
-                                        side: BorderSide(width: 1.5, color: _customLoveTheme.primaryColor),
-                                        avatar: avatar,
-                                        label: Text(_swipeItem.content.interests[i]),
-                                        onPressed: () {},
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Center(
-                              child: Container(
-                                //for small bio card
-                                height: height - height * 0.6,
-                                width: !kIsWeb ? width * 0.70 : width * 0.53,
-                                margin: const EdgeInsets.symmetric(vertical: kIsWeb ? 50 : 30, horizontal: 35),
-                                decoration: BoxDecoration(
-                                  color: _customLoveTheme.neutralBackgroundColor,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: _customLoveTheme.textColor.withOpacity(0.3),
-                                      spreadRadius: 3,
-                                      blurRadius: 10,
-                                      offset: const Offset(0, 3), // changes position of shadow
-                                    ),
-                                  ],
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
-                                child: Padding(
-                                    padding: const EdgeInsets.all(20),
+                                SizedBox(height: height * 0.08),
+                                FittedBox(
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: kIsWeb ? 50 : 40),
                                     child: Text(
-                                        _swipeItem.content.bio,
-                                        style: const TextStyle(fontSize: kIsWeb ? 16 : 14),
-                                        textAlign: TextAlign.left
-                                    )
+                                      _swipeItem.content.firstName,
+                                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ),
-                            Align(
-                                alignment: Alignment.bottomCenter,
-                                heightFactor: !kIsWeb ? 0.85 : 1,
-                                child: FittedBox(
-                                  child: buttonWidget(context, height, width),
+                                SizedBox(height: height * 0.02),
+                                FittedBox(
+                                   child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                        Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: kIsWeb ? 50 : 40),
+                                        child: Text(
+                                          "Age: ${_swipeItem.content.age}",
+                                          style: const TextStyle(fontSize: kIsWeb ? 16 : 14, fontWeight: FontWeight.bold),
+                                        ),
+                                      ),
+                                      SizedBox(width: kIsWeb ? width * 0.25 : width * 0.15),
+                                      locationWidget(),
+                                    ],
+                                ),
+                                 ),
+                                SizedBox(height: height * 0.02),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: kIsWeb ? 50 : 40),
+                                  child: FittedBox(
+                                    child: Wrap(
+                                      spacing: 25,
+                                      runSpacing: 4,
+                                      children: List<Widget>.generate(_swipeItem.content.interests.length,
+                                            (int i) {
+                                          Icon avatar;
+                                          if (_swipeItem.content.interests[i] == "sport") {
+                                            avatar = Icon(Icons.sports_soccer, color: _customLoveTheme.primaryColor);
+                                          } else if (_swipeItem.content.interests[i] == "reading") {
+                                            avatar = Icon(Icons.book, color: _customLoveTheme.primaryColor);
+                                          } else if (_swipeItem.content.interests[i] == "movies") {
+                                            avatar = Icon(Icons.movie, color: _customLoveTheme.primaryColor);
+                                          } else if (_swipeItem.content.interests[i] == "IT") {
+                                            avatar = Icon(Icons.laptop, color: _customLoveTheme.primaryColor);
+                                          } else {
+                                            avatar = Icon(Icons.favorite, color: _customLoveTheme.primaryColor);
+                                          }
+                                          return ActionChip(
+                                            side: BorderSide(width: 1.5, color: _customLoveTheme.primaryColor),
+                                            avatar: avatar,
+                                            label: Text(_swipeItem.content.interests[i]),
+                                            onPressed: () {},
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Center(
+                                  child: Container(
+                                    //for small bio card
+                                    height: height - height * 0.6,
+                                    width: !kIsWeb ? width * 0.70 : width * 0.53,
+                                    margin: const EdgeInsets.symmetric(vertical: kIsWeb ? 50 : 30, horizontal: 35),
+                                    decoration: BoxDecoration(
+                                      color: _customLoveTheme.neutralBackgroundColor,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: _customLoveTheme.textColor.withOpacity(0.3),
+                                          spreadRadius: 3,
+                                          blurRadius: 10,
+                                          offset: const Offset(0, 3), // changes position of shadow
+                                        ),
+                                      ],
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                    child: Padding(
+                                        padding: const EdgeInsets.all(20),
+                                        child: Text(
+                                            _swipeItem.content.bio,
+                                            style: const TextStyle(fontSize: kIsWeb ? 16 : 14),
+                                            textAlign: TextAlign.left
+                                        )
+                                    ),
+                                  ),
+                                ),
+                                Align(
+                                    alignment: Alignment.bottomCenter,
+                                    heightFactor: !kIsWeb ? 0.85 : 1,
+                                    child: FittedBox(
+                                      child: buttonWidget(context, height, width),
+                                    )
                                 )
-                            )
-                          ]
-                      ),
-                    )
-                );
-              },
-              onStackFinished: () {},
-              itemChanged: (SwipeItem item, int index) {
-                print("item: ${item.content.firstName}, index: $index");
-              },
-              leftSwipeAllowed: swipeable,
-              rightSwipeAllowed: swipeable,
-              fillSpace: true,
-              likeTag: Container(
-                margin: const EdgeInsets.all(15.0),
-                padding: const EdgeInsets.all(3.0),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: _customLoveTheme.primaryColor)
+                              ]
+                          ),
+                        ),
+                      )
+                  );
+                },
+                onStackFinished: () {},
+                itemChanged: (SwipeItem item, int index) {
+                  print("item: ${item.content.firstName}, index: $index");
+                },
+                leftSwipeAllowed: swipeable,
+                rightSwipeAllowed: swipeable,
+                fillSpace: true,
+                likeTag: Container(
+                  margin: const EdgeInsets.all(15.0),
+                  padding: const EdgeInsets.all(3.0),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: _customLoveTheme.primaryColor)
+                  ),
+                  child: const Text('Like'),
                 ),
-                child: const Text('Like'),
-              ),
-              nopeTag: Container(
-                margin: const EdgeInsets.all(15.0),
-                padding: const EdgeInsets.all(3.0),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: _customLoveTheme.primaryColor)
+                nopeTag: Container(
+                  margin: const EdgeInsets.all(15.0),
+                  padding: const EdgeInsets.all(3.0),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: _customLoveTheme.primaryColor)
+                  ),
+                  child: const Text('Dislike'),
                 ),
-                child: const Text('Dislike'),
               ),
             ),
-          ),
-        ]));
+          ])),
+    );
     }
 
     Widget locationWidget() {
       return const Row(
         mainAxisAlignment: MainAxisAlignment.start,
-        children: [ Icon(Icons.location_on, size: 18),
+        children: [Icon(Icons.location_on, size: 18),
         Text(
           "Location: ",
           style: TextStyle(fontSize: kIsWeb ? 16 : 14, fontWeight: FontWeight.bold),
@@ -188,7 +197,6 @@ class SwipingCard extends StatelessWidget {
       final buttonHeight =  kIsWeb ? height * 0.037 : height * 0.022;
       final buttonWidth = kIsWeb ? width * 0.046 : width * 0.055;
       double buttonSize = kIsWeb ? 40 : 32;
-      bool isToastShown = false;
 
       return Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
