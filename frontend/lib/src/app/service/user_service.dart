@@ -6,10 +6,23 @@ import 'package:geolocator/geolocator.dart';
 class UserService extends PaginatedService<User, UserApi> {
   UserService(super._api);
 
+  @override
+  PaginatedService<User, UserApi> copyWith(String urlParams)
+  => UserService(super.api.copyWith(urlParams));
+
   Future<List<User>> getAllUsers() async {
     try {
       Map<int, User> users = await super.api.getAll();
       return users.values as List<User>;
+    } on Exception {
+      rethrow;
+    }
+  }
+
+  Future<User> getUser() async {
+    try {
+      final user = super.api.getUser();
+      return user;
     } on Exception {
       rethrow;
     }
@@ -25,7 +38,12 @@ class UserService extends PaginatedService<User, UserApi> {
     }
   }
 
-  @override
-  PaginatedService<User, UserApi> copyWith(String urlParams)
-    => UserService(super.api.copyWith(urlParams));
+  Future<User> getAlgoUser(var accessToken) async {
+    try {
+      final algoUser = super.api.getAlgoUser(accessToken);
+      return algoUser;
+    } on Exception {
+      rethrow;
+    }
+  }
 }
