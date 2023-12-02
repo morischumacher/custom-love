@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:frontend/src/app/model/user_model.dart';
 import 'package:frontend/src/app/presentation/swipe/util/content.dart';
 import 'package:flutter/material.dart';
-import 'package:swipe_cards/draggable_card.dart';
 import 'package:swipe_cards/swipe_cards.dart';
 import 'package:frontend/src/config/theme.dart';
 import 'package:frontend/src/app/presentation/authentification/controller/login_controller.dart';
@@ -143,7 +142,9 @@ class _SwipeState extends State<Swipe> {
 
   @override
   void dispose() {
-    timer.cancel();
+    if(timer.isActive) {
+      timer.cancel();
+    }
     super.dispose();
   }
 }
