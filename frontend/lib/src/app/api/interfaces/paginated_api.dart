@@ -14,10 +14,7 @@ abstract class PaginatedApi<T> extends BaseApi {
 
   Future<Map<int, T>> getAll() async {
     // token is hardcoded, waiting for a ticket about saving jwt tokens to app state
-    PaginationApi paginationApi = PaginationApi(
-        _url,
-        ApiConfig.token
-    );
+    PaginationApi paginationApi = PaginationApi(_url);
 
     List<dynamic> items = List<dynamic>.empty(growable: true);
 
@@ -36,7 +33,6 @@ abstract class PaginatedApi<T> extends BaseApi {
         0,
         1,
         _url,
-        ApiConfig.token,
         -1
     );
 
@@ -49,7 +45,6 @@ abstract class PaginatedApi<T> extends BaseApi {
         currentPage,
         size,
         _url,
-        ApiConfig.token,
         -1
     );
 
@@ -62,7 +57,6 @@ abstract class PaginatedApi<T> extends BaseApi {
         currentPage,
         size,
         _url,
-        ApiConfig.token,
         -1
     );
 
@@ -75,7 +69,6 @@ abstract class PaginatedApi<T> extends BaseApi {
         currentPage,
         size,
         _url,
-        ApiConfig.token,
         -1
     );
 

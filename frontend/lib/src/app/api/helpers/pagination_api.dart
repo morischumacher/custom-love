@@ -10,7 +10,6 @@ class PaginationApi {
   int _currentPage;
   int _size;
   String _url;
-  String _token;
 
   // getters
   int? get maxPage => _maxPage;
@@ -19,13 +18,13 @@ class PaginationApi {
   int get size => _size;
 
   // the default constructor (same as in backend, the default size is 50)
-  PaginationApi(url, token): this.custom(0, 50, url, token, -1);
+  PaginationApi(url): this.custom(0, 50, url, -1);
 
   // a custom constructor to set a different page size
-  PaginationApi.custom(this._currentPage, this._size, this._url, this._token, this._maxPage);
+  PaginationApi.custom(this._currentPage, this._size, this._url, this._maxPage);
 
   Future<Map<String, dynamic>> _getRequest(http.Client client) async {
-    JWTApi jwtApi = JWTApi(_token);
+    JWTApi jwtApi = JWTApi();
     int page = _currentPage == 0 ? 1 : _currentPage;
     http.Response response = await jwtApi.get(client, "$_url?size=$_size&page=$page");
 
