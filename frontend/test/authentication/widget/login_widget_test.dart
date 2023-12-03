@@ -3,21 +3,27 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:frontend/src/app/presentation/authentification/components/sign_in_button.dart';
 import 'package:frontend/src/app/presentation/authentification/pages/login_page.dart';
 import 'package:frontend/src/app/service/login_service.dart';
+import 'package:frontend/src/app/service/user_service.dart';
 
 import 'package:mockito/mockito.dart';
 
 class MockLoginService extends Mock implements LoginService {}
+
+class MockUserService extends Mock implements UserService {}
 
 void main() {
   testWidgets('LoginPage UI Test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
 
     final MockLoginService mockLoginService = MockLoginService();
+    final MockUserService mockUserService = MockUserService();
+
     await tester.pumpWidget(
       MaterialApp(
         home: LoginPage(
-          loginService:
-              mockLoginService, // You need to provide a mock or actual login service here.
+          loginService: mockLoginService,
+          userService:
+              mockUserService, // You need to provide a mock or actual login service here.
         ),
       ),
     );

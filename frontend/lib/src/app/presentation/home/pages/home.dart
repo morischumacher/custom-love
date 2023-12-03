@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/src/app/presentation/swipe/util/shared_algorithm_event.dart';
 import 'package:frontend/src/config/theme.dart';
 import 'package:frontend/src/app/presentation/match/pages/matches.dart';
 import 'package:frontend/src/app/presentation/profile/pages/profile.dart';
@@ -6,6 +7,9 @@ import 'package:frontend/src/app/presentation/swipe/pages/swipe.dart';
 import 'package:frontend/src/app/service/user_service.dart';
 
 import 'package:provider/provider.dart';
+
+import '../../authentification/controller/login_controller.dart';
+
 
 enum AppPage { Profile, Swipe, Matches }
 
@@ -20,6 +24,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   AppPage _currentPage = AppPage.Swipe;
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
+  final LoginController _controller = LoginController();
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +32,55 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text('Custom Love App'),
         backgroundColor: _customLoveTheme.primaryColor,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30),
+            child: PopupMenuButton(
+                icon: const Icon(Icons.tune, size: 28, color: Colors.black,),
+                itemBuilder: (BuildContext context) => [
+                  PopupMenuItem(
+                    value: "Random Algorithm",
+                    child: ListTile(
+                      title: const Text("Random Algorithm", style: TextStyle(fontSize: 13)),
+                      onTap: () {
+                        print("selected");
+                        Navigator.pop(context);
+                        SharedAlgorithmEvent.algoId.changeAlgoId(1);
+                        print("broadcast happened");
+                        /*_controller.retrieveAccessToken().then((String? accessToken) {
+                            if (accessToken != null) {
+                               print("accessTOKEN: $accessToken");
+                            } else {
+                               print("accessTOKEN not available");
+                            }
+                        });*/
+                      },
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: "Interest-based Algorithm",
+                    child: ListTile(
+                      title: const Text("Interest-based Algorithm", style: TextStyle(fontSize: 13)),
+                      onTap: () {
+                        print("selected");
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: "Preference-based Algorithm",
+                    child: ListTile(
+                      title: const Text("Preference-based Algorithm", style: TextStyle(fontSize: 13)),
+                      onTap: () {
+                        print("selected");
+                        Navigator.pop(context);
+                      },
+                    ),
+                  )
+                ]
+            ),
+          ),
+        ],
       ),
       body: getPage(_currentPage),
       bottomNavigationBar: BottomNavigationBar(
@@ -61,7 +115,7 @@ class _HomeScreenState extends State<HomeScreen> {
       case AppPage.Profile:
         return Profile(userService: context.read<UserService>());
       case AppPage.Swipe:
-        return const Swipe();
+        return Swipe(userService: context.read<UserService>());
       case AppPage.Matches:
         return const Matches();
     }
