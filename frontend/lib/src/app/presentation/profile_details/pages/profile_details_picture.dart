@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/presentation/profile_details/pages/profile_details.dart';
+import 'package:frontend/src/app/presentation/profile_details/pages/profile_details_interests.dart';
 import 'package:frontend/src/app/presentation/profile_details/pages/profile_details_location.dart';
 import 'package:frontend/src/app/presentation/profile_details/pages/widgets/page_title.dart';
+
+import '../../../../config/theme.dart';
 
 class ProfileDetailsPicture extends StatefulWidget {
   // const ProfileDetailsPicture({super.key});
@@ -32,43 +35,52 @@ class _ProfileDetailsPictureState extends State<ProfileDetailsPicture> {
     required this.dob
   });
 
+  final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
   final String? gender;
   final String? preference;
   final String? dob;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        padding: const EdgeInsets.fromLTRB(21.0, 0, 21.0, 51.0),
-        child: Center(
-          child: Column(
-            children: [
-              const PageTitle(
-                  title: "Profile Pictures",
-                  description: "Provide up to five pictures of yourself",
-                  bottomPadding: 150.0,
+    return Scaffold(
+      backgroundColor: _customLoveTheme.neutralColor,
+      body: Center(
+        child: Container(
+            constraints: const BoxConstraints(maxWidth: 500),
+            color: _customLoveTheme.neutralColor,
+            padding: const EdgeInsets.fromLTRB(21.0, 0, 21.0, 51.0),
+            child: Center(
+              child: Column(
+                children: [
+                  const PageTitle(
+                      title: "Profile Pictures",
+                      description: "Provide up to five pictures of yourself",
+                      bottomPadding: 150.0,
+                  ),
+                  const Spacer(),
+                  Center(
+                    child: Row(
+                      children: [
+                        prevBtn(context),
+                        const Spacer(),
+                        nextBtn(context)
+                      ],
+                    ),
+                  )
+                ],
               ),
-              const Spacer(),
-              Center(
-                child: Row(
-                  children: [
-                    prevBtn(context),
-                    const Spacer(),
-                    nextBtn(context)
-                  ],
-                ),
-              )
-            ],
-          ),
-        )
+            )
+        ),
+      ),
     );
   }
 
   OutlinedButton prevBtn(BuildContext context) {
     return OutlinedButton(
       style: OutlinedButton.styleFrom(
-          backgroundColor: Color(0xFF953829),
-          minimumSize: const Size(156, 56)
+          minimumSize: const Size(156, 56),
+          backgroundColor: _customLoveTheme.primaryColor,
+          side: BorderSide.none
       ),
       onPressed: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
@@ -89,12 +101,12 @@ class _ProfileDetailsPictureState extends State<ProfileDetailsPicture> {
     return OutlinedButton(
       style: OutlinedButton.styleFrom(
           minimumSize: const Size(156, 56),
-          backgroundColor: Color(0xFF953829)
+          backgroundColor: _customLoveTheme.primaryColor,
+          side: BorderSide.none
       ),
       onPressed: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return ProfileDetailsLocation(
-          );
+          return ProfileDetailsInterests();
         }));
       },
       child: const Text(

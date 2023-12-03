@@ -18,7 +18,7 @@ class _ProfileDetailsState extends State<ProfileDetails> {
   }
 
   final TextEditingController _dateController = TextEditingController();
-  final CustomLoveTheme _customLoveTheme = CustomLoveTheme();
+  final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
   final _genderList = ["Male", "Female", "Other"];
   String? _selectedGender = "";
   String? _selectedPreference = "";
