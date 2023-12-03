@@ -10,6 +10,7 @@ class CustomLoveTheme extends ThemeExtension<CustomLoveTheme> {
     this.neutralColor = const Color(0xFFFFC0CB), // Pink 100
     this.textColor = const Color(0xFF000000), // Black
     this.neutralBackgroundColor = const Color(0xFFFFFFFF),
+    this.formFieldBorder = const Color(0xFFFFFFFF),
     this.inputWidth = 327,
     this.inputHeight = 56,
     this.textFieldDecoration,
@@ -18,6 +19,7 @@ class CustomLoveTheme extends ThemeExtension<CustomLoveTheme> {
   });
 
   final Color primaryColor, tertiaryColor, neutralColor, textColor, neutralBackgroundColor;
+  final Color formFieldBorder;
   final double inputWidth, inputHeight;
   final InputDecoration? textFieldDecoration;
   final ButtonStyle? buttonStyle;
@@ -37,6 +39,7 @@ class CustomLoveTheme extends ThemeExtension<CustomLoveTheme> {
     Color? neutralColor,
     Color? textColor,
     Color? neutralBackgroundColor,
+    Color? formFieldBorder,
     double? inputWidth,
     double? inputHeight,
     InputDecoration? textFieldDecoration,
@@ -49,6 +52,7 @@ class CustomLoveTheme extends ThemeExtension<CustomLoveTheme> {
         neutralColor: neutralColor ?? this.neutralColor,
         textColor: textColor ?? this.textColor,
         neutralBackgroundColor: neutralBackgroundColor ?? this.neutralBackgroundColor,
+        formFieldBorder: formFieldBorder ?? this.formFieldBorder,
         inputWidth: inputWidth ?? this.inputWidth,
         inputHeight: inputHeight ?? this.inputHeight,
         textFieldDecoration: textFieldDecoration ?? this.textFieldDecoration,
@@ -67,6 +71,7 @@ class CustomLoveTheme extends ThemeExtension<CustomLoveTheme> {
       neutralColor: Color.lerp(neutralColor, other.neutralColor, t)!,
       textColor: Color.lerp(textColor, other.textColor, t)!,
       neutralBackgroundColor: Color.lerp(neutralBackgroundColor, other.neutralBackgroundColor, t)!,
+      formFieldBorder: Color.lerp(formFieldBorder, other.formFieldBorder, t)!,
       inputWidth: lerpDouble(inputWidth, other.inputWidth, t)!,
       inputHeight: lerpDouble(inputHeight, other.inputHeight, t)!,
       textFieldDecoration: other.textFieldDecoration ?? textFieldDecoration,

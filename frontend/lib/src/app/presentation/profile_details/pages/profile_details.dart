@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:frontend/src/app/presentation/profile_details/pages/profile_details_picture.dart';
 import 'package:frontend/src/app/presentation/profile_details/pages/widgets/page_title.dart';
 
+import '../../../../config/theme.dart';
+
 class ProfileDetails extends StatefulWidget {
   const ProfileDetails({super.key});
 
@@ -11,10 +13,11 @@ class ProfileDetails extends StatefulWidget {
 
 class _ProfileDetailsState extends State<ProfileDetails> {
   _ProfileDetailsState() {
-    _selectedGender = _genderList[0];
-    _selectedPreference = _genderList[0];
+    _selectedGender = null;
+    _selectedPreference = null;
   }
 
+  final CustomLoveTheme _customLoveTheme = CustomLoveTheme();
   final _genderList = ["Male", "Female", "Other"];
   String? _selectedGender = "";
   String? _selectedPreference = "";
@@ -23,91 +26,115 @@ class _ProfileDetailsState extends State<ProfileDetails> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Container(
-            padding: EdgeInsets.fromLTRB(21.0, 0, 21.0, 51.0),
-            child: Center(
-              child: Column(
-                children: [
-                  const PageTitle(
-                      title: "Profile Details",
-                      description: "Provide some basic data about yourself",
-                      bottomPadding: 150.0,
-                  ),
-                  DropdownButtonFormField(
-                    value: _selectedGender,
-                    items: _genderList
-                        .map((e) => DropdownMenuItem(child: Text(e), value: e))
-                        .toList(),
-                    onChanged: (val) {
-                      setState(() {
-                        _selectedGender = val as String;
-                      });
-                    },
-                    icon: const Icon(
-                      Icons.arrow_drop_down,
-                      color: Colors.black,
+      backgroundColor: _customLoveTheme.neutralColor,
+        body: Center(
+          child: Container(
+            constraints: BoxConstraints(maxWidth: 500),
+              padding: EdgeInsets.fromLTRB(21.0, 0, 21.0, 51.0),
+              child: Center(
+                child: Column(
+                  children: [
+                    const PageTitle(
+                        title: "Profile Details",
+                        description: "Provide some basic data about yourself",
+                        bottomPadding: 150.0,
                     ),
-                    dropdownColor: Color(0xFFFFCCBC),
-                    decoration: InputDecoration(
-                        labelText: "Gender",
-                        border: OutlineInputBorder(),
-                        enabledBorder: const OutlineInputBorder(
-                            borderSide:
-                            const BorderSide(color: Color(0xFFE8E6EA)))),
-                  ),
-                  const SizedBox(height: 19.0),
-                  DropdownButtonFormField(
-                    value: _selectedPreference,
-                    items: _genderList
-                        .map((e) => DropdownMenuItem(child: Text(e), value: e))
-                        .toList(),
-                    onChanged: (val) {
-                      setState(() {
-                        _selectedGender = val as String;
-                      });
-                    },
-                    icon: const Icon(
-                      Icons.arrow_drop_down,
-                      color: Colors.black,
-                    ),
-                    dropdownColor: Color(0xFFFFCCBC),
-                    decoration: InputDecoration(
-                        labelText: "Preference",
-                        border: OutlineInputBorder(),
-                        enabledBorder: const OutlineInputBorder(
-                            borderSide:
-                            const BorderSide(color: Color(0xFFE8E6EA)))),
-                  ),
-                  const SizedBox(height: 19.0),
-                  TextField(
-                    readOnly: true,
-                    onTap: () {
-                      selectDate();
-                    },
-                    decoration: InputDecoration(
-                        suffixIcon: Icon(Icons.calendar_today),
-                        labelText: "Birthday",
-                        border: OutlineInputBorder(),
-                        enabledBorder: const OutlineInputBorder(
-                            borderSide:
-                            const BorderSide(color: Color(0xFFE8E6EA))
-                        )
-                    ),
-                  ),
-                  const Spacer(),
-                  Center(
-                    child: Row(
-                      children: [
-                        prevBtn(context),
-                        const Spacer(),
-                        nextBtn(context)
-                      ],
-                    ),
-                  )
+                    DropdownButtonFormField(
+                      value: _selectedGender,
+                      items: _genderList
+                          .map((e) => DropdownMenuItem(child: Text(e), value: e))
+                          .toList(),
+                      onChanged: (val) {
+                        setState(() {
+                          _selectedGender = val as String;
+                        });
+                      },
+                      icon: const Icon(
+                        Icons.arrow_drop_down,
+                        color: Colors.black,
+                      ),
+                      dropdownColor: Colors.grey.shade200,
 
-                ],
-              ),
-            )));
+                      decoration: InputDecoration(
+                          fillColor: Colors.grey.shade200,
+                          filled: true,
+                          labelText: "Gender",
+                          labelStyle: TextStyle(color: Colors.black),
+                          border: OutlineInputBorder(),
+                          enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: _customLoveTheme.formFieldBorder)
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: _customLoveTheme.formFieldBorder)
+                          )
+                      ),
+                    ),
+                    const SizedBox(height: 19.0),
+                    DropdownButtonFormField(
+                      value: null,
+                      items: _genderList
+                          .map((e) => DropdownMenuItem(child: Text(e), value: e))
+                          .toList(),
+                      onChanged: (val) {
+                        setState(() {
+                          _selectedGender = val as String;
+                        });
+                      },
+                      icon: const Icon(
+                        Icons.arrow_drop_down,
+                        color: Colors.black,
+                      ),
+                      dropdownColor: Colors.grey.shade200,
+                      decoration: InputDecoration(
+                          fillColor: Colors.grey.shade200,
+                          filled: true,
+                          labelText: "Preference",
+                          labelStyle: TextStyle(color: Colors.black),
+                          border: OutlineInputBorder(),
+                          enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: _customLoveTheme.formFieldBorder)
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: _customLoveTheme.formFieldBorder)
+                          )
+                      ),
+                    ),
+                    const SizedBox(height: 19.0),
+                    TextField(
+                      readOnly: true,
+                      onTap: () {
+                        selectDate();
+                      },
+                      decoration: InputDecoration(
+                          fillColor: Colors.grey.shade200,
+                          filled: true,
+                          suffixIcon: Icon(Icons.calendar_today),
+                          labelText: "Birthday",
+                          labelStyle: TextStyle(color: Colors.black),
+                          border: OutlineInputBorder(),
+                          enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: _customLoveTheme.formFieldBorder)
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: _customLoveTheme.formFieldBorder)
+                          )
+                      ),
+                    ),
+                    const Spacer(),
+                    Center(
+                      child: Row(
+                        children: [
+                          prevBtn(context),
+                          const Spacer(),
+                          nextBtn(context)
+                        ],
+                      ),
+                    )
+
+                  ],
+                ),
+              )),
+        ));
   }
   Future<void> selectDate() async {
     await showDatePicker(
@@ -121,8 +148,9 @@ class _ProfileDetailsState extends State<ProfileDetails> {
   OutlinedButton prevBtn(BuildContext context) {
     return OutlinedButton(
       style: OutlinedButton.styleFrom(
-          backgroundColor: Color(0xFF953829),
-          minimumSize: const Size(156, 56)
+          minimumSize: const Size(156, 56),
+          backgroundColor: _customLoveTheme.primaryColor,
+          side: BorderSide.none
       ),
       onPressed: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
@@ -147,7 +175,8 @@ class _ProfileDetailsState extends State<ProfileDetails> {
     return OutlinedButton(
       style: OutlinedButton.styleFrom(
           minimumSize: const Size(156, 56),
-          backgroundColor: Color(0xFF953829)
+          backgroundColor: _customLoveTheme.primaryColor,
+          side: BorderSide.none
       ),
       onPressed: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {

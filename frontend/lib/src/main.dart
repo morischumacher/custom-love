@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/src/app/presentation/profile_details/pages/profile_details.dart';
 import 'package:frontend/src/config/theme.dart';
 import 'package:frontend/src/app/presentation/authentification/pages/login_page.dart';
 import 'package:frontend/src/app/presentation/home/pages/home.dart';
@@ -50,6 +51,9 @@ class CustomLove extends StatelessWidget {
             final userService = Provider.of<UserService>(context);
             return HomeScreen(userService: userService);
           },
+          '/registration': (context) {
+            return const ProfileDetails();
+          }
         },
       ),
     );
