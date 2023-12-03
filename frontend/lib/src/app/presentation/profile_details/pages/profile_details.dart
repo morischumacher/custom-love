@@ -17,6 +17,7 @@ class _ProfileDetailsState extends State<ProfileDetails> {
     _selectedPreference = null;
   }
 
+  final TextEditingController _dateController = TextEditingController();
   final CustomLoveTheme _customLoveTheme = CustomLoveTheme();
   final _genderList = ["Male", "Female", "Other"];
   String? _selectedGender = "";
@@ -37,7 +38,7 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                     const PageTitle(
                         title: "Profile Details",
                         description: "Provide some basic data about yourself",
-                        bottomPadding: 150.0,
+                        bottomPadding: 70.0,
                     ),
                     DropdownButtonFormField(
                       value: _selectedGender,
@@ -101,6 +102,7 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                     ),
                     const SizedBox(height: 19.0),
                     TextField(
+                      controller: _dateController,
                       readOnly: true,
                       onTap: () {
                         selectDate();
@@ -137,12 +139,17 @@ class _ProfileDetailsState extends State<ProfileDetails> {
         ));
   }
   Future<void> selectDate() async {
-    await showDatePicker(
+    final today = DateTime.now();
+    DateTime? _picked = await showDatePicker(
         context: context,
-        initialDate: DateTime.now(),
+        initialDate: DateTime(today.year - 18, today.month, today.day),
         firstDate: DateTime(1900),
-        lastDate: DateTime(DateTime.now().year)
+        lastDate: DateTime(today.year - 18, today.month, today.day)
     );
+
+    if (_picked != null) {
+      _dateController.text = _picked.toString().split(" ")[0];
+    }
   }
 
   OutlinedButton prevBtn(BuildContext context) {
