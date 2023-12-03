@@ -37,7 +37,7 @@ class LoginApi {
       // Unauthorized (wrong credentials), throw a custom exception
       throw WrongEmailException();
     } else {
-      throw Exception('Error during Authentification');
+      throw Exception('Error during Authentication');
     }
   }
 }
