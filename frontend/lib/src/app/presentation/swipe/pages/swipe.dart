@@ -110,14 +110,10 @@ class _SwipeState extends State<Swipe> {
               .elementAt(0)
               .interests),
           likeAction: () {
-            if (swipeable) {
               _loadNextUser();
-            }
           },
           nopeAction: () {
-            if (swipeable) {
               _loadNextUser();
-            }
           },
         );
         _matchEngine = MatchEngine(swipeItems: [_swipeItem]);
@@ -135,7 +131,7 @@ class _SwipeState extends State<Swipe> {
             child: CircularProgressIndicator(),
           ):
             Center(
-              child: SwipingCard(matchEngine: _matchEngine, customLoveTheme: _customLoveTheme, swipeItem: _swipeItem, swipeable: swipeable),
+              child: SwipingCard(matchEngine: _matchEngine, customLoveTheme: _customLoveTheme, swipeItem: _swipeItem, swipeable: swipeable, controller: _controller, userService: widget.userService),
             )
     );
   }

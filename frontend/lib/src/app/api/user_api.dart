@@ -73,6 +73,32 @@ class UserApi {
     }
   }
 
+  Future<User> updateUserSwipesLeft(var accessToken) async {
+    final Map<String, dynamic> body = {
+      "swiped": true,
+    };
+
+    final response = await http.patch(
+      Uri.parse('${ApiConfig.baseUrl}/users'),
+      headers: {
+        'Content-Type': 'application/json',
+        'accept': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+      body: jsonEncode(body),
+    );
+
+    if (response.statusCode == 200) {
+      final dynamic jsonItem = json.decode(response.body);
+      print("response: " + jsonItem.toString());
+      final User user = User.fromJson(jsonItem);
+      return user;
+    } else {
+      // TODO: Add custom exception
+      throw Exception('Failed to update user swipesLeft');
+    }
+  }
+
   Future<User> getAlgoUser(var accessToken) async {
     final response = await http.get(
       Uri.parse('${ApiConfig.baseUrl}/users/algo/1?algoId=1&page=1&size=50'),

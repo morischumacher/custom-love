@@ -1,3 +1,4 @@
+import datetime
 from typing import List, Annotated
 
 from fastapi import Depends
@@ -26,6 +27,7 @@ from backend.utils.token import create_access_token, get_current_user
 class UserUpdate(BaseModel):
     latitude: float = Field(None, title="Latitude")
     longitude: float = Field(None, title="Longitude")
+    swiped: bool = Field(None, title="Swiped")
 
 
 def get_user(user_id: int, db: Annotated[Session, Depends(create_session)]) -> User:
@@ -95,13 +97,26 @@ def patch_user(updated_user: UserUpdate, user: Annotated[User, Depends(get_curre
         :return: a user object
     """
     # TODO: check if the other fields should be updated
-    user.latitude = updated_user.latitude
-    user.longitude = updated_user.longitude
+    print("updated user: " + updated_user.json())
+    for key in updated_user.__dict__.items():
+        print("key: " + str(key))
+        if "swiped" in key:
+            if datetime.datetime.now() < user.swipe_limit_reset_date:
+                if user.swipes_left != 0:
+                    user.swipes_left = user.swipes_left - 1
+            else:
+                user.swipe_limit_reset_date = datetime.datetime.now() + datetime.timedelta(hours=24)
+                user.swipes_left = 10
 
-    point = geometry.Point(user.longitude, user.latitude)
-    wkt_point = wkt.dumps(point)
+        elif "latitude" in key:
+            if updated_user.latitude is not None and updated_user.longitude is not None:
+                user.latitude = updated_user.latitude
+                user.longitude = updated_user.longitude
 
-    user.location = wkt_point
+                point = geometry.Point(user.longitude, user.latitude)
+                wkt_point = wkt.dumps(point)
+
+                user.location = wkt_point
 
     db.commit()
     db.refresh(user)
@@ -117,6 +132,7 @@ def patch_user(updated_user: UserUpdate, user: Annotated[User, Depends(get_curre
         job=user.job,
         search_radius=user.search_radius,
         swipes_left=user.swipes_left,
+        swipe_limit_reset_date=user.swipe_limit_reset_date,
         latitude=user.latitude,
         longitude=user.longitude,
         gender_identity_id=user.gender_identity_id

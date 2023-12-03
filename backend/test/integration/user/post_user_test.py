@@ -19,7 +19,8 @@ def test_post_create_user(client, session):
         "date_of_birth": "1990-11-17T20:06:55.441841",
         "job": "Software Engineer",
         "search_radius": 200,
-        "swipes_left": 10
+        "swipes_left": 10,
+        "swipe_limit_reset_date": "2023-11-17T20:06:55.441841"
     })
 
     print(f"created user: {response.json()}")

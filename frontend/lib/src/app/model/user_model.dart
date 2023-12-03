@@ -8,6 +8,7 @@ class User {
   final String date_of_birth;
   final int search_radius;
   final int swipes_left;
+  final String swipe_limit_reset_date;
   final int gender_identity_id;
 
   User({
@@ -20,6 +21,7 @@ class User {
     required this.date_of_birth,
     required this.search_radius,
     required this.swipes_left,
+    required this.swipe_limit_reset_date,
     required this.gender_identity_id,
   });
 
@@ -34,6 +36,7 @@ class User {
       date_of_birth: json['date_of_birth'] as String,
       search_radius: json['search_radius'] as int,
       swipes_left: json['swipes_left'] as int,
+      swipe_limit_reset_date: json['swipe_limit_reset_date'] as String,
       gender_identity_id: json['gender_identity_id'] as int,
     );
   }
@@ -49,6 +52,7 @@ class User {
       'date_of_birth': date_of_birth,
       'search_radius': search_radius,
       'swipes_left': swipes_left,
+      'swipe_limit_reset_date': swipe_limit_reset_date,
       'gender_identity_id': gender_identity_id,
     };
   }

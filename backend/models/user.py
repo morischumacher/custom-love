@@ -29,6 +29,7 @@ class User(SQLModel, table=True):
     job: str
     search_radius: int
     swipes_left: int
+    swipe_limit_reset_date: datetime
     latitude: Optional[float]
     longitude: Optional[float]
 

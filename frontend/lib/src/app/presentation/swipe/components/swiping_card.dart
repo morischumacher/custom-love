@@ -5,23 +5,31 @@ import 'package:flutter/material.dart';
 import 'package:swipe_cards/swipe_cards.dart';
 import 'package:frontend/src/config/theme.dart';
 
-class SwipingCard extends StatelessWidget {
+import '../../../model/user_model.dart';
+import '../../../service/user_service.dart';
+import '../../authentification/controller/login_controller.dart';
 
-  const SwipingCard({
+class SwipingCard extends StatelessWidget {
+  final LoginController controller;
+  final UserService userService;
+
+  SwipingCard({
     super.key,
     required MatchEngine? matchEngine,
     required CustomLoveTheme customLoveTheme,
     required SwipeItem swipeItem,
-    required this.swipeable,
+    required this.swipeable, required this.controller, required this.userService,
   })
       : _matchEngine = matchEngine,
         _customLoveTheme = customLoveTheme,
         _swipeItem = swipeItem;
 
+
   final MatchEngine? _matchEngine;
   final CustomLoveTheme _customLoveTheme;
   final SwipeItem _swipeItem;
   final bool swipeable;
+  int swipingsLeft = -1;
 
   @override
   Widget build(BuildContext context) {
@@ -144,12 +152,15 @@ class SwipingCard extends StatelessWidget {
                     )
                 );
               },
-              onStackFinished: () {},
+              onStackFinished: () async {
+                 swipingsLeft = await updateSwipeLeft();
+                 print("swipingsLeft: " + swipingsLeft.toString());
+              },
               itemChanged: (SwipeItem item, int index) {
                 print("item: ${item.content.firstName}, index: $index");
               },
-              leftSwipeAllowed: swipeable,
-              rightSwipeAllowed: swipeable,
+              leftSwipeAllowed: swipingsLeft > 0 ? swipeable : false,
+              rightSwipeAllowed: swipingsLeft > 0 ? swipeable : false,
               fillSpace: true,
               likeTag: Container(
                 margin: const EdgeInsets.all(15.0),
@@ -174,6 +185,21 @@ class SwipingCard extends StatelessWidget {
         ]));
     }
 
+    Future<int> updateSwipeLeft() async {
+      print("hello");
+      String accessToken = await controller.retrieveAccessToken() as String;
+      int tmpSwipesLeft = 0;
+      print("AccessToken from user logged in: $accessToken");
+      await userService.updateCurrentUserSwipesLeft(accessToken).then((User? user) {
+        print("user updated: " + user!.swipes_left.toString());
+        tmpSwipesLeft = user.swipes_left;
+        if(tmpSwipesLeft == 0) {
+           print("swipe limit reached");
+        }
+      });
+      return tmpSwipesLeft;
+    }
+
     Widget locationWidget() {
       return const Row(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -188,15 +214,18 @@ class SwipingCard extends StatelessWidget {
       final buttonHeight =  kIsWeb ? height * 0.037 : height * 0.022;
       final buttonWidth = kIsWeb ? width * 0.046 : width * 0.055;
       double buttonSize = kIsWeb ? 40 : 32;
-      bool isToastShown = false;
 
       return Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 if(swipeable) {
-                  _matchEngine!.currentItem?.nope();
+                  int tmpSwipesLeft = await updateSwipeLeft();
+                  print("ohh no: " + tmpSwipesLeft.toString());
+                  if(tmpSwipesLeft > 0) {
+                    _matchEngine!.currentItem?.nope();
+                  }
                 }
               },
               style: ElevatedButton.styleFrom(
@@ -206,9 +235,12 @@ class SwipingCard extends StatelessWidget {
               child: Icon(Icons.close, size: buttonSize, color: _customLoveTheme.textColor)),
           SizedBox(width: width * 0.1),
           ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 if(swipeable) {
-                  _matchEngine!.currentItem?.like();
+                  int tmpSwipesLeft = await updateSwipeLeft();
+                  if(tmpSwipesLeft > 0) {
+                    _matchEngine!.currentItem?.like();
+                  }
                 }
               },
               style: ElevatedButton.styleFrom(

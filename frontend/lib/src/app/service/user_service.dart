@@ -35,6 +35,15 @@ class UserService {
     }
   }
 
+  Future<User> updateCurrentUserSwipesLeft(var accessToken) async {
+    try {
+      final updateUser = _userApi.updateUserSwipesLeft(accessToken);
+      return updateUser;
+    } on Exception {
+      rethrow;
+    }
+  }
+
   Future<User> getAlgoUser(var accessToken) async {
     try {
       final algoUser = _userApi.getAlgoUser(accessToken);
