@@ -7,27 +7,32 @@ class Interest extends StatefulWidget {
   Interest({
     Key? key,
     required this.interestName,
-    required this.icon,
+    required this.iconCode,
+    required this.fontFamily
   });
 
-  final IconData icon;
   final String interestName;
+  final int iconCode;
+  final String fontFamily;
 
   @override
   State<Interest> createState() => _InterestState(
     interestName: interestName,
-    icon: icon
+    iconCode: iconCode,
+    fontFamily: fontFamily
   );
 }
 
 class _InterestState extends State<Interest> {
   _InterestState({
     required this.interestName,
-    required this.icon
+    required this.iconCode,
+    required this.fontFamily
   });
 
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
-  final IconData icon;
+  final int iconCode;
+  final String fontFamily;
   final String interestName;
   bool interestSelected = false;
 
@@ -35,7 +40,7 @@ class _InterestState extends State<Interest> {
   Widget build(BuildContext context) {
     return ElevatedButton.icon(
       // child: const Text("Shopping"),
-        icon: Icon(icon, color: interestSelected == true ? Colors.white : _customLoveTheme.tertiaryColor),
+        icon: Icon(IconData(iconCode, fontFamily: fontFamily), color: interestSelected == true ? Colors.white : _customLoveTheme.tertiaryColor),
         label: Text(interestName),
         onPressed: () {
           setState(() {

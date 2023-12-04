@@ -37,11 +37,33 @@ class _ProfileDetailsInterestsState extends State<ProfileDetailsInterests> {
   final String? preference;
   final String? dob;
 
+  final interestDto = [
+    {'icon_code': 0xe4b6, 'font_family': 'MaterialIcons', 'interest_name': 'Photography'},
+    {'icon_code': 0xe59a, 'font_family': 'MaterialIcons', 'interest_name': 'Shopping'},
+    {'icon_code': 0xf8bd, 'font_family': 'MaterialIcons', 'interest_name': 'Karaoke'},
+    {'icon_code': 0xe5f3, 'font_family': 'MaterialIcons', 'interest_name': 'Tennis'},
+    {'icon_code': 0xe39b, 'font_family': 'MaterialIcons', 'interest_name': 'Movies'},
+    {'icon_code': 0xe5e3, 'font_family': 'MaterialIcons', 'interest_name': 'Sports'},
+    {'icon_code': 0xe5e4, 'font_family': 'MaterialIcons', 'interest_name': 'Bars'},
+    {'icon_code': 0xf02ee, 'font_family': 'MaterialIcons', 'interest_name': 'Travel'}, // 0xf02ee
+    {'icon_code': 0xe0ef, 'font_family': 'MaterialIcons', 'interest_name': 'Book'},
+    {'icon_code': 0xe55a, 'font_family': 'MaterialIcons', 'interest_name': 'Science'},
+    {'icon_code': 0xf06c3, 'font_family': 'MaterialIcons', 'interest_name': 'Yoga'},
+    {'icon_code': 0xe28e, 'font_family': 'MaterialIcons', 'interest_name': 'LGBTQ rights'},
+    {'icon_code': 0xe67c, 'font_family': 'MaterialIcons', 'interest_name': 'Road trips'},
+    {'icon_code': 0xf32c, 'font_family': 'MaterialIcons', 'interest_name': 'Jogging'},
+    {'icon_code': 0xe1d3, 'font_family': 'MaterialIcons', 'interest_name': 'Jetski'},
+    {'icon_code': 0xe2f2, 'font_family': 'MaterialIcons', 'interest_name': 'Social Justice'},
+    {'icon_code': 0xe4c1, 'font_family': 'MaterialIcons', 'interest_name': 'NFTs'},
+    {'icon_code': 0xeede, 'font_family': 'MaterialIcons', 'interest_name': 'Marvel'},
+    {'icon_code': 0xf03dd, 'font_family': 'MaterialIcons', 'interest_name': 'Gym'},
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: _customLoveTheme.neutralColor,
-      body: Container(
+      body: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(21.0, 0, 21.0, 51.0),
           child: Center(
             child: Column(
@@ -51,61 +73,45 @@ class _ProfileDetailsInterestsState extends State<ProfileDetailsInterests> {
                     description: "Select a few interests and let everyone know what you're passionate about",
                     bottomPadding: 49.0
                 ),
-                Center(
-                  child: Container(
-                    constraints: BoxConstraints(maxWidth: 400),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Interest(
-                              interestName: "Photography",
-                              icon: Icons.photo_camera
+                for (int i = 0; i < interestDto.length; i += 2)
+                  Center(
+                    child: Container(
+                      constraints: const BoxConstraints(maxWidth: 400),
+                      margin: const EdgeInsets.only(bottom: 20),
+                      child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Interest(
+                                    interestName: interestDto[i]['interest_name'].toString(),
+                                    iconCode: int.parse(interestDto[i]['icon_code'].toString()),
+                                    fontFamily: interestDto[i]['font_family'].toString(),
+                                ),
+                              ),
+                              const SizedBox(width: 20),
+                              if (i + 1 < interestDto.length)
+                                Expanded(
+                                child: Interest(
+                                    interestName: interestDto[i + 1]['interest_name'].toString(),
+                                    iconCode: int.parse(interestDto[i + 1]['icon_code'].toString()),
+                                    fontFamily: interestDto[i + 1]['font_family'].toString(),
+                                ),
+                              ) else Expanded(child: Container()),
+                            ],
                           ),
-                        ),
-                        const SizedBox(width: 20),
-                        Expanded(
-                          child: Interest(
-                              interestName: "Shopping",
-                              icon: Icons.shopping_bag
-                          ),
-                        ),
-                      ],
                     ),
                   ),
-                ),
-                const SizedBox(height: 21.0),
-                Center(
-                  child: Container(
-                    constraints: BoxConstraints(maxWidth: 400),
+                Container(
+                  constraints: const BoxConstraints(maxWidth: 500),
+                  child: Center(
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Expanded(
-                          child: Interest(
-                              interestName: "Karaoke",
-                              icon: Icons.mic_rounded
-                          ),
-                        ),
-                        const SizedBox(width: 20),
-                        Expanded(
-                          child: Interest(
-                              interestName: "Tennis",
-                              icon: Icons.sports_tennis
-                          ),
-                        ),
+                        const SizedBox(height: 80),
+                        prevBtn(context),
+                        const Spacer(),
+                        nextBtn(context)
                       ],
                     ),
-                  ),
-                ),
-                const Spacer(),
-                Center(
-                  child: Row(
-                    children: [
-                      prevBtn(context),
-                      const Spacer(),
-                      nextBtn(context)
-                    ],
                   ),
                 )
               ],
