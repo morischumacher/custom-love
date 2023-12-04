@@ -8,6 +8,7 @@ import 'package:swipe_cards/swipe_cards.dart';
 import 'package:frontend/src/config/theme.dart';
 import 'package:frontend/src/app/presentation/authentification/controller/login_controller.dart';
 
+import '../../../service/location_service.dart';
 import '../../../service/user_service.dart';
 import '../components/swiping_card.dart';
 import '../util/shared_algorithm_event.dart';
@@ -31,6 +32,7 @@ class _SwipeState extends State<Swipe> {
   bool swipeable = true;
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
   final LoginController _controller = LoginController();
+  final LocationService _locationService = LocationService();
 
   final List<Content> _cards = [
     Content(firstName: "Bravo", languages: ["english", "french"], bio: "hello,...", interests: ["sport", "reading", "movies", "IT"])];
@@ -55,8 +57,11 @@ class _SwipeState extends State<Swipe> {
 
     if (swipingAlgoId == 0) {
        print("No special swiping algorithm is used");
-       await widget.userService.getUser().then((User? user) {
-         _setSwipingCard(user);
+       await widget.userService.getUser().then((User? user) async {
+         var city = await _locationService.getCurrentLocation(
+             user!.latitude, user.longitude);
+         print("city: " + city.toString());
+         _setSwipingCard(user, city);
        }).whenComplete(() {
          isLoading = false;
        });
@@ -64,8 +69,11 @@ class _SwipeState extends State<Swipe> {
        print("Random swiping algorithm is used");
        String accessToken = await _controller.retrieveAccessToken() as String;
        print("AccessToken from user logged in: $accessToken");
-       await widget.userService.getAlgoUser(accessToken).then((User? user) {
-         _setSwipingCard(user);
+       await widget.userService.getAlgoUser(accessToken).then((User? user) async {
+         var city = await _locationService.getCurrentLocation(
+             user!.latitude, user.longitude);
+         print("city: " + city.toString());
+         _setSwipingCard(user, city);
        }).whenComplete(() {
          isLoading = false;
        });
@@ -73,7 +81,7 @@ class _SwipeState extends State<Swipe> {
 
   }
 
-  void _setSwipingCard(User? user) {
+  void _setSwipingCard(User? user, String? city) {
     if (user == null) {
       setState(() {
         _swipeItem = SwipeItem(
@@ -103,8 +111,9 @@ class _SwipeState extends State<Swipe> {
           });
         });
 
+
         _swipeItem = SwipeItem(
-          content: Content(firstName: firstName, age: age, languages: _cards
+          content: Content(firstName: firstName, age: age, city: city, languages: _cards
               .elementAt(0)
               .languages, bio: user.bio, interests: _cards
               .elementAt(0)

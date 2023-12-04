@@ -9,6 +9,8 @@ class User {
   final int search_radius;
   final int swipes_left;
   final int gender_identity_id;
+  final double latitude;
+  final double longitude;
 
   User({
     required this.id,
@@ -21,6 +23,8 @@ class User {
     required this.search_radius,
     required this.swipes_left,
     required this.gender_identity_id,
+    required this.latitude,
+    required this.longitude
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -35,6 +39,8 @@ class User {
       search_radius: json['search_radius'] as int,
       swipes_left: json['swipes_left'] as int,
       gender_identity_id: json['gender_identity_id'] as int,
+      latitude: json['latitude'] as double,
+      longitude: json['longitude'] as double,
     );
   }
 
@@ -50,6 +56,8 @@ class User {
       'search_radius': search_radius,
       'swipes_left': swipes_left,
       'gender_identity_id': gender_identity_id,
+      'latitude': latitude,
+      'longitude': longitude,
     };
   }
 }

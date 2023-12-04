@@ -4,6 +4,7 @@ class Content {
   final List<String>? languages;
   final List<String>? interests;
   final int? age;
-  Content({this.firstName, this.age, this.languages, this.bio, this.interests});
+  final String? city;
+  Content({this.firstName, this.age, this.city, this.languages, this.bio, this.interests});
 
 }

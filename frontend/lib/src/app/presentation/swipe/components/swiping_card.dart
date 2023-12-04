@@ -58,20 +58,22 @@ class SwipingCard extends StatelessWidget {
                               ),
                             ),
                             SizedBox(height: height * 0.02),
-                             Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                  Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: kIsWeb ? 50 : 40),
-                                  child: Text(
-                                    "Age: ${_swipeItem.content.age}",
-                                    style: const TextStyle(fontSize: kIsWeb ? 16 : 14, fontWeight: FontWeight.bold),
+                             FittedBox(
+                               child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                    Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: kIsWeb ? 50 : 40),
+                                    child: Text(
+                                      "Age: ${_swipeItem.content.age}",
+                                      style: const TextStyle(fontSize: kIsWeb ? 16 : 14, fontWeight: FontWeight.bold),
+                                    ),
                                   ),
-                                ),
-                                SizedBox(width: kIsWeb ? width * 0.25 : width * 0.15),
-                                locationWidget(),
-                              ],
+                                  SizedBox(width: kIsWeb ? width * 0.20 : width * 0.15),
+                                  locationWidget(_swipeItem.content.city),
+                                ],
                             ),
+                             ),
                             SizedBox(height: height * 0.02),
                             Padding(
                               padding: const EdgeInsets.symmetric(horizontal: kIsWeb ? 50 : 40),
@@ -174,12 +176,12 @@ class SwipingCard extends StatelessWidget {
         ]));
     }
 
-    Widget locationWidget() {
-      return const Row(
+    Widget locationWidget(city) {
+      return Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [ Icon(Icons.location_on, size: 18),
         Text(
-          "Location: ",
+          "Location: $city",
           style: TextStyle(fontSize: kIsWeb ? 16 : 14, fontWeight: FontWeight.bold),
         )],);
     }
@@ -188,7 +190,6 @@ class SwipingCard extends StatelessWidget {
       final buttonHeight =  kIsWeb ? height * 0.037 : height * 0.022;
       final buttonWidth = kIsWeb ? width * 0.046 : width * 0.055;
       double buttonSize = kIsWeb ? 40 : 32;
-      bool isToastShown = false;
 
       return Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
