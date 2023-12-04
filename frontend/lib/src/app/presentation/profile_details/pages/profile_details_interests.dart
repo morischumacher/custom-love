@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/presentation/profile_details/pages/profile_details_picture.dart';
+import 'package:frontend/src/app/presentation/profile_details/pages/widgets/interest.dart';
 import 'package:frontend/src/app/presentation/profile_details/pages/widgets/page_title.dart';
 
 import '../../../../config/theme.dart';
@@ -36,20 +37,6 @@ class _ProfileDetailsInterestsState extends State<ProfileDetailsInterests> {
   final String? preference;
   final String? dob;
 
-  final interestIconMapping = {
-    "photography": const Icon(Icons.photo_camera),
-    "shopping": const Icon(Icons.shopping_bag),
-    "karaoke": const Icon(Icons.mic_rounded),
-    "tennis": const Icon(Icons.sports_tennis)
-};
-
-  final interestSelectMapping = {
-    "photography": false,
-    "shopping": false,
-    "karaoke": false,
-    "tennis": false
-  };
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,57 +58,16 @@ class _ProfileDetailsInterestsState extends State<ProfileDetailsInterests> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Expanded(
-                          child: ElevatedButton.icon(
-                            // child: const Text("Shopping"),
-                              icon: Icon(Icons.photo_camera, color: interestSelectMapping["photography"] == true ? Colors.white : _customLoveTheme.tertiaryColor),
-                              label: const Text("Photography"),
-                              onPressed: () {
-                                setState(() {
-                                  interestSelectMapping["photography"] = !interestSelectMapping["photography"]!;
-                                });
-                              },
-                              style: ElevatedButton.styleFrom(
-                                  padding: const EdgeInsets.all(20.0),
-                                  backgroundColor: interestSelectMapping["photography"] == true ? _customLoveTheme.selected : Colors.white,
-                                  foregroundColor:interestSelectMapping["photography"] == true ? Colors.white : _customLoveTheme.tertiaryColor,
-                                  elevation: 15,
-                                  shadowColor: Colors.black,
-                                  alignment: Alignment.center,
-                                  // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-                                  shape: StadiumBorder(
-                                      side: BorderSide(
-                                        width: 2,
-                                        color: interestSelectMapping["photography"] == true ? Colors.white : _customLoveTheme.tertiaryColor
-                                      )
-                                  ),
-                                  textStyle: const TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold,
-                                  ),
-                              )
+                          child: Interest(
+                              interestName: "Photography",
+                              icon: const Icon(Icons.photo_camera)
                           ),
                         ),
                         const SizedBox(width: 20),
                         Expanded(
-                          child: ElevatedButton.icon(
-                            // child: const Text("Shopping"),
-                            icon: const Icon(Icons.shopping_bag),
-                            label: const Text("Shopping"),
-                            onPressed: () {},
-                            style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.all(20.0),
-                              backgroundColor:  _customLoveTheme.tertiaryColor,
-                              foregroundColor: Colors.white,
-                              elevation: 15,
-                              shadowColor: Colors.black,
-                              alignment: Alignment.center,
-                              // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-                                shape: const StadiumBorder(),
-                              textStyle: const TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold
-                              )
-                            )
+                          child: Interest(
+                              interestName: "Shopping",
+                              icon: const Icon(Icons.shopping_bag)
                           ),
                         ),
                       ],
@@ -136,48 +82,16 @@ class _ProfileDetailsInterestsState extends State<ProfileDetailsInterests> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Expanded(
-                          child: ElevatedButton.icon(
-                            // child: const Text("Shopping"),
-                              icon: const Icon(Icons.mic_rounded),
-                              label: const Text("Karaoke"),
-                              onPressed: () {},
-                              style: ElevatedButton.styleFrom(
-                                  padding: const EdgeInsets.all(20.0),
-                                  backgroundColor:  _customLoveTheme.tertiaryColor,
-                                  foregroundColor: Colors.white,
-                                  elevation: 15,
-                                  shadowColor: Colors.black,
-                                  alignment: Alignment.center,
-                                  // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-                                  shape: const StadiumBorder(),
-                                  textStyle: const TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold
-                                  )
-                              )
+                          child: Interest(
+                              interestName: "Karaoke",
+                              icon: const Icon(Icons.mic_rounded)
                           ),
                         ),
                         const SizedBox(width: 20),
                         Expanded(
-                          child: ElevatedButton.icon(
-                            // child: const Text("Shopping"),
-                              icon: const Icon(Icons.sports_tennis),
-                              label: const Text("Tennis"),
-                              onPressed: () {},
-                              style: ElevatedButton.styleFrom(
-                                  padding: const EdgeInsets.all(20.0),
-                                  backgroundColor: _customLoveTheme.tertiaryColor,
-                                  foregroundColor: Colors.white,
-                                  elevation: 15,
-                                  shadowColor: Colors.black,
-                                  alignment: Alignment.center,
-                                  // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-                                  shape: const StadiumBorder(),
-                                  textStyle: const TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold
-                                  )
-                              )
+                          child: Interest(
+                              interestName: "Tennis",
+                              icon: const Icon(Icons.sports_tennis)
                           ),
                         ),
                       ],
