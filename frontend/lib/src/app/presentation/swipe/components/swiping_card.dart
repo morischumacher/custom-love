@@ -13,23 +13,24 @@ class SwipingCard extends StatelessWidget {
   final LoginController controller;
   final UserService userService;
 
-  SwipingCard({
+  const SwipingCard({
     super.key,
     required MatchEngine? matchEngine,
     required CustomLoveTheme customLoveTheme,
     required SwipeItem swipeItem,
-    required this.swipeable, required this.controller, required this.userService,
+    required this.swipeable, required this.controller, required this.userService, swipingsLeft
   })
       : _matchEngine = matchEngine,
         _customLoveTheme = customLoveTheme,
-        _swipeItem = swipeItem;
+        _swipeItem = swipeItem,
+        _swipingsLeft = swipingsLeft;
 
 
   final MatchEngine? _matchEngine;
   final CustomLoveTheme _customLoveTheme;
   final SwipeItem _swipeItem;
   final bool swipeable;
-  int swipingsLeft = -1;
+  final bool _swipingsLeft;
 
   @override
   Widget build(BuildContext context) {
@@ -152,15 +153,12 @@ class SwipingCard extends StatelessWidget {
                     )
                 );
               },
-              onStackFinished: () async {
-                 swipingsLeft = await updateSwipeLeft();
-                 print("swipingsLeft: " + swipingsLeft.toString());
-              },
+              onStackFinished: () async {},
               itemChanged: (SwipeItem item, int index) {
                 print("item: ${item.content.firstName}, index: $index");
               },
-              leftSwipeAllowed: swipingsLeft > 0 ? swipeable : false,
-              rightSwipeAllowed: swipingsLeft > 0 ? swipeable : false,
+              leftSwipeAllowed: _swipingsLeft ? swipeable : false,
+              rightSwipeAllowed: _swipingsLeft ? swipeable : false,
               fillSpace: true,
               likeTag: Container(
                 margin: const EdgeInsets.all(15.0),
@@ -186,12 +184,11 @@ class SwipingCard extends StatelessWidget {
     }
 
     Future<int> updateSwipeLeft() async {
-      print("hello");
       String accessToken = await controller.retrieveAccessToken() as String;
       int tmpSwipesLeft = 0;
       print("AccessToken from user logged in: $accessToken");
       await userService.updateCurrentUserSwipesLeft(accessToken).then((User? user) {
-        print("user updated: " + user!.swipes_left.toString());
+        print("swipes left: " + user!.swipes_left.toString());
         tmpSwipesLeft = user.swipes_left;
         if(tmpSwipesLeft == 0) {
            print("swipe limit reached");
@@ -222,7 +219,6 @@ class SwipingCard extends StatelessWidget {
               onPressed: () async {
                 if(swipeable) {
                   int tmpSwipesLeft = await updateSwipeLeft();
-                  print("ohh no: " + tmpSwipesLeft.toString());
                   if(tmpSwipesLeft > 0) {
                     _matchEngine!.currentItem?.nope();
                   }

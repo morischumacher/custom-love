@@ -29,6 +29,8 @@ class _SwipeState extends State<Swipe> {
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
   bool isLoading = false;
   bool swipeable = true;
+  late bool swiped;
+  bool swipingsLeft = true;
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
   final LoginController _controller = LoginController();
 
@@ -47,6 +49,7 @@ class _SwipeState extends State<Swipe> {
   }
 
   void _loadNextUser() async {
+
     setState(() {
       isLoading = true;
     });
@@ -97,6 +100,8 @@ class _SwipeState extends State<Swipe> {
           swipeable = false;
         });
 
+        swiped = false;
+
         Timer(const Duration(seconds: 10), () {
           setState(() {
             swipeable = true;
@@ -115,10 +120,51 @@ class _SwipeState extends State<Swipe> {
           nopeAction: () {
               _loadNextUser();
           },
+          onSlideUpdate: (SlideRegion? region) async {
+            //check if it's possible to swipe (10 sec timer)
+            if (swipeable) {
+              //ignore the swipe left check if the card is just be tapped
+              if (region != null) {
+                //ensure that after a swipe attempt the api call happens only once
+                if (!swiped) {
+                  swiped = true;
+                  int tmpSwipesLeft = await updateSwipeLeft();
+                  if(tmpSwipesLeft > 0) {
+                    swipingsLeft = true;
+                    //after reset_date is updated, it's possible to swipe again
+                    setState(() {
+                      swipeable = true;
+                    });
+                  } else {
+                    swipingsLeft = false;
+                  }
+                }
+              }
+
+              //when swipe card is in the initial state (null position), it should be possible to make the api call
+              if (region == null) {
+                swiped = false;
+              }
+            }
+          },
         );
         _matchEngine = MatchEngine(swipeItems: [_swipeItem]);
       });
     }
+  }
+
+  Future<int> updateSwipeLeft() async {
+    String accessToken = await _controller.retrieveAccessToken() as String;
+    int tmpSwipesLeft = 0;
+    print("AccessToken from user logged in: $accessToken");
+    await widget.userService.updateCurrentUserSwipesLeft(accessToken).then((User? user) {
+      print("swipes left: " + user!.swipes_left.toString());
+      tmpSwipesLeft = user.swipes_left;
+      if(tmpSwipesLeft == 0) {
+        print("swipe limit reached");
+      }
+    });
+    return tmpSwipesLeft;
   }
 
   @override
@@ -131,7 +177,7 @@ class _SwipeState extends State<Swipe> {
             child: CircularProgressIndicator(),
           ):
             Center(
-              child: SwipingCard(matchEngine: _matchEngine, customLoveTheme: _customLoveTheme, swipeItem: _swipeItem, swipeable: swipeable, controller: _controller, userService: widget.userService),
+              child: SwipingCard(matchEngine: _matchEngine, customLoveTheme: _customLoveTheme, swipeItem: _swipeItem, swipeable: swipeable, controller: _controller, userService: widget.userService, swipingsLeft: swipingsLeft),
             )
     );
   }
