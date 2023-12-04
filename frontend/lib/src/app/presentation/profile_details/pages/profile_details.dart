@@ -78,7 +78,7 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                           .toList(),
                       onChanged: (val) {
                         setState(() {
-                          _selectedGender = val as String;
+                          _selectedPreference = val as String;
                         });
                       },
                       icon: const Icon(
