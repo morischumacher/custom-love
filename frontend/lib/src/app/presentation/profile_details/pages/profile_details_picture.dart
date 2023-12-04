@@ -4,7 +4,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/presentation/profile_details/pages/profile_details.dart';
 import 'package:frontend/src/app/presentation/profile_details/pages/profile_details_interests.dart';
-import 'package:frontend/src/app/presentation/profile_details/pages/profile_details_location.dart';
 import 'package:frontend/src/app/presentation/profile_details/pages/widgets/page_title.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -149,7 +148,11 @@ class _ProfileDetailsPictureState extends State<ProfileDetailsPicture> {
       ),
       onPressed: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return ProfileDetailsInterests();
+          return ProfileDetailsInterests(
+            dob: dob,
+            gender: gender,
+            preference: preference,
+          );
         }));
       },
       child: const Text(

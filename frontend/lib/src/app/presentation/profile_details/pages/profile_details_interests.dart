@@ -1,19 +1,40 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend/src/app/presentation/profile_details/pages/profile_details_location.dart';
+import 'package:frontend/src/app/presentation/profile_details/pages/profile_details_picture.dart';
 import 'package:frontend/src/app/presentation/profile_details/pages/widgets/page_title.dart';
 
 import '../../../../config/theme.dart';
 
 class ProfileDetailsInterests extends StatefulWidget {
-  const ProfileDetailsInterests({super.key});
+  const ProfileDetailsInterests({
+    Key? key,
+    required this.gender,
+    required this.preference,
+    required this.dob
+  }) : super(key: key);
+
+  final String? gender;
+  final String? preference;
+  final String? dob;
 
   @override
-  State<ProfileDetailsInterests> createState() => _ProfileDetailsInterestsState();
+  State<ProfileDetailsInterests> createState() => _ProfileDetailsInterestsState(
+    dob: dob,
+    gender: gender,
+    preference: preference
+  );
 }
 
 class _ProfileDetailsInterestsState extends State<ProfileDetailsInterests> {
+  _ProfileDetailsInterestsState({
+    required this.gender,
+    required this.preference,
+    required this.dob
+  });
+
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
+  final String? gender;
+  final String? preference;
+  final String? dob;
 
   @override
   Widget build(BuildContext context) {
@@ -30,15 +51,41 @@ class _ProfileDetailsInterestsState extends State<ProfileDetailsInterests> {
                     bottomPadding: 49.0
                 ),
                 Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      ElevatedButton.icon(
-                        // child: const Text("Shopping"),
-                          icon: const Icon(Icons.photo_camera),
-                          label: const Text("Photography"),
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
+                  child: Container(
+                    constraints: BoxConstraints(maxWidth: 400),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            // child: const Text("Shopping"),
+                              icon: const Icon(Icons.photo_camera),
+                              label: const Text("Photography"),
+                              onPressed: () {},
+                              style: ElevatedButton.styleFrom(
+                                  padding: const EdgeInsets.all(20.0),
+                                  backgroundColor:  _customLoveTheme.tertiaryColor,
+                                  foregroundColor: Colors.white,
+                                  elevation: 15,
+                                  shadowColor: Colors.black,
+                                  alignment: Alignment.center,
+                                  // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+                                  shape: const StadiumBorder(),
+                                  textStyle: const TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold
+                                  )
+                              )
+                          ),
+                        ),
+                        SizedBox(width: 20),
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            // child: const Text("Shopping"),
+                            icon: const Icon(Icons.shopping_bag),
+                            label: const Text("Shopping"),
+                            onPressed: () {},
+                            style: ElevatedButton.styleFrom(
                               padding: const EdgeInsets.all(20.0),
                               backgroundColor:  _customLoveTheme.tertiaryColor,
                               foregroundColor: Colors.white,
@@ -46,83 +93,72 @@ class _ProfileDetailsInterestsState extends State<ProfileDetailsInterests> {
                               shadowColor: Colors.black,
                               alignment: Alignment.center,
                               // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-                              shape: const StadiumBorder(),
+                                shape: const StadiumBorder(),
                               textStyle: const TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold
                               )
-                          )
-                      ),
-                      ElevatedButton.icon(
-                        // child: const Text("Shopping"),
-                        icon: const Icon(Icons.shopping_bag),
-                        label: const Text("Shopping"),
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.all(20.0),
-                          backgroundColor:  _customLoveTheme.tertiaryColor,
-                          foregroundColor: Colors.white,
-                          elevation: 15,
-                          shadowColor: Colors.black,
-                          alignment: Alignment.center,
-                          // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-                            shape: const StadiumBorder(),
-                          textStyle: const TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold
-                          )
-                        )
-                      ),
-                    ],
+                            )
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 const SizedBox(height: 21.0),
                 Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      ElevatedButton.icon(
-                        // child: const Text("Shopping"),
-                          icon: const Icon(Icons.mic_rounded),
-                          label: const Text("Karaoke"),
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.all(20.0),
-                              backgroundColor:  _customLoveTheme.tertiaryColor,
-                              foregroundColor: Colors.white,
-                              elevation: 15,
-                              shadowColor: Colors.black,
-                              alignment: Alignment.center,
-                              // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-                              shape: const StadiumBorder(),
-                              textStyle: const TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold
+                  child: Container(
+                    constraints: BoxConstraints(maxWidth: 400),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            // child: const Text("Shopping"),
+                              icon: const Icon(Icons.mic_rounded),
+                              label: const Text("Karaoke"),
+                              onPressed: () {},
+                              style: ElevatedButton.styleFrom(
+                                  padding: const EdgeInsets.all(20.0),
+                                  backgroundColor:  _customLoveTheme.tertiaryColor,
+                                  foregroundColor: Colors.white,
+                                  elevation: 15,
+                                  shadowColor: Colors.black,
+                                  alignment: Alignment.center,
+                                  // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+                                  shape: const StadiumBorder(),
+                                  textStyle: const TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold
+                                  )
                               )
-                          )
-                      ),
-                      const Spacer(),
-                      ElevatedButton.icon(
-                        // child: const Text("Shopping"),
-                          icon: const Icon(Icons.sports_tennis),
-                          label: const Text("Tenis"),
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.all(20.0),
-                              backgroundColor: _customLoveTheme.tertiaryColor,
-                              foregroundColor: Colors.white,
-                              elevation: 15,
-                              shadowColor: Colors.black,
-                              alignment: Alignment.center,
-                              // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-                              shape: const StadiumBorder(),
-                              textStyle: const TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold
+                          ),
+                        ),
+                        const SizedBox(width: 20),
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            // child: const Text("Shopping"),
+                              icon: const Icon(Icons.sports_tennis),
+                              label: const Text("Tennis"),
+                              onPressed: () {},
+                              style: ElevatedButton.styleFrom(
+                                  padding: const EdgeInsets.all(20.0),
+                                  backgroundColor: _customLoveTheme.tertiaryColor,
+                                  foregroundColor: Colors.white,
+                                  elevation: 15,
+                                  shadowColor: Colors.black,
+                                  alignment: Alignment.center,
+                                  // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+                                  shape: const StadiumBorder(),
+                                  textStyle: const TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold
+                                  )
                               )
-                          )
-                      ),
-                    ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 const Spacer(),
@@ -152,7 +188,10 @@ class _ProfileDetailsInterestsState extends State<ProfileDetailsInterests> {
       ),
       onPressed: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return ProfileDetailsLocation(
+          return ProfileDetailsPicture(
+            dob: dob,
+            gender: gender,
+            preference: preference,
           );
         }));
       },

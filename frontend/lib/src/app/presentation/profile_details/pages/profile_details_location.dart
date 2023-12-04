@@ -3,6 +3,7 @@ import 'package:frontend/src/app/presentation/profile_details/pages/profile_deta
 import 'package:frontend/src/app/presentation/profile_details/pages/profile_details_picture.dart';
 import 'package:frontend/src/app/presentation/profile_details/pages/widgets/page_title.dart';
 
+/*
 class ProfileDetailsLocation extends StatefulWidget {
   const ProfileDetailsLocation({super.key});
 
@@ -164,3 +165,6 @@ class _ProfileDetailsLocationState extends State<ProfileDetailsLocation> {
     );
   }
 }
+
+
+ */
