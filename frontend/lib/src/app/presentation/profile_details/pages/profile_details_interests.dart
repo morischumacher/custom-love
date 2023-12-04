@@ -36,6 +36,20 @@ class _ProfileDetailsInterestsState extends State<ProfileDetailsInterests> {
   final String? preference;
   final String? dob;
 
+  final interestIconMapping = {
+    "photography": const Icon(Icons.photo_camera),
+    "shopping": const Icon(Icons.shopping_bag),
+    "karaoke": const Icon(Icons.mic_rounded),
+    "tennis": const Icon(Icons.sports_tennis)
+};
+
+  final interestSelectMapping = {
+    "photography": false,
+    "shopping": false,
+    "karaoke": false,
+    "tennis": false
+  };
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,26 +73,35 @@ class _ProfileDetailsInterestsState extends State<ProfileDetailsInterests> {
                         Expanded(
                           child: ElevatedButton.icon(
                             // child: const Text("Shopping"),
-                              icon: const Icon(Icons.photo_camera),
+                              icon: Icon(Icons.photo_camera, color: interestSelectMapping["photography"] == true ? Colors.white : _customLoveTheme.tertiaryColor),
                               label: const Text("Photography"),
-                              onPressed: () {},
+                              onPressed: () {
+                                setState(() {
+                                  interestSelectMapping["photography"] = !interestSelectMapping["photography"]!;
+                                });
+                              },
                               style: ElevatedButton.styleFrom(
                                   padding: const EdgeInsets.all(20.0),
-                                  backgroundColor:  _customLoveTheme.tertiaryColor,
-                                  foregroundColor: Colors.white,
+                                  backgroundColor: interestSelectMapping["photography"] == true ? _customLoveTheme.selected : Colors.white,
+                                  foregroundColor:interestSelectMapping["photography"] == true ? Colors.white : _customLoveTheme.tertiaryColor,
                                   elevation: 15,
                                   shadowColor: Colors.black,
                                   alignment: Alignment.center,
                                   // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-                                  shape: const StadiumBorder(),
+                                  shape: StadiumBorder(
+                                      side: BorderSide(
+                                        width: 2,
+                                        color: interestSelectMapping["photography"] == true ? Colors.white : _customLoveTheme.tertiaryColor
+                                      )
+                                  ),
                                   textStyle: const TextStyle(
                                       fontSize: 15,
-                                      fontWeight: FontWeight.bold
-                                  )
+                                      fontWeight: FontWeight.bold,
+                                  ),
                               )
                           ),
                         ),
-                        SizedBox(width: 20),
+                        const SizedBox(width: 20),
                         Expanded(
                           child: ElevatedButton.icon(
                             // child: const Text("Shopping"),

@@ -9,6 +9,7 @@ class CustomLoveTheme extends ThemeExtension<CustomLoveTheme> {
     this.tertiaryColor = const Color(0xFFF06292), // Pink 200
     this.neutralColor = const Color(0xFFFFC0CB), // Pink 100
     this.textColor = const Color(0xFF000000), // Black
+    this.selected = const Color(0xFF32DE84),
     this.neutralBackgroundColor = const Color(0xFFFFFFFF),
     this.formFieldBorder = const Color(0xFFFFFFFF),
     this.inputWidth = 327,
@@ -19,7 +20,7 @@ class CustomLoveTheme extends ThemeExtension<CustomLoveTheme> {
   });
 
   final Color primaryColor, tertiaryColor, neutralColor, textColor, neutralBackgroundColor;
-  final Color formFieldBorder;
+  final Color formFieldBorder, selected;
   final double inputWidth, inputHeight;
   final InputDecoration? textFieldDecoration;
   final ButtonStyle? buttonStyle;
@@ -40,6 +41,7 @@ class CustomLoveTheme extends ThemeExtension<CustomLoveTheme> {
     Color? textColor,
     Color? neutralBackgroundColor,
     Color? formFieldBorder,
+    Color? selected,
     double? inputWidth,
     double? inputHeight,
     InputDecoration? textFieldDecoration,
@@ -53,6 +55,7 @@ class CustomLoveTheme extends ThemeExtension<CustomLoveTheme> {
         textColor: textColor ?? this.textColor,
         neutralBackgroundColor: neutralBackgroundColor ?? this.neutralBackgroundColor,
         formFieldBorder: formFieldBorder ?? this.formFieldBorder,
+        selected: selected ?? this.selected,
         inputWidth: inputWidth ?? this.inputWidth,
         inputHeight: inputHeight ?? this.inputHeight,
         textFieldDecoration: textFieldDecoration ?? this.textFieldDecoration,
@@ -72,6 +75,7 @@ class CustomLoveTheme extends ThemeExtension<CustomLoveTheme> {
       textColor: Color.lerp(textColor, other.textColor, t)!,
       neutralBackgroundColor: Color.lerp(neutralBackgroundColor, other.neutralBackgroundColor, t)!,
       formFieldBorder: Color.lerp(formFieldBorder, other.formFieldBorder, t)!,
+      selected: Color.lerp(selected, other.selected, t)!,
       inputWidth: lerpDouble(inputWidth, other.inputWidth, t)!,
       inputHeight: lerpDouble(inputHeight, other.inputHeight, t)!,
       textFieldDecoration: other.textFieldDecoration ?? textFieldDecoration,
