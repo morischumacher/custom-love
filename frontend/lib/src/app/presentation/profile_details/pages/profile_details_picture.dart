@@ -59,7 +59,6 @@ class _ProfileDetailsPictureState extends State<ProfileDetailsPicture> {
       });
 
     }
-    print(selectFile);
   }
 
   @override
