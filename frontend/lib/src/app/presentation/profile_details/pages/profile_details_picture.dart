@@ -80,7 +80,7 @@ class _ProfileDetailsPictureState extends State<ProfileDetailsPicture> {
                   const SizedBox(height: 19.0),
                   if (!selectFile!.isEmpty)
                     Container(
-                      height: 150,
+                      height: 250,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(15)
                       ),

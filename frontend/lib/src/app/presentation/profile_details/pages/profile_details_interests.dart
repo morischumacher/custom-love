@@ -60,14 +60,14 @@ class _ProfileDetailsInterestsState extends State<ProfileDetailsInterests> {
                         Expanded(
                           child: Interest(
                               interestName: "Photography",
-                              icon: const Icon(Icons.photo_camera)
+                              icon: Icons.photo_camera
                           ),
                         ),
                         const SizedBox(width: 20),
                         Expanded(
                           child: Interest(
                               interestName: "Shopping",
-                              icon: const Icon(Icons.shopping_bag)
+                              icon: Icons.shopping_bag
                           ),
                         ),
                       ],
@@ -84,14 +84,14 @@ class _ProfileDetailsInterestsState extends State<ProfileDetailsInterests> {
                         Expanded(
                           child: Interest(
                               interestName: "Karaoke",
-                              icon: const Icon(Icons.mic_rounded)
+                              icon: Icons.mic_rounded
                           ),
                         ),
                         const SizedBox(width: 20),
                         Expanded(
                           child: Interest(
                               interestName: "Tennis",
-                              icon: const Icon(Icons.sports_tennis)
+                              icon: Icons.sports_tennis
                           ),
                         ),
                       ],
