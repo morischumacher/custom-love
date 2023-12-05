@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/src/app/presentation/authentification/pages/login_page.dart';
 import 'package:frontend/src/app/presentation/profile_details/pages/profile_details_picture.dart';
 import 'package:frontend/src/app/presentation/profile_details/pages/widgets/page_title.dart';
+import 'package:provider/provider.dart';
 
 import '../../../../config/theme.dart';
+import '../../../service/login_service.dart';
+import '../../../service/user_service.dart';
 
 class ProfileDetails extends StatefulWidget {
   const ProfileDetails({super.key});
@@ -161,15 +165,14 @@ class _ProfileDetailsState extends State<ProfileDetails> {
       ),
       onPressed: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return ProfileDetailsPicture(
-              gender: _selectedGender,
-              preference: _selectedPreference,
-              dob: _selectedBirthdate
+          return LoginPage(
+              loginService: Provider.of<LoginService>(context),
+              userService: Provider.of<UserService>(context),
           );
         }));
       },
       child: const Text(
-        "Previous",
+        "Return",
         style: const TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.white
