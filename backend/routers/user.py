@@ -14,7 +14,7 @@ from backend.services.expert_system import get_expert_system_by_user_id, update_
 router = APIRouter(prefix='/users', tags=['users'], responses={status.HTTP_200_OK: {"description": "Success"}})
 
 
-@router.get("/", response_model=Page[User])
+@router.get("/", response_model=Page[UserResponse])
 async def get_users(commons: Annotated[Page[User], Depends(get_users)]):
     """
     Retrieves all users, with whom the querying user has a match
@@ -23,7 +23,7 @@ async def get_users(commons: Annotated[Page[User], Depends(get_users)]):
     return commons
 
 
-@router.get('/{user_id}', response_model=User, responses={
+@router.get('/{user_id}', response_model=UserResponse, responses={
     status.HTTP_404_NOT_FOUND: {"description": "Not Found", "model": ErrorResponse},
     status.HTTP_400_BAD_REQUEST: {"description": "Bad Request", "model": ErrorResponse},
 })
@@ -35,7 +35,7 @@ def get_user(commons: Annotated[dict, Depends(get_user)]):
     return commons
 
 
-@router.post('/', response_model=User, responses={
+@router.post('/', response_model=UserResponse, responses={
     status.HTTP_422_UNPROCESSABLE_ENTITY: {"description": "Validation Error", "model": ErrorResponse}
 })
 def post_user(commons: Annotated[dict, Depends(post_user)]):
