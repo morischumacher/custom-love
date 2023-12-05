@@ -7,7 +7,7 @@ from fastapi_pagination.ext.sqlmodel import paginate
 from geoalchemy2 import Geography
 from pydantic import BaseModel, Field, json
 from shapely import geometry, wkt
-from sqlalchemy import func
+from sqlalchemy import func, or_, and_
 from sqlmodel import Session, select
 from starlette.requests import Request
 from backend.algo.exsys import ExSys
@@ -15,6 +15,7 @@ from backend.exceptions.bad_request_exception import BadRequestException
 from backend.exceptions.credentials_exception import CredentialsException
 from backend.exceptions.not_found_exception import NotFoundException
 from backend.exceptions.validation_exception import ValidationException
+from backend.models.swipe_status import SwipeStatus, SwipeStatusType
 from backend.models.user import User
 from backend.repository.repository import create_session
 from backend.responses.user_response import UserResponse
@@ -61,13 +62,17 @@ def get_user_by_email(user_email: str, db: Annotated[Session, Depends(create_ses
     return user
 
 
-def get_users(db: Annotated[Session, Depends(create_session)], request: Request) -> List[User]:
+def get_users(user: Annotated[User, Depends(get_current_user)], db: Annotated[Session, Depends(create_session)],
+              request: Request) -> List[User]:
     """
-    Returns a list of users
+    Retrieves all users, with whom the querying user has a match
     :return: a list of users
     """
-    return paginate(db, select(User), PaginationParams(size=request.query_params.get("size"),
-                                                       page=request.query_params.get("page")))
+    return paginate(db, select(User).join(SwipeStatus, and_(
+        or_(SwipeStatus.user1_id == user.id, SwipeStatus.user2_id == user.id),
+        SwipeStatus.status == SwipeStatusType.match)),
+                    PaginationParams(size=request.query_params.get("size"),
+                                     page=request.query_params.get("page")))
 
 
 def post_user(user: User, db: Annotated[Session, Depends(create_session)]) -> User:
@@ -136,7 +141,7 @@ def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: Annota
         raise CredentialsException("Wrong Password")
 
     access_token = create_access_token(data={"sub": user.email})
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {"access_token": access_token, "token_type": "bearer", "user": user}
 
 
 def get_algo_user(algoId: int, user: Annotated[User, Depends(get_current_user)],

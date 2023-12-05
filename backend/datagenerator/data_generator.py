@@ -4,9 +4,11 @@ from sqlmodel import Session, select
 from backend.models.conversation import Conversation
 from backend.models.gender_identity import GenderIdentity
 from backend.models.language import Language
+from backend.models.message import Message
 from backend.models.preference import Preference
 from backend.models.expert_system import ExpertSystem
 from backend.models.rating import Rating
+from backend.models.swipe_status import SwipeStatus, SwipeStatusType
 from backend.models.user import User
 from backend.utils.passwords import hash_pwd
 from backend.datagenerator.data.features import interests_dict, language_dict
@@ -521,9 +523,10 @@ class DataGenerator:
             session.refresh(user_bravo)
 
             # Conversations
-            session.add(Conversation(user1_id=user_alfa.id, user2_id=user_bravo.id))
-            session.add(Conversation(user1_id=user_charlie.id, user2_id=user_bravo.id))
-            session.add(Conversation(user1_id=user_charlie.id, user2_id=user_alfa.id))
+            for user in [user_bravo, user_charlie, user_delta, user_foxtrot, user_echo, user_golf, user_hotel, user_kitchen]:
+                session.add(SwipeStatus(user1_id=user_alfa.id, user2_id=user.id, status=SwipeStatusType.match))
+                session.add(Conversation(user1_id=user_alfa.id, user2_id=user.id))
+
             session.commit()
 
             # Rating
