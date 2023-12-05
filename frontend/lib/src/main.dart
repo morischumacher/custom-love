@@ -46,7 +46,21 @@ class CustomLove extends StatelessWidget {
             return LoginPage(
                 loginService: loginService, userService: userService);
           },
+          /*
           '/home': (context) {
+            final userService = Provider.of<UserService>(context);
+            return HomeScreen(userService: userService);
+          },
+           */
+          '/home/profile': (context) {
+            final userService = Provider.of<UserService>(context);
+            return HomeScreen(userService: userService);
+          },
+          '/home/swipe': (context) {
+            final userService = Provider.of<UserService>(context);
+            return HomeScreen(userService: userService);
+          },
+          '/home/matches': (context) {
             final userService = Provider.of<UserService>(context);
             return HomeScreen(userService: userService);
           },
