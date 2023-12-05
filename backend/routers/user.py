@@ -68,7 +68,7 @@ def login(commons: Annotated[Token, Depends(login)]):
     status.HTTP_404_NOT_FOUND: {"description": "Not Found", "model": ErrorResponse},
     status.HTTP_400_BAD_REQUEST: {"description": "Bad Request", "model": ErrorResponse},
 })
-def get_algo_user(commons: Annotated[UserResponse, Depends(get_algo_user)]):
+def get_algo_user(commons: Annotated[User, Depends(get_algo_user)]):
     """
     Retrieves a user based on a given algorithm
         1: random
