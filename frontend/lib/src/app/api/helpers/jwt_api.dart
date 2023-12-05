@@ -1,0 +1,34 @@
+import 'dart:convert';
+
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart' as http;
+
+import '../../../config/api_config.dart';
+
+class JWTApi {
+  Future<String?> retrieveAccessToken() async {
+    const FlutterSecureStorage storage = FlutterSecureStorage();
+    return await storage.read(key: "access_token");
+  }
+
+  Future<http.Response> get(http.Client client, String url) async {
+    String? token = await retrieveAccessToken();
+    if (token == null) {
+      throw Exception('Not logged in');
+    }
+
+    http.Response response = await client.get(Uri.parse('${ApiConfig.baseUrl}/$url'),
+        headers: {
+          'Content-Type': 'application/json',
+          'accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        });
+
+    if (response.statusCode == 422) {
+      // TODO: handle token refresh
+      throw Exception('JWT is corrupt');
+    }
+
+    return response;
+  }
+}

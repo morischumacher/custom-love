@@ -4,11 +4,12 @@ from starlette import status
 
 from backend.responses.user_response import UserResponse
 from backend.models.user import User
+from backend.models.expert_system import ExpertSystem
 from backend.responses.error_response import ErrorResponse
 from backend.utils.pagination import Page
 from backend.utils.token import Token
-from backend.services.user import get_user, post_user, patch_user, get_users, login, get_algo_user, \
-    UserUpdate
+from backend.services.user import patch_user, get_algo_user, UserUpdate, get_user, post_user, get_users, login
+from backend.services.expert_system import get_expert_system_by_user_id, update_expert_system
 
 router = APIRouter(prefix='/users', tags=['users'], responses={status.HTTP_200_OK: {"description": "Success"}})
 
@@ -16,7 +17,7 @@ router = APIRouter(prefix='/users', tags=['users'], responses={status.HTTP_200_O
 @router.get("/", response_model=Page[User])
 async def get_users(commons: Annotated[Page[User], Depends(get_users)]):
     """
-    Retrieves all users stored in the system.
+    Retrieves all users, with whom the querying user has a match
     :return: a list of users
     """
     return commons
@@ -63,14 +64,17 @@ def login(commons: Annotated[Token, Depends(login)]):
     return commons
 
 
-@router.get('/algo/{algo_id}', response_model=Page[User], responses={
+@router.get('/algo/{algo_id}', response_model=User, responses={
     status.HTTP_404_NOT_FOUND: {"description": "Not Found", "model": ErrorResponse},
     status.HTTP_400_BAD_REQUEST: {"description": "Bad Request", "model": ErrorResponse},
 })
-def get_algo_user(commons: Annotated[Page[User], Depends(get_algo_user)]):
+def get_algo_user(commons: Annotated[User, Depends(get_algo_user)]):
     """
     Retrieves a user based on a given algorithm
         1: random
+        3: decision-based
     :return: a user with a corresponding id which is in the search radius
     """
     return commons
+
+

@@ -7,7 +7,6 @@ import 'package:swipe_cards/draggable_card.dart';
 import 'package:swipe_cards/swipe_cards.dart';
 import 'package:frontend/src/config/theme.dart';
 import 'package:frontend/src/app/presentation/authentification/controller/login_controller.dart';
-import 'package:flutterwebapp_reload_detector/flutterwebapp_reload_detector.dart';
 
 import '../../../service/user_service.dart';
 import '../components/swiping_card.dart';
@@ -35,9 +34,7 @@ class _SwipeState extends State<Swipe> {
   bool swipingsLeft = true;
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
   final LoginController _controller = LoginController();
-  bool reloaded = false;
-  late User currentUser;
-  //late Future<void> init;
+  late Timer timer;
 
   final List<Content> _cards = [
     Content(firstName: "Bravo", languages: ["english", "french"], bio: "hello,...", interests: ["sport", "reading", "movies", "IT"])];
@@ -45,15 +42,12 @@ class _SwipeState extends State<Swipe> {
   @override
   void initState() {
     super.initState();
-    //init = _initialization();
 
     SharedAlgorithmEvent.algoId.algoIdChanged.listen((int algoId) {
       print("current algoID: $algoId");
     });
 
-    if (!reloaded) {
-      _loadNextUser();
-    }
+    _loadNextUser();
   }
 
   /*Future<void> _initialization() async {
@@ -67,7 +61,6 @@ class _SwipeState extends State<Swipe> {
   }*/
 
   void _loadNextUser() async {
-
     setState(() {
       isLoading = true;
     });
@@ -76,8 +69,7 @@ class _SwipeState extends State<Swipe> {
 
     if (swipingAlgoId == 0) {
        print("No special swiping algorithm is used");
-       await widget.userService.getUser().then((User? user) async {
-         currentUser = user!;
+       await widget.userService.getUser().then((User? user) {
          _setSwipingCard(user);
        }).whenComplete(() {
          isLoading = false;
@@ -87,7 +79,6 @@ class _SwipeState extends State<Swipe> {
        String accessToken = await _controller.retrieveAccessToken() as String;
        print("AccessToken from user logged in: $accessToken");
        await widget.userService.getAlgoUser(accessToken).then((User? user) {
-         currentUser = user!;
          _setSwipingCard(user);
        }).whenComplete(() {
          isLoading = false;
@@ -99,7 +90,6 @@ class _SwipeState extends State<Swipe> {
   void _setSwipingCard(User? user) {
     if (user == null) {
       setState(() {
-        print("should be here");
         _swipeItem = SwipeItem(
           content: const Text("There's no user to show"),
         );
@@ -121,6 +111,7 @@ class _SwipeState extends State<Swipe> {
           swipeable = false;
         });
 
+        timer = Timer(const Duration(seconds: 10), () {
         swiped = false;
 
         Timer(const Duration(seconds: 10), () {
@@ -189,4 +180,11 @@ class _SwipeState extends State<Swipe> {
     );
   }
 
+  @override
+  void dispose() {
+    if(timer.isActive) {
+      timer.cancel();
+    }
+    super.dispose();
+  }
 }

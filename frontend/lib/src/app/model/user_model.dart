@@ -1,3 +1,7 @@
+import 'dart:collection';
+
+import 'package:frontend/src/app/presentation/chat/components/avatar.dart';
+
 class User {
   final int id;
   final String firstName;
