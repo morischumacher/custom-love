@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/src/app/presentation/profile_details/pages/profile_details.dart';
 import 'package:frontend/src/config/theme.dart';
 import 'package:frontend/src/app/presentation/authentification/pages/login_page.dart';
 import 'package:frontend/src/app/presentation/home/pages/home.dart';
@@ -7,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'app/api/login_api.dart';
 import 'app/api/user_api.dart';
+import 'app/presentation/registration/pages/registration_gender_preference.dart';
 import 'app/service/login_service.dart';
 import 'app/service/user_service.dart';
 
@@ -52,7 +52,7 @@ class CustomLove extends StatelessWidget {
             return HomeScreen(userService: userService);
           },
           '/registration': (context) {
-            return const ProfileDetails();
+            return const RegistrationGenderPreference();
           }
         },
       ),

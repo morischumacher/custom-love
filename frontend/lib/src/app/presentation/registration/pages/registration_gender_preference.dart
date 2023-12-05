@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/presentation/authentification/pages/login_page.dart';
-import 'package:frontend/src/app/presentation/profile_details/pages/profile_details_picture.dart';
-import 'package:frontend/src/app/presentation/profile_details/pages/widgets/page_title.dart';
+import 'package:frontend/src/app/presentation/registration/pages/registration_pictures.dart';
+import 'package:frontend/src/app/presentation/registration/pages/widgets/page_title.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../config/theme.dart';
 import '../../../service/login_service.dart';
 import '../../../service/user_service.dart';
 
-class ProfileDetails extends StatefulWidget {
-  const ProfileDetails({super.key});
+class RegistrationGenderPreference extends StatefulWidget {
+  const RegistrationGenderPreference({super.key});
 
   @override
-  State<ProfileDetails> createState() => _ProfileDetailsState();
+  State<RegistrationGenderPreference> createState() => _RegistrationGenderPreferenceState();
 }
 
-class _ProfileDetailsState extends State<ProfileDetails> {
-  _ProfileDetailsState() {
+class _RegistrationGenderPreferenceState extends State<RegistrationGenderPreference> {
+  _RegistrationGenderPreferenceState() {
     _selectedGender = null;
     _selectedPreference = null;
   }
@@ -190,7 +190,7 @@ class _ProfileDetailsState extends State<ProfileDetails> {
       ),
       onPressed: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return ProfileDetailsPicture(
+          return RegistrationPictures(
               gender: _selectedGender,
               preference: _selectedPreference,
               dob: _selectedBirthdate

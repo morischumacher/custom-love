@@ -2,16 +2,15 @@ import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend/src/app/presentation/profile_details/pages/profile_details.dart';
-import 'package:frontend/src/app/presentation/profile_details/pages/profile_details_interests.dart';
-import 'package:frontend/src/app/presentation/profile_details/pages/widgets/page_title.dart';
+import 'package:frontend/src/app/presentation/registration/pages/registration_gender_preference.dart';
+import 'package:frontend/src/app/presentation/registration/pages/registration_interests.dart';
+import 'package:frontend/src/app/presentation/registration/pages/widgets/page_title.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../config/theme.dart';
 
-class ProfileDetailsPicture extends StatefulWidget {
-  // const ProfileDetailsPicture({super.key});
-  const ProfileDetailsPicture({
+class RegistrationPictures extends StatefulWidget {
+  const RegistrationPictures({
     Key? key,
     required this.gender,
     required this.preference,
@@ -24,15 +23,15 @@ class ProfileDetailsPicture extends StatefulWidget {
 
 
   @override
-  State<ProfileDetailsPicture> createState() => _ProfileDetailsPictureState(
+  State<RegistrationPictures> createState() => _RegistrationPicturesState(
       gender: gender,
       preference: preference,
       dob: dob
   );
 }
 
-class _ProfileDetailsPictureState extends State<ProfileDetailsPicture> {
-  _ProfileDetailsPictureState({
+class _RegistrationPicturesState extends State<RegistrationPictures> {
+  _RegistrationPicturesState({
     required this.gender,
     required this.preference,
     required this.dob
@@ -126,7 +125,7 @@ class _ProfileDetailsPictureState extends State<ProfileDetailsPicture> {
       ),
       onPressed: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return ProfileDetails();
+          return RegistrationGenderPreference();
         }));
       },
       child: const Text(
@@ -148,7 +147,7 @@ class _ProfileDetailsPictureState extends State<ProfileDetailsPicture> {
       ),
       onPressed: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return ProfileDetailsInterests(
+          return RegistrationInterests(
             dob: dob,
             gender: gender,
             preference: preference,

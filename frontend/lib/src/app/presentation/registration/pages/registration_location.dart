@@ -1,7 +1,3 @@
-import 'package:flutter/material.dart';
-import 'package:frontend/src/app/presentation/profile_details/pages/profile_details_interests.dart';
-import 'package:frontend/src/app/presentation/profile_details/pages/profile_details_picture.dart';
-import 'package:frontend/src/app/presentation/profile_details/pages/widgets/page_title.dart';
 
 /*
 class ProfileDetailsLocation extends StatefulWidget {

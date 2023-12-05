@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/presentation/home/pages/home.dart';
-import 'package:frontend/src/app/presentation/profile_details/pages/profile_details_picture.dart';
-import 'package:frontend/src/app/presentation/profile_details/pages/widgets/interest.dart';
-import 'package:frontend/src/app/presentation/profile_details/pages/widgets/page_title.dart';
+import 'package:frontend/src/app/presentation/registration/pages/registration_pictures.dart';
+import 'package:frontend/src/app/presentation/registration/pages/widgets/interest.dart';
+import 'package:frontend/src/app/presentation/registration/pages/widgets/page_title.dart';
 import 'package:frontend/src/app/service/user_service.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../config/theme.dart';
 
-class ProfileDetailsInterests extends StatefulWidget {
-  const ProfileDetailsInterests({
+class RegistrationInterests extends StatefulWidget {
+  const RegistrationInterests({
     Key? key,
     required this.gender,
     required this.preference,
@@ -21,15 +21,15 @@ class ProfileDetailsInterests extends StatefulWidget {
   final String? dob;
 
   @override
-  State<ProfileDetailsInterests> createState() => _ProfileDetailsInterestsState(
+  State<RegistrationInterests> createState() => _RegistrationInterestsState(
     dob: dob,
     gender: gender,
     preference: preference
   );
 }
 
-class _ProfileDetailsInterestsState extends State<ProfileDetailsInterests> {
-  _ProfileDetailsInterestsState({
+class _RegistrationInterestsState extends State<RegistrationInterests> {
+  _RegistrationInterestsState({
     required this.gender,
     required this.preference,
     required this.dob
@@ -134,7 +134,7 @@ class _ProfileDetailsInterestsState extends State<ProfileDetailsInterests> {
       ),
       onPressed: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return ProfileDetailsPicture(
+          return RegistrationPictures(
             dob: dob,
             gender: gender,
             preference: preference,
