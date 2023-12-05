@@ -8,7 +8,7 @@ from fastapi_pagination.ext.sqlmodel import paginate
 from geoalchemy2 import Geography
 from pydantic import BaseModel, Field
 from shapely import geometry, wkt
-from sqlalchemy import func, or_, and_
+from sqlalchemy import func, or_, and_, exists
 from sqlmodel import Session, select
 from starlette.requests import Request
 from starlette.websockets import WebSocket, WebSocketDisconnect
@@ -165,6 +165,12 @@ def get_swipeable_user(user, db):
             )
         )
         .where(User.id != user.id)
+        .where(
+            ~exists(
+                select([1])
+                .where(SwipeStatus.user2_id == User.id)
+            )
+        )
     )
     return db.exec(query).fetchall()
 
