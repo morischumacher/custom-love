@@ -24,6 +24,7 @@ from backend.utils import passwords
 from backend.utils.pagination import PaginationParams
 from backend.utils.token import create_access_token, get_current_user
 from backend.services.expert_system import get_expert_system_by_user_id
+from backend.models.interest import Interest
 
 
 class UserUpdate(BaseModel):
@@ -145,7 +146,7 @@ def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: Annota
 
 
 def get_algo_user(algoId: int, user: Annotated[User, Depends(get_current_user)],
-                  db: Annotated[Session, Depends(create_session)], request: Request) -> list[Type[User]] | None | Any:
+                  db: Annotated[Session, Depends(create_session)], request: Request) -> UserResponse | None:
 
     # Query to get all users in the given radius
     subquery = (
@@ -177,7 +178,8 @@ def get_algo_user(algoId: int, user: Annotated[User, Depends(get_current_user)],
 
     match algoId:
         case 1:
-            return random.choice(users_list)
+            user = random.choice(users_list)
+            return db_user_to_response_model_user(user, user.interests)
         case 2:
             return None
         case 3:
@@ -195,7 +197,31 @@ def get_algo_user(algoId: int, user: Annotated[User, Depends(get_current_user)],
             # TODO Use the prediction for something like: "Particularly Compatible! (#65)"
             user_id_with_highest_prediction, prediction = exsys.predict(users_list)
 
+            user = [user for user in users_list if user.id == user_id_with_highest_prediction][0]
             #return the user with the user.id = user_id_with_highest_prediction
-            return [user for user in users_list if user.id == user_id_with_highest_prediction][0]
+            return db_user_to_response_model_user(user, user.interests)
         case _:
             return None
+
+
+def db_user_to_response_model_user(user, interests):
+
+    interests_list = []
+    for interest in interests:
+        interests_list.append(Interest(id=interest.id, name=interest.name, icon=interest.icon))
+
+    return UserResponse(
+        id=user.id,
+        first_name=user.first_name,
+        last_name=user.last_name,
+        email=user.email,
+        bio=user.bio,
+        date_of_birth=user.date_of_birth,
+        job=user.job,
+        search_radius=user.search_radius,
+        swipes_left=user.swipes_left,
+        latitude=user.latitude,
+        longitude=user.longitude,
+        gender_identity_id=user.gender_identity_id,
+        interests=interests_list
+    )
