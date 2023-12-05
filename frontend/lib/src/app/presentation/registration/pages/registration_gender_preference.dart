@@ -34,8 +34,8 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
       backgroundColor: _customLoveTheme.neutralColor,
         body: Center(
           child: Container(
-            constraints: BoxConstraints(maxWidth: 500),
-              padding: EdgeInsets.fromLTRB(21.0, 0, 21.0, 51.0),
+            constraints: const BoxConstraints(maxWidth: 500),
+              padding: const EdgeInsets.fromLTRB(21.0, 0, 21.0, 51.0),
               child: Center(
                 child: Column(
                   children: [
@@ -114,10 +114,10 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
                       decoration: InputDecoration(
                           fillColor: Colors.grey.shade200,
                           filled: true,
-                          suffixIcon: Icon(Icons.calendar_today),
+                          suffixIcon: const Icon(Icons.calendar_today),
                           labelText: "Birthday",
-                          labelStyle: TextStyle(color: Colors.black),
-                          border: OutlineInputBorder(),
+                          labelStyle: const TextStyle(color: Colors.black),
+                          border: const OutlineInputBorder(),
                           enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(color: _customLoveTheme.formFieldBorder)
                           ),
@@ -142,6 +142,7 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
               )),
         ));
   }
+
   Future<void> selectDate() async {
     final today = DateTime.now();
     DateTime? _picked = await showDatePicker(
@@ -173,7 +174,7 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
       },
       child: const Text(
         "Return",
-        style: const TextStyle(
+        style: TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.white
         ),
@@ -182,6 +183,8 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
   }
 
   OutlinedButton nextBtn(BuildContext context) {
+    const CustomLoveTheme _customLoveTheme = CustomLoveTheme();
+
     return OutlinedButton(
       style: OutlinedButton.styleFrom(
           minimumSize: const Size(156, 56),
@@ -199,7 +202,7 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
       },
       child: const Text(
         "Next",
-        style: const TextStyle(
+        style: TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.white
         ),
