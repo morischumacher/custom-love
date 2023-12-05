@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/src/app/presentation/home/pages/home.dart';
 import 'package:frontend/src/app/presentation/profile_details/pages/profile_details_picture.dart';
 import 'package:frontend/src/app/presentation/profile_details/pages/widgets/interest.dart';
 import 'package:frontend/src/app/presentation/profile_details/pages/widgets/page_title.dart';
+import 'package:frontend/src/app/service/user_service.dart';
+import 'package:provider/provider.dart';
 
 import '../../../../config/theme.dart';
 
@@ -156,15 +159,13 @@ class _ProfileDetailsInterestsState extends State<ProfileDetailsInterests> {
           side: BorderSide.none
       ),
       onPressed: () {
-        /*
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return ProfileDetailsInterests();
+          return HomeScreen(userService: Provider.of<UserService>(context));
         }));
-         */
       },
       child: const Text(
         "Create Profile",
-        style: const TextStyle(
+        style: TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.white
         ),
