@@ -8,6 +8,7 @@ import 'package:frontend/src/config/theme.dart';
 import '../../../model/user_model.dart';
 import '../../../service/user_service.dart';
 import '../../authentification/controller/login_controller.dart';
+import '../util/swipes_left.dart';
 
 class SwipingCard extends StatelessWidget {
   final LoginController controller;
@@ -183,20 +184,6 @@ class SwipingCard extends StatelessWidget {
         ]));
     }
 
-    Future<int> updateSwipeLeft() async {
-      String accessToken = await controller.retrieveAccessToken() as String;
-      int tmpSwipesLeft = 0;
-      print("AccessToken from user logged in: $accessToken");
-      await userService.updateCurrentUserSwipesLeft(accessToken).then((User? user) {
-        print("swipes left: " + user!.swipes_left.toString());
-        tmpSwipesLeft = user.swipes_left;
-        if(tmpSwipesLeft == 0) {
-           print("swipe limit reached");
-        }
-      });
-      return tmpSwipesLeft;
-    }
-
     Widget locationWidget() {
       return const Row(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -218,7 +205,7 @@ class SwipingCard extends StatelessWidget {
           ElevatedButton(
               onPressed: () async {
                 if(swipeable) {
-                  int tmpSwipesLeft = await updateSwipeLeft();
+                  int tmpSwipesLeft = await SwipesLeft.updateSwipeLeft(controller, userService);
                   if(tmpSwipesLeft > 0) {
                     _matchEngine!.currentItem?.nope();
                   }
@@ -233,7 +220,7 @@ class SwipingCard extends StatelessWidget {
           ElevatedButton(
               onPressed: () async {
                 if(swipeable) {
-                  int tmpSwipesLeft = await updateSwipeLeft();
+                  int tmpSwipesLeft = await SwipesLeft.updateSwipeLeft(controller, userService);
                   if(tmpSwipesLeft > 0) {
                     _matchEngine!.currentItem?.like();
                   }

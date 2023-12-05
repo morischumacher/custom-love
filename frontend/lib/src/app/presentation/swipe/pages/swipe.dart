@@ -7,10 +7,12 @@ import 'package:swipe_cards/draggable_card.dart';
 import 'package:swipe_cards/swipe_cards.dart';
 import 'package:frontend/src/config/theme.dart';
 import 'package:frontend/src/app/presentation/authentification/controller/login_controller.dart';
+import 'package:flutterwebapp_reload_detector/flutterwebapp_reload_detector.dart';
 
 import '../../../service/user_service.dart';
 import '../components/swiping_card.dart';
 import '../util/shared_algorithm_event.dart';
+import '../util/swipes_left.dart';
 
 
 class Swipe extends StatefulWidget {
@@ -33,6 +35,9 @@ class _SwipeState extends State<Swipe> {
   bool swipingsLeft = true;
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
   final LoginController _controller = LoginController();
+  bool reloaded = false;
+  late User currentUser;
+  //late Future<void> init;
 
   final List<Content> _cards = [
     Content(firstName: "Bravo", languages: ["english", "french"], bio: "hello,...", interests: ["sport", "reading", "movies", "IT"])];
@@ -40,13 +45,26 @@ class _SwipeState extends State<Swipe> {
   @override
   void initState() {
     super.initState();
+    //init = _initialization();
 
     SharedAlgorithmEvent.algoId.algoIdChanged.listen((int algoId) {
       print("current algoID: $algoId");
     });
 
-    _loadNextUser();
+    if (!reloaded) {
+      _loadNextUser();
+    }
   }
+
+  /*Future<void> _initialization() async {
+    WebAppReloadDetector.onReload(() {
+      setState(() {
+        reloaded = true;
+      });
+
+      _reloadCompleter.complete();
+    });
+  }*/
 
   void _loadNextUser() async {
 
@@ -58,7 +76,8 @@ class _SwipeState extends State<Swipe> {
 
     if (swipingAlgoId == 0) {
        print("No special swiping algorithm is used");
-       await widget.userService.getUser().then((User? user) {
+       await widget.userService.getUser().then((User? user) async {
+         currentUser = user!;
          _setSwipingCard(user);
        }).whenComplete(() {
          isLoading = false;
@@ -68,6 +87,7 @@ class _SwipeState extends State<Swipe> {
        String accessToken = await _controller.retrieveAccessToken() as String;
        print("AccessToken from user logged in: $accessToken");
        await widget.userService.getAlgoUser(accessToken).then((User? user) {
+         currentUser = user!;
          _setSwipingCard(user);
        }).whenComplete(() {
          isLoading = false;
@@ -79,6 +99,7 @@ class _SwipeState extends State<Swipe> {
   void _setSwipingCard(User? user) {
     if (user == null) {
       setState(() {
+        print("should be here");
         _swipeItem = SwipeItem(
           content: const Text("There's no user to show"),
         );
@@ -128,7 +149,7 @@ class _SwipeState extends State<Swipe> {
                 //ensure that after a swipe attempt the api call happens only once
                 if (!swiped) {
                   swiped = true;
-                  int tmpSwipesLeft = await updateSwipeLeft();
+                  int tmpSwipesLeft = await SwipesLeft.updateSwipeLeft(_controller, widget.userService);
                   if(tmpSwipesLeft > 0) {
                     swipingsLeft = true;
                     //after reset_date is updated, it's possible to swipe again
@@ -153,32 +174,19 @@ class _SwipeState extends State<Swipe> {
     }
   }
 
-  Future<int> updateSwipeLeft() async {
-    String accessToken = await _controller.retrieveAccessToken() as String;
-    int tmpSwipesLeft = 0;
-    print("AccessToken from user logged in: $accessToken");
-    await widget.userService.updateCurrentUserSwipesLeft(accessToken).then((User? user) {
-      print("swipes left: " + user!.swipes_left.toString());
-      tmpSwipesLeft = user.swipes_left;
-      if(tmpSwipesLeft == 0) {
-        print("swipe limit reached");
-      }
-    });
-    return tmpSwipesLeft;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         key: _scaffoldKey,
         backgroundColor: _customLoveTheme.neutralColor,
         body: isLoading
-          ? const Center(
-            child: CircularProgressIndicator(),
-          ):
-            Center(
-              child: SwipingCard(matchEngine: _matchEngine, customLoveTheme: _customLoveTheme, swipeItem: _swipeItem, swipeable: swipeable, controller: _controller, userService: widget.userService, swipingsLeft: swipingsLeft),
-            )
+            ? const Center(
+          child: CircularProgressIndicator(),
+        ):
+        Center(
+          child: SwipingCard(matchEngine: _matchEngine, customLoveTheme: _customLoveTheme, swipeItem: _swipeItem, swipeable: swipeable, controller: _controller, userService: widget.userService, swipingsLeft: swipingsLeft),
+        )
     );
   }
+
 }
