@@ -168,7 +168,13 @@ def get_swipeable_user(user, db):
         .where(
             ~exists(
                 select([1])
-                .where(SwipeStatus.user2_id == User.id)
+                .where(
+                    or_(
+                        and_(SwipeStatus.user2_id == User.id, SwipeStatus.status.in_(['view', 'like'])),
+                        and_(SwipeStatus.user2_id == User.id, SwipeStatus.status == 'match'),
+                        and_(SwipeStatus.user1_id == User.id, SwipeStatus.status == 'match')
+                    )
+                )
             )
         )
     )
