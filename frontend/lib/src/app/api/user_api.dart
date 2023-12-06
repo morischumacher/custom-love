@@ -27,12 +27,10 @@ class UserApi extends PaginatedApi<User> {
       );
 
   Future<User> getUser(var id) async {
-    //int id = random.nextInt(3) + 1;
     final response =
     await super.client.get(Uri.parse('${ApiConfig.baseUrl}/users/$id'));
 
     if (response.statusCode == 200) {
-      print("RESPONSE: ${response.body}");
       var tmp = json.decode(response.body);
       final User user = User.fromJson(tmp);
       return user;
@@ -87,7 +85,6 @@ class UserApi extends PaginatedApi<User> {
 
     if (response.statusCode == 200) {
       final dynamic jsonItem = json.decode(response.body);
-      print("response: " + jsonItem.toString());
       final User user = User.fromJson(jsonItem);
       return user;
     } else {
@@ -96,9 +93,9 @@ class UserApi extends PaginatedApi<User> {
     }
   }
 
-  Future<User> getAlgoUser(var accessToken) async {
+  Future<User> getAlgoUser(var accessToken, int algoId) async {
     final response = await http.get(
-      Uri.parse('${ApiConfig.baseUrl}/users/algo/1?algoId=1&page=1&size=50'),
+      Uri.parse('${ApiConfig.baseUrl}/users/algo/$algoId?algoId=1&page=1&size=50'),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
         'accept': 'application/json',
@@ -106,13 +103,11 @@ class UserApi extends PaginatedApi<User> {
       },
     );
 
-    print("fetched users: " + response.body);
+    print("fetched user: " + response.body);
 
     if (response.statusCode == 200) {
       final dynamic jsonItem = json.decode(response.body);
-      var getItems = jsonItem["items"];
-      int number = random.nextInt(getItems.length-1);
-      final User user = User.fromJson(getItems[number]);
+      final User user = User.fromJson(jsonItem);
       return user;
     } else {
       // TODO: Add custom exception

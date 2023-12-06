@@ -8,8 +8,7 @@ class SwipesLeft {
     int tmpSwipesLeft = 0;
     print("AccessToken from user logged in: $accessToken");
     await userService.updateCurrentUserSwipesLeft(accessToken).then((User? user) {
-      print("swipes left: " + user!.swipes_left.toString());
-      tmpSwipesLeft = user.swipes_left;
+      tmpSwipesLeft = user!.swipes_left;
       if(tmpSwipesLeft == 0) {
         print("swipe limit reached");
       }
@@ -21,7 +20,6 @@ class SwipesLeft {
     int tmpSwipesLeft = 0;
     await userService.getUser(userId).then((User? user) {
       tmpSwipesLeft = user!.swipes_left;
-      print("jskajdj: " + tmpSwipesLeft.toString());
     });
     return tmpSwipesLeft;
   }

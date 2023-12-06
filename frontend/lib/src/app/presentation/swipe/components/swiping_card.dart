@@ -165,7 +165,6 @@ class SwipingCard extends StatelessWidget {
                   );
                 },
                 onStackFinished: () async {
-                  print("Maximal");
                   int swipingsLeftInt = await SwipesLeft.updateSwipeLeft(controller, userService);
                   if (swipingsLeftInt > 0) {
                     SharedSwipeableEvent.swipeable.changeSwipeable(true);

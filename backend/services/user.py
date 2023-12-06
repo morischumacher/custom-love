@@ -107,7 +107,6 @@ def patch_user(updated_user: UserUpdate, user: Annotated[User, Depends(get_curre
     # TODO: check if the other fields should be updated
     print("updated user: " + updated_user.json())
     for key in updated_user.__dict__.items():
-        print("key: " + str(key))
         if "swiped" in key:
             if datetime.datetime.now() < user.swipe_limit_reset_date:
                 if user.swipes_left != 0:
