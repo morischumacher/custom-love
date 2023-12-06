@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:frontend/src/app/presentation/swipe/util/shared_swipeable_event.dart';
 import 'package:swipe_cards/swipe_cards.dart';
 import 'package:frontend/src/config/theme.dart';
 
@@ -14,29 +16,35 @@ class SwipingCard extends StatelessWidget {
   final LoginController controller;
   final UserService userService;
 
-  const SwipingCard({
+  SwipingCard({
     super.key,
     required MatchEngine? matchEngine,
     required CustomLoveTheme customLoveTheme,
     required SwipeItem swipeItem,
-    required this.swipeable, required this.controller, required this.userService, swipingsLeft
+    required this.swipeable, required this.controller, required this.userService,
   })
       : _matchEngine = matchEngine,
         _customLoveTheme = customLoveTheme,
-        _swipeItem = swipeItem,
-        _swipingsLeft = swipingsLeft;
-
+        _swipeItem = swipeItem;
 
   final MatchEngine? _matchEngine;
   final CustomLoveTheme _customLoveTheme;
   final SwipeItem _swipeItem;
-  final bool swipeable;
-  final bool _swipingsLeft;
+  bool swipeable = false;
+
+  // void _setSwipeAllowed() {
+  //   SharedSwipeableEvent.swipeable.swipeableChanged.listen((bool swipeable) async {
+  //     print("current swipeable: $swipeable");
+  //     setS
+  //     _swipeAllowed = await SharedSwipeableEvent.swipeable.getFutureSwipeable();
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = min(MediaQuery.of(context).size.width, 750);
+
     return SafeArea(
       child: Container(
           alignment: Alignment.center,
@@ -162,7 +170,15 @@ class SwipingCard extends StatelessWidget {
                       )
                   );
                 },
-                onStackFinished: () {},
+                onStackFinished: () async {
+                  print("Maximal");
+                  int swipingsLeftInt = await SwipesLeft.updateSwipeLeft(controller, userService);
+                  if (swipingsLeftInt > 0) {
+                    SharedSwipeableEvent.swipeable.changeSwipeable(true);
+                  } else {
+                    SharedSwipeableEvent.swipeable.changeSwipeable(false);
+                  }
+                },
                 itemChanged: (SwipeItem item, int index) {
                   print("item: ${item.content.firstName}, index: $index");
                 },
@@ -243,4 +259,11 @@ class SwipingCard extends StatelessWidget {
         ],
       );
     }
+
+    /*void updateSwipesLeftLogin() async {
+      const FlutterSecureStorage storage = FlutterSecureStorage();
+      _swipesLeftLogin = _swipesLeftLogin - 1;
+      print("updated swipesLeft");
+      await storage.write(key: "swipes_left_login", value: _swipesLeftLogin.toString());
+    }*/
 }

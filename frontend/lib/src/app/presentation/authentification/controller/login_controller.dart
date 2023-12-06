@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/service/conversation_service.dart';
@@ -33,6 +34,26 @@ class LoginController {
       return await storage.read(key: "access_token");
   }
 
+  /*Future<void> storeSwipesLeftLogin(String swipesLeftLogin) async {
+    const FlutterSecureStorage storage = FlutterSecureStorage();
+    await storage.write(key: "swipes_left_login", value: swipesLeftLogin);
+  }
+
+  Future<String?> retrieveSwipesLeftLogin() async {
+    const FlutterSecureStorage storage = FlutterSecureStorage();
+    return await storage.read(key: "swipes_left_login");
+  }*/
+
+  Future<void> storeUserId(String id) async {
+    const FlutterSecureStorage storage = FlutterSecureStorage();
+    await storage.write(key: "user_id", value: id);
+  }
+
+  Future<String?> retrieveUserId() async {
+    const FlutterSecureStorage storage = FlutterSecureStorage();
+    return await storage.read(key: "user_id");
+  }
+
   Future<void> handleLogin(BuildContext context) async {
     String email = emailController.text;
     String password = passwordController.text;
@@ -51,6 +72,10 @@ class LoginController {
         var accessToken = loginResult["access_token"];
 
         await storeAccessToken(accessToken);
+
+        var userId = loginResult["user"]["id"];
+
+        await storeUserId(userId.toString());
 
         // If login is successful, navigate to '/home'
         if (context.mounted) {

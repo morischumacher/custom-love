@@ -19,9 +19,9 @@ class UserService extends PaginatedService<User, UserApi> {
     }
   }
 
-  Future<User> getUser() async {
+  Future<User> getUser(var id) async {
     try {
-      final user = super.api.getUser();
+      final user = super.api.getUser(id);
       return user;
     } on Exception {
       rethrow;
@@ -40,7 +40,7 @@ class UserService extends PaginatedService<User, UserApi> {
 
   Future<User> updateCurrentUserSwipesLeft(var accessToken) async {
     try {
-      final updateUser = _userApi.updateUserSwipesLeft(accessToken);
+      final updateUser = super.api.updateUserSwipesLeft(accessToken);
       return updateUser;
     } on Exception {
       rethrow;

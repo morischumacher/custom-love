@@ -26,8 +26,8 @@ class UserApi extends PaginatedApi<User> {
           urlParams
       );
 
-  Future<User> getUser() async {
-    int id = random.nextInt(3) + 1;
+  Future<User> getUser(var id) async {
+    //int id = random.nextInt(3) + 1;
     final response =
     await super.client.get(Uri.parse('${ApiConfig.baseUrl}/users/$id'));
 
