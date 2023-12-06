@@ -2,4 +2,8 @@ import 'package:frontend/src/app/presentation/swipe/util/swiping_algorithm_event
 
 class SharedAlgorithmEvent {
    static SwipingAlgorithmEvent algoId = SwipingAlgorithmEvent();
+
+   void dispose() {
+      algoId.dispose();
+   }
 }

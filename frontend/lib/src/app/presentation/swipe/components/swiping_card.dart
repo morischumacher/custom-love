@@ -2,12 +2,10 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:frontend/src/app/presentation/swipe/util/shared_swipeable_event.dart';
 import 'package:swipe_cards/swipe_cards.dart';
 import 'package:frontend/src/config/theme.dart';
 
-import '../../../model/user_model.dart';
 import '../../../service/user_service.dart';
 import '../../authentification/controller/login_controller.dart';
 import '../util/swipes_left.dart';
@@ -21,24 +19,20 @@ class SwipingCard extends StatelessWidget {
     required MatchEngine? matchEngine,
     required CustomLoveTheme customLoveTheme,
     required SwipeItem swipeItem,
-    required this.swipeable, required this.controller, required this.userService,
+    required this.swipeable, swipeableTimer, userId, required this.controller, required this.userService,
   })
       : _matchEngine = matchEngine,
         _customLoveTheme = customLoveTheme,
-        _swipeItem = swipeItem;
+        _swipeItem = swipeItem,
+        _swipeableTimer = swipeableTimer,
+        _userId = userId;
 
   final MatchEngine? _matchEngine;
   final CustomLoveTheme _customLoveTheme;
   final SwipeItem _swipeItem;
   bool swipeable = false;
-
-  // void _setSwipeAllowed() {
-  //   SharedSwipeableEvent.swipeable.swipeableChanged.listen((bool swipeable) async {
-  //     print("current swipeable: $swipeable");
-  //     setS
-  //     _swipeAllowed = await SharedSwipeableEvent.swipeable.getFutureSwipeable();
-  //   });
-  // }
+  bool _swipeableTimer;
+  final int _userId;
 
   @override
   Widget build(BuildContext context) {
@@ -182,8 +176,8 @@ class SwipingCard extends StatelessWidget {
                 itemChanged: (SwipeItem item, int index) {
                   print("item: ${item.content.firstName}, index: $index");
                 },
-                leftSwipeAllowed: swipeable,
-                rightSwipeAllowed: swipeable,
+                leftSwipeAllowed: _swipeableTimer ? swipeable : false,
+                rightSwipeAllowed: _swipeableTimer ? swipeable : false,
                 fillSpace: true,
                 likeTag: Container(
                   margin: const EdgeInsets.all(15.0),
@@ -229,10 +223,11 @@ class SwipingCard extends StatelessWidget {
         children: [
           ElevatedButton(
               onPressed: () async {
-                if(swipeable) {
-                  int tmpSwipesLeft = await SwipesLeft.updateSwipeLeft(controller, userService);
+                if(_swipeableTimer) {
+                  int tmpSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(_userId, userService);
                   if(tmpSwipesLeft > 0) {
                     _matchEngine!.currentItem?.nope();
+                    await SwipesLeft.updateSwipeLeft(controller, userService);
                   }
                 }
               },
@@ -244,10 +239,11 @@ class SwipingCard extends StatelessWidget {
           SizedBox(width: width * 0.1),
           ElevatedButton(
               onPressed: () async {
-                if(swipeable) {
-                  int tmpSwipesLeft = await SwipesLeft.updateSwipeLeft(controller, userService);
+                if(_swipeableTimer) {
+                  int tmpSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(_userId, userService);
                   if(tmpSwipesLeft > 0) {
                     _matchEngine!.currentItem?.like();
+                    await SwipesLeft.updateSwipeLeft(controller, userService);
                   }
                 }
               },
@@ -259,11 +255,4 @@ class SwipingCard extends StatelessWidget {
         ],
       );
     }
-
-    /*void updateSwipesLeftLogin() async {
-      const FlutterSecureStorage storage = FlutterSecureStorage();
-      _swipesLeftLogin = _swipesLeftLogin - 1;
-      print("updated swipesLeft");
-      await storage.write(key: "swipes_left_login", value: _swipesLeftLogin.toString());
-    }*/
 }

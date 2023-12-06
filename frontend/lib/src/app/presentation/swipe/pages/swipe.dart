@@ -1,13 +1,9 @@
 import 'dart:async';
 
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:frontend/src/app/model/user_model.dart';
-import 'package:frontend/src/app/presentation/chat/components/list_tile.dart';
 import 'package:frontend/src/app/presentation/swipe/util/content.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/presentation/swipe/util/shared_swipeable_event.dart';
-import 'package:frontend/src/config/app_state.dart';
-import 'package:provider/provider.dart';
 import 'package:swipe_cards/draggable_card.dart';
 import 'package:swipe_cards/swipe_cards.dart';
 import 'package:frontend/src/config/theme.dart';
@@ -36,10 +32,10 @@ class _SwipeState extends State<Swipe> {
   bool isLoading = false;
   bool swipeable = true;
   late bool swiped;
-  //bool swipingsLeft = true;
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
   final LoginController _controller = LoginController();
   late Timer timer;
+  bool swipeableTimer = true;
   late int tmpSwipesLeft;
   late int userId;
   bool swipesEvent = false;
@@ -53,8 +49,6 @@ class _SwipeState extends State<Swipe> {
     super.initState();
 
     _fetchInitData();
-
-    print("init");
 
     SharedAlgorithmEvent.algoId.algoIdChanged.listen((int algoId) {
       print("current algoID: $algoId");
@@ -76,44 +70,10 @@ class _SwipeState extends State<Swipe> {
     });
   }
 
-  Future<int> _getCurrentSwipesLeft(userId) async {
-    int tmpSwipesLeft = 0;
-    await widget.userService.getUser(userId).then((User? user) {
-      tmpSwipesLeft = user!.swipes_left;
-      print("jskajdj: " + tmpSwipesLeft.toString());
-    });
-    return tmpSwipesLeft;
-  }
-
   Future<void> _getUserId() async {
     var userIdString = await _controller.retrieveUserId() as String;
     userId = int.parse(userIdString);
-    print("json: " + userIdString);
   }
-
-  /*void _fetchSwipesLeft() async {
-    var swipesLeftString = await _controller.retrieveSwipesLeftLogin() as String;
-    swipesLeftLogin = int.parse(swipesLeftString);
-    print("json: " + swipesLeftLogin.toString());
-
-    if (swipesLeftLogin == 0) {
-      swipingsLeft = false;
-      tmpSwipesLeft = 0;
-    } else {
-      swipingsLeft = true;
-      tmpSwipesLeft = 1;
-    }
-  }*/
-
-  /*Future<void> _initialization() async {
-    WebAppReloadDetector.onReload(() {
-      setState(() {
-        reloaded = true;
-      });
-
-      _reloadCompleter.complete();
-    });
-  }*/
 
   void _loadNextUser() async {
     setState(() {
@@ -162,20 +122,17 @@ class _SwipeState extends State<Swipe> {
           age--;
         }
 
-        // setState(() {
-        //   swipeable = false;
-        // });
+        setState(() {
+          swipeableTimer = false;
+        });
 
-        // SharedSwipeableEvent.swipeable.changeSwipeable(false);
-        //
-        // swiped = false;
-        //
-        // timer = Timer(const Duration(seconds: 10), () {
-        //   // setState(() {
-        //   //   swipeable = true;
-        //   // });
-        //   SharedSwipeableEvent.swipeable.changeSwipeable(true);
-        // });
+        swiped = false;
+
+        timer = Timer(const Duration(seconds: 10), () {
+          setState(() {
+            swipeableTimer = true;
+          });
+        });
 
         _swipeItem = SwipeItem(
           content: Content(firstName: firstName, age: age, languages: _cards
@@ -191,21 +148,21 @@ class _SwipeState extends State<Swipe> {
           },
           onSlideUpdate: (SlideRegion? region) async {
             //check if it's possible to swipe (10 sec timer)
-            if (swipeable) {
+            if (swipeableTimer) {
               //ignore the swipe left check if the card is just be tapped
               if (region != null) {
                 //ensure that after a swipe attempt the api call happens only once
                 if (!swiped) {
                   swiped = true;
-                  //tmpSwipesLeft = await SwipesLeft.updateSwipeLeft(_controller, widget.userService);
-                  tmpSwipesLeft = await _getCurrentSwipesLeft(userId);
-                  print("slideUpdate swipesLeft: " + tmpSwipesLeft.toString());
+                  tmpSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(userId, widget.userService);
                   if(tmpSwipesLeft > 0) {
-                    //swipingsLeft = true;
                     //after reset_date is updated, it's possible to swipe again
+                    setState(() {
+                      swipeableTimer = true;
+                    });
                     SharedSwipeableEvent.swipeable.changeSwipeable(true);
+
                   } else {
-                    //swipingsLeft = false;
                     SharedSwipeableEvent.swipeable.changeSwipeable(false);
                   }
                 }
@@ -233,17 +190,19 @@ class _SwipeState extends State<Swipe> {
           child: CircularProgressIndicator(),
         ):
         Center(
-          child: SwipingCard(matchEngine: _matchEngine, customLoveTheme: _customLoveTheme, swipeItem: _swipeItem, swipeable: swipesEvent, controller: _controller, userService: widget.userService),
+          child: SwipingCard(matchEngine: _matchEngine, customLoveTheme: _customLoveTheme, swipeItem: _swipeItem, swipeable: swipesEvent, swipeableTimer: swipeableTimer, userId: userId, controller: _controller, userService: widget.userService),
         )
     );
   }
 
-  // @override
-  // void dispose() {
-  //   if(timer.isActive) {
-  //     timer.cancel();
-  //   }
-  //   super.dispose();
-  // }
+  @override
+  void dispose() {
+    if(timer.isActive) {
+      timer.cancel();
+    }
+    SharedAlgorithmEvent().dispose();
+    SharedSwipeableEvent().dispose();
+    super.dispose();
+  }
 
 }

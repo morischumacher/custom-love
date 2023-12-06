@@ -18,4 +18,8 @@ class SwipeableEvent {
   Future<bool> getFutureSwipeable() async {
     return _currentSwipeable;
   }
+
+  void dispose() {
+    _controller.close();
+  }
 }
