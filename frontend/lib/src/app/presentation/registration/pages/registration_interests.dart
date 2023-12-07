@@ -140,6 +140,7 @@ class _RegistrationInterestsState extends State<RegistrationInterests> {
             birthdate: birthdate,
             gender: gender,
             preference: preference,
+            profilePicture: null,
           );
         }));
       },

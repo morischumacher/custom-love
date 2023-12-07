@@ -59,6 +59,7 @@ class CustomLove extends StatelessWidget {
               gender: null,
               preference: null,
               birthdate: null,
+              profilePicture: null,
             );
           }
         },

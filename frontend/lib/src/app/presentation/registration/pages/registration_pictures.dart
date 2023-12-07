@@ -16,7 +16,8 @@ class RegistrationPictures extends StatefulWidget {
     required this.email,
     required this.gender,
     required this.preference,
-    required this.birthdate
+    required this.birthdate,
+    required this.profilePicture
   }) : super(key: key);
 
   final String? name;
@@ -24,7 +25,7 @@ class RegistrationPictures extends StatefulWidget {
   final String? gender;
   final String? preference;
   final String? birthdate;
-
+  final Uint8List? profilePicture;
 
   @override
   State<RegistrationPictures> createState() => _RegistrationPicturesState();
@@ -39,6 +40,7 @@ class _RegistrationPicturesState extends State<RegistrationPictures> {
     gender = widget.gender;
     preference = widget.preference;
     birthdate = widget.birthdate;
+    profilePicture = widget.profilePicture;
   }
 
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
@@ -51,7 +53,7 @@ class _RegistrationPicturesState extends State<RegistrationPictures> {
   String defaultImageUrl = 'https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fblogs.timesofindia.indiatimes.com%2Fwp-content%2Fuploads%2F2016%2F11%2FNarendra-Modi-10-1.jpg&f=1&nofb=1&ipt=2934f6195ba86ab161d54c942491f87a1c68cc89b426d0601667d9052cf98010&ipo=images';
   String? selectFile = '';
   XFile? file;
-  Uint8List? selectedImageInBytes;
+  Uint8List? profilePicture;
 
   _selectFile(bool imageFrom) async {
     FilePickerResult? fileResult = await FilePicker.platform.pickFiles();
@@ -59,7 +61,7 @@ class _RegistrationPicturesState extends State<RegistrationPictures> {
     if (fileResult != null) {
       setState(() {
         selectFile = fileResult.files.first.name;
-        selectedImageInBytes = fileResult.files.first.bytes;
+        profilePicture = fileResult.files.first.bytes;
       });
 
     }
@@ -79,29 +81,37 @@ class _RegistrationPicturesState extends State<RegistrationPictures> {
                 children: [
                   const PageTitle(
                       title: "Profile Pictures",
-                      description: "Provide up to five pictures of yourself",
+                      // description: "Provide up to five pictures of yourself",
+                      description: "Provide a profile picture of yourself",
                       bottomPadding: 70.0,
                   ),
                   const SizedBox(height: 19.0),
-                  if (!selectFile!.isEmpty)
+                  if (profilePicture != null && profilePicture!.isNotEmpty)
                     Container(
                       height: 250,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15)
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                            width: 5,
+                            color: _customLoveTheme.primaryColor
+                        )
                       ),
-                      child: Image.memory(selectedImageInBytes!),
+                      child: Image.memory(profilePicture!),
                     ),
                   const SizedBox(height: 19.0),
                   SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.05,
+                    height: MediaQuery.of(context).size.height * 0.075,
                     child: ElevatedButton.icon(
                         onPressed: () {
                           _selectFile(true);
                         },
-                        icon: const Icon(Icons.camera),
-                        label: const Text(
+                        icon: Icon(Icons.camera, color: _customLoveTheme.primaryColor,),
+                        label: Text(
                           'Choose Image',
-                          style: TextStyle(),
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: _customLoveTheme.primaryColor
+                          ),
                         ))
                   ),
                   const Spacer(),
@@ -136,7 +146,8 @@ class _RegistrationPicturesState extends State<RegistrationPictures> {
             email: email,
             gender: gender,
             preference: preference,
-            birthdate: birthdate
+            birthdate: birthdate,
+            profilePicture: profilePicture
           );
         }));
       },
@@ -168,7 +179,7 @@ class _RegistrationPicturesState extends State<RegistrationPictures> {
       },
       child: const Text(
         "Next",
-        style: const TextStyle(
+        style: TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.white
         ),

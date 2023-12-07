@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/presentation/registration/pages/registration_name_email.dart';
 import 'package:frontend/src/app/presentation/registration/pages/registration_pictures.dart';
@@ -12,7 +14,8 @@ class RegistrationGenderPreference extends StatefulWidget {
     required this.email,
     required this.gender,
     required this.preference,
-    required this.birthdate
+    required this.birthdate,
+    required this.profilePicture
   });
 
   final String? name;
@@ -20,6 +23,7 @@ class RegistrationGenderPreference extends StatefulWidget {
   final String? gender;
   final String? preference;
   final String? birthdate;
+  final Uint8List? profilePicture;
 
   @override
   State<RegistrationGenderPreference> createState() => _RegistrationGenderPreferenceState();
@@ -34,12 +38,14 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
     _selectedGender = widget.gender;
     _selectedPreference = widget.preference;
     _dateController.value = TextEditingValue(text: widget.birthdate == null ? "" : widget.birthdate as String);
+    profilePicture = widget.profilePicture;
   }
 
   late String? name;
   late String? email;
   String? _selectedGender = "";
   String? _selectedPreference = "";
+  Uint8List? profilePicture;
 
   final TextEditingController _dateController = TextEditingController();
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
@@ -189,6 +195,7 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
             gender: _selectedGender,
             preference: _selectedPreference,
             birthdate: _dateController.value.text,
+            profilePicture: profilePicture
           );
         }));
       },
@@ -218,7 +225,8 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
               email: email,
               gender: _selectedGender,
               preference: _selectedPreference,
-              birthdate: _dateController.value.text
+              birthdate: _dateController.value.text,
+            profilePicture: profilePicture
           );
         }));
       },

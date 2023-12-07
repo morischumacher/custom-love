@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/presentation/registration/pages/registration_gender_preference.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/page_title.dart';
@@ -15,7 +17,8 @@ class RegistrationNameEmail extends StatefulWidget {
     required this.email,
     required this.gender,
     required this.preference,
-    required this.birthdate
+    required this.birthdate,
+    required this.profilePicture
   });
 
   final String? name;
@@ -23,6 +26,7 @@ class RegistrationNameEmail extends StatefulWidget {
   final String? gender;
   final String? preference;
   final String? birthdate;
+  final Uint8List? profilePicture;
 
   @override
   State<RegistrationNameEmail> createState() => _RegistrationNameEmailState();
@@ -37,6 +41,7 @@ class _RegistrationNameEmailState extends State<RegistrationNameEmail> {
     gender = widget.gender;
     preference = widget.preference;
     birthdate = widget.birthdate;
+    profilePicture = widget.profilePicture;
   }
 
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
@@ -46,6 +51,7 @@ class _RegistrationNameEmailState extends State<RegistrationNameEmail> {
   late String? gender;
   late String? preference;
   late String? birthdate;
+  late Uint8List? profilePicture;
 
   @override
   Widget build(BuildContext context) {
@@ -131,7 +137,8 @@ class _RegistrationNameEmailState extends State<RegistrationNameEmail> {
             email: emailController.value.text,
             gender: gender,
             preference: preference,
-            birthdate: birthdate
+            birthdate: birthdate,
+            profilePicture: profilePicture,
           );
         }));
       },
