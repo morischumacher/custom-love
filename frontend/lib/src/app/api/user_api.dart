@@ -80,13 +80,13 @@ class UserApi extends PaginatedApi<User> {
       },
     );
 
-    print("fetched users: " + response.body);
+    print("fetched user: " + response.body);
 
     if (response.statusCode == 200) {
       final dynamic jsonItem = json.decode(response.body);
-      var getItems = jsonItem["items"];
-      int number = random.nextInt(getItems.length-1);
-      final User user = User.fromJson(getItems[number]);
+      // var getItems = jsonItem["items"];
+      // int number = random.nextInt(getItems.length-1);
+      final User user = User.fromJson(jsonItem);
       return user;
     } else {
       // TODO: Add custom exception
