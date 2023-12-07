@@ -15,7 +15,8 @@ class RegistrationGenderPreference extends StatefulWidget {
     required this.gender,
     required this.preference,
     required this.birthdate,
-    required this.profilePicture
+    required this.profilePicture,
+    required this.userInterestIdList
   });
 
   final String? name;
@@ -24,6 +25,7 @@ class RegistrationGenderPreference extends StatefulWidget {
   final String? preference;
   final String? birthdate;
   final Uint8List? profilePicture;
+  final Set<int> userInterestIdList;
 
   @override
   State<RegistrationGenderPreference> createState() => _RegistrationGenderPreferenceState();
@@ -39,13 +41,15 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
     _selectedPreference = widget.preference;
     _dateController.value = TextEditingValue(text: widget.birthdate == null ? "" : widget.birthdate as String);
     profilePicture = widget.profilePicture;
+    userInterestIdList = widget.userInterestIdList;
   }
 
   late String? name;
   late String? email;
   String? _selectedGender = "";
   String? _selectedPreference = "";
-  Uint8List? profilePicture;
+  late Uint8List? profilePicture;
+  late Set<int> userInterestIdList;
 
   final TextEditingController _dateController = TextEditingController();
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
@@ -195,7 +199,8 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
             gender: _selectedGender,
             preference: _selectedPreference,
             birthdate: _dateController.value.text,
-            profilePicture: profilePicture
+            profilePicture: profilePicture,
+            userInterestIdList: userInterestIdList
           );
         }));
       },
@@ -226,7 +231,8 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
               gender: _selectedGender,
               preference: _selectedPreference,
               birthdate: _dateController.value.text,
-            profilePicture: profilePicture
+              profilePicture: profilePicture,
+              userInterestIdList: userInterestIdList,
           );
         }));
       },

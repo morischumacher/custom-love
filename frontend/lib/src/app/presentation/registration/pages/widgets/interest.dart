@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../config/theme.dart';
@@ -6,14 +5,20 @@ import '../../../../../config/theme.dart';
 class Interest extends StatefulWidget {
   const Interest({
     super.key,
+    required this.interestId,
     required this.interestName,
     required this.iconCode,
-    required this.fontFamily
+    required this.fontFamily,
+    required this.containsInterestFunction,
+    required this.addRemoveInterestFunction
   });
 
+  final int interestId;
   final String interestName;
   final int iconCode;
   final String fontFamily;
+  final Function containsInterestFunction;
+  final Function addRemoveInterestFunction;
 
   @override
   State<Interest> createState() => _InterestState();
@@ -23,32 +28,39 @@ class _InterestState extends State<Interest> {
   @override
   void initState() {
     super.initState();
+    interestId = widget.interestId;
     interestName = widget.interestName;
     iconCode = widget.iconCode;
     fontFamily = widget.fontFamily;
+    containsInterestFunction = widget.containsInterestFunction;
+    addRemoveInterestFunction = widget.addRemoveInterestFunction;
   }
 
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
+  late int interestId;
   late int iconCode;
   late String fontFamily;
   late String interestName;
-  bool interestSelected = false;
+  late Function containsInterestFunction;
+  late Function addRemoveInterestFunction;
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton.icon(
-      // child: const Text("Shopping"),
-        icon: Icon(IconData(iconCode, fontFamily: fontFamily), color: interestSelected == true ? Colors.white : _customLoveTheme.tertiaryColor),
+        icon: Icon(
+            IconData(iconCode, fontFamily: fontFamily),
+            color: containsInterestFunction(interestId) ? Colors.white : _customLoveTheme.tertiaryColor
+        ),
         label: Text(interestName),
         onPressed: () {
           setState(() {
-            interestSelected = !interestSelected;
+            addRemoveInterestFunction(interestId);
           });
         },
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.all(20.0),
-          backgroundColor: interestSelected == true ? _customLoveTheme.selected : Colors.white,
-          foregroundColor: interestSelected == true ? Colors.white : _customLoveTheme.tertiaryColor,
+          backgroundColor: containsInterestFunction(interestId) ? _customLoveTheme.selected : Colors.white,
+          foregroundColor: containsInterestFunction(interestId) ? Colors.white : _customLoveTheme.tertiaryColor,
           elevation: 15,
           shadowColor: Colors.black,
           alignment: Alignment.center,
@@ -56,7 +68,7 @@ class _InterestState extends State<Interest> {
           shape: StadiumBorder(
               side: BorderSide(
                   width: 2,
-                  color: interestSelected == true ? Colors.white : _customLoveTheme.tertiaryColor
+                  color: containsInterestFunction(interestId) ? Colors.white : _customLoveTheme.tertiaryColor
               )
           ),
           textStyle: const TextStyle(

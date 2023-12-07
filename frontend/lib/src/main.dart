@@ -53,13 +53,14 @@ class CustomLove extends StatelessWidget {
           },
           '/registration': (context) {
             // return const RegistrationGenderPreference();
-            return const RegistrationNameEmail(
+            return RegistrationNameEmail(
               name: null,
               email: null,
               gender: null,
               preference: null,
               birthdate: null,
               profilePicture: null,
+              userInterestIdList: Set<int>()
             );
           }
         },

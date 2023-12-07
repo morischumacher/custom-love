@@ -17,7 +17,8 @@ class RegistrationPictures extends StatefulWidget {
     required this.gender,
     required this.preference,
     required this.birthdate,
-    required this.profilePicture
+    required this.profilePicture,
+    required this.userInterestIdList
   }) : super(key: key);
 
   final String? name;
@@ -26,6 +27,7 @@ class RegistrationPictures extends StatefulWidget {
   final String? preference;
   final String? birthdate;
   final Uint8List? profilePicture;
+  final Set<int> userInterestIdList;
 
   @override
   State<RegistrationPictures> createState() => _RegistrationPicturesState();
@@ -41,6 +43,7 @@ class _RegistrationPicturesState extends State<RegistrationPictures> {
     preference = widget.preference;
     birthdate = widget.birthdate;
     profilePicture = widget.profilePicture;
+    userInterestIdList = widget.userInterestIdList;
   }
 
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
@@ -49,11 +52,12 @@ class _RegistrationPicturesState extends State<RegistrationPictures> {
   late String? gender;
   late String? preference;
   late String? birthdate;
+  Uint8List? profilePicture;
+  late Set<int> userInterestIdList;
 
   String defaultImageUrl = 'https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fblogs.timesofindia.indiatimes.com%2Fwp-content%2Fuploads%2F2016%2F11%2FNarendra-Modi-10-1.jpg&f=1&nofb=1&ipt=2934f6195ba86ab161d54c942491f87a1c68cc89b426d0601667d9052cf98010&ipo=images';
   String? selectFile = '';
   XFile? file;
-  Uint8List? profilePicture;
 
   _selectFile(bool imageFrom) async {
     FilePickerResult? fileResult = await FilePicker.platform.pickFiles();
@@ -147,7 +151,8 @@ class _RegistrationPicturesState extends State<RegistrationPictures> {
             gender: gender,
             preference: preference,
             birthdate: birthdate,
-            profilePicture: profilePicture
+            profilePicture: profilePicture,
+            userInterestIdList: userInterestIdList
           );
         }));
       },
@@ -177,6 +182,7 @@ class _RegistrationPicturesState extends State<RegistrationPictures> {
             gender: gender,
             preference: preference,
             profilePicture: profilePicture,
+            userInterestIdList: userInterestIdList,
           );
         }));
       },

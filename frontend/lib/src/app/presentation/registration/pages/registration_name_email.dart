@@ -18,7 +18,8 @@ class RegistrationNameEmail extends StatefulWidget {
     required this.gender,
     required this.preference,
     required this.birthdate,
-    required this.profilePicture
+    required this.profilePicture,
+    required this.userInterestIdList
   });
 
   final String? name;
@@ -27,6 +28,7 @@ class RegistrationNameEmail extends StatefulWidget {
   final String? preference;
   final String? birthdate;
   final Uint8List? profilePicture;
+  final Set<int> userInterestIdList;
 
   @override
   State<RegistrationNameEmail> createState() => _RegistrationNameEmailState();
@@ -42,6 +44,7 @@ class _RegistrationNameEmailState extends State<RegistrationNameEmail> {
     preference = widget.preference;
     birthdate = widget.birthdate;
     profilePicture = widget.profilePicture;
+    userInterestIdList = widget.userInterestIdList;
   }
 
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
@@ -52,6 +55,7 @@ class _RegistrationNameEmailState extends State<RegistrationNameEmail> {
   late String? preference;
   late String? birthdate;
   late Uint8List? profilePicture;
+  late Set<int> userInterestIdList;
 
   @override
   Widget build(BuildContext context) {
@@ -139,6 +143,7 @@ class _RegistrationNameEmailState extends State<RegistrationNameEmail> {
             preference: preference,
             birthdate: birthdate,
             profilePicture: profilePicture,
+            userInterestIdList: userInterestIdList
           );
         }));
       },
