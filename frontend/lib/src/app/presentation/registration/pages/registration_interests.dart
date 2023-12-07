@@ -30,9 +30,9 @@ class RegistrationInterests extends StatefulWidget {
 
 class _RegistrationInterestsState extends State<RegistrationInterests> {
   _RegistrationInterestsState({
+    required this.dob,
     required this.gender,
-    required this.preference,
-    required this.dob
+    required this.preference
   });
 
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
@@ -135,6 +135,8 @@ class _RegistrationInterestsState extends State<RegistrationInterests> {
       onPressed: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return RegistrationPictures(
+            name: null,
+            email: null,
             dob: dob,
             gender: gender,
             preference: preference,

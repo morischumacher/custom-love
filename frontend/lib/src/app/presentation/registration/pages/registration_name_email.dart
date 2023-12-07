@@ -3,19 +3,33 @@ import 'package:frontend/src/app/presentation/registration/pages/registration_ge
 import 'package:frontend/src/app/presentation/registration/pages/widgets/page_title.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/textfield.dart';
 import 'package:provider/provider.dart';
-import '../../../config/theme.dart';
-import '../../service/login_service.dart';
-import '../../service/user_service.dart';
-import '../authentification/pages/login_page.dart';
+import '../../../../config/theme.dart';
+import '../../../service/login_service.dart';
+import '../../../service/user_service.dart';
+import '../../authentification/pages/login_page.dart';
 
 class RegistrationNameEmail extends StatefulWidget {
-  const RegistrationNameEmail({super.key});
+  const RegistrationNameEmail({
+    super.key,
+    required this.name,
+    required this.email
+  });
+
+  final String? name;
+  final String? email;
 
   @override
   State<RegistrationNameEmail> createState() => _RegistrationNameEmailState();
 }
 
 class _RegistrationNameEmailState extends State<RegistrationNameEmail> {
+  @override
+  void initState() {
+    super.initState();
+    usernameController.value = TextEditingValue(text: widget.name == null ? "" : widget.name as String);
+    emailController.value = TextEditingValue(text: widget.email == null ? "" : widget.email as String);
+  }
+
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
 
   final usernameController = TextEditingController();
@@ -100,7 +114,10 @@ class _RegistrationNameEmailState extends State<RegistrationNameEmail> {
       ),
       onPressed: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return const RegistrationGenderPreference();
+          return RegistrationGenderPreference(
+            name: usernameController.value.text,
+            email: emailController.value.text
+          );
         }));
       },
       child: const Text(

@@ -1,28 +1,42 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/src/app/presentation/authentification/pages/login_page.dart';
+import 'package:frontend/src/app/presentation/registration/pages/registration_name_email.dart';
 import 'package:frontend/src/app/presentation/registration/pages/registration_pictures.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/page_title.dart';
-import 'package:provider/provider.dart';
 
 import '../../../../config/theme.dart';
-import '../../../service/login_service.dart';
-import '../../../service/user_service.dart';
 
 class RegistrationGenderPreference extends StatefulWidget {
-  const RegistrationGenderPreference({super.key});
+  const RegistrationGenderPreference({
+    super.key,
+    required this.name,
+    required this.email
+  });
+
+  final String? name;
+  final String? email;
 
   @override
   State<RegistrationGenderPreference> createState() => _RegistrationGenderPreferenceState();
 }
 
 class _RegistrationGenderPreferenceState extends State<RegistrationGenderPreference> {
-  _RegistrationGenderPreferenceState() {
+  @override
+  void initState() {
+    super.initState();
+    name = widget.name;
+    email = widget.email;
     _selectedGender = null;
     _selectedPreference = null;
+    _selectedBirthdate = null;
+
+    print(name);
+    print(email);
   }
 
   final TextEditingController _dateController = TextEditingController();
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
+  late String? name;
+  late String? email;
   final _genderList = ["Male", "Female", "Other"];
   String? _selectedGender = "";
   String? _selectedPreference = "";
@@ -166,9 +180,9 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
       ),
       onPressed: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return LoginPage(
-              loginService: Provider.of<LoginService>(context),
-              userService: Provider.of<UserService>(context),
+          return RegistrationNameEmail(
+            name: name,
+            email: email,
           );
         }));
       },
@@ -194,6 +208,8 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
       onPressed: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return RegistrationPictures(
+              name: name,
+              email: email,
               gender: _selectedGender,
               preference: _selectedPreference,
               dob: _selectedBirthdate

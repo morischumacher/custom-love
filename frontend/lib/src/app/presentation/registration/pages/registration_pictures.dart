@@ -12,11 +12,15 @@ import '../../../../config/theme.dart';
 class RegistrationPictures extends StatefulWidget {
   const RegistrationPictures({
     Key? key,
+    required this.name,
+    required this.email,
     required this.gender,
     required this.preference,
     required this.dob
   }) : super(key: key);
 
+  final String? name;
+  final String? email;
   final String? gender;
   final String? preference;
   final String? dob;
@@ -24,6 +28,8 @@ class RegistrationPictures extends StatefulWidget {
 
   @override
   State<RegistrationPictures> createState() => _RegistrationPicturesState(
+      name: name,
+      email: email,
       gender: gender,
       preference: preference,
       dob: dob
@@ -32,12 +38,16 @@ class RegistrationPictures extends StatefulWidget {
 
 class _RegistrationPicturesState extends State<RegistrationPictures> {
   _RegistrationPicturesState({
+    required this.name,
+    required this.email,
     required this.gender,
     required this.preference,
     required this.dob
   });
 
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
+  final String? name;
+  final String? email;
   final String? gender;
   final String? preference;
   final String? dob;
@@ -125,7 +135,10 @@ class _RegistrationPicturesState extends State<RegistrationPictures> {
       ),
       onPressed: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return RegistrationGenderPreference();
+          return RegistrationGenderPreference(
+            name: name,
+            email: email
+          );
         }));
       },
       child: const Text(
