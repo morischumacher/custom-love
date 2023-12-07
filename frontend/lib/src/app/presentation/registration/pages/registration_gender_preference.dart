@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/presentation/registration/pages/registration_name_email.dart';
 import 'package:frontend/src/app/presentation/registration/pages/registration_pictures.dart';
+import 'package:frontend/src/app/presentation/registration/pages/widgets/dropdown_list.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/page_title.dart';
 
 import '../../../../config/theme.dart';
@@ -71,64 +72,18 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
                         description: "Provide some basic data about yourself",
                         bottomPadding: 70.0,
                     ),
-                    DropdownButtonFormField(
-                      value: _selectedGender,
-                      items: _genderList
-                          .map((e) => DropdownMenuItem(child: Text(e), value: e))
-                          .toList(),
-                      onChanged: (val) {
-                        setState(() {
-                          _selectedGender = val as String;
-                        });
-                      },
-                      icon: const Icon(
-                        Icons.arrow_drop_down,
-                        color: Colors.black,
-                      ),
-                      dropdownColor: Colors.grey.shade200,
-                      decoration: InputDecoration(
-                          labelText: "Gender",
-                          fillColor: Colors.grey.shade200,
-                          filled: true,
-                          labelStyle: TextStyle(color: Colors.grey[500]),
-                          border: const OutlineInputBorder(),
-                          enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: _customLoveTheme.formFieldBorder)
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: _customLoveTheme.formFieldBorder)
-                          )
-                      ),
+                    DropDownList(
+                        labelText: "Gender",
+                        value: _selectedGender,
+                        options: _genderList,
+                        setParentValueFunction: setGender
                     ),
                     const SizedBox(height: 19.0),
-                    DropdownButtonFormField(
-                      value: _selectedPreference,
-                      items: _genderList
-                          .map((e) => DropdownMenuItem(child: Text(e), value: e))
-                          .toList(),
-                      onChanged: (val) {
-                        setState(() {
-                          _selectedPreference = val as String;
-                        });
-                      },
-                      icon: const Icon(
-                        Icons.arrow_drop_down,
-                        color: Colors.black,
-                      ),
-                      dropdownColor: Colors.grey.shade200,
-                      decoration: InputDecoration(
-                          fillColor: Colors.grey.shade200,
-                          filled: true,
-                          labelText: "Preference",
-                          labelStyle: TextStyle(color: Colors.grey[500]),
-                          border: const OutlineInputBorder(),
-                          enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: _customLoveTheme.formFieldBorder)
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: _customLoveTheme.formFieldBorder)
-                          )
-                      ),
+                    DropDownList(
+                        labelText: "Preference",
+                        value: _selectedPreference,
+                        options: _genderList,
+                        setParentValueFunction: setPreference
                     ),
                     const SizedBox(height: 19.0),
                     TextField(
@@ -243,5 +198,13 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
         ),
       ),
     );
+  }
+
+  void setGender(String gender) {
+    _selectedGender = gender;
+  }
+
+  void setPreference(String preference) {
+    _selectedPreference = preference;
   }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class RegistrationTextfield extends StatelessWidget {
-  // Accesses what the uses fill into the text field
+  // Accesses what the users fill into the text field
   final TextEditingController? controller;
   final String hintText;
 
