@@ -86,12 +86,11 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
                         color: Colors.black,
                       ),
                       dropdownColor: Colors.grey.shade200,
-
                       decoration: InputDecoration(
+                          labelText: "Gender",
                           fillColor: Colors.grey.shade200,
                           filled: true,
-                          labelText: "Gender",
-                          labelStyle: const TextStyle(color: Colors.black),
+                          labelStyle: TextStyle(color: Colors.grey[500]),
                           border: const OutlineInputBorder(),
                           enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(color: _customLoveTheme.formFieldBorder)
@@ -121,7 +120,7 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
                           fillColor: Colors.grey.shade200,
                           filled: true,
                           labelText: "Preference",
-                          labelStyle: const TextStyle(color: Colors.black),
+                          labelStyle: TextStyle(color: Colors.grey[500]),
                           border: const OutlineInputBorder(),
                           enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(color: _customLoveTheme.formFieldBorder)
@@ -143,7 +142,7 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
                           filled: true,
                           suffixIcon: const Icon(Icons.calendar_today),
                           labelText: "Birthday",
-                          labelStyle: const TextStyle(color: Colors.black),
+                          labelStyle: TextStyle(color: Colors.grey[500]),
                           border: const OutlineInputBorder(),
                           enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(color: _customLoveTheme.formFieldBorder)
