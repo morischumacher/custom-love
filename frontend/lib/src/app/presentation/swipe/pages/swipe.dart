@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:frontend/src/app/model/user_model.dart';
 import 'package:frontend/src/app/presentation/swipe/util/content.dart';
 import 'package:flutter/material.dart';
-import 'package:swipe_cards/draggable_card.dart';
 import 'package:swipe_cards/swipe_cards.dart';
 import 'package:frontend/src/config/theme.dart';
 import 'package:frontend/src/app/presentation/authentification/controller/login_controller.dart';
@@ -33,6 +32,7 @@ class _SwipeState extends State<Swipe> {
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
   final LoginController _controller = LoginController();
   final LocationService _locationService = LocationService();
+  late Timer timer;
 
   final List<Content> _cards = [
     Content(firstName: "Bravo", languages: ["english", "french"], bio: "hello,...", interests: ["sport", "reading", "movies", "IT"])];
@@ -105,7 +105,7 @@ class _SwipeState extends State<Swipe> {
           swipeable = false;
         });
 
-        Timer(const Duration(seconds: 10), () {
+        timer = Timer(const Duration(seconds: 10), () {
           setState(() {
             swipeable = true;
           });
@@ -147,5 +147,13 @@ class _SwipeState extends State<Swipe> {
               child: SwipingCard(matchEngine: _matchEngine, customLoveTheme: _customLoveTheme, swipeItem: _swipeItem, swipeable: swipeable),
             )
     );
+  }
+
+  @override
+  void dispose() {
+    if(timer.isActive) {
+      timer.cancel();
+    }
+    super.dispose();
   }
 }

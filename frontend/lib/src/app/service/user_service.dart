@@ -1,16 +1,19 @@
 import 'package:frontend/src/app/api/user_api.dart';
 import 'package:frontend/src/app/model/user_model.dart';
+import 'package:frontend/src/app/service/interfaces/paginated_service.dart';
 import 'package:geolocator/geolocator.dart';
 
-class UserService {
-  final UserApi _userApi;
+class UserService extends PaginatedService<User, UserApi> {
+  UserService(super._api);
 
-  UserService(this._userApi);
+  @override
+  PaginatedService<User, UserApi> copyWith(String urlParams)
+  => UserService(super.api.copyWith(urlParams));
 
   Future<List<User>> getAllUsers() async {
     try {
-      final users = _userApi.getUsers();
-      return users;
+      Map<int, User> users = await super.api.getAll();
+      return users.values as List<User>;
     } on Exception {
       rethrow;
     }
@@ -18,7 +21,7 @@ class UserService {
 
   Future<User> getUser() async {
     try {
-      final user = _userApi.getUser();
+      final user = super.api.getUser();
       return user;
     } on Exception {
       rethrow;
@@ -28,7 +31,7 @@ class UserService {
   Future<User> updateCurrentUserLocation(
       Position userPosition, var accessToken) async {
     try {
-      final updateUser = _userApi.updateUserLocation(userPosition, accessToken);
+      final updateUser = super.api.updateUserLocation(userPosition, accessToken);
       return updateUser;
     } on Exception {
       rethrow;
@@ -37,11 +40,10 @@ class UserService {
 
   Future<User> getAlgoUser(var accessToken) async {
     try {
-      final algoUser = _userApi.getAlgoUser(accessToken);
+      final algoUser = super.api.getAlgoUser(accessToken);
       return algoUser;
     } on Exception {
       rethrow;
     }
   }
-
 }

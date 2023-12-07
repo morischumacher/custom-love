@@ -1,38 +1,35 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:frontend/src/app/api/helpers/pagination_api.dart';
+import 'package:frontend/src/app/model/factories/user_factory.dart';
 import 'package:frontend/src/app/model/user_model.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:frontend/src/config/api_config.dart';
 import 'package:logger/logger.dart';
 
-class UserApi {
-  final http.Client httpClient;
+import 'interfaces/paginated_api.dart';
+
+class UserApi extends PaginatedApi<User> {
   final logger = Logger();
   Random random = Random();
 
-  UserApi({required this.httpClient});
+  UserApi(http.Client client): super(client, "users/", UserFactory());
+  UserApi.url(http.Client client, String urlParams): super(client, "users/$urlParams", UserFactory());
 
-  Future<List<User>> getUsers() async {
-    final response =
-        await httpClient.get(Uri.parse('${ApiConfig.baseUrl}/users'));
 
-    if (response.statusCode == 200) {
-      final List<dynamic> jsonList = json.decode(response.body)["items"];
-      final List<User> users =
-          jsonList.map((json) => User.fromJson(json)).toList();
-      return users;
-    } else {
-      // TODO: Add custom exception
-      throw Exception('Failed to fetch users');
-    }
-  }
+  @override
+  UserApi copyWith(String urlParams) =>
+      UserApi.url(
+          client,
+          urlParams
+      );
 
   Future<User> getUser() async {
     int id = random.nextInt(3) + 1;
     final response =
-    await httpClient.get(Uri.parse('${ApiConfig.baseUrl}/users/$id'));
+    await super.client.get(Uri.parse('${ApiConfig.baseUrl}/users/$id'));
 
     if (response.statusCode == 200) {
       print("RESPONSE: ${response.body}");
