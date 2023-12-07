@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import '../../../../../config/theme.dart';
 
 class Interest extends StatefulWidget {
-  Interest({
-    Key? key,
+  const Interest({
+    super.key,
     required this.interestName,
     required this.iconCode,
     required this.fontFamily
@@ -16,24 +16,22 @@ class Interest extends StatefulWidget {
   final String fontFamily;
 
   @override
-  State<Interest> createState() => _InterestState(
-    interestName: interestName,
-    iconCode: iconCode,
-    fontFamily: fontFamily
-  );
+  State<Interest> createState() => _InterestState();
 }
 
 class _InterestState extends State<Interest> {
-  _InterestState({
-    required this.interestName,
-    required this.iconCode,
-    required this.fontFamily
-  });
+  @override
+  void initState() {
+    super.initState();
+    interestName = widget.interestName;
+    iconCode = widget.iconCode;
+    fontFamily = widget.fontFamily;
+  }
 
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
-  final int iconCode;
-  final String fontFamily;
-  final String interestName;
+  late int iconCode;
+  late String fontFamily;
+  late String interestName;
   bool interestSelected = false;
 
   @override
