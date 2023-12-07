@@ -9,11 +9,17 @@ class RegistrationGenderPreference extends StatefulWidget {
   const RegistrationGenderPreference({
     super.key,
     required this.name,
-    required this.email
+    required this.email,
+    required this.gender,
+    required this.preference,
+    required this.birthdate
   });
 
   final String? name;
   final String? email;
+  final String? gender;
+  final String? preference;
+  final String? birthdate;
 
   @override
   State<RegistrationGenderPreference> createState() => _RegistrationGenderPreferenceState();
@@ -25,22 +31,19 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
     super.initState();
     name = widget.name;
     email = widget.email;
-    _selectedGender = null;
-    _selectedPreference = null;
-    _selectedBirthdate = null;
-
-    print(name);
-    print(email);
+    _selectedGender = widget.gender;
+    _selectedPreference = widget.preference;
+    _dateController.value = TextEditingValue(text: widget.birthdate == null ? "" : widget.birthdate as String);
   }
+
+  late String? name;
+  late String? email;
+  String? _selectedGender = "";
+  String? _selectedPreference = "";
 
   final TextEditingController _dateController = TextEditingController();
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
-  late String? name;
-  late String? email;
   final _genderList = ["Male", "Female", "Other"];
-  String? _selectedGender = "";
-  String? _selectedPreference = "";
-  String? _selectedBirthdate = "";
 
   @override
   Widget build(BuildContext context) {
@@ -78,8 +81,8 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
                           fillColor: Colors.grey.shade200,
                           filled: true,
                           labelText: "Gender",
-                          labelStyle: TextStyle(color: Colors.black),
-                          border: OutlineInputBorder(),
+                          labelStyle: const TextStyle(color: Colors.black),
+                          border: const OutlineInputBorder(),
                           enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(color: _customLoveTheme.formFieldBorder)
                           ),
@@ -90,7 +93,7 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
                     ),
                     const SizedBox(height: 19.0),
                     DropdownButtonFormField(
-                      value: null,
+                      value: _selectedPreference,
                       items: _genderList
                           .map((e) => DropdownMenuItem(child: Text(e), value: e))
                           .toList(),
@@ -108,8 +111,8 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
                           fillColor: Colors.grey.shade200,
                           filled: true,
                           labelText: "Preference",
-                          labelStyle: TextStyle(color: Colors.black),
-                          border: OutlineInputBorder(),
+                          labelStyle: const TextStyle(color: Colors.black),
+                          border: const OutlineInputBorder(),
                           enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(color: _customLoveTheme.formFieldBorder)
                           ),
@@ -183,6 +186,9 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
           return RegistrationNameEmail(
             name: name,
             email: email,
+            gender: _selectedGender,
+            preference: _selectedPreference,
+            birthdate: _dateController.value.text,
           );
         }));
       },
@@ -212,7 +218,7 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
               email: email,
               gender: _selectedGender,
               preference: _selectedPreference,
-              dob: _selectedBirthdate
+              birthdate: _dateController.value.text
           );
         }));
       },

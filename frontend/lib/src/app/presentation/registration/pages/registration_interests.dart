@@ -13,16 +13,16 @@ class RegistrationInterests extends StatefulWidget {
     Key? key,
     required this.gender,
     required this.preference,
-    required this.dob
+    required this.birthdate
   }) : super(key: key);
 
   final String? gender;
   final String? preference;
-  final String? dob;
+  final String? birthdate;
 
   @override
   State<RegistrationInterests> createState() => _RegistrationInterestsState(
-    dob: dob,
+      birthdate: birthdate,
     gender: gender,
     preference: preference
   );
@@ -30,7 +30,7 @@ class RegistrationInterests extends StatefulWidget {
 
 class _RegistrationInterestsState extends State<RegistrationInterests> {
   _RegistrationInterestsState({
-    required this.dob,
+    required this.birthdate,
     required this.gender,
     required this.preference
   });
@@ -38,7 +38,7 @@ class _RegistrationInterestsState extends State<RegistrationInterests> {
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
   final String? gender;
   final String? preference;
-  final String? dob;
+  final String? birthdate;
 
   final interestDto = [
     {'icon_code': 0xe4b6, 'font_family': 'MaterialIcons', 'interest_name': 'Photography'},
@@ -137,7 +137,7 @@ class _RegistrationInterestsState extends State<RegistrationInterests> {
           return RegistrationPictures(
             name: null,
             email: null,
-            dob: dob,
+            birthdate: birthdate,
             gender: gender,
             preference: preference,
           );

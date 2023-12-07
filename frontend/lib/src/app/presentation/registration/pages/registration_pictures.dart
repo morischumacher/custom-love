@@ -16,41 +16,37 @@ class RegistrationPictures extends StatefulWidget {
     required this.email,
     required this.gender,
     required this.preference,
-    required this.dob
+    required this.birthdate
   }) : super(key: key);
 
   final String? name;
   final String? email;
   final String? gender;
   final String? preference;
-  final String? dob;
+  final String? birthdate;
 
 
   @override
-  State<RegistrationPictures> createState() => _RegistrationPicturesState(
-      name: name,
-      email: email,
-      gender: gender,
-      preference: preference,
-      dob: dob
-  );
+  State<RegistrationPictures> createState() => _RegistrationPicturesState();
 }
 
 class _RegistrationPicturesState extends State<RegistrationPictures> {
-  _RegistrationPicturesState({
-    required this.name,
-    required this.email,
-    required this.gender,
-    required this.preference,
-    required this.dob
-  });
+  @override
+  void initState() {
+    super.initState();
+    name = widget.name;
+    email = widget.email;
+    gender = widget.gender;
+    preference = widget.preference;
+    birthdate = widget.birthdate;
+  }
 
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
-  final String? name;
-  final String? email;
-  final String? gender;
-  final String? preference;
-  final String? dob;
+  late String? name;
+  late String? email;
+  late String? gender;
+  late String? preference;
+  late String? birthdate;
 
   String defaultImageUrl = 'https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fblogs.timesofindia.indiatimes.com%2Fwp-content%2Fuploads%2F2016%2F11%2FNarendra-Modi-10-1.jpg&f=1&nofb=1&ipt=2934f6195ba86ab161d54c942491f87a1c68cc89b426d0601667d9052cf98010&ipo=images';
   String? selectFile = '';
@@ -137,7 +133,10 @@ class _RegistrationPicturesState extends State<RegistrationPictures> {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return RegistrationGenderPreference(
             name: name,
-            email: email
+            email: email,
+            gender: gender,
+            preference: preference,
+            birthdate: birthdate
           );
         }));
       },
@@ -161,7 +160,7 @@ class _RegistrationPicturesState extends State<RegistrationPictures> {
       onPressed: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return RegistrationInterests(
-            dob: dob,
+            birthdate: birthdate,
             gender: gender,
             preference: preference,
           );

@@ -12,11 +12,17 @@ class RegistrationNameEmail extends StatefulWidget {
   const RegistrationNameEmail({
     super.key,
     required this.name,
-    required this.email
+    required this.email,
+    required this.gender,
+    required this.preference,
+    required this.birthdate
   });
 
   final String? name;
   final String? email;
+  final String? gender;
+  final String? preference;
+  final String? birthdate;
 
   @override
   State<RegistrationNameEmail> createState() => _RegistrationNameEmailState();
@@ -28,12 +34,18 @@ class _RegistrationNameEmailState extends State<RegistrationNameEmail> {
     super.initState();
     usernameController.value = TextEditingValue(text: widget.name == null ? "" : widget.name as String);
     emailController.value = TextEditingValue(text: widget.email == null ? "" : widget.email as String);
+    gender = widget.gender;
+    preference = widget.preference;
+    birthdate = widget.birthdate;
   }
 
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
 
   final usernameController = TextEditingController();
   final emailController = TextEditingController();
+  late String? gender;
+  late String? preference;
+  late String? birthdate;
 
   @override
   Widget build(BuildContext context) {
@@ -50,13 +62,13 @@ class _RegistrationNameEmailState extends State<RegistrationNameEmail> {
                   description: "Provide your Name and Email",
                   bottomPadding: 70.0,
                 ),
-                // Email
+                // Name
                 RegistrationTextfield(
                   controller: usernameController,
                   hintText: "Name",
                 ),
                 const SizedBox(height: 19.0),
-                // Name
+                // Email
                 RegistrationTextfield(
                   controller: emailController,
                   hintText: "Email",
@@ -116,7 +128,10 @@ class _RegistrationNameEmailState extends State<RegistrationNameEmail> {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return RegistrationGenderPreference(
             name: usernameController.value.text,
-            email: emailController.value.text
+            email: emailController.value.text,
+            gender: gender,
+            preference: preference,
+            birthdate: birthdate
           );
         }));
       },

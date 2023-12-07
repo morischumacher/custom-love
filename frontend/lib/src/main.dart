@@ -56,6 +56,9 @@ class CustomLove extends StatelessWidget {
             return const RegistrationNameEmail(
               name: null,
               email: null,
+              gender: null,
+              preference: null,
+              birthdate: null,
             );
           }
         },
