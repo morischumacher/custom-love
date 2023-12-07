@@ -1,8 +1,9 @@
 from datetime import datetime
-from typing import Optional, List
-from backend.models.interest import Interest
+from typing import Optional
 
 from pydantic import BaseModel
+
+from backend.models.interest import Interest
 
 
 class UserResponse(BaseModel):
@@ -18,4 +19,4 @@ class UserResponse(BaseModel):
     latitude: Optional[float]
     longitude: Optional[float]
     gender_identity_id: Optional[int] = None
-    interests: Optional[List[Interest]]
+    interests: Optional[list[Interest]]
