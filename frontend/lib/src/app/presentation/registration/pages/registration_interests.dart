@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/presentation/home/pages/home.dart';
 import 'package:frontend/src/app/presentation/registration/pages/registration_pictures.dart';
@@ -11,34 +13,44 @@ import '../../../../config/theme.dart';
 class RegistrationInterests extends StatefulWidget {
   const RegistrationInterests({
     Key? key,
+    required this.name,
+    required this.email,
     required this.gender,
     required this.preference,
-    required this.birthdate
+    required this.birthdate,
+    required this.profilePicture
   }) : super(key: key);
 
+  final String? name;
+  final String? email;
   final String? gender;
   final String? preference;
   final String? birthdate;
+  final Uint8List? profilePicture;
 
   @override
-  State<RegistrationInterests> createState() => _RegistrationInterestsState(
-      birthdate: birthdate,
-    gender: gender,
-    preference: preference
-  );
+  State<RegistrationInterests> createState() => _RegistrationInterestsState();
 }
 
 class _RegistrationInterestsState extends State<RegistrationInterests> {
-  _RegistrationInterestsState({
-    required this.birthdate,
-    required this.gender,
-    required this.preference
-  });
+  @override
+  void initState() {
+    super.initState();
+    name = widget.name;
+    email = widget.email;
+    gender = widget.gender;
+    preference = widget.preference;
+    birthdate = widget.birthdate;
+    profilePicture = widget.profilePicture;
+  }
 
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
-  final String? gender;
-  final String? preference;
-  final String? birthdate;
+  late String? name;
+  late String? email;
+  late String? gender;
+  late String? preference;
+  late String? birthdate;
+  late Uint8List? profilePicture;
 
   final interestDto = [
     {'icon_code': 0xe4b6, 'font_family': 'MaterialIcons', 'interest_name': 'Photography'},

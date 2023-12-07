@@ -171,9 +171,12 @@ class _RegistrationPicturesState extends State<RegistrationPictures> {
       onPressed: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return RegistrationInterests(
+            name: name,
+            email: email,
             birthdate: birthdate,
             gender: gender,
             preference: preference,
+            profilePicture: profilePicture,
           );
         }));
       },
