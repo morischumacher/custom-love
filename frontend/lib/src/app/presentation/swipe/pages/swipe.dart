@@ -41,6 +41,8 @@ class _SwipeState extends State<Swipe> {
   bool swipesEvent = false;
   bool hasVisitedSwipePage = false;
   int swipingAlgoId = 0;
+  StreamSubscription<int>? _algoIdSubscription;
+  StreamSubscription<bool>? _swipeableSubscription;
 
   final List<Content> _cards = [
     Content(firstName: "Bravo", languages: ["english", "french"], bio: "hello,...", interests: ["sport", "reading", "movies", "IT"])];
@@ -52,7 +54,7 @@ class _SwipeState extends State<Swipe> {
 
     _fetchInitData();
 
-    SharedAlgorithmEvent.algoId.algoIdChanged.listen((int algoId) {
+    _algoIdSubscription = SharedAlgorithmEvent.algoId.algoIdChanged.listen((int algoId) {
       print("current algoID: $algoId");
       if (mounted) {
         setState(() {
@@ -125,7 +127,7 @@ class _SwipeState extends State<Swipe> {
       hasVisitedSwipePage = true;
     }
 
-    SharedSwipeableEvent.swipeable.swipeableChanged.listen((bool swipeable) async {
+    _swipeableSubscription = SharedSwipeableEvent.swipeable.swipeableChanged.listen((bool swipeable) async {
       if (mounted) {
         setState(() {
           swipesEvent = swipeable;
@@ -275,6 +277,10 @@ class _SwipeState extends State<Swipe> {
     if(timer.isActive) {
       timer.cancel();
     }
+
+    _algoIdSubscription?.cancel();
+    _swipeableSubscription?.cancel();
+
     super.dispose();
   }
 

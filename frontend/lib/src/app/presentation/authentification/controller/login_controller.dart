@@ -34,16 +34,6 @@ class LoginController {
       return await storage.read(key: "access_token");
   }
 
-  /*Future<void> storeSwipesLeftLogin(String swipesLeftLogin) async {
-    const FlutterSecureStorage storage = FlutterSecureStorage();
-    await storage.write(key: "swipes_left_login", value: swipesLeftLogin);
-  }
-
-  Future<String?> retrieveSwipesLeftLogin() async {
-    const FlutterSecureStorage storage = FlutterSecureStorage();
-    return await storage.read(key: "swipes_left_login");
-  }*/
-
   Future<void> storeUserId(String id) async {
     const FlutterSecureStorage storage = FlutterSecureStorage();
     await storage.write(key: "user_id", value: id);
