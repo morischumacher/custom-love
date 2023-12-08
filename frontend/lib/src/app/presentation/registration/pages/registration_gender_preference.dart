@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/presentation/registration/pages/registration_name_email.dart';
 import 'package:frontend/src/app/presentation/registration/pages/registration_pictures.dart';
+import 'package:frontend/src/app/presentation/registration/pages/widgets/birthdate_field.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/dropdown_list.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/page_title.dart';
 
@@ -86,26 +87,9 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
                         setParentValueFunction: setPreference
                     ),
                     const SizedBox(height: 19.0),
-                    TextField(
-                      controller: _dateController,
-                      readOnly: true,
-                      onTap: () {
-                        selectDate();
-                      },
-                      decoration: InputDecoration(
-                          fillColor: Colors.grey.shade200,
-                          filled: true,
-                          suffixIcon: const Icon(Icons.calendar_today),
-                          labelText: "Birthday",
-                          labelStyle: TextStyle(color: Colors.grey[500]),
-                          border: const OutlineInputBorder(),
-                          enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: _customLoveTheme.formFieldBorder)
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: _customLoveTheme.formFieldBorder)
-                          )
-                      ),
+                    BirthdateField(
+                        controller: _dateController,
+                        context: context
                     ),
                     const Spacer(),
                     Center(
@@ -122,20 +106,6 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
                 ),
               )),
         ));
-  }
-
-  Future<void> selectDate() async {
-    final today = DateTime.now();
-    DateTime? _picked = await showDatePicker(
-        context: context,
-        initialDate: DateTime(today.year - 18, today.month, today.day),
-        firstDate: DateTime(1900),
-        lastDate: DateTime(today.year - 18, today.month, today.day)
-    );
-
-    if (_picked != null) {
-      _dateController.text = _picked.toString().split(" ")[0];
-    }
   }
 
   OutlinedButton prevBtn(BuildContext context) {
@@ -169,8 +139,6 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
   }
 
   OutlinedButton nextBtn(BuildContext context) {
-    const CustomLoveTheme _customLoveTheme = CustomLoveTheme();
-
     return OutlinedButton(
       style: OutlinedButton.styleFrom(
           minimumSize: const Size(156, 56),
