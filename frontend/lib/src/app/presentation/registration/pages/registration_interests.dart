@@ -1,12 +1,10 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:frontend/src/app/presentation/home/pages/home.dart';
+import 'package:frontend/src/app/presentation/registration/controller/registration_controller.dart';
 import 'package:frontend/src/app/presentation/registration/pages/registration_pictures.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/interest.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/page_title.dart';
-import 'package:frontend/src/app/service/user_service.dart';
-import 'package:provider/provider.dart';
 
 import '../../../../config/theme.dart';
 
@@ -47,6 +45,7 @@ class _RegistrationInterestsState extends State<RegistrationInterests> {
     userInterestIdList = widget.userInterestIdList;
   }
 
+  final RegistrationController _controller = RegistrationController();
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
   late String? name;
   late String? email;
@@ -185,9 +184,28 @@ class _RegistrationInterestsState extends State<RegistrationInterests> {
           side: BorderSide.none
       ),
       onPressed: () {
+        Future<void>.value(
+            _controller.handleRegistration(
+                context,
+              name,
+              "TEST",
+              email,
+              "TEST1",
+              "TEST BIO",
+              gender,
+              preference,
+              birthdate,
+              "TEST JOB",
+              null,
+              userInterestIdList,
+              1
+            )
+        );
+        /*
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return HomeScreen(userService: Provider.of<UserService>(context));
         }));
+         */
       },
       child: const Text(
         "Create Profile",
