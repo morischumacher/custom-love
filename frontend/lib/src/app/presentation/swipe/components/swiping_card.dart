@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:swipe_cards/swipe_cards.dart';
 import 'package:frontend/src/config/theme.dart';
 
+import '../util/interests.dart';
+
 class SwipingCard extends StatelessWidget {
 
   const SwipingCard({
@@ -74,8 +76,8 @@ class SwipingCard extends StatelessWidget {
                                           style: const TextStyle(fontSize: kIsWeb ? 16 : 14, fontWeight: FontWeight.bold),
                                         ),
                                       ),
-                                      SizedBox(width: kIsWeb ? width * 0.25 : width * 0.15),
-                                      locationWidget(),
+                                      SizedBox(width: kIsWeb ? width * 0.20 : width * 0.15),
+                                      locationWidget(_swipeItem.content.city),
                                     ],
                                 ),
                                  ),
@@ -86,28 +88,17 @@ class SwipingCard extends StatelessWidget {
                                     child: Wrap(
                                       spacing: 25,
                                       runSpacing: 4,
-                                      children: List<Widget>.generate(_swipeItem.content.interests.length,
+                                      children: _swipeItem.content.interests.length > 0 ? List<Widget>.generate(_swipeItem.content.interests.length,
                                             (int i) {
-                                          Icon avatar;
-                                          if (_swipeItem.content.interests[i] == "sport") {
-                                            avatar = Icon(Icons.sports_soccer, color: _customLoveTheme.primaryColor);
-                                          } else if (_swipeItem.content.interests[i] == "reading") {
-                                            avatar = Icon(Icons.book, color: _customLoveTheme.primaryColor);
-                                          } else if (_swipeItem.content.interests[i] == "movies") {
-                                            avatar = Icon(Icons.movie, color: _customLoveTheme.primaryColor);
-                                          } else if (_swipeItem.content.interests[i] == "IT") {
-                                            avatar = Icon(Icons.laptop, color: _customLoveTheme.primaryColor);
-                                          } else {
-                                            avatar = Icon(Icons.favorite, color: _customLoveTheme.primaryColor);
-                                          }
+                                          Icon avatar = Interests.getIcon(_swipeItem.content.interests[i]["name"]);
                                           return ActionChip(
                                             side: BorderSide(width: 1.5, color: _customLoveTheme.primaryColor),
                                             avatar: avatar,
-                                            label: Text(_swipeItem.content.interests[i]),
+                                            label: Text(_swipeItem.content.interests[i]["name"]),
                                             onPressed: () {},
                                           );
                                         },
-                                      ),
+                                      ) : [Container()],
                                     ),
                                   ),
                                 ),
@@ -183,12 +174,12 @@ class SwipingCard extends StatelessWidget {
     );
     }
 
-    Widget locationWidget() {
-      return const Row(
+    Widget locationWidget(city) {
+      return Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [Icon(Icons.location_on, size: 18),
         Text(
-          "Location: ",
+          "Location: $city",
           style: TextStyle(fontSize: kIsWeb ? 16 : 14, fontWeight: FontWeight.bold),
         )],);
     }
