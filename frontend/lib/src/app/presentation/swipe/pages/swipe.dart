@@ -155,22 +155,19 @@ class _SwipeState extends State<Swipe> {
     }
 
     if (swipingAlgoId == 1) {
-       print("Random swiping algorithm is used");
-       String accessToken = await _controller.retrieveAccessToken() as String;
-       await widget.userService.getAlgoUser(accessToken, swipingAlgoId).then((User? user) {
-         _setSwipingCard(user);
-       }).whenComplete(() {
-         isLoading = false;
-       });
+      print("Random swiping algorithm is used");
+    } else if (swipingAlgoId == 2) {
+      print("Interest-based swiping algorithm is used");
     } else if (swipingAlgoId == 3) {
       print("Preference-based swiping algorithm is used");
-      String accessToken = await _controller.retrieveAccessToken() as String;
-      await widget.userService.getAlgoUser(accessToken, swipingAlgoId).then((User? user) {
-        _setSwipingCard(user);
-      }).whenComplete(() {
-        isLoading = false;
-      });
     }
+
+    String accessToken = await _controller.retrieveAccessToken() as String;
+    await widget.userService.getAlgoUser(accessToken, swipingAlgoId).then((User? user) {
+      _setSwipingCard(user);
+    }).whenComplete(() {
+      isLoading = false;
+    });
 
   }
 

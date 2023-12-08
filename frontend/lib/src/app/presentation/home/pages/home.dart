@@ -47,13 +47,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         Navigator.pop(context);
                         SharedAlgorithmEvent.algoId.changeAlgoId(1);
                         print("broadcast happened");
-                        /*_controller.retrieveAccessToken().then((String? accessToken) {
-                            if (accessToken != null) {
-                               print("accessTOKEN: $accessToken");
-                            } else {
-                               print("accessTOKEN not available");
-                            }
-                        });*/
                       },
                     ),
                   ),
@@ -64,6 +57,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       onTap: () {
                         print("selected");
                         Navigator.pop(context);
+                        SharedAlgorithmEvent.algoId.changeAlgoId(2);
+                        print("broadcast happened");
                       },
                     ),
                   ),
@@ -74,6 +69,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       onTap: () {
                         print("selected");
                         Navigator.pop(context);
+                        SharedAlgorithmEvent.algoId.changeAlgoId(3);
+                        print("broadcast happened");
                       },
                     ),
                   )
