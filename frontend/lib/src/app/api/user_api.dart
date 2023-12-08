@@ -15,20 +15,16 @@ class UserApi extends PaginatedApi<User> {
   final logger = Logger();
   Random random = Random();
 
-  UserApi(http.Client client): super(client, "users/", UserFactory());
-  UserApi.url(http.Client client, String urlParams): super(client, "users/$urlParams", UserFactory());
-
+  UserApi(http.Client client) : super(client, "users/", UserFactory());
+  UserApi.url(http.Client client, String urlParams)
+      : super(client, "users/$urlParams", UserFactory());
 
   @override
-  UserApi copyWith(String urlParams) =>
-      UserApi.url(
-          client,
-          urlParams
-      );
+  UserApi copyWith(String urlParams) => UserApi.url(client, urlParams);
 
   Future<User> getUser(var id) async {
     final response =
-    await super.client.get(Uri.parse('${ApiConfig.baseUrl}/users/$id'));
+        await super.client.get(Uri.parse('${ApiConfig.baseUrl}/users/$id'));
 
     if (response.statusCode == 200) {
       var tmp = json.decode(response.body);
@@ -38,7 +34,6 @@ class UserApi extends PaginatedApi<User> {
       // TODO: Add custom exception
       throw Exception('Failed to fetch user');
     }
-
   }
 
   Future<User> updateUserLocation(
@@ -95,7 +90,8 @@ class UserApi extends PaginatedApi<User> {
 
   Future<User> getAlgoUser(var accessToken, int algoId) async {
     final response = await http.get(
-      Uri.parse('${ApiConfig.baseUrl}/users/algo/$algoId?algoId=1&page=1&size=50'),
+      Uri.parse(
+          '${ApiConfig.baseUrl}/users/algo/{algoId}?algoId=$algoId&page=1&size=50'),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
         'accept': 'application/json',
