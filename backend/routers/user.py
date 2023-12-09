@@ -12,7 +12,7 @@ from backend.services.user import patch_user, get_algo_user, UserUpdate, get_use
 router = APIRouter(prefix='/users', tags=['users'], responses={status.HTTP_200_OK: {"description": "Success"}})
 
 
-@router.get("/", response_model=Page[User])
+@router.get('', response_model=Page[User])
 async def get_users(commons: Annotated[Page[User], Depends(get_users)]):
     """
     Retrieves all users, with whom the querying user has a match
