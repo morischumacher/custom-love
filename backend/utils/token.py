@@ -8,6 +8,7 @@ from sqlmodel import Session, select
 from backend.exceptions.credentials_exception import CredentialsException
 from backend.models.user import User
 from backend.repository.repository import create_session
+from backend.responses.user_response import UserResponse
 
 SECRET_KEY = "2c0fb37921906f1614f8f5905af837942b4672aa82943ac5058591a130a2a4aa"
 ALGORITHM = "HS256"
@@ -18,6 +19,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="users/login")
 class Token(BaseModel):
     access_token: str
     token_type: str
+    user: UserResponse
 
 
 def create_access_token(data: dict, expiration_minutes=ACCESS_TOKEN_EXPIRE_MINUTES):

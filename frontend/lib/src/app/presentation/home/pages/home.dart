@@ -1,7 +1,9 @@
+import 'dart:html';
+
 import 'package:flutter/material.dart';
+import 'package:frontend/src/app/presentation/chat/pages/conversation.dart';
 import 'package:frontend/src/app/presentation/swipe/util/shared_algorithm_event.dart';
 import 'package:frontend/src/config/theme.dart';
-import 'package:frontend/src/app/presentation/match/pages/matches.dart';
 import 'package:frontend/src/app/presentation/profile/pages/profile.dart';
 import 'package:frontend/src/app/presentation/swipe/pages/swipe.dart';
 import 'package:frontend/src/app/service/user_service.dart';
@@ -22,7 +24,28 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  AppPage _currentPage = AppPage.Swipe;
+  @override
+  void initState() {
+    super.initState();
+    var url = window.location.href;
+    List<String> urlSubsections = url.split("/");
+    String subRoute = urlSubsections[urlSubsections.length - 1].toLowerCase();
+    switch(subRoute) {
+      case 'profile':
+        _currentPage = AppPage.Profile;
+        break;
+      case 'swipe':
+        _currentPage = AppPage.Swipe;
+        break;
+      case 'matches':
+        _currentPage = AppPage.Matches;
+        break;
+      default:
+        _currentPage = AppPage.Profile;
+    }
+  }
+
+  late AppPage _currentPage;
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
   final LoginController _controller = LoginController();
 
@@ -86,9 +109,10 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentPage.index,
         onTap: (int index) {
-          setState(() {
-            _currentPage = AppPage.values[index];
-          });
+          String str = AppPage.values[index].toString();
+          String subRouteName = str.split(".")[1].toLowerCase();
+          String subRoute = '/home/$subRouteName';
+          Navigator.pushNamed(context, subRoute);
         },
         unselectedItemColor: Colors.grey,
         selectedItemColor: _customLoveTheme.primaryColor,
@@ -117,7 +141,7 @@ class _HomeScreenState extends State<HomeScreen> {
       case AppPage.Swipe:
         return Swipe(userService: context.read<UserService>());
       case AppPage.Matches:
-        return const Matches();
+        return const ConversationsPage();
     }
   }
 }
