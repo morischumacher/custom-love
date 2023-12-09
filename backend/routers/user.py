@@ -8,7 +8,8 @@ from backend.models.expert_system import ExpertSystem
 from backend.responses.error_response import ErrorResponse
 from backend.utils.pagination import Page
 from backend.utils.token import Token
-from backend.services.user import patch_user, get_algo_user, UserUpdate, get_user, post_user, get_users, login
+from backend.services.user import patch_user, get_algo_user, UserUpdate, get_user, post_user, get_users, login, \
+    websocket_connect
 from backend.services.expert_system import get_expert_system_by_user_id, update_expert_system
 
 router = APIRouter(prefix='/users', tags=['users'], responses={status.HTTP_200_OK: {"description": "Success"}})
@@ -78,3 +79,6 @@ def get_algo_user(commons: Annotated[User, Depends(get_algo_user)]):
     return commons
 
 
+@router.websocket("/socket/{user_token}")
+async def socket(commons: Annotated[dict, Depends(websocket_connect)]):
+    return commons

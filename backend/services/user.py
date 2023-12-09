@@ -10,17 +10,23 @@ from shapely import geometry, wkt
 from sqlalchemy import func, or_, and_
 from sqlmodel import Session, select
 from starlette.requests import Request
+from starlette.websockets import WebSocket, WebSocketDisconnect
+
 from backend.algo.exsys import ExSys
 from backend.exceptions.bad_request_exception import BadRequestException
 from backend.exceptions.credentials_exception import CredentialsException
 from backend.exceptions.not_found_exception import NotFoundException
 from backend.exceptions.validation_exception import ValidationException
+from backend.models.message import Message, message_factory
 from backend.models.swipe_status import SwipeStatus, SwipeStatusType
 from backend.models.user import User
 from backend.repository.repository import create_session
 from backend.responses.user_response import UserResponse
+from backend.services.message import _save_message
 from backend.services.validation.user_validation import validate_new_user
 from backend.utils import passwords
+from backend.utils.connection_manager import connection_manager
+from backend.utils.logger import Logger
 from backend.utils.pagination import PaginationParams
 from backend.utils.token import create_access_token, get_current_user
 from backend.services.expert_system import get_expert_system_by_user_id
@@ -225,3 +231,18 @@ def db_user_to_response_model_user(user, interests):
         gender_identity_id=user.gender_identity_id,
         interests=interests_list
     )
+
+
+async def websocket_connect(websocket: WebSocket, user_token: str, db: Annotated[Session, Depends(create_session)]):
+    user: User = get_current_user(user_token, db)
+    Logger.debug(f"[websocket_connect]: connected on a websocket: {websocket} with the user: {user.id}")
+
+    await connection_manager.connect(websocket, user.id)
+    try:
+        while True:
+            data: Message = message_factory(await websocket.receive_json())
+            Logger.debug(f"[websocket_connect]: received a message from: user #{user.id}, contents: {data}")
+            data = _save_message(data, db)
+            await connection_manager.send_message(data.receiver_id, data)
+    except WebSocketDisconnect:
+        connection_manager.disconnect(websocket, user.id)

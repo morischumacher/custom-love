@@ -67,7 +67,7 @@ class LoginController {
               messageService,
               matchService
           ));
-          Provider.of<StateManager>(context, listen: false).user = User.fromJson(loginResult['user']);
+          Provider.of<StateManager>(context, listen: false).registerUser(User.fromJson(loginResult['user']));
 
           Navigator.of(context).pushNamed('/home');
         }

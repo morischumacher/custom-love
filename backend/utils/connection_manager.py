@@ -47,3 +47,6 @@ class ConnectionManager:
         # send to every the given user's every open socket
         for socket in self.active_connections.get(receiver_id):
             await socket.send_json(message.json())
+
+
+connection_manager = ConnectionManager()
