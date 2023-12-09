@@ -44,7 +44,7 @@ class LoginController {
         // If login is successful, navigate to '/home'
         if (context.mounted) {
           userService.updateCurrentUserLocation(userLocation!, accessToken);
-          Navigator.of(context).pushNamed('/home/profile');
+          Navigator.of(context).pushNamed('/home/swipe');
         }
       } catch (e) {
         // Handle different exceptions
