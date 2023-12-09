@@ -45,8 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  AppPage _currentPage = AppPage.Swipe;
-  // AppPage? _currentPage;
+  late AppPage _currentPage;
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
   final LoginController _controller = LoginController();
 
@@ -109,13 +108,6 @@ class _HomeScreenState extends State<HomeScreen> {
       body: getPage(_currentPage),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentPage.index,
-        /*
-        onTap: (int index) {
-          setState(() {
-            _currentPage = AppPage.values[index];
-          });
-        },
-         */
         onTap: (int index) {
           String str = AppPage.values[index].toString();
           String subRouteName = str.split(".")[1].toLowerCase();
