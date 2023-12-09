@@ -1,3 +1,4 @@
+import 'package:flutter/rendering.dart';
 import "package:universal_html/html.dart" as universal_html;
 import 'package:flutter/foundation.dart' show kIsWeb;
 
@@ -25,9 +26,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  late bool isOnSwipePage;
+
   @override
   void initState() {
     super.initState();
+    isOnSwipePage = false;
     var url = universal_html.window.location.href;
     List<String> urlSubsections = url.split("/");
     String subRoute = urlSubsections[urlSubsections.length - 1].toLowerCase();
@@ -56,10 +60,11 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text('Custom Love App'),
         backgroundColor: _customLoveTheme.primaryColor,
-        actions: [
+        actions: [ _currentPage.index == 1 ?
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 30),
             child: PopupMenuButton(
+                color: _customLoveTheme.neutralBackgroundColor,
                 icon: const Icon(Icons.tune, size: 28, color: Colors.black,),
                 itemBuilder: (BuildContext context) => [
                   PopupMenuItem(
@@ -100,7 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   )
                 ]
             ),
-          ),
+          ) : Container(),
         ],
       ),
       body: getPage(_currentPage),
