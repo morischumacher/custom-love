@@ -238,6 +238,7 @@ def db_user_to_response_model_user(user, interests):
         job=user.job,
         search_radius=user.search_radius,
         swipes_left=user.swipes_left,
+        swipe_limit_reset_date=user.swipe_limit_reset_date,
         latitude=user.latitude,
         longitude=user.longitude,
         gender_identity_id=user.gender_identity_id,

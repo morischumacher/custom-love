@@ -14,7 +14,7 @@ from backend.services.expert_system import get_expert_system_by_user_id, update_
 router = APIRouter(prefix='/users', tags=['users'], responses={status.HTTP_200_OK: {"description": "Success"}})
 
 
-@router.get("/", response_model=Page[UserResponse])
+@router.get("", response_model=Page[UserResponse])
 async def get_users(commons: Annotated[Page[User], Depends(get_users)]):
     """
     Retrieves all users, with whom the querying user has a match

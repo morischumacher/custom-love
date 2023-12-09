@@ -15,9 +15,9 @@ class UserApi extends PaginatedApi<User> {
   final logger = Logger();
   Random random = Random();
 
-  UserApi(http.Client client) : super(client, "users/", UserFactory());
+  UserApi(http.Client client) : super(client, "users", UserFactory());
   UserApi.url(http.Client client, String urlParams)
-      : super(client, "users/$urlParams", UserFactory());
+      : super(client, "users$urlParams", UserFactory());
 
   @override
   UserApi copyWith(String urlParams) => UserApi.url(client, urlParams);

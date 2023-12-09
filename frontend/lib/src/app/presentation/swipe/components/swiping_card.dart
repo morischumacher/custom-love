@@ -196,10 +196,10 @@ class SwipingCard extends StatelessWidget {
     Widget locationWidget(city) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.start,
-        children: [Icon(Icons.location_on, size: 18),
+        children: [const Icon(Icons.location_on, size: 18),
         Text(
           "Location: $city",
-          style: TextStyle(fontSize: kIsWeb ? 16 : 14, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: kIsWeb ? 16 : 14, fontWeight: FontWeight.bold),
         )],);
     }
 

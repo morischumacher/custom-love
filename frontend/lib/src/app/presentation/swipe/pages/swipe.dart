@@ -165,8 +165,10 @@ class _SwipeState extends State<Swipe> {
     }
 
     String accessToken = await _controller.retrieveAccessToken() as String;
-    await widget.userService.getAlgoUser(accessToken, swipingAlgoId).then((User? user) {
-      _setSwipingCard(user);
+    await widget.userService.getAlgoUser(accessToken, swipingAlgoId).then((User? user) async {
+      var city = await _locationService.getCurrentLocation(
+          user!.latitude, user.longitude);
+      _setSwipingCard(user, city);
     }).whenComplete(() {
       isLoading = false;
     });
@@ -186,6 +188,10 @@ class _SwipeState extends State<Swipe> {
       if (mounted) {
         setState(() {
           var firstName = user.firstName;
+          List<dynamic>? interests = [];
+          if (user.interests != null) {
+            interests = user.interests;
+          }
           var birthDate = DateTime.parse(user.date_of_birth);
           var birthYear = birthDate.year;
           var todayDate = DateTime.now();
@@ -209,11 +215,7 @@ class _SwipeState extends State<Swipe> {
           });
 
           _swipeItem = SwipeItem(
-            content: Content(firstName: firstName, age: age, languages: _cards
-                .elementAt(0)
-                .languages, bio: user.bio, interests: _cards
-                .elementAt(0)
-                .interests),
+            content: Content(firstName: firstName, age: age, city: city, bio: user.bio, interests: interests),
             likeAction: () {
               _loadNextUser();
             },
