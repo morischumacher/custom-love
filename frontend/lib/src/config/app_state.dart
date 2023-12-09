@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -8,6 +9,7 @@ import 'package:frontend/src/app/service/match_service.dart';
 import 'package:frontend/src/app/service/message_service.dart';
 import 'package:frontend/src/app/service/user_service.dart';
 import 'package:frontend/src/config/api_config.dart';
+import 'package:frontend/src/config/exceptions.dart';
 import 'package:provider/provider.dart';
 
 import '../app/api/helpers/jwt_api.dart';
@@ -43,18 +45,12 @@ class MatchStorage extends CollectionStorage {
 class StateManager extends ChangeNotifier {
   User? user;
   WebSocketChannel? socket;
+  bool connected = false;
+  int loginRetries = 10;
 
   Future<void> registerUser(User user, BuildContext buildContext) async {
     // save the current user
     this.user = user;
-
-    // get the token
-    String? token = await JWTApi.retrieveAccessToken();
-
-    // subscribe to a websocket
-    socket = WebSocketChannel.connect(
-      Uri.parse("${ApiConfig.socketsUrl}/users/socket/$token")
-    );
 
     if (!buildContext.mounted) return;
     await connect(buildContext);
@@ -156,6 +152,14 @@ class StateManager extends ChangeNotifier {
   }
 
   Future<void> connect(BuildContext buildContext) async {
+    // get the token
+    String? token = await JWTApi.retrieveAccessToken();
+
+    // subscribe to a websocket
+    socket = WebSocketChannel.connect(
+        Uri.parse("${ApiConfig.socketsUrl}/users/socket/$token")
+    );
+
     socket?.stream.listen(
       (event) {
         NotificationModel notification = NotificationModel.fromJson(event);
@@ -165,14 +169,64 @@ class StateManager extends ChangeNotifier {
         }
       },
       onDone: () {
+        // ignore the callback when the closeCode is null
+        // the event will be handled in the onError callback
+        if (socket?.closeCode == null) {
+          // do nothing
+          print("onDone did nothing");
+          return;
+        }
+
+        // update the connected flag
+        connected = false;
+        notifyListeners();
+
         if (socket?.closeReason == "logout") {
           user = null;
           Navigator.of(buildContext).pushNamed(
             "/logout",
             arguments: const LogoutRouteArguments("You have logged in on more than 10 devices. You have been logged out of this device"),
           );
+
+          return;
         }
+
+        // reconnect to the webSocket if the connection has been closed
+        unawaited(connect(buildContext));
+      },
+      onError: (error) {
+        // update the connected flag
+        connected = false;
+        notifyListeners();
+
+        // if the retry threshold has been exceeded, logout
+        if (loginRetries <= 0) {
+          loginRetries = 10;
+          user = null;
+          Navigator.of(buildContext).pushNamed(
+            "/logout",
+            arguments: const LogoutRouteArguments("The server is unreachable, you have been logged out."),
+          );
+
+          return;
+        }
+
+        // TODO: there should be a sleep(x seconds)
+        // TODO: implement a background worker
+        loginRetries -= 1;
+
+        // try to reconnect to the socket
+        unawaited(connect(buildContext));
       }
     );
+
+    // set the connected flag to true
+    try {
+      await socket?.ready;
+      connected = true;
+      notifyListeners();
+    } catch(e) {
+      // do nothing
+    }
   }
 }
