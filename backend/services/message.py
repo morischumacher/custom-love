@@ -103,12 +103,17 @@ def sockets_test(username: str, receiver_username: str, db: Annotated[Session, D
                 };
                 function sendMessage(event) {
                     var input = document.getElementById("messageText")
-                    var content = JSON.stringify({
-                        "conversation_id": %%CONVERSATION_ID%%,
-                        "sender_id": %%SENDER_ID%%, 
-                        "receiver_id": %%RECEIVER_ID%%, 
-                        "message": input.value
-                    })
+                    var content = JSON.stringify(
+                        {
+                            "type": "message",
+                            "content": {
+                                "conversation_id": %%CONVERSATION_ID%%,
+                                "sender_id": %%SENDER_ID%%, 
+                                "receiver_id": %%RECEIVER_ID%%, 
+                                "message": input.value
+                            }
+                        }
+                    )
                     console.log(content)
                     ws.send(content)
                     input.value = ''

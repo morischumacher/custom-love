@@ -23,6 +23,7 @@ from backend.models.message import Message, message_factory
 from backend.models.swipe_status import SwipeStatus, SwipeStatusType
 from backend.models.user import User
 from backend.repository.repository import create_session
+from backend.responses.notification import Notification, NotificationType
 from backend.responses.user_response import UserResponse
 from backend.services.message import _save_message
 from backend.services.validation.user_validation import validate_new_user
@@ -253,9 +254,20 @@ async def websocket_connect(websocket: WebSocket, user_token: str, db: Annotated
     await connection_manager.connect(websocket, user.id)
     try:
         while True:
-            data: Message = message_factory(await websocket.receive_json())
-            Logger.debug(f"[websocket_connect]: received a message from: user #{user.id}, contents: {data}")
-            data = _save_message(data, db)
-            await connection_manager.send_message(data.receiver_id, data)
+            notification: Notification = Notification(await websocket.receive_json())
+            # data: Message = message_factory(await websocket.receive_json())
+            Logger.debug(f"[websocket_connect]: received a notification from: user #{user.id}, contents: {notification}")
+
+            if notification.type == NotificationType.message:
+                message: Message = message_factory(notification.content)
+                message = _save_message(message, db)
+                notification.content = message.json()
+
+                # send the message to the receiver
+                await connection_manager.send_notification(message.receiver_id, notification)
+
+                # send the message to all devices of the sender
+                await connection_manager.send_notification(message.sender_id, notification)
+
     except WebSocketDisconnect:
         connection_manager.disconnect(websocket, user.id)

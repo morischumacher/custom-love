@@ -73,16 +73,13 @@ class LoginController {
 
           // load users, conversations, matches and first messages
           unawaited(Provider.of<StateManager>(context, listen: false).initialize(
-              Provider.of<UserStorage>(context, listen: false),
-              Provider.of<ConversationStorage>(context, listen: false),
-              Provider.of<MessageStorage>(context, listen: false),
-              Provider.of<MatchStorage>(context, listen: false),
-              userService,
-              conversationService,
-              messageService,
-              matchService
+              context
           ));
-          Provider.of<StateManager>(context, listen: false).registerUser(User.fromJson(loginResult['user']));
+
+          // save the user object and connect to a websocket
+          Provider.of<StateManager>(context, listen: false).registerUser(
+              User.fromJson(loginResult['user']), context
+          );
 
           Navigator.of(context).pushNamed('/home/swipe');
         }
