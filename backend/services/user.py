@@ -180,6 +180,8 @@ def get_swipeable_user(user, db):
     )
     return db.exec(query).fetchall()
 
+    # Execute the query
+    result = db.exec(query)
 
 def get_algo_user(algoId: int, user: Annotated[User, Depends(get_current_user)],
                   db: Annotated[Session, Depends(create_session)],
