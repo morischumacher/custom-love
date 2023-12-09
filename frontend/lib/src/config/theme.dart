@@ -23,6 +23,7 @@ class CustomLoveTheme extends ThemeExtension<CustomLoveTheme> {
   });
 
   final Color primaryColor, tertiaryColor, neutralColor, textColor, neutralBackgroundColor;
+  final Color grayscale1, grayscale2, whiteColor;
   final Color formFieldBorder, selected;
   final double inputWidth, inputHeight;
   final InputDecoration? textFieldDecoration;
