@@ -16,6 +16,7 @@ class UserResponse(BaseModel):
     job: str
     search_radius: int
     swipes_left: int
+    swipe_limit_reset_date: datetime
     latitude: Optional[float]
     longitude: Optional[float]
     gender_identity_id: Optional[int] = None

@@ -2,33 +2,45 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/src/app/presentation/swipe/util/shared_swipeable_event.dart';
 import 'package:swipe_cards/swipe_cards.dart';
 import 'package:frontend/src/config/theme.dart';
 
 import '../util/interests.dart';
 
-class SwipingCard extends StatelessWidget {
+import '../../../service/user_service.dart';
+import '../../authentification/controller/login_controller.dart';
+import '../util/swipes_left.dart';
 
-  const SwipingCard({
+class SwipingCard extends StatelessWidget {
+  final LoginController controller;
+  final UserService userService;
+
+  SwipingCard({
     super.key,
     required MatchEngine? matchEngine,
     required CustomLoveTheme customLoveTheme,
     required SwipeItem swipeItem,
-    required this.swipeable,
+    required this.swipeable, swipeableTimer, userId, required this.controller, required this.userService,
   })
       : _matchEngine = matchEngine,
         _customLoveTheme = customLoveTheme,
-        _swipeItem = swipeItem;
+        _swipeItem = swipeItem,
+        _swipeableTimer = swipeableTimer,
+        _userId = userId;
 
   final MatchEngine? _matchEngine;
   final CustomLoveTheme _customLoveTheme;
   final SwipeItem _swipeItem;
-  final bool swipeable;
+  bool swipeable = false;
+  bool _swipeableTimer;
+  final int _userId;
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = min(MediaQuery.of(context).size.width, 750);
+
     return SafeArea(
       child: Container(
           alignment: Alignment.center,
@@ -143,12 +155,19 @@ class SwipingCard extends StatelessWidget {
                       )
                   );
                 },
-                onStackFinished: () {},
+                onStackFinished: () async {
+                  int swipingsLeftInt = await SwipesLeft.updateSwipeLeft(controller, userService);
+                  if (swipingsLeftInt > 0) {
+                    SharedSwipeableEvent.swipeable.changeSwipeable(true);
+                  } else {
+                    SharedSwipeableEvent.swipeable.changeSwipeable(false);
+                  }
+                },
                 itemChanged: (SwipeItem item, int index) {
                   print("item: ${item.content.firstName}, index: $index");
                 },
-                leftSwipeAllowed: swipeable,
-                rightSwipeAllowed: swipeable,
+                leftSwipeAllowed: _swipeableTimer ? swipeable : false,
+                rightSwipeAllowed: _swipeableTimer ? swipeable : false,
                 fillSpace: true,
                 likeTag: Container(
                   margin: const EdgeInsets.all(15.0),
@@ -177,10 +196,10 @@ class SwipingCard extends StatelessWidget {
     Widget locationWidget(city) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.start,
-        children: [Icon(Icons.location_on, size: 18),
+        children: [const Icon(Icons.location_on, size: 18),
         Text(
           "Location: $city",
-          style: TextStyle(fontSize: kIsWeb ? 16 : 14, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: kIsWeb ? 16 : 14, fontWeight: FontWeight.bold),
         )],);
     }
 
@@ -193,9 +212,13 @@ class SwipingCard extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           ElevatedButton(
-              onPressed: () {
-                if(swipeable) {
-                  _matchEngine!.currentItem?.nope();
+              onPressed: () async {
+                if(_swipeableTimer) {
+                  int tmpSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(_userId, userService);
+                  if(tmpSwipesLeft > 0) {
+                    _matchEngine!.currentItem?.nope();
+                    await SwipesLeft.updateSwipeLeft(controller, userService);
+                  }
                 }
               },
               style: ElevatedButton.styleFrom(
@@ -205,9 +228,13 @@ class SwipingCard extends StatelessWidget {
               child: Icon(Icons.close, size: buttonSize, color: _customLoveTheme.textColor)),
           SizedBox(width: width * 0.1),
           ElevatedButton(
-              onPressed: () {
-                if(swipeable) {
-                  _matchEngine!.currentItem?.like();
+              onPressed: () async {
+                if(_swipeableTimer) {
+                  int tmpSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(_userId, userService);
+                  if(tmpSwipesLeft > 0) {
+                    _matchEngine!.currentItem?.like();
+                    await SwipesLeft.updateSwipeLeft(controller, userService);
+                  }
                 }
               },
               style: ElevatedButton.styleFrom(

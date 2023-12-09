@@ -3,6 +3,7 @@ from sqlalchemy.engine import Engine
 from sqlmodel import Session, select
 from backend.models.conversation import Conversation
 from backend.models.gender_identity import GenderIdentity
+from backend.models.interest import Interest
 from backend.models.language import Language
 from backend.models.message import Message
 from backend.models.preference import Preference
@@ -37,7 +38,29 @@ class DataGenerator:
     # TODO: Modularize Languages, Preferences etc.
     def __generate_users(self):
         with Session(self.engine) as session:
-            
+
+
+            sports= Interest(name="sports", icon="icon1")
+            movies= Interest(name="movies", icon="icon2")
+            travel= Interest(name="travel", icon="icon3")
+            books= Interest(name="books", icon="icon4")
+            science= Interest(name="science", icon="icon5")
+            music= Interest(name="music", icon="icon6")
+            art= Interest(name="art", icon="icon7")
+            food= Interest(name="food", icon="icon8")
+            technology= Interest(name="technology", icon="icon9")
+            fashion= Interest(name="fashion", icon="icon10")
+            photography= Interest(name="photography", icon="icon11")
+            gaming= Interest(name="gaming", icon="icon12")
+            nature= Interest(name="nature", icon="icon13")
+            history= Interest(name="history", icon="icon14")
+            fitness= Interest(name="fitness", icon="icon15")
+            crafts= Interest(name="crafts", icon="icon16")
+            writing= Interest(name="writing", icon="icon17")
+            gardening= Interest(name="gardening", icon="icon18")
+            philosophy= Interest(name="philosophy", icon="icon19")
+            coding= Interest(name="coding", icon="icon20")
+
 
             # Preferences
             preference_1: Preference = Preference(property_1="property1", property_2="property4", decision="decision1",
@@ -104,11 +127,12 @@ class DataGenerator:
                 job='Software Engineer',
                 search_radius=200,
                 swipes_left=10,
+                swipe_limit_reset_date=datetime.today(),
                 languages=[language_dict.get("english")],
                 preferences=[preference_1],
                 gender_preferences=[woman],
                 gender_identity=man,
-                interests=[interests_dict.get("sports"), interests_dict.get("movies")],
+                interests=[sports, movies],
                 password=hash_pwd("pass1"),
                 latitude=48.227982,
                 longitude=16.372316
@@ -122,11 +146,12 @@ class DataGenerator:
                 job='Data Scientist',
                 search_radius=50,
                 swipes_left=5,
+                swipe_limit_reset_date=datetime.today(),
                 languages=[language_dict.get("english"), language_dict.get("french"), language_dict.get("german")],
                 preferences=[preference_1, preference_2],
                 gender_preferences=[woman, man],
                 gender_identity=woman,
-                interests=[interests_dict.get("travel"), interests_dict.get("books"), interests_dict.get("science")],
+                interests=[travel, books, science],
                 password=hash_pwd("pass1"),
                 latitude=48.215178,
                 longitude=16.354447
@@ -140,11 +165,12 @@ class DataGenerator:
                 job='Civil Engineer',
                 search_radius=20,
                 swipes_left=2,
+                swipe_limit_reset_date=datetime.today(),
                 languages=[language_dict.get("french"), language_dict.get("german")],
                 gender_preferences=[woman],
                 preferences=[preference_2],
                 gender_identity=divers,
-                interests=[interests_dict.get("science")],
+                interests=[science],
                 password=hash_pwd("pass1"),
                 latitude=48.172097,
                 longitude=16.294326
@@ -159,11 +185,12 @@ class DataGenerator:
                 job='Graphic Designer',
                 search_radius=30,
                 swipes_left=8,
+                swipe_limit_reset_date=datetime.today(),
                 languages=[language_dict.get("english"), language_dict.get("german")],
                 preferences=[preference_2],
                 gender_preferences=[man],
                 gender_identity=man,
-                interests=[interests_dict.get("music"), interests_dict.get("art"), interests_dict.get("technology")],
+                interests=[music, art, technology],
                 password=hash_pwd("pass1"),
                 latitude=48.208174,
                 longitude=16.373819
@@ -178,11 +205,12 @@ class DataGenerator:
                 job='Marketing Specialist',
                 search_radius=40,
                 swipes_left=12,
+                swipe_limit_reset_date=datetime.today(),
                 languages=[language_dict.get("english"), language_dict.get("french")],
                 preferences=[preference_1, preference_2],
                 gender_preferences=[woman, man],
                 gender_identity=woman,
-                interests=[interests_dict.get("food"), interests_dict.get("fashion"), interests_dict.get("photography")],
+                interests=[food, fashion, photography],
                 password=hash_pwd("pass1"),
                 latitude=48.200519,
                 longitude=16.369796
@@ -197,11 +225,12 @@ class DataGenerator:
                 job='Architect',
                 search_radius=25,
                 swipes_left=15,
+                swipe_limit_reset_date=datetime.today(),
                 languages=[language_dict.get("german")],
                 preferences=[preference_1],
                 gender_preferences=[woman],
                 gender_identity=divers,
-                interests=[interests_dict.get("nature"), interests_dict.get("history"), interests_dict.get("fitness")],
+                interests=[nature, history, fitness],
                 password=hash_pwd("pass1"),
                 latitude=48.213185,
                 longitude=16.377086
@@ -216,11 +245,12 @@ class DataGenerator:
                 job='Professional Golfer',
                 search_radius=15,
                 swipes_left=20,
+                swipe_limit_reset_date=datetime.today(),
                 languages=[language_dict.get("english")],
                 preferences=[preference_1],
                 gender_preferences=[man],
                 gender_identity=man,
-                interests=[interests_dict.get("sports"), interests_dict.get("travel")],
+                interests=[sports, travel],
                 password=hash_pwd("pass1"),
                 latitude=48.225241,
                 longitude=16.366003
@@ -235,11 +265,12 @@ class DataGenerator:
                 job='Hotel Manager',
                 search_radius=10,
                 swipes_left=5,
+                swipe_limit_reset_date=datetime.today(),
                 languages=[language_dict.get("english"), language_dict.get("german")],
                 preferences=[preference_2],
                 gender_preferences=[woman],
                 gender_identity=woman,
-                interests=[interests_dict.get("travel"), interests_dict.get("books"), interests_dict.get("technology")],
+                interests=[travel, books, technology],
                 password=hash_pwd("pass1"),
                 latitude=48.214828,
                 longitude=16.371755
@@ -254,11 +285,12 @@ class DataGenerator:
                 job='Journalist',
                 search_radius=35,
                 swipes_left=10,
+                swipe_limit_reset_date=datetime.today(),
                 languages=[language_dict.get("english"), language_dict.get("french")],
                 preferences=[preference_1, preference_2],
                 gender_preferences=[woman, man],
                 gender_identity=woman,
-                interests=[interests_dict.get("writing"), interests_dict.get("photography")],
+                interests=[writing, photography],
                 password=hash_pwd("pass1"),
                 latitude=48.220692,
                 longitude=16.376215
@@ -273,11 +305,12 @@ class DataGenerator:
                 job='Chef',
                 search_radius=18,
                 swipes_left=15,
+                swipe_limit_reset_date=datetime.today(),
                 languages=[language_dict.get("english"), language_dict.get("german")],
                 preferences=[preference_1],
                 gender_preferences=[man],
                 gender_identity=man,
-                interests=[interests_dict.get("food"), interests_dict.get("gardening")],
+                interests=[food, gardening],
                 password=hash_pwd("pass1"),
                 latitude=48.204692,
                 longitude=16.361950
@@ -292,11 +325,12 @@ class DataGenerator:
                 job='Environmental Scientist',
                 search_radius=25,
                 swipes_left=12,
+                swipe_limit_reset_date=datetime.today(),
                 languages=[language_dict.get("english"), language_dict.get("german")],
                 preferences=[preference_2],
                 gender_preferences=[woman],
                 gender_identity=woman,
-                interests=[interests_dict.get("nature"), interests_dict.get("science")],
+                interests=[nature, science],
                 password=hash_pwd("pass1"),
                 latitude=48.231217,
                 longitude=16.355386
@@ -311,11 +345,12 @@ class DataGenerator:
                 job='Mountain Guide',
                 search_radius=30,
                 swipes_left=18,
+                swipe_limit_reset_date=datetime.today(),
                 languages=[language_dict.get("english")],
                 preferences=[preference_1],
                 gender_preferences=[man],
                 gender_identity=man,
-                interests=[interests_dict.get("nature"), interests_dict.get("fitness"), interests_dict.get("travel")],
+                interests=[nature, fitness, travel],
                 password=hash_pwd("pass1"),
                 latitude=48.205377,
                 longitude=16.338982
@@ -330,11 +365,12 @@ class DataGenerator:
                 job='Novelist',
                 search_radius=22,
                 swipes_left=8,
+                swipe_limit_reset_date=datetime.today(),
                 languages=[language_dict.get("english"), language_dict.get("french")],
                 preferences=[preference_1, preference_2],
                 gender_preferences=[woman, man],
                 gender_identity=divers,
-                interests=[interests_dict.get("books"), interests_dict.get("writing")],
+                interests=[books, writing],
                 password=hash_pwd("pass1"),
                 latitude=48.229243,
                 longitude=16.328042
@@ -349,11 +385,12 @@ class DataGenerator:
                 job='Astronomer',
                 search_radius=40,
                 swipes_left=15,
+                swipe_limit_reset_date=datetime.today(),
                 languages=[language_dict.get("english"), language_dict.get("german")],
                 preferences=[preference_2],
                 gender_preferences=[man],
                 gender_identity=man,
-                interests=[interests_dict.get("science"), interests_dict.get("gaming")],
+                interests=[science, gaming],
                 password=hash_pwd("pass1"),
                 latitude=48.215407,
                 longitude=16.383019
@@ -368,11 +405,12 @@ class DataGenerator:
                 job='Visual Artist',
                 search_radius=18,
                 swipes_left=10,
+                swipe_limit_reset_date=datetime.today(),
                 languages=[language_dict.get("english"), language_dict.get("french")],
                 preferences=[preference_1],
                 gender_preferences=[woman],
                 gender_identity=woman,
-                interests=[interests_dict.get("art"), interests_dict.get("photography")],
+                interests=[art, photography],
                 password=hash_pwd("pass1"),
                 latitude=48.198285,
                 longitude=16.351907
@@ -387,11 +425,12 @@ class DataGenerator:
                 job='Librarian',
                 search_radius=15,
                 swipes_left=5,
+                swipe_limit_reset_date=datetime.today(),
                 languages=[language_dict.get("english"), language_dict.get("german")],
                 preferences=[preference_2],
                 gender_preferences=[woman],
                 gender_identity=woman,
-                interests=[interests_dict.get("books"), interests_dict.get("philosophy")],
+                interests=[books, philosophy],
                 password=hash_pwd("pass1"),
                 latitude=48.221002,
                 longitude=16.364694
@@ -406,11 +445,12 @@ class DataGenerator:
                 job='Robotics Engineer',
                 search_radius=25,
                 swipes_left=12,
+                swipe_limit_reset_date=datetime.today(),
                 languages=[language_dict.get("english"), language_dict.get("german")],
                 preferences=[preference_1],
                 gender_preferences=[man],
                 gender_identity=man,
-                interests=[interests_dict.get("technology"), interests_dict.get("coding")],
+                interests=[technology, coding],
                 password=hash_pwd("pass1"),
                 latitude=48.212813,
                 longitude=16.339321
@@ -425,11 +465,12 @@ class DataGenerator:
                 job='Marine Biologist',
                 search_radius=30,
                 swipes_left=15,
+                swipe_limit_reset_date=datetime.today(),
                 languages=[language_dict.get("english"), language_dict.get("french")],
                 preferences=[preference_2],
                 gender_preferences=[man],
                 gender_identity=man,
-                interests=[interests_dict.get("travel"), interests_dict.get("nature")],
+                interests=[travel, nature],
                 password=hash_pwd("pass1"),
                 latitude=48.225899,
                 longitude=16.356740
@@ -444,11 +485,12 @@ class DataGenerator:
                 job='Theater Director',
                 search_radius=20,
                 swipes_left=8,
+                swipe_limit_reset_date=datetime.today(),
                 languages=[language_dict.get("english"), language_dict.get("german")],
                 preferences=[preference_1],
                 gender_preferences=[woman],
                 gender_identity=woman,
-                interests=[interests_dict.get("movies"), interests_dict.get("crafts"), interests_dict.get("philosophy")],
+                interests=[movies, crafts, philosophy],
                 password=hash_pwd("pass1"),
                 latitude=48.207308,
                 longitude=16.377155
@@ -463,11 +505,12 @@ class DataGenerator:
                 job='Urban Planner',
                 search_radius=25,
                 swipes_left=10,
+                swipe_limit_reset_date=datetime.today(),
                 languages=[language_dict.get("english"), language_dict.get("french")],
                 preferences=[preference_2],
                 gender_preferences=[man],
                 gender_identity=man,
-                interests=[interests_dict.get("technology"), interests_dict.get("coding"), interests_dict.get("history")],
+                interests=[technology, coding, history],
                 password=hash_pwd("pass1"),
                 latitude=48.219170,
                 longitude=16.354686
@@ -482,11 +525,12 @@ class DataGenerator:
                 job='Social Worker',
                 search_radius=15,
                 swipes_left=5,
+                swipe_limit_reset_date=datetime.today(),
                 languages=[language_dict.get("english")],
                 preferences=[preference_1],
                 gender_preferences=[woman],
                 gender_identity=woman,
-                interests=[interests_dict.get("philosophy"), interests_dict.get("fitness")],
+                interests=[philosophy, fitness],
                 password=hash_pwd("pass1"),
                 latitude=48.223641,
                 longitude=16.341989
@@ -501,11 +545,12 @@ class DataGenerator:
                 job='Wildlife Biologist',
                 search_radius=30,
                 swipes_left=12,
+                swipe_limit_reset_date=datetime.today(),
                 languages=[language_dict.get("english"), language_dict.get("german")],
                 preferences=[preference_2],
                 gender_preferences=[man],
                 gender_identity=man,
-                interests=[interests_dict.get("nature"), interests_dict.get("photography")],
+                interests=[nature, photography],
                 password=hash_pwd("pass1"),
                 latitude=48.231890,
                 longitude=16.363775
