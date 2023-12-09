@@ -3,6 +3,7 @@ from sqlalchemy.engine import Engine
 from sqlmodel import Session, select
 from backend.models.conversation import Conversation
 from backend.models.gender_identity import GenderIdentity
+from backend.models.interest import Interest
 from backend.models.language import Language
 from backend.models.message import Message
 from backend.models.preference import Preference
@@ -37,6 +38,28 @@ class DataGenerator:
     # TODO: Modularize Languages, Preferences etc.
     def __generate_users(self):
         with Session(self.engine) as session:
+
+
+            sports= Interest(name="sports", icon="icon1")
+            movies= Interest(name="movies", icon="icon2")
+            travel= Interest(name="travel", icon="icon3")
+            books= Interest(name="books", icon="icon4")
+            science= Interest(name="science", icon="icon5")
+            music= Interest(name="music", icon="icon6")
+            art= Interest(name="art", icon="icon7")
+            food= Interest(name="food", icon="icon8")
+            technology= Interest(name="technology", icon="icon9")
+            fashion= Interest(name="fashion", icon="icon10")
+            photography= Interest(name="photography", icon="icon11")
+            gaming= Interest(name="gaming", icon="icon12")
+            nature= Interest(name="nature", icon="icon13")
+            history= Interest(name="history", icon="icon14")
+            fitness= Interest(name="fitness", icon="icon15")
+            crafts= Interest(name="crafts", icon="icon16")
+            writing= Interest(name="writing", icon="icon17")
+            gardening= Interest(name="gardening", icon="icon18")
+            philosophy= Interest(name="philosophy", icon="icon19")
+            coding= Interest(name="coding", icon="icon20")
 
 
             # Preferences
@@ -109,7 +132,7 @@ class DataGenerator:
                 preferences=[preference_1],
                 gender_preferences=[woman],
                 gender_identity=man,
-                interests=[interests_dict.get("sports"), interests_dict.get("movies")],
+                interests=[sports, movies],
                 password=hash_pwd("pass1"),
                 latitude=48.227982,
                 longitude=16.372316
@@ -128,7 +151,7 @@ class DataGenerator:
                 preferences=[preference_1, preference_2],
                 gender_preferences=[woman, man],
                 gender_identity=woman,
-                interests=[interests_dict.get("travel"), interests_dict.get("books"), interests_dict.get("science")],
+                interests=[travel, books, science],
                 password=hash_pwd("pass1"),
                 latitude=48.215178,
                 longitude=16.354447
@@ -147,7 +170,7 @@ class DataGenerator:
                 gender_preferences=[woman],
                 preferences=[preference_2],
                 gender_identity=divers,
-                interests=[interests_dict.get("science")],
+                interests=[science],
                 password=hash_pwd("pass1"),
                 latitude=48.172097,
                 longitude=16.294326
@@ -167,7 +190,7 @@ class DataGenerator:
                 preferences=[preference_2],
                 gender_preferences=[man],
                 gender_identity=man,
-                interests=[interests_dict.get("music"), interests_dict.get("art"), interests_dict.get("technology")],
+                interests=[music, art, technology],
                 password=hash_pwd("pass1"),
                 latitude=48.208174,
                 longitude=16.373819
@@ -187,7 +210,7 @@ class DataGenerator:
                 preferences=[preference_1, preference_2],
                 gender_preferences=[woman, man],
                 gender_identity=woman,
-                interests=[interests_dict.get("food"), interests_dict.get("fashion"), interests_dict.get("photography")],
+                interests=[food, fashion, photography],
                 password=hash_pwd("pass1"),
                 latitude=48.200519,
                 longitude=16.369796
@@ -207,7 +230,7 @@ class DataGenerator:
                 preferences=[preference_1],
                 gender_preferences=[woman],
                 gender_identity=divers,
-                interests=[interests_dict.get("nature"), interests_dict.get("history"), interests_dict.get("fitness")],
+                interests=[nature, history, fitness],
                 password=hash_pwd("pass1"),
                 latitude=48.213185,
                 longitude=16.377086
@@ -227,7 +250,7 @@ class DataGenerator:
                 preferences=[preference_1],
                 gender_preferences=[man],
                 gender_identity=man,
-                interests=[interests_dict.get("sports"), interests_dict.get("travel")],
+                interests=[sports, travel],
                 password=hash_pwd("pass1"),
                 latitude=48.225241,
                 longitude=16.366003
@@ -247,7 +270,7 @@ class DataGenerator:
                 preferences=[preference_2],
                 gender_preferences=[woman],
                 gender_identity=woman,
-                interests=[interests_dict.get("travel"), interests_dict.get("books"), interests_dict.get("technology")],
+                interests=[travel, books, technology],
                 password=hash_pwd("pass1"),
                 latitude=48.214828,
                 longitude=16.371755
@@ -267,7 +290,7 @@ class DataGenerator:
                 preferences=[preference_1, preference_2],
                 gender_preferences=[woman, man],
                 gender_identity=woman,
-                interests=[interests_dict.get("writing"), interests_dict.get("photography")],
+                interests=[writing, photography],
                 password=hash_pwd("pass1"),
                 latitude=48.220692,
                 longitude=16.376215
@@ -287,7 +310,7 @@ class DataGenerator:
                 preferences=[preference_1],
                 gender_preferences=[man],
                 gender_identity=man,
-                interests=[interests_dict.get("food"), interests_dict.get("gardening")],
+                interests=[food, gardening],
                 password=hash_pwd("pass1"),
                 latitude=48.204692,
                 longitude=16.361950
@@ -307,7 +330,7 @@ class DataGenerator:
                 preferences=[preference_2],
                 gender_preferences=[woman],
                 gender_identity=woman,
-                interests=[interests_dict.get("nature"), interests_dict.get("science")],
+                interests=[nature, science],
                 password=hash_pwd("pass1"),
                 latitude=48.231217,
                 longitude=16.355386
@@ -327,7 +350,7 @@ class DataGenerator:
                 preferences=[preference_1],
                 gender_preferences=[man],
                 gender_identity=man,
-                interests=[interests_dict.get("nature"), interests_dict.get("fitness"), interests_dict.get("travel")],
+                interests=[nature, fitness, travel],
                 password=hash_pwd("pass1"),
                 latitude=48.205377,
                 longitude=16.338982
@@ -347,7 +370,7 @@ class DataGenerator:
                 preferences=[preference_1, preference_2],
                 gender_preferences=[woman, man],
                 gender_identity=divers,
-                interests=[interests_dict.get("books"), interests_dict.get("writing")],
+                interests=[books, writing],
                 password=hash_pwd("pass1"),
                 latitude=48.229243,
                 longitude=16.328042
@@ -367,7 +390,7 @@ class DataGenerator:
                 preferences=[preference_2],
                 gender_preferences=[man],
                 gender_identity=man,
-                interests=[interests_dict.get("science"), interests_dict.get("gaming")],
+                interests=[science, gaming],
                 password=hash_pwd("pass1"),
                 latitude=48.215407,
                 longitude=16.383019
@@ -387,7 +410,7 @@ class DataGenerator:
                 preferences=[preference_1],
                 gender_preferences=[woman],
                 gender_identity=woman,
-                interests=[interests_dict.get("art"), interests_dict.get("photography")],
+                interests=[art, photography],
                 password=hash_pwd("pass1"),
                 latitude=48.198285,
                 longitude=16.351907
@@ -407,7 +430,7 @@ class DataGenerator:
                 preferences=[preference_2],
                 gender_preferences=[woman],
                 gender_identity=woman,
-                interests=[interests_dict.get("books"), interests_dict.get("philosophy")],
+                interests=[books, philosophy],
                 password=hash_pwd("pass1"),
                 latitude=48.221002,
                 longitude=16.364694
@@ -427,7 +450,7 @@ class DataGenerator:
                 preferences=[preference_1],
                 gender_preferences=[man],
                 gender_identity=man,
-                interests=[interests_dict.get("technology"), interests_dict.get("coding")],
+                interests=[technology, coding],
                 password=hash_pwd("pass1"),
                 latitude=48.212813,
                 longitude=16.339321
@@ -447,7 +470,7 @@ class DataGenerator:
                 preferences=[preference_2],
                 gender_preferences=[man],
                 gender_identity=man,
-                interests=[interests_dict.get("travel"), interests_dict.get("nature")],
+                interests=[travel, nature],
                 password=hash_pwd("pass1"),
                 latitude=48.225899,
                 longitude=16.356740
@@ -467,7 +490,7 @@ class DataGenerator:
                 preferences=[preference_1],
                 gender_preferences=[woman],
                 gender_identity=woman,
-                interests=[interests_dict.get("movies"), interests_dict.get("crafts"), interests_dict.get("philosophy")],
+                interests=[movies, crafts, philosophy],
                 password=hash_pwd("pass1"),
                 latitude=48.207308,
                 longitude=16.377155
@@ -487,7 +510,7 @@ class DataGenerator:
                 preferences=[preference_2],
                 gender_preferences=[man],
                 gender_identity=man,
-                interests=[interests_dict.get("technology"), interests_dict.get("coding"), interests_dict.get("history")],
+                interests=[technology, coding, history],
                 password=hash_pwd("pass1"),
                 latitude=48.219170,
                 longitude=16.354686
@@ -507,7 +530,7 @@ class DataGenerator:
                 preferences=[preference_1],
                 gender_preferences=[woman],
                 gender_identity=woman,
-                interests=[interests_dict.get("philosophy"), interests_dict.get("fitness")],
+                interests=[philosophy, fitness],
                 password=hash_pwd("pass1"),
                 latitude=48.223641,
                 longitude=16.341989
@@ -527,7 +550,7 @@ class DataGenerator:
                 preferences=[preference_2],
                 gender_preferences=[man],
                 gender_identity=man,
-                interests=[interests_dict.get("nature"), interests_dict.get("photography")],
+                interests=[nature, photography],
                 password=hash_pwd("pass1"),
                 latitude=48.231890,
                 longitude=16.363775
