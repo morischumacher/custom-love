@@ -7,6 +7,7 @@ import 'package:swipe_cards/swipe_cards.dart';
 import 'package:frontend/src/config/theme.dart';
 import 'package:frontend/src/app/presentation/authentification/controller/login_controller.dart';
 
+import '../../../service/location_service.dart';
 import '../../../service/user_service.dart';
 import '../components/swiping_card.dart';
 import '../util/shared_algorithm_event.dart';
@@ -30,6 +31,7 @@ class _SwipeState extends State<Swipe> {
   bool swipeable = true;
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
   final LoginController _controller = LoginController();
+  final LocationService _locationService = LocationService();
   late Timer timer;
 
   final List<Content> _cards = [
@@ -53,27 +55,20 @@ class _SwipeState extends State<Swipe> {
 
     int swipingAlgoId = await SharedAlgorithmEvent.algoId.getAlgoId();
 
-    if (swipingAlgoId == 0) {
-       print("No special swiping algorithm is used");
-       await widget.userService.getUser().then((User? user) {
-         _setSwipingCard(user);
-       }).whenComplete(() {
-         isLoading = false;
-       });
-    } else if (swipingAlgoId == 1) {
-       print("Random swiping algorithm is used");
-       String accessToken = await _controller.retrieveAccessToken() as String;
-       print("AccessToken from user logged in: $accessToken");
-       await widget.userService.getAlgoUser(accessToken).then((User? user) {
-         _setSwipingCard(user);
-       }).whenComplete(() {
-         isLoading = false;
-       });
-    }
+    print("Random swiping algorithm is used");
+    String accessToken = await _controller.retrieveAccessToken() as String;
+    print("AccessToken from user logged in: $accessToken");
+    await widget.userService.getAlgoUser(accessToken).then((User? user) async {
+      var city = await _locationService.getCurrentLocation(
+          user!.latitude, user.longitude);
+      _setSwipingCard(user, city);
+    }).whenComplete(() {
+      isLoading = false;
+    });
 
   }
 
-  void _setSwipingCard(User? user) {
+  void _setSwipingCard(User? user, String? city) {
     if (user == null) {
       setState(() {
         _swipeItem = SwipeItem(
@@ -83,6 +78,10 @@ class _SwipeState extends State<Swipe> {
     } else {
       setState(() {
         var firstName = user.firstName;
+        List<dynamic>? interests = [];
+        if (user.interests != null) {
+          interests = user.interests;
+        }
         var birthDate = DateTime.parse(user.date_of_birth);
         var birthYear = birthDate.year;
         var todayDate = DateTime.now();
@@ -103,12 +102,9 @@ class _SwipeState extends State<Swipe> {
           });
         });
 
+
         _swipeItem = SwipeItem(
-          content: Content(firstName: firstName, age: age, languages: _cards
-              .elementAt(0)
-              .languages, bio: user.bio, interests: _cards
-              .elementAt(0)
-              .interests),
+          content: Content(firstName: firstName, age: age, city: city, bio: user.bio, interests: interests),
           likeAction: () {
             if (swipeable) {
               _loadNextUser();
