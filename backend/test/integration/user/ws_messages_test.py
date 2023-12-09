@@ -19,11 +19,12 @@ async def test_ws_messages_save_in_the_db(client: TestClient, session: Session):
     load_entities([conversation], session)
 
     with client.websocket_connect(f"/users/socket/{token}") as websocket:
-        websocket.send_text("{" + f""
+        websocket.send_text("{\"type\": \"message\", \"content\":"
+                            "{" + f""
                                   f"\"conversation_id\": \"{str(conversation.id)}\", "
                                   f"\"sender_id\": \"{str(users[0].id)}\", "
                                   f"\"receiver_id\": \"{str(users[1].id)}\", "
-                                  f"\"message\": \"test_message\"" + "}")
+                                  f"\"message\": \"test_message\"" + "}}")
         await asyncio.sleep(5)
 
         message = session.exec(select(Message)).first()
