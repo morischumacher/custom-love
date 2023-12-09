@@ -59,7 +59,7 @@ class UserApi extends PaginatedApi<User> {
       return user;
     } else {
       // TODO: Add custom exception
-      throw Exception('Failed to update user');
+      throw Exception("Failed to update user Location");
     }
   }
 
@@ -98,8 +98,6 @@ class UserApi extends PaginatedApi<User> {
         'Authorization': 'Bearer $accessToken',
       },
     );
-
-    print("fetched user: " + response.body);
 
     if (response.statusCode == 200) {
       final dynamic jsonItem = json.decode(response.body);

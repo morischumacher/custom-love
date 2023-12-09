@@ -180,11 +180,8 @@ def get_algo_user(algoId: int, user: Annotated[User, Depends(get_current_user)],
         .where(User.id != user.id)
     )
 
-    # Execute the query
-    result = db.exec(query)
-
     # Fetch the query
-    users_list = result.fetchall()
+    users_list = db.exec(query).fetchall()
 
 
 
