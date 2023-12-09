@@ -3,6 +3,8 @@ from typing import Optional
 
 from pydantic import BaseModel
 
+from backend.models.interest import Interest
+
 
 class UserResponse(BaseModel):
     id: Optional[int] = None
@@ -18,3 +20,4 @@ class UserResponse(BaseModel):
     latitude: Optional[float]
     longitude: Optional[float]
     gender_identity_id: Optional[int] = None
+    interests: Optional[list[Interest]]

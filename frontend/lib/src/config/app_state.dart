@@ -1,16 +1,20 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:frontend/src/app/model/collection_model.dart';
 import 'package:frontend/src/app/service/match_service.dart';
 import 'package:frontend/src/app/service/message_service.dart';
 import 'package:frontend/src/app/service/user_service.dart';
+import 'package:frontend/src/config/api_config.dart';
 
+import '../app/api/helpers/jwt_api.dart';
 import '../app/model/conversation_model.dart';
 import '../app/model/user_model.dart';
 import '../app/model/match_model.dart';
 import '../app/model/message_model.dart';
 import '../app/service/conversation_service.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 abstract class CollectionStorage extends ChangeNotifier {
   bool loading = false;
@@ -35,6 +39,24 @@ class MatchStorage extends CollectionStorage {
 
 class StateManager extends ChangeNotifier {
   User? user;
+  WebSocketChannel? socket;
+
+  Future<void> registerUser(User user) async {
+    // save the current user
+    this.user = user;
+
+    // get the token
+    String? token = await JWTApi.retrieveAccessToken();
+
+    // subscribe to a websocket
+    socket = WebSocketChannel.connect(
+      Uri.parse("${ApiConfig.socketsUrl}/users/socket/$token")
+    );
+
+    socket?.stream.listen((event) {
+      print(event);
+    });
+  }
 
   Future<void> initialize(
       UserStorage userStorage,

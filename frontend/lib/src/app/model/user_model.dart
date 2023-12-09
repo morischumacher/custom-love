@@ -14,6 +14,9 @@ class User {
   final int swipes_left;
   final String swipe_limit_reset_date;
   final int gender_identity_id;
+  final double latitude;
+  final double longitude;
+  final List<dynamic>? interests;
 
   User({
     required this.id,
@@ -27,6 +30,9 @@ class User {
     required this.swipes_left,
     required this.swipe_limit_reset_date,
     required this.gender_identity_id,
+    required this.latitude,
+    required this.longitude,
+    required this.interests
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -42,6 +48,9 @@ class User {
       swipes_left: json['swipes_left'] as int,
       swipe_limit_reset_date: json['swipe_limit_reset_date'] as String,
       gender_identity_id: json['gender_identity_id'] as int,
+      latitude: json['latitude'] as double,
+      longitude: json['longitude'] as double,
+      interests: json['interests'] as List<dynamic>?
     );
   }
 
@@ -58,6 +67,9 @@ class User {
       'swipes_left': swipes_left,
       'swipe_limit_reset_date': swipe_limit_reset_date,
       'gender_identity_id': gender_identity_id,
+      'latitude': latitude,
+      'longitude': longitude,
+      'interests': interests
     };
   }
 }

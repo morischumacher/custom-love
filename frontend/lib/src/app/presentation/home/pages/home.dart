@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/presentation/chat/pages/conversation.dart';
 import 'package:frontend/src/app/presentation/swipe/util/shared_algorithm_event.dart';
@@ -22,7 +24,28 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  AppPage _currentPage = AppPage.Swipe;
+  @override
+  void initState() {
+    super.initState();
+    var url = window.location.href;
+    List<String> urlSubsections = url.split("/");
+    String subRoute = urlSubsections[urlSubsections.length - 1].toLowerCase();
+    switch(subRoute) {
+      case 'profile':
+        _currentPage = AppPage.Profile;
+        break;
+      case 'swipe':
+        _currentPage = AppPage.Swipe;
+        break;
+      case 'matches':
+        _currentPage = AppPage.Matches;
+        break;
+      default:
+        _currentPage = AppPage.Profile;
+    }
+  }
+
+  late AppPage _currentPage;
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
   final LoginController _controller = LoginController();
 
@@ -83,9 +106,10 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentPage.index,
         onTap: (int index) {
-          setState(() {
-            _currentPage = AppPage.values[index];
-          });
+          String str = AppPage.values[index].toString();
+          String subRouteName = str.split(".")[1].toLowerCase();
+          String subRoute = '/home/$subRouteName';
+          Navigator.pushNamed(context, subRoute);
         },
         unselectedItemColor: Colors.grey,
         selectedItemColor: _customLoveTheme.primaryColor,

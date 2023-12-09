@@ -4,14 +4,9 @@ from backend.utils.pagination import Page
 from starlette import status
 from backend.models.message import Message
 from backend.responses.error_response import ErrorResponse
-from backend.services.message import websocket_connect, get_messages, sockets_test
+from backend.services.message import get_messages, sockets_test
 
 router = APIRouter(prefix='/messages', tags=['messages'], responses={status.HTTP_200_OK: {"description": "Success"}})
-
-
-@router.websocket("/socket/{user_token}")
-async def socket(commons: Annotated[dict, Depends(websocket_connect)]):
-    return commons
 
 
 @router.get("/{conversation_id}", response_model=Page[Message], responses={

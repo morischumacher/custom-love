@@ -9,6 +9,7 @@ import 'package:swipe_cards/swipe_cards.dart';
 import 'package:frontend/src/config/theme.dart';
 import 'package:frontend/src/app/presentation/authentification/controller/login_controller.dart';
 
+import '../../../service/location_service.dart';
 import '../../../service/user_service.dart';
 import '../components/swiping_card.dart';
 import '../util/shared_algorithm_event.dart';
@@ -34,6 +35,7 @@ class _SwipeState extends State<Swipe> {
   late bool swiped;
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
   final LoginController _controller = LoginController();
+  final LocationService _locationService = LocationService();
   late Timer timer;
   bool swipeableTimer = true;
   late int tmpSwipesLeft;
@@ -171,7 +173,7 @@ class _SwipeState extends State<Swipe> {
 
   }
 
-  void _setSwipingCard(User? user) {
+  void _setSwipingCard(User? user, String? city) {
     if (user == null) {
       if (mounted) {
         setState(() {

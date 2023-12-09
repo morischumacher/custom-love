@@ -7,12 +7,14 @@ from backend.models.user import User
 from backend.responses.error_response import ErrorResponse
 from backend.utils.pagination import Page
 from backend.utils.token import Token
-from backend.services.user import patch_user, get_algo_user, UserUpdate, get_user, post_user, get_users, login
+from backend.services.user import patch_user, get_algo_user, UserUpdate, get_user, post_user, get_users, login, \
+    websocket_connect
+from backend.services.expert_system import get_expert_system_by_user_id, update_expert_system
 
 router = APIRouter(prefix='/users', tags=['users'], responses={status.HTTP_200_OK: {"description": "Success"}})
 
 
-@router.get('', response_model=Page[User])
+@router.get("/", response_model=Page[UserResponse])
 async def get_users(commons: Annotated[Page[User], Depends(get_users)]):
     """
     Retrieves all users, with whom the querying user has a match
@@ -21,7 +23,7 @@ async def get_users(commons: Annotated[Page[User], Depends(get_users)]):
     return commons
 
 
-@router.get('/{user_id}', response_model=User, responses={
+@router.get('/{user_id}', response_model=UserResponse, responses={
     status.HTTP_404_NOT_FOUND: {"description": "Not Found", "model": ErrorResponse},
     status.HTTP_400_BAD_REQUEST: {"description": "Bad Request", "model": ErrorResponse},
 })
@@ -33,7 +35,7 @@ def get_user(commons: Annotated[dict, Depends(get_user)]):
     return commons
 
 
-@router.post('/', response_model=User, responses={
+@router.post('/', response_model=UserResponse, responses={
     status.HTTP_422_UNPROCESSABLE_ENTITY: {"description": "Validation Error", "model": ErrorResponse}
 })
 def post_user(commons: Annotated[dict, Depends(post_user)]):
@@ -62,7 +64,7 @@ def login(commons: Annotated[Token, Depends(login)]):
     return commons
 
 
-@router.get('/algo/{algo_id}', response_model=User, responses={
+@router.get('/algo/{algo_id}', response_model=UserResponse, responses={
     status.HTTP_404_NOT_FOUND: {"description": "Not Found", "model": ErrorResponse},
     status.HTTP_400_BAD_REQUEST: {"description": "Bad Request", "model": ErrorResponse},
 })
@@ -76,3 +78,6 @@ def get_algo_user(commons: Annotated[User, Depends(get_algo_user)]):
     return commons
 
 
+@router.websocket("/socket/{user_token}")
+async def socket(commons: Annotated[dict, Depends(websocket_connect)]):
+    return commons
