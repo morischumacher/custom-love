@@ -6,13 +6,19 @@ import 'package:http/http.dart' as http;
 import '../../../config/api_config.dart';
 
 class JWTApi {
-  Future<String?> retrieveAccessToken() async {
+  static Future<String?> retrieveAccessToken() async {
     const FlutterSecureStorage storage = FlutterSecureStorage();
-    return await storage.read(key: "access_token");
+    String? token = await storage.read(key: "access_token");
+
+    if (token == null) {
+      throw Exception("Token not registered!");
+    }
+
+    return token;
   }
 
   Future<http.Response> get(http.Client client, String url) async {
-    String? token = await retrieveAccessToken();
+    String? token = await JWTApi.retrieveAccessToken();
     if (token == null) {
       throw Exception('Not logged in');
     }

@@ -18,7 +18,7 @@ async def test_ws_messages_save_in_the_db(client: TestClient, session: Session):
     conversation = Conversation(user1_id=users[1].id, user2_id=users[0].id)
     load_entities([conversation], session)
 
-    with client.websocket_connect(f"/messages/socket/{token}") as websocket:
+    with client.websocket_connect(f"/users/socket/{token}") as websocket:
         websocket.send_text("{" + f""
                                   f"\"conversation_id\": \"{str(conversation.id)}\", "
                                   f"\"sender_id\": \"{str(users[0].id)}\", "
