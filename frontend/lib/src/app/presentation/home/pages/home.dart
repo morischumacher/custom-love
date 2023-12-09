@@ -1,4 +1,5 @@
-import 'dart:html';
+import "package:universal_html/html.dart" as universal_html;
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/presentation/chat/pages/conversation.dart';
@@ -27,7 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    var url = window.location.href;
+    var url = universal_html.window.location.href;
     List<String> urlSubsections = url.split("/");
     String subRoute = urlSubsections[urlSubsections.length - 1].toLowerCase();
     switch(subRoute) {
@@ -108,11 +109,20 @@ class _HomeScreenState extends State<HomeScreen> {
       body: getPage(_currentPage),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentPage.index,
+
         onTap: (int index) {
-          String str = AppPage.values[index].toString();
-          String subRouteName = str.split(".")[1].toLowerCase();
-          String subRoute = '/home/$subRouteName';
-          Navigator.pushNamed(context, subRoute);
+          if (kIsWeb) {
+            // Web
+            String str = AppPage.values[index].toString();
+            String subRouteName = str.split(".")[1].toLowerCase();
+            String subRoute = '/home/$subRouteName';
+            Navigator.pushNamed(context, subRoute);
+          } else {
+            // Mobile
+            setState(() {
+              _currentPage = AppPage.values[index];
+            });
+          }
         },
         unselectedItemColor: Colors.grey,
         selectedItemColor: _customLoveTheme.primaryColor,
