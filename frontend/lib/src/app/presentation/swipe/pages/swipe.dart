@@ -262,9 +262,13 @@ class _SwipeState extends State<Swipe> {
                   }
 
                   if (region == SlideRegion.inNopeRegion) {
-                    wantsToLike = false;
+                    setState(() {
+                      wantsToLike = false;
+                    });
                   } else if (region == SlideRegion.inLikeRegion) {
-                    wantsToLike = true;
+                    setState(() {
+                      wantsToLike = true;
+                    });
                   }
                 }
 

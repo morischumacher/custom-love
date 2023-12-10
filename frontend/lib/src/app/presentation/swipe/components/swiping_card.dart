@@ -171,7 +171,8 @@ class SwipingCard extends StatelessWidget {
                   if(_wantsToLike) {
                     print("Liked");
                     String accessToken = await controller.retrieveAccessToken() as String;
-                    await swipeStatusService.postLike(accessToken, int.parse(_swipeItem.content.id));
+                    String result = await swipeStatusService.postLike(accessToken, int.parse(_swipeItem.content.id));
+                    print("result " + result);
                   } else {
                     print("Disliked");
                     String accessToken = await controller.retrieveAccessToken() as String;

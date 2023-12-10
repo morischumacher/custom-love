@@ -6,7 +6,7 @@ import "interfaces/paginated_api.dart";
 
 class MatchApi extends PaginatedApi<Match> {
   MatchApi(http.Client client)
-      : super(client, "swipe_statuses/view/", MatchFactory());
+      : super(client, "swipe_statuses/matches/", MatchFactory());
   MatchApi.url(http.Client client, String urlParams)
       : super(client, "swipe_statuses/matches/$urlParams", MatchFactory());
 
