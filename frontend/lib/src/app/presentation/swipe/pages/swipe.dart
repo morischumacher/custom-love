@@ -36,7 +36,7 @@ class _SwipeState extends State<Swipe> {
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
   final LoginController _controller = LoginController();
   final LocationService _locationService = LocationService();
-  late Timer timer;
+  Timer? timer;
   bool swipeableTimer = true;
   late int tmpSwipesLeft;
   late int userId;
@@ -275,8 +275,10 @@ class _SwipeState extends State<Swipe> {
 
   @override
   void dispose() {
-    if(timer.isActive) {
-      timer.cancel();
+    if (timer != null) {
+      if(timer!.isActive) {
+        timer?.cancel();
+      }
     }
 
     _algoIdSubscription?.cancel();
