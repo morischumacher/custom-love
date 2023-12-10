@@ -24,6 +24,10 @@ class MatchesPage extends StatelessWidget {
     String subRoute = urlSubsections[urlSubsections.length - 1].toLowerCase();
 
     if (subRoute == "messages") {
+      if (ModalRoute.of(context)!.settings.arguments == null) {
+        return const ConversationsPage();
+      }
+
       return const MessagesPage();
     } else {
       return const ConversationsPage();
