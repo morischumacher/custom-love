@@ -168,7 +168,7 @@ class SwipingCard extends StatelessWidget {
                     SharedSwipeableEvent.swipeable.changeSwipeable(false);
                   }
 
-                  if(_wantsToLike) {
+                  /*if(_wantsToLike) {
                     print("Liked");
                     String accessToken = await controller.retrieveAccessToken() as String;
                     String result = await swipeStatusService.postLike(accessToken, int.parse(_swipeItem.content.id));
@@ -177,7 +177,7 @@ class SwipingCard extends StatelessWidget {
                     print("Disliked");
                     String accessToken = await controller.retrieveAccessToken() as String;
                     await swipeStatusService.postView(accessToken, int.parse(_swipeItem.content.id));
-                  }
+                  }*/
                 },
                 itemChanged: (SwipeItem item, int index) {
                   print("item: ${item.content.firstName}, index: $index");
@@ -232,11 +232,9 @@ class SwipingCard extends StatelessWidget {
                 if(_swipeableTimer) {
                   int tmpSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(_userId, userService);
                   if(tmpSwipesLeft > 0) {
-                    _matchEngine!.currentItem?.nope();
                     await SwipesLeft.updateSwipeLeft(controller, userService);
                     print("Disliked");
-                    String accessToken = await controller.retrieveAccessToken() as String;
-                    await swipeStatusService.postView(accessToken, int.parse(_swipeItem.content.id));
+                    _matchEngine!.currentItem?.nope();
                   }
                 }
               },
@@ -251,11 +249,9 @@ class SwipingCard extends StatelessWidget {
                 if(_swipeableTimer) {
                   int tmpSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(_userId, userService);
                   if(tmpSwipesLeft > 0) {
-                    _matchEngine!.currentItem?.like();
                     await SwipesLeft.updateSwipeLeft(controller, userService);
                     print("Liked");
-                    String accessToken = await controller.retrieveAccessToken() as String;
-                    await swipeStatusService.postLike(accessToken, int.parse(_swipeItem.content.id));
+                    _matchEngine!.currentItem?.like();
                   }
                 }
               },

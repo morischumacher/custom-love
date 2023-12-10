@@ -232,10 +232,18 @@ class _SwipeState extends State<Swipe> {
                 city: city,
                 bio: user.bio,
                 interests: interests),
-            likeAction: () {
+            likeAction: () async {
+              String accessToken = await _controller.retrieveAccessToken() as String;
+              String result = await widget.swipeStatusService.postLike(accessToken, int.parse(_swipeItem.content.id));
+              print("result " + result);
+              print("Liked");
               _loadNextUser();
             },
-            nopeAction: () {
+            nopeAction: () async {
+              String accessToken = await _controller.retrieveAccessToken() as String;
+              String result = await widget.swipeStatusService.postView(accessToken, int.parse(_swipeItem.content.id));
+              print("result " + result);
+              print("Disliked");
               _loadNextUser();
             },
             onSlideUpdate: (SlideRegion? region) async {
