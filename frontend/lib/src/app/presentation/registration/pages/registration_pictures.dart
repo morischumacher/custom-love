@@ -1,6 +1,8 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/presentation/registration/pages/registration_gender_preference.dart';
 import 'package:frontend/src/app/presentation/registration/pages/registration_interests.dart';
@@ -55,11 +57,15 @@ class _RegistrationPicturesState extends State<RegistrationPictures> {
   Uint8List? profilePicture;
   late Set<int> userInterestIdList;
 
+  // Web
   String defaultImageUrl = 'https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fblogs.timesofindia.indiatimes.com%2Fwp-content%2Fuploads%2F2016%2F11%2FNarendra-Modi-10-1.jpg&f=1&nofb=1&ipt=2934f6195ba86ab161d54c942491f87a1c68cc89b426d0601667d9052cf98010&ipo=images';
   String? selectFile = '';
   XFile? file;
 
-  _selectFile(bool imageFrom) async {
+  // Phone
+  File ? _selectedPhoneImage;
+
+  void _selectFile(bool imageFrom) async {
     FilePickerResult? fileResult = await FilePicker.platform.pickFiles();
 
     if (fileResult != null) {
@@ -69,6 +75,15 @@ class _RegistrationPicturesState extends State<RegistrationPictures> {
       });
 
     }
+  }
+
+  Future _pickImageFromPhoneGallery() async {
+    final returnedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
+
+    if (returnedImage == null) return;
+    setState(() {
+      _selectedPhoneImage = File(returnedImage.path);
+    });
   }
 
   @override
@@ -100,15 +115,20 @@ class _RegistrationPicturesState extends State<RegistrationPictures> {
                             color: _customLoveTheme.primaryColor
                         )
                       ),
-                      child: Image.memory(profilePicture!),
+                      // child: kIsWeb ? Image.memory(profilePicture!) : (_selectedPhoneImage != null ? Image.file(_selectedPhoneImage) : ""),
+                      child: kIsWeb ? Image.memory(profilePicture!) : Image.file(_selectedPhoneImage!),
                     ),
                   const SizedBox(height: 19.0),
                   SizedBox(
                     height: MediaQuery.of(context).size.height * 0.075,
                     child: ElevatedButton.icon(
                         onPressed: () {
-                          _selectFile(true);
-                        },
+                          if (kIsWeb) {
+                              _selectFile(true);
+                          } else {
+                            _pickImageFromPhoneGallery();
+                          }
+                          },
                         icon: Icon(Icons.camera, color: _customLoveTheme.primaryColor,),
                         label: Text(
                           'Choose Image',
