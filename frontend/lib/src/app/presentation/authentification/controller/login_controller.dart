@@ -10,6 +10,7 @@ import 'package:frontend/src/config/app_state.dart';
 import 'package:frontend/src/config/exceptions.dart';
 import 'package:frontend/src/config/theme.dart';
 import 'package:frontend/src/app/service/login_service.dart';
+import 'package:frontend/src/app/service/view_service.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
@@ -25,13 +26,13 @@ class LoginController {
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
 
   Future<void> storeAccessToken(String accessToken) async {
-      const FlutterSecureStorage storage = FlutterSecureStorage();
-      await storage.write(key: "access_token", value: accessToken);
+    const FlutterSecureStorage storage = FlutterSecureStorage();
+    await storage.write(key: "access_token", value: accessToken);
   }
 
   Future<String?> retrieveAccessToken() async {
-      const FlutterSecureStorage storage = FlutterSecureStorage();
-      return await storage.read(key: "access_token");
+    const FlutterSecureStorage storage = FlutterSecureStorage();
+    return await storage.read(key: "access_token");
   }
 
   Future<void> storeUserId(String id) async {
@@ -49,9 +50,11 @@ class LoginController {
     String password = passwordController.text;
     LoginService loginService = context.read<LoginService>();
     UserService userService = context.read<UserService>();
-    ConversationService conversationService = context.read<ConversationService>();
+    ConversationService conversationService =
+        context.read<ConversationService>();
     MessageService messageService = context.read<MessageService>();
     MatchService matchService = context.read<MatchService>();
+    ViewService viewService = context.read<ViewService>();
 
     if (email.isNotEmpty && password.isNotEmpty) {
       try {
@@ -72,14 +75,12 @@ class LoginController {
           userService.updateCurrentUserLocation(userLocation!, accessToken);
 
           // load users, conversations, matches and first messages
-          unawaited(Provider.of<StateManager>(context, listen: false).initialize(
-              context
-          ));
+          unawaited(Provider.of<StateManager>(context, listen: false)
+              .initialize(context));
 
           // save the user object and connect to a websocket
-          Provider.of<StateManager>(context, listen: false).registerUser(
-              User.fromJson(loginResult['user']), context
-          );
+          Provider.of<StateManager>(context, listen: false)
+              .registerUser(User.fromJson(loginResult['user']), context);
 
           Navigator.of(context).pushNamed('/home/swipe');
         }
