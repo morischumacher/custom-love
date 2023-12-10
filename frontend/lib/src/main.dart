@@ -109,7 +109,7 @@ class CustomLove extends StatelessWidget {
           },
           '/logout': (context) {
             return const LogoutPage();
-          }
+          },
           '/registration': (context) {
             // return const RegistrationGenderPreference();
             return RegistrationNameEmail(
