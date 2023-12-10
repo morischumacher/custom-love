@@ -34,7 +34,8 @@ class CustomListTile extends StatelessWidget {
           return;
         }
 
-        Navigator.of(context).pushNamed(
+        Navigator.pushNamed(
+          context,
           "/home/matches/messages",
           arguments: MessagesPageRouteArguments(recipient, conversation!)
         );

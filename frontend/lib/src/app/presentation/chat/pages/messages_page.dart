@@ -22,6 +22,7 @@ class MessagesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (ModalRoute.of(context)!.settings.arguments == null) {
+      // do nothing
       Navigator.of(context).pushReplacementNamed("/home/matches");
     }
 
