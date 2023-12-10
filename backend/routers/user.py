@@ -1,15 +1,15 @@
 from typing import Annotated
+
 from fastapi import APIRouter, Depends
 from starlette import status
 
-from backend.responses.user_response import UserResponse
 from backend.models.user import User
 from backend.responses.error_response import ErrorResponse
-from backend.utils.pagination import Page
-from backend.utils.token import Token
+from backend.responses.user_response import UserResponse, UserResponseWithInterests
 from backend.services.user import patch_user, get_algo_user, UserUpdate, get_user, post_user, get_users, login, \
     websocket_connect
-from backend.services.expert_system import get_expert_system_by_user_id, update_expert_system
+from backend.utils.pagination import Page
+from backend.utils.token import Token
 
 router = APIRouter(prefix='/users', tags=['users'], responses={status.HTTP_200_OK: {"description": "Success"}})
 
@@ -64,7 +64,7 @@ def login(commons: Annotated[Token, Depends(login)]):
     return commons
 
 
-@router.get('/algo/{algo_id}', response_model=UserResponse, responses={
+@router.get('/algo/{algo_id}', response_model=UserResponseWithInterests, responses={
     status.HTTP_404_NOT_FOUND: {"description": "Not Found", "model": ErrorResponse},
     status.HTTP_400_BAD_REQUEST: {"description": "Bad Request", "model": ErrorResponse},
 })

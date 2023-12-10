@@ -1,13 +1,12 @@
-import random
-from typing import List, Annotated, Any, Type
 import datetime
+import random
 from typing import List, Annotated
 
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_pagination.ext.sqlmodel import paginate
 from geoalchemy2 import Geography
-from pydantic import BaseModel, Field, json
+from pydantic import BaseModel, Field
 from shapely import geometry, wkt
 from sqlalchemy import func, or_, and_
 from sqlmodel import Session, select
@@ -19,12 +18,15 @@ from backend.exceptions.bad_request_exception import BadRequestException
 from backend.exceptions.credentials_exception import CredentialsException
 from backend.exceptions.not_found_exception import NotFoundException
 from backend.exceptions.validation_exception import ValidationException
+from backend.mapper.user_mapper import map_user_to_user_response_with_interests, map_user_to_user_response
+from backend.models.interest import Interest
 from backend.models.message import Message, message_factory
 from backend.models.swipe_status import SwipeStatus, SwipeStatusType
 from backend.models.user import User
 from backend.repository.repository import create_session
 from backend.responses.notification import Notification, NotificationType
-from backend.responses.user_response import UserResponse
+from backend.responses.user_response import UserResponse, UserResponseWithInterests
+from backend.services.expert_system import get_expert_system_by_user_id
 from backend.services.message import _save_message
 from backend.services.validation.user_validation import validate_new_user
 from backend.utils import passwords
@@ -32,8 +34,6 @@ from backend.utils.connection_manager import connection_manager
 from backend.utils.logger import Logger
 from backend.utils.pagination import PaginationParams
 from backend.utils.token import create_access_token, get_current_user
-from backend.services.expert_system import get_expert_system_by_user_id
-from backend.models.interest import Interest
 
 
 class UserUpdate(BaseModel):
@@ -134,25 +134,7 @@ def patch_user(updated_user: UserUpdate, user: Annotated[User, Depends(get_curre
 
     db.commit()
     db.refresh(user)
-
-    # Create a new instance of UserBase with the data from the updated User instance
-    user_base = UserResponse(
-        id=user.id,
-        first_name=user.first_name,
-        last_name=user.last_name,
-        email=user.email,
-        bio=user.bio,
-        date_of_birth=user.date_of_birth,
-        job=user.job,
-        search_radius=user.search_radius,
-        swipes_left=user.swipes_left,
-        swipe_limit_reset_date=user.swipe_limit_reset_date,
-        latitude=user.latitude,
-        longitude=user.longitude,
-        gender_identity_id=user.gender_identity_id
-    )
-
-    return user_base
+    return map_user_to_user_response(user)
 
 
 def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: Annotated[Session, Depends(create_session)]):
@@ -167,10 +149,7 @@ def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: Annota
     return {"access_token": access_token, "token_type": "bearer", "user": user}
 
 
-def get_algo_user(algoId: int, user: Annotated[User, Depends(get_current_user)],
-                  db: Annotated[Session, Depends(create_session)], request: Request) -> UserResponse | None:
-
-    # Query to get all users in the given radius
+def get_swipeable_user(user, db):
     subquery = (
         select([User.location])
         .where(User.id == user.id)
@@ -187,20 +166,19 @@ def get_algo_user(algoId: int, user: Annotated[User, Depends(get_current_user)],
         )
         .where(User.id != user.id)
     )
-
-    # Fetch the query
-    users_list = db.exec(query).fetchall()
+    return db.exec(query).fetchall()
 
 
-
-
-
+def get_algo_user(algoId: int, user: Annotated[User, Depends(get_current_user)],
+                  db: Annotated[Session, Depends(create_session)],
+                  request: Request) -> UserResponseWithInterests | None:
+    swipeable_user = get_swipeable_user(user, db)
     match algoId:
         case 1:
-            user = random.choice(users_list)
-            return db_user_to_response_model_user(user, user.interests)
+            user = random.choice(swipeable_user)
+            return map_user_to_user_response_with_interests(user)
         case 2:
-            return None
+            return get_user_with_common_interests(user, swipeable_user)
         case 3:
             # Get expertsytem of current user
             expert_system = get_expert_system_by_user_id(user.id, db)
@@ -214,37 +192,21 @@ def get_algo_user(algoId: int, user: Annotated[User, Depends(get_current_user)],
 
             # Compute the user_id with the highest prediction from the all users in the given radius
             # TODO Use the prediction for something like: "Particularly Compatible! (#65)"
-            user_id_with_highest_prediction, prediction = exsys.predict(users_list)
+            user_id_with_highest_prediction, prediction = exsys.predict(swipeable_user)
 
-            user = [user for user in users_list if user.id == user_id_with_highest_prediction][0]
-            #return the user with the user.id = user_id_with_highest_prediction
-            return db_user_to_response_model_user(user, user.interests)
+            user = [user for user in swipeable_user if user.id == user_id_with_highest_prediction][0]
+            # return the user with the user.id = user_id_with_highest_prediction
+            return map_user_to_user_response_with_interests(user)
         case _:
             return None
 
 
-def db_user_to_response_model_user(user, interests):
+def get_user_with_common_interests(user, swipeable_user_list):
+    user_interests = set(user.interests)
 
-    interests_list = []
-    for interest in interests:
-        interests_list.append(Interest(id=interest.id, name=interest.name, icon=interest.icon))
-
-    return UserResponse(
-        id=user.id,
-        first_name=user.first_name,
-        last_name=user.last_name,
-        email=user.email,
-        bio=user.bio,
-        date_of_birth=user.date_of_birth,
-        job=user.job,
-        search_radius=user.search_radius,
-        swipes_left=user.swipes_left,
-        swipe_limit_reset_date=user.swipe_limit_reset_date,
-        latitude=user.latitude,
-        longitude=user.longitude,
-        gender_identity_id=user.gender_identity_id,
-        interests=interests_list
-    )
+    most_common_user = max(swipeable_user_list, key=lambda su: len(set(user_interests).intersection(set(su.interests))),
+                           default=None)
+    return map_user_to_user_response_with_interests(most_common_user) if most_common_user else None
 
 
 async def websocket_connect(websocket: WebSocket, user_token: str, db: Annotated[Session, Depends(create_session)]):
@@ -256,7 +218,8 @@ async def websocket_connect(websocket: WebSocket, user_token: str, db: Annotated
         while True:
             notification: Notification = Notification(await websocket.receive_json())
             # data: Message = message_factory(await websocket.receive_json())
-            Logger.debug(f"[websocket_connect]: received a notification from: user #{user.id}, contents: {notification}")
+            Logger.debug(
+                f"[websocket_connect]: received a notification from: user #{user.id}, contents: {notification}")
 
             if notification.type == NotificationType.message:
                 message: Message = message_factory(notification.content)
