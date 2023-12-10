@@ -10,7 +10,6 @@ import 'package:frontend/src/config/app_state.dart';
 import 'package:frontend/src/config/exceptions.dart';
 import 'package:frontend/src/config/theme.dart';
 import 'package:frontend/src/app/service/login_service.dart';
-import 'package:frontend/src/app/service/swipe_status_service.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';

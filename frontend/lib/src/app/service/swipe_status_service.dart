@@ -7,7 +7,7 @@ class SwipeStatusService {
 
   Future<String> postView(String token, int userId) async {
     try {
-      final result = await _swipeStatusApi.postView(userId);
+      final result = await _swipeStatusApi.postView(token, userId);
       return result;
     } catch (error) {
       print('Could not post view: $error');

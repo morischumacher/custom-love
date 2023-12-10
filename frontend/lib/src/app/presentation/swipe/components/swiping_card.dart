@@ -174,6 +174,8 @@ class SwipingCard extends StatelessWidget {
                     await swipeStatusService.postLike(accessToken, int.parse(_swipeItem.content.id));
                   } else {
                     print("Disliked");
+                    String accessToken = await controller.retrieveAccessToken() as String;
+                    await swipeStatusService.postView(accessToken, int.parse(_swipeItem.content.id));
                   }
                 },
                 itemChanged: (SwipeItem item, int index) {
@@ -231,6 +233,9 @@ class SwipingCard extends StatelessWidget {
                   if(tmpSwipesLeft > 0) {
                     _matchEngine!.currentItem?.nope();
                     await SwipesLeft.updateSwipeLeft(controller, userService);
+                    print("Disliked");
+                    String accessToken = await controller.retrieveAccessToken() as String;
+                    await swipeStatusService.postView(accessToken, int.parse(_swipeItem.content.id));
                   }
                 }
               },
@@ -247,6 +252,9 @@ class SwipingCard extends StatelessWidget {
                   if(tmpSwipesLeft > 0) {
                     _matchEngine!.currentItem?.like();
                     await SwipesLeft.updateSwipeLeft(controller, userService);
+                    print("Liked");
+                    String accessToken = await controller.retrieveAccessToken() as String;
+                    await swipeStatusService.postLike(accessToken, int.parse(_swipeItem.content.id));
                   }
                 }
               },

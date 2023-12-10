@@ -6,8 +6,15 @@ class SwipeStatusApi {
 
   SwipeStatusApi({required this.httpClient});
 
-  Future<String> postView(int userId) async {
-    final response = await httpClient.post(Uri.parse('${ApiConfig.baseUrl}/swipe_statuses/view/$userId'));
+  Future<String> postView(String accessToken, int userId) async {
+    final response = await httpClient.post(
+        Uri.parse('${ApiConfig.baseUrl}/swipe_statuses/view/$userId'),
+        headers: {
+          'Content-Type': 'application/json',
+          'accept': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        }
+    );
 
     if (response.statusCode == 200) {
       return response.toString();
