@@ -56,25 +56,26 @@ class _RegistrationInterestsState extends State<RegistrationInterests> {
   late Set<int> userInterestIdList;
 
   final interestDto = [
-    {'id': 1, 'icon_code': 0xe4b6, 'font_family': 'MaterialIcons', 'interest_name': 'Photography'},
-    {'id': 2, 'icon_code': 0xe59a, 'font_family': 'MaterialIcons', 'interest_name': 'Shopping'},
-    {'id': 3, 'icon_code': 0xf8bd, 'font_family': 'MaterialIcons', 'interest_name': 'Karaoke'},
-    {'id': 4, 'icon_code': 0xe5f3, 'font_family': 'MaterialIcons', 'interest_name': 'Tennis'},
-    {'id': 5, 'icon_code': 0xe39b, 'font_family': 'MaterialIcons', 'interest_name': 'Movies'},
-    {'id': 6, 'icon_code': 0xe5e3, 'font_family': 'MaterialIcons', 'interest_name': 'Sports'},
-    {'id': 7, 'icon_code': 0xe5e4, 'font_family': 'MaterialIcons', 'interest_name': 'Bars'},
-    {'id': 8, 'icon_code': 0xf02ee, 'font_family': 'MaterialIcons', 'interest_name': 'Travel'}, // 0xf02ee
-    {'id': 9, 'icon_code': 0xe0ef, 'font_family': 'MaterialIcons', 'interest_name': 'Book'},
-    {'id': 10, 'icon_code': 0xe55a, 'font_family': 'MaterialIcons', 'interest_name': 'Science'},
-    {'id': 11, 'icon_code': 0xf06c3, 'font_family': 'MaterialIcons', 'interest_name': 'Yoga'},
-    {'id': 12, 'icon_code': 0xe28e, 'font_family': 'MaterialIcons', 'interest_name': 'LGBTQ rights'},
-    {'id': 13, 'icon_code': 0xe67c, 'font_family': 'MaterialIcons', 'interest_name': 'Road trips'},
-    {'id': 14, 'icon_code': 0xf32c, 'font_family': 'MaterialIcons', 'interest_name': 'Jogging'},
-    {'id': 15, 'icon_code': 0xe1d3, 'font_family': 'MaterialIcons', 'interest_name': 'Jetski'},
-    {'id': 16, 'icon_code': 0xe2f2, 'font_family': 'MaterialIcons', 'interest_name': 'Social Justice'},
-    {'id': 17, 'icon_code': 0xe4c1, 'font_family': 'MaterialIcons', 'interest_name': 'NFTs'},
-    {'id': 18, 'icon_code': 0xeede, 'font_family': 'MaterialIcons', 'interest_name': 'Marvel'},
-    {'id': 19, 'icon_code': 0xf03dd, 'font_family': 'MaterialIcons', 'interest_name': 'Gym'},
+    {"id": 1, "name": "sports"},
+    {"id": 2, "name": "movies"},
+    {"id": 3, "name": "travel"},
+    {"id": 4, "name": "science"},
+    {"id": 5, "name": "books"},
+    {"id": 6, "name": "music"},
+    {"id": 7, "name": "art"},
+    {"id": 8, "name": "food"},
+    {"id": 9, "name": "technology"},
+    {"id": 10, "name": "fashion"},
+    {"id": 11, "name": "photography"},
+    {"id": 12, "name": "gaming"},
+    {"id": 13, "name": "nature"},
+    {"id": 14, "name": "history"},
+    {"id": 15, "name": "fitness"},
+    {"id": 16, "name": "crafts"},
+    {"id": 17, "name": "writing"},
+    {"id": 18, "name": "gardening"},
+    {"id": 19, "name": "philosophy"},
+    {"id": 20, "name": "coding"}
   ];
 
   @override
@@ -102,9 +103,7 @@ class _RegistrationInterestsState extends State<RegistrationInterests> {
                               Expanded(
                                 child: Interest(
                                     interestId: interestDto[i]['id'] as int,
-                                    interestName: interestDto[i]['interest_name'].toString(),
-                                    iconCode: int.parse(interestDto[i]['icon_code'].toString()),
-                                    fontFamily: interestDto[i]['font_family'].toString(),
+                                    interestName: interestDto[i]['name'].toString(),
                                     containsInterestFunction: containsInterest,
                                     addRemoveInterestFunction: addRemoveInterest
                                 ),
@@ -114,9 +113,7 @@ class _RegistrationInterestsState extends State<RegistrationInterests> {
                                 Expanded(
                                 child: Interest(
                                   interestId: interestDto[i + 1]['id'] as int,
-                                  interestName: interestDto[i + 1]['interest_name'].toString(),
-                                  iconCode: int.parse(interestDto[i + 1]['icon_code'].toString()),
-                                  fontFamily: interestDto[i + 1]['font_family'].toString(),
+                                  interestName: interestDto[i + 1]['name'].toString(),
                                   containsInterestFunction: containsInterest,
                                     addRemoveInterestFunction: addRemoveInterest
                                 ),

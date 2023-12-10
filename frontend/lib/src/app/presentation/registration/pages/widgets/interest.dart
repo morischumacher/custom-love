@@ -1,22 +1,19 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../config/theme.dart';
+import '../../../swipe/util/interests.dart';
 
 class Interest extends StatefulWidget {
   const Interest({
     super.key,
     required this.interestId,
     required this.interestName,
-    required this.iconCode,
-    required this.fontFamily,
     required this.containsInterestFunction,
     required this.addRemoveInterestFunction
   });
 
   final int interestId;
   final String interestName;
-  final int iconCode;
-  final String fontFamily;
   final Function containsInterestFunction;
   final Function addRemoveInterestFunction;
 
@@ -30,16 +27,12 @@ class _InterestState extends State<Interest> {
     super.initState();
     interestId = widget.interestId;
     interestName = widget.interestName;
-    iconCode = widget.iconCode;
-    fontFamily = widget.fontFamily;
     containsInterestFunction = widget.containsInterestFunction;
     addRemoveInterestFunction = widget.addRemoveInterestFunction;
   }
 
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
   late int interestId;
-  late int iconCode;
-  late String fontFamily;
   late String interestName;
   late Function containsInterestFunction;
   late Function addRemoveInterestFunction;
@@ -47,7 +40,7 @@ class _InterestState extends State<Interest> {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton.icon(
-        icon: Icon(Icons.sports_soccer,
+        icon: Icon(Interests.getIconData(interestName),
             color: containsInterestFunction(interestId) ? Colors.white : _customLoveTheme.tertiaryColor
         ),
         label: Text(interestName),
