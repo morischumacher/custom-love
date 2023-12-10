@@ -47,6 +47,8 @@ class RegistrationApi {
       "address_id": 1.toString()
     };
 
+    final String bd = "{\"first_name\": \"Echo\"}";
+
     print("BODY");
     print(body);
     print("\n");
@@ -54,8 +56,24 @@ class RegistrationApi {
 
     final response = await httpClient.post(
         Uri.parse('${ApiConfig.baseUrl}/users/'),
-
-        body: body);
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: json.encode(<String, String>{
+          "first_name": "Echo",
+          "last_name": "Echoson",
+          "email": "echo.echoson@email.con",
+          "password": "pass1",
+          "bio": "Test subject",
+          "date_of_birth": "1975-11-18T11:11:27.137918",
+          "job": "Software Engineer",
+          "search_radius": 1.toString(),
+          "swipes_left": 1.toString(),
+          "gender_identity_id": 1.toString(),
+          "address_id": 1.toString(),
+          "swipe_limit_reset_date": 10.toString()
+        })
+    );
 
     if (response.statusCode == 200) {
       // Successful login, return the response body as a map
