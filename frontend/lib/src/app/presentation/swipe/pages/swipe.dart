@@ -19,8 +19,9 @@ import '../util/swipes_left.dart';
 
 class Swipe extends StatefulWidget {
   final UserService userService;
+  final SwipeStatusService swipeStatusService;
 
-  const Swipe({Key? key, required this.userService}) : super(key: key);
+  const Swipe({Key? key, required this.userService, required this.swipeStatusService}) : super(key: key);
 
   @override
   _SwipeState createState() => _SwipeState();
@@ -36,7 +37,6 @@ class _SwipeState extends State<Swipe> {
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
   final LoginController _controller = LoginController();
   final LocationService _locationService = LocationService();
-  final SwipeStatusService _swipeStatusService = SwipeStatusService();
   late Timer timer;
   bool swipeableTimer = true;
   late int tmpSwipesLeft;
@@ -301,7 +301,7 @@ class _SwipeState extends State<Swipe> {
                         userId: userId,
                         controller: _controller,
                         userService: widget.userService,
-                        //viewService: _viewService,
+                        swipeStatusService: widget.swipeStatusService,
                         wantsToLike: wantsToLike),
                   ))
         : SizedBox();

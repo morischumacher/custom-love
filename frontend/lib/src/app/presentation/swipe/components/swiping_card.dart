@@ -17,14 +17,14 @@ import '../util/swipes_left.dart';
 class SwipingCard extends StatelessWidget {
   final LoginController controller;
   final UserService userService;
-  //final SwipeStatusService viewService;
+  final SwipeStatusService swipeStatusService;
 
   SwipingCard({
     super.key,
     required MatchEngine? matchEngine,
     required CustomLoveTheme customLoveTheme,
     required SwipeItem swipeItem,
-    required this.swipeable, swipeableTimer, userId, required this.controller, required this.userService, wantsToLike
+    required this.swipeable, swipeableTimer, userId, required this.controller, required this.userService, required this.swipeStatusService, wantsToLike
   })
       : _matchEngine = matchEngine,
         _customLoveTheme = customLoveTheme,
@@ -168,9 +168,10 @@ class SwipingCard extends StatelessWidget {
                     SharedSwipeableEvent.swipeable.changeSwipeable(false);
                   }
 
-                  //await SwipeStatus.view(controller, viewService, _swipeItem.content.id);
                   if(_wantsToLike) {
                     print("Liked");
+                    String accessToken = await controller.retrieveAccessToken() as String;
+                    await swipeStatusService.postLike(accessToken, int.parse(_swipeItem.content.id));
                   } else {
                     print("Disliked");
                   }

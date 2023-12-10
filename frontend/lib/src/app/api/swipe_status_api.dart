@@ -16,8 +16,15 @@ class SwipeStatusApi {
     }
   }
 
-  Future<String> postLike(int userId) async {
-    final response = await httpClient.post(Uri.parse('${ApiConfig.baseUrl}/swipe_statuses/like/$userId'));
+  Future<String> postLike(String accessToken, int userId) async {
+    final response = await httpClient.post(
+      Uri.parse('${ApiConfig.baseUrl}/swipe_statuses/like/$userId'),
+      headers: {
+        'Content-Type': 'application/json',
+        'accept': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      }
+    );
 
     if (response.statusCode == 200) {
       return response.toString();

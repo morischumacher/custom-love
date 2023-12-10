@@ -1,4 +1,5 @@
 import 'package:flutter/rendering.dart';
+import 'package:frontend/src/app/service/swipe_status_service.dart';
 import "package:universal_html/html.dart" as universal_html;
 import 'package:flutter/foundation.dart' show kIsWeb;
 
@@ -19,7 +20,7 @@ import '../../authentification/controller/login_controller.dart';
 enum AppPage { Profile, Swipe, Matches }
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key, required UserService userService})
+  const HomeScreen({Key? key, required UserService userService, SwipeStatusService? swipeStatusService})
       : super(key: key);
 
   @override
@@ -152,7 +153,7 @@ class _HomeScreenState extends State<HomeScreen> {
       case AppPage.Profile:
         return Profile(userService: context.read<UserService>());
       case AppPage.Swipe:
-        return Swipe(userService: context.read<UserService>());
+        return Swipe(userService: context.read<UserService>(), swipeStatusService: context.read<SwipeStatusService>());
       case AppPage.Matches:
         return const ConversationsPage();
     }
