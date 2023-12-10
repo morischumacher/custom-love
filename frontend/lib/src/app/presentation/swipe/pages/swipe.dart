@@ -1,10 +1,11 @@
 import 'dart:async';
 
 import 'package:frontend/src/app/model/user_model.dart';
-import 'package:frontend/src/app/presentation/swipe/controller/swipe_controller.dart';
+import 'package:frontend/src/app/presentation/swipe/util/swipe_status.dart';
 import 'package:frontend/src/app/presentation/swipe/util/content.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/presentation/swipe/util/shared_swipeable_event.dart';
+import 'package:frontend/src/app/service/swipe_status_service.dart';
 import 'package:swipe_cards/draggable_card.dart';
 import 'package:swipe_cards/swipe_cards.dart';
 import 'package:frontend/src/config/theme.dart';
@@ -34,25 +35,18 @@ class _SwipeState extends State<Swipe> {
   late bool swiped;
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
   final LoginController _controller = LoginController();
-  final SwipeController _swipeController = SwipeController();
   final LocationService _locationService = LocationService();
+  final SwipeStatusService _swipeStatusService = SwipeStatusService();
   late Timer timer;
   bool swipeableTimer = true;
   late int tmpSwipesLeft;
   late int userId;
   bool swipesEvent = false;
   bool hasVisitedSwipePage = false;
+  bool wantsToLike = false;
   int swipingAlgoId = 0;
   StreamSubscription<int>? _algoIdSubscription;
   StreamSubscription<bool>? _swipeableSubscription;
-
-  final List<Content> _cards = [
-    Content(
-        firstName: "Bravo",
-        languages: ["english", "french"],
-        bio: "hello,...",
-        interests: ["sport", "reading", "movies", "IT"])
-  ];
 
   @override
   void initState() {
@@ -200,6 +194,7 @@ class _SwipeState extends State<Swipe> {
     } else {
       if (mounted) {
         setState(() {
+          var id = user.id;
           var firstName = user.firstName;
           List<dynamic>? interests = [];
           if (user.interests != null) {
@@ -231,6 +226,7 @@ class _SwipeState extends State<Swipe> {
 
           _swipeItem = SwipeItem(
             content: Content(
+                id: id.toString(),
                 firstName: firstName,
                 age: age,
                 city: city,
@@ -259,13 +255,16 @@ class _SwipeState extends State<Swipe> {
                       });
                       // Dislike
                       SharedSwipeableEvent.swipeable.changeSwipeable(true);
-                      _swipeController.view(user.id);
-                      // TODO: create a view in backend
                     } else {
                       // Like
                       SharedSwipeableEvent.swipeable.changeSwipeable(false);
-                      // TODO: create a like in backend
                     }
+                  }
+
+                  if (region == SlideRegion.inNopeRegion) {
+                    wantsToLike = false;
+                  } else if (region == SlideRegion.inLikeRegion) {
+                    wantsToLike = true;
                   }
                 }
 
@@ -301,7 +300,9 @@ class _SwipeState extends State<Swipe> {
                         swipeableTimer: swipeableTimer,
                         userId: userId,
                         controller: _controller,
-                        userService: widget.userService),
+                        userService: widget.userService,
+                        //viewService: _viewService,
+                        wantsToLike: wantsToLike),
                   ))
         : SizedBox();
   }

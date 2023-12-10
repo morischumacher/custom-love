@@ -6,6 +6,8 @@ import 'package:frontend/src/app/presentation/swipe/util/shared_swipeable_event.
 import 'package:swipe_cards/swipe_cards.dart';
 import 'package:frontend/src/config/theme.dart';
 
+import '../../../service/swipe_status_service.dart';
+import '../util/swipe_status.dart';
 import '../util/interests.dart';
 
 import '../../../service/user_service.dart';
@@ -15,19 +17,21 @@ import '../util/swipes_left.dart';
 class SwipingCard extends StatelessWidget {
   final LoginController controller;
   final UserService userService;
+  //final SwipeStatusService viewService;
 
   SwipingCard({
     super.key,
     required MatchEngine? matchEngine,
     required CustomLoveTheme customLoveTheme,
     required SwipeItem swipeItem,
-    required this.swipeable, swipeableTimer, userId, required this.controller, required this.userService,
+    required this.swipeable, swipeableTimer, userId, required this.controller, required this.userService, wantsToLike
   })
       : _matchEngine = matchEngine,
         _customLoveTheme = customLoveTheme,
         _swipeItem = swipeItem,
         _swipeableTimer = swipeableTimer,
-        _userId = userId;
+        _userId = userId,
+        _wantsToLike = wantsToLike;
 
   final MatchEngine? _matchEngine;
   final CustomLoveTheme _customLoveTheme;
@@ -35,6 +39,7 @@ class SwipingCard extends StatelessWidget {
   bool swipeable = false;
   bool _swipeableTimer;
   final int _userId;
+  bool _wantsToLike;
 
   @override
   Widget build(BuildContext context) {
@@ -161,6 +166,13 @@ class SwipingCard extends StatelessWidget {
                     SharedSwipeableEvent.swipeable.changeSwipeable(true);
                   } else {
                     SharedSwipeableEvent.swipeable.changeSwipeable(false);
+                  }
+
+                  //await SwipeStatus.view(controller, viewService, _swipeItem.content.id);
+                  if(_wantsToLike) {
+                    print("Liked");
+                  } else {
+                    print("Disliked");
                   }
                 },
                 itemChanged: (SwipeItem item, int index) {
