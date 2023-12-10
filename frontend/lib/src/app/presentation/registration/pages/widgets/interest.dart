@@ -47,8 +47,7 @@ class _InterestState extends State<Interest> {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton.icon(
-        icon: Icon(
-            IconData(iconCode, fontFamily: fontFamily),
+        icon: Icon(Icons.sports_soccer,
             color: containsInterestFunction(interestId) ? Colors.white : _customLoveTheme.tertiaryColor
         ),
         label: Text(interestName),
