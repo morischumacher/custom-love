@@ -19,7 +19,6 @@ from backend.exceptions.credentials_exception import CredentialsException
 from backend.exceptions.not_found_exception import NotFoundException
 from backend.exceptions.validation_exception import ValidationException
 from backend.mapper.user_mapper import map_user_to_user_response_with_interests, map_user_to_user_response
-from backend.models.interest import Interest
 from backend.models.message import Message, message_factory
 from backend.models.swipe_status import SwipeStatus, SwipeStatusType
 from backend.models.user import User
@@ -170,9 +169,14 @@ def get_swipeable_user(user, db):
                 select([1])
                 .where(
                     or_(
-                        and_(SwipeStatus.user2_id == User.id, SwipeStatus.status.in_(['view', 'like'])),
-                        and_(SwipeStatus.user2_id == User.id, SwipeStatus.status == 'match'),
-                        and_(SwipeStatus.user1_id == User.id, SwipeStatus.status == 'match')
+                        and_(SwipeStatus.user2_id == User.id,
+                             SwipeStatus.user1_id == user.id,
+                             SwipeStatus.status.in_(['view', 'like', 'match'])
+                             ),
+                        and_(SwipeStatus.user1_id == User.id,
+                             SwipeStatus.user2_id == user.id,
+                             SwipeStatus.status == 'match'
+                             )
                     )
                 )
             )
@@ -180,8 +184,6 @@ def get_swipeable_user(user, db):
     )
     return db.exec(query).fetchall()
 
-    # Execute the query
-    result = db.exec(query)
 
 def get_algo_user(algoId: int, user: Annotated[User, Depends(get_current_user)],
                   db: Annotated[Session, Depends(create_session)],
