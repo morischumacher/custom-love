@@ -14,4 +14,8 @@ class SwipingAlgorithmEvent {
    Future<int> getAlgoId() async {
       return _currentAlgoId;
    }
+
+   void dispose() {
+      _controller.close();
+   }
 }

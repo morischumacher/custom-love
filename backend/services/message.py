@@ -1,39 +1,24 @@
 import json
 from typing import Annotated
+
 from fastapi import Depends
 from fastapi_pagination.ext.sqlmodel import paginate
 from sqlalchemy import or_, and_
 from sqlmodel import Session, select, col
 from starlette.requests import Request
 from starlette.responses import HTMLResponse
-from starlette.websockets import WebSocket, WebSocketDisconnect
+
 from backend.exceptions.credentials_exception import CredentialsException
 from backend.exceptions.not_found_exception import NotFoundException
 from backend.models.conversation import Conversation
-from backend.models.message import Message, message_factory
-from backend.repository.repository import create_session
+from backend.models.message import Message
 from backend.models.user import User
+from backend.repository.repository import create_session
 from backend.utils.connection_manager import ConnectionManager
-from backend.utils.logger import Logger
 from backend.utils.pagination import PaginationParams
 from backend.utils.token import get_current_user, create_access_token
 
 connection_manager = ConnectionManager()
-
-
-async def websocket_connect(websocket: WebSocket, user_token: str, db: Annotated[Session, Depends(create_session)]):
-    user: User = get_current_user(user_token, db)
-    Logger.debug(f"[websocket_connect]: connected on a websocket: {websocket} with the user: {user.id}")
-
-    await connection_manager.connect(websocket, user.id)
-    try:
-        while True:
-            data: Message = message_factory(await websocket.receive_json())
-            Logger.debug(f"[websocket_connect]: received a message from: user #{user.id}, contents: {data}")
-            data = _save_message(data, db)
-            await connection_manager.send_message(data.receiver_id, data)
-    except WebSocketDisconnect:
-        connection_manager.disconnect(websocket, user.id)
 
 
 def get_messages(conversation_id: int, db: Annotated[Session, Depends(create_session)],
@@ -108,7 +93,7 @@ def sockets_test(username: str, receiver_username: str, db: Annotated[Session, D
             <ul id='messages'>
             </ul>
             <script>
-                var ws = new WebSocket("%%URL%%/messages/socket/%%TOKEN%%");
+                var ws = new WebSocket("%%URL%%/users/socket/%%TOKEN%%");
                 ws.onmessage = function(event) {
                     var messages = document.getElementById('messages')
                     var message = document.createElement('li')
@@ -118,12 +103,17 @@ def sockets_test(username: str, receiver_username: str, db: Annotated[Session, D
                 };
                 function sendMessage(event) {
                     var input = document.getElementById("messageText")
-                    var content = JSON.stringify({
-                        "conversation_id": %%CONVERSATION_ID%%,
-                        "sender_id": %%SENDER_ID%%, 
-                        "receiver_id": %%RECEIVER_ID%%, 
-                        "message": input.value
-                    })
+                    var content = JSON.stringify(
+                        {
+                            "type": "message",
+                            "content": {
+                                "conversation_id": %%CONVERSATION_ID%%,
+                                "sender_id": %%SENDER_ID%%, 
+                                "receiver_id": %%RECEIVER_ID%%, 
+                                "message": input.value
+                            }
+                        }
+                    )
                     console.log(content)
                     ws.send(content)
                     input.value = ''

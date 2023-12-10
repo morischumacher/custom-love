@@ -59,7 +59,7 @@ class _ConversationsPageState extends State<ConversationsPage> {
                 return Consumer<StateManager>(
                   builder: (BuildContext context, StateManager stateManager, Widget? child) {
                     return CustomListTile(
-                        userId: stateManager.user!.id,
+                        userId: stateManager.user?.id,
                         conversation: conversationStorage.conversations.items.values.elementAtOrNull(index)
                     );
                   },

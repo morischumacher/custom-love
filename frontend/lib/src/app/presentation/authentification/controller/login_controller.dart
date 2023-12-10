@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/service/conversation_service.dart';
@@ -33,6 +34,16 @@ class LoginController {
       return await storage.read(key: "access_token");
   }
 
+  Future<void> storeUserId(String id) async {
+    const FlutterSecureStorage storage = FlutterSecureStorage();
+    await storage.write(key: "user_id", value: id);
+  }
+
+  Future<String?> retrieveUserId() async {
+    const FlutterSecureStorage storage = FlutterSecureStorage();
+    return await storage.read(key: "user_id");
+  }
+
   Future<void> handleLogin(BuildContext context) async {
     String email = emailController.text;
     String password = passwordController.text;
@@ -52,22 +63,23 @@ class LoginController {
 
         await storeAccessToken(accessToken);
 
+        var userId = loginResult["user"]["id"];
+
+        await storeUserId(userId.toString());
+
         // If login is successful, navigate to '/home'
         if (context.mounted) {
           userService.updateCurrentUserLocation(userLocation!, accessToken);
 
           // load users, conversations, matches and first messages
           unawaited(Provider.of<StateManager>(context, listen: false).initialize(
-              Provider.of<UserStorage>(context, listen: false),
-              Provider.of<ConversationStorage>(context, listen: false),
-              Provider.of<MessageStorage>(context, listen: false),
-              Provider.of<MatchStorage>(context, listen: false),
-              userService,
-              conversationService,
-              messageService,
-              matchService
+              context
           ));
-          Provider.of<StateManager>(context, listen: false).user = User.fromJson(loginResult['user']);
+
+          // save the user object and connect to a websocket
+          Provider.of<StateManager>(context, listen: false).registerUser(
+              User.fromJson(loginResult['user']), context
+          );
 
           Navigator.of(context).pushNamed('/home/swipe');
         }

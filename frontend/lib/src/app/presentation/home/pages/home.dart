@@ -1,4 +1,6 @@
-import 'dart:html';
+import 'package:flutter/rendering.dart';
+import "package:universal_html/html.dart" as universal_html;
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/presentation/chat/pages/conversation.dart';
@@ -10,6 +12,7 @@ import 'package:frontend/src/app/service/user_service.dart';
 
 import 'package:provider/provider.dart';
 
+import '../../../../config/app_state.dart';
 import '../../authentification/controller/login_controller.dart';
 
 
@@ -24,10 +27,13 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  late bool isOnSwipePage;
+
   @override
   void initState() {
     super.initState();
-    var url = window.location.href;
+    isOnSwipePage = false;
+    var url = universal_html.window.location.href;
     List<String> urlSubsections = url.split("/");
     String subRoute = urlSubsections[urlSubsections.length - 1].toLowerCase();
     switch(subRoute) {
@@ -55,10 +61,11 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text('Custom Love App'),
         backgroundColor: _customLoveTheme.primaryColor,
-        actions: [
+        actions: [ _currentPage.index == 1 ?
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 30),
             child: PopupMenuButton(
+                color: _customLoveTheme.neutralBackgroundColor,
                 icon: const Icon(Icons.tune, size: 28, color: Colors.black,),
                 itemBuilder: (BuildContext context) => [
                   PopupMenuItem(
@@ -70,13 +77,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         Navigator.pop(context);
                         SharedAlgorithmEvent.algoId.changeAlgoId(1);
                         print("broadcast happened");
-                        /*_controller.retrieveAccessToken().then((String? accessToken) {
-                            if (accessToken != null) {
-                               print("accessTOKEN: $accessToken");
-                            } else {
-                               print("accessTOKEN not available");
-                            }
-                        });*/
                       },
                     ),
                   ),
@@ -87,6 +87,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       onTap: () {
                         print("selected");
                         Navigator.pop(context);
+                        SharedAlgorithmEvent.algoId.changeAlgoId(2);
+                        print("broadcast happened");
                       },
                     ),
                   ),
@@ -97,22 +99,33 @@ class _HomeScreenState extends State<HomeScreen> {
                       onTap: () {
                         print("selected");
                         Navigator.pop(context);
+                        SharedAlgorithmEvent.algoId.changeAlgoId(3);
+                        print("broadcast happened");
                       },
                     ),
                   )
                 ]
             ),
-          ),
+          ) : Container(),
         ],
       ),
       body: getPage(_currentPage),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentPage.index,
+
         onTap: (int index) {
-          String str = AppPage.values[index].toString();
-          String subRouteName = str.split(".")[1].toLowerCase();
-          String subRoute = '/home/$subRouteName';
-          Navigator.pushNamed(context, subRoute);
+          if (kIsWeb) {
+            // Web
+            String str = AppPage.values[index].toString();
+            String subRouteName = str.split(".")[1].toLowerCase();
+            String subRoute = '/home/$subRouteName';
+            Navigator.pushNamed(context, subRoute);
+          } else {
+            // Mobile
+            setState(() {
+              _currentPage = AppPage.values[index];
+            });
+          }
         },
         unselectedItemColor: Colors.grey,
         selectedItemColor: _customLoveTheme.primaryColor,

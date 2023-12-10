@@ -1,5 +1,7 @@
 import random
 from typing import List, Annotated, Any, Type
+import datetime
+from typing import List, Annotated
 
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordRequestForm
@@ -10,17 +12,24 @@ from shapely import geometry, wkt
 from sqlalchemy import func, or_, and_
 from sqlmodel import Session, select
 from starlette.requests import Request
+from starlette.websockets import WebSocket, WebSocketDisconnect
+
 from backend.algo.exsys import ExSys
 from backend.exceptions.bad_request_exception import BadRequestException
 from backend.exceptions.credentials_exception import CredentialsException
 from backend.exceptions.not_found_exception import NotFoundException
 from backend.exceptions.validation_exception import ValidationException
+from backend.models.message import Message, message_factory
 from backend.models.swipe_status import SwipeStatus, SwipeStatusType
 from backend.models.user import User
 from backend.repository.repository import create_session
+from backend.responses.notification import Notification, NotificationType
 from backend.responses.user_response import UserResponse
+from backend.services.message import _save_message
 from backend.services.validation.user_validation import validate_new_user
 from backend.utils import passwords
+from backend.utils.connection_manager import connection_manager
+from backend.utils.logger import Logger
 from backend.utils.pagination import PaginationParams
 from backend.utils.token import create_access_token, get_current_user
 from backend.services.expert_system import get_expert_system_by_user_id
@@ -30,6 +39,7 @@ from backend.models.interest import Interest
 class UserUpdate(BaseModel):
     latitude: float = Field(None, title="Latitude")
     longitude: float = Field(None, title="Longitude")
+    swiped: bool = Field(None, title="Swiped")
 
 
 def get_user(user_id: int, db: Annotated[Session, Depends(create_session)]) -> User:
@@ -103,13 +113,24 @@ def patch_user(updated_user: UserUpdate, user: Annotated[User, Depends(get_curre
         :return: a user object
     """
     # TODO: check if the other fields should be updated
-    user.latitude = updated_user.latitude
-    user.longitude = updated_user.longitude
+    for key in updated_user.__dict__.items():
+        if "swiped" in key:
+            if datetime.datetime.now() < user.swipe_limit_reset_date:
+                if user.swipes_left != 0:
+                    user.swipes_left = user.swipes_left - 1
+            else:
+                user.swipe_limit_reset_date = datetime.datetime.now() + datetime.timedelta(hours=24)
+                user.swipes_left = 10
 
-    point = geometry.Point(user.longitude, user.latitude)
-    wkt_point = wkt.dumps(point)
+        elif "latitude" in key:
+            if updated_user.latitude is not None and updated_user.longitude is not None:
+                user.latitude = updated_user.latitude
+                user.longitude = updated_user.longitude
 
-    user.location = wkt_point
+                point = geometry.Point(user.longitude, user.latitude)
+                wkt_point = wkt.dumps(point)
+
+                user.location = wkt_point
 
     db.commit()
     db.refresh(user)
@@ -125,6 +146,7 @@ def patch_user(updated_user: UserUpdate, user: Annotated[User, Depends(get_curre
         job=user.job,
         search_radius=user.search_radius,
         swipes_left=user.swipes_left,
+        swipe_limit_reset_date=user.swipe_limit_reset_date,
         latitude=user.latitude,
         longitude=user.longitude,
         gender_identity_id=user.gender_identity_id
@@ -166,11 +188,8 @@ def get_algo_user(algoId: int, user: Annotated[User, Depends(get_current_user)],
         .where(User.id != user.id)
     )
 
-    # Execute the query
-    result = db.exec(query)
-
     # Fetch the query
-    users_list = result.fetchall()
+    users_list = db.exec(query).fetchall()
 
 
 
@@ -220,8 +239,35 @@ def db_user_to_response_model_user(user, interests):
         job=user.job,
         search_radius=user.search_radius,
         swipes_left=user.swipes_left,
+        swipe_limit_reset_date=user.swipe_limit_reset_date,
         latitude=user.latitude,
         longitude=user.longitude,
         gender_identity_id=user.gender_identity_id,
         interests=interests_list
     )
+
+
+async def websocket_connect(websocket: WebSocket, user_token: str, db: Annotated[Session, Depends(create_session)]):
+    user: User = get_current_user(user_token, db)
+    Logger.debug(f"[websocket_connect]: connected on a websocket: {websocket} with the user: {user.id}")
+
+    await connection_manager.connect(websocket, user.id)
+    try:
+        while True:
+            notification: Notification = Notification(await websocket.receive_json())
+            # data: Message = message_factory(await websocket.receive_json())
+            Logger.debug(f"[websocket_connect]: received a notification from: user #{user.id}, contents: {notification}")
+
+            if notification.type == NotificationType.message:
+                message: Message = message_factory(notification.content)
+                message = _save_message(message, db)
+                notification.content = message.json()
+
+                # send the message to the receiver
+                await connection_manager.send_notification(message.receiver_id, notification)
+
+                # send the message to all devices of the sender
+                await connection_manager.send_notification(message.sender_id, notification)
+
+    except WebSocketDisconnect:
+        connection_manager.disconnect(websocket, user.id)

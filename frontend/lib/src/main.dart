@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/src/app/presentation/authentification/pages/logout_page.dart';
 import 'package:frontend/src/app/presentation/utils/CustomScrollBehaviour.dart';
 import 'package:frontend/src/app/service/conversation_service.dart';
 import 'package:frontend/src/app/service/match_service.dart';
@@ -106,6 +107,9 @@ class CustomLove extends StatelessWidget {
             final messageService = Provider.of<MessageService>(context);
             return HomeScreen(userService: userService);
           },
+          '/logout': (context) {
+            return const LogoutPage();
+          }
           '/registration': (context) {
             // return const RegistrationGenderPreference();
             return RegistrationNameEmail(
