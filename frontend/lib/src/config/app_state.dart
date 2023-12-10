@@ -70,6 +70,7 @@ class StateManager extends ChangeNotifier {
   WebSocketChannel? socket;
   bool connected = false;
   int loginRetries = 10;
+  bool initialized = false;
 
   Future<void> registerUser(User user, BuildContext buildContext) async {
     // save the current user
@@ -89,6 +90,8 @@ class StateManager extends ChangeNotifier {
     for (Future<void> task in tasks) {
       await task;
     }
+
+    initialized = true;
   }
   
   Future<void> initializeUsers(BuildContext buildContext) async {

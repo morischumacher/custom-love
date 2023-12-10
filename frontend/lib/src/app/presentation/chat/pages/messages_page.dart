@@ -21,6 +21,10 @@ class MessagesPage extends StatelessWidget {
   const MessagesPage({super.key});
   @override
   Widget build(BuildContext context) {
+    if (ModalRoute.of(context)!.settings.arguments == null) {
+      Navigator.of(context).pushReplacementNamed("/home/matches");
+    }
+
     final args = ModalRoute.of(context)!.settings.arguments as MessagesPageRouteArguments;
     final TextEditingController _textInputController = TextEditingController();
     const CustomLoveTheme _theme = CustomLoveTheme();
