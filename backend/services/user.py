@@ -1,6 +1,7 @@
 import datetime
 import random
 from typing import List, Annotated
+import json
 
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordRequestForm
@@ -240,7 +241,7 @@ async def websocket_connect(websocket: WebSocket, user_token: str, db: Annotated
             if notification.type == NotificationType.message:
                 message: Message = message_factory(notification.content)
                 message = _save_message(message, db)
-                notification.content = message.json()
+                notification.content = message
 
                 # send the message to the receiver
                 await connection_manager.send_notification(message.receiver_id, notification)

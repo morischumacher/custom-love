@@ -1,0 +1,57 @@
+import 'package:flutter/material.dart';
+import 'package:frontend/src/config/app_state.dart';
+import 'package:provider/provider.dart';
+
+import '../../../model/message_model.dart';
+
+class MessageInput extends StatelessWidget {
+  final TextEditingController textInputController;
+  final int conversationId;
+  final int senderId;
+  final int receiverId;
+
+  const MessageInput(
+      this.textInputController,
+      this.conversationId,
+      this.senderId,
+      this.receiverId,
+      {super.key}
+  );
+
+  Future<void> sendMessage(BuildContext context) async {
+    if (textInputController.text.isEmpty) {
+      return;
+    }
+
+    Message message = Message(
+        null,
+        conversationId,
+        senderId,
+        receiverId,
+        textInputController.text,
+        DateTime.now()
+    );
+
+    Provider.of<StateManager>(context, listen: false).sendMessage(message, context);
+    textInputController.clear();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(child: TextField(
+          decoration: const InputDecoration(
+            hintText: "Enter your message ...",
+          ),
+          controller: textInputController,
+          obscureText: false,
+          autofocus: true,
+          maxLines: null,
+        )),
+        IconButton(onPressed: () => sendMessage(context), icon: const Icon(Icons.arrow_upward, size: 40,)),
+      ],
+    );
+  }
+
+}

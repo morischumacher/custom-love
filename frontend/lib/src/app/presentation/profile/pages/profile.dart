@@ -14,37 +14,9 @@ class Profile extends StatefulWidget {
 class _ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       body: Center(
-        child: FutureBuilder<List<User>>(
-          future: widget.userService.getAllUsers(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator();
-            } else if (snapshot.hasError) {
-              return Text('Error: ${snapshot.error}');
-            } else if (snapshot.hasData) {
-              final users = snapshot.data!;
-              return users.isNotEmpty
-                  ? Center(
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: users.length,
-                        itemBuilder: (context, index) {
-                          final user = users[index];
-                          return ListTile(
-                            title: Text('${user.firstName} ${user.lastName}'),
-                            subtitle: Text(user.job),
-                          );
-                        },
-                      ),
-                    )
-                  : const Text('No Users');
-            } else {
-              return const Text('No data available.');
-            }
-          },
-        ),
+        child: Text("Placeholder")
       ),
     );
   }
