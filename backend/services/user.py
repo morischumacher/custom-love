@@ -8,7 +8,7 @@ from fastapi_pagination.ext.sqlmodel import paginate
 from geoalchemy2 import Geography
 from pydantic import BaseModel, Field
 from shapely import geometry, wkt
-from sqlalchemy import func, or_, and_
+from sqlalchemy import func, or_, and_, exists
 from sqlmodel import Session, select
 from starlette.requests import Request
 from starlette.websockets import WebSocket, WebSocketDisconnect
@@ -19,7 +19,6 @@ from backend.exceptions.credentials_exception import CredentialsException
 from backend.exceptions.not_found_exception import NotFoundException
 from backend.exceptions.validation_exception import ValidationException
 from backend.mapper.user_mapper import map_user_to_user_response_with_interests, map_user_to_user_response
-from backend.models.interest import Interest
 from backend.models.message import Message, message_factory
 from backend.models.swipe_status import SwipeStatus, SwipeStatusType
 from backend.models.user import User
@@ -165,6 +164,23 @@ def get_swipeable_user(user, db):
             )
         )
         .where(User.id != user.id)
+        .where(
+            ~exists(
+                select([1])
+                .where(
+                    or_(
+                        and_(SwipeStatus.user2_id == User.id,
+                             SwipeStatus.user1_id == user.id,
+                             SwipeStatus.status.in_(['view', 'like', 'match'])
+                             ),
+                        and_(SwipeStatus.user1_id == User.id,
+                             SwipeStatus.user2_id == user.id,
+                             SwipeStatus.status == 'match'
+                             )
+                    )
+                )
+            )
+        )
     )
     return db.exec(query).fetchall()
 
