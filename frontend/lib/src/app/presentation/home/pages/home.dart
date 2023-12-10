@@ -119,7 +119,7 @@ class _HomeScreenState extends State<HomeScreen> {
             String str = AppPage.values[index].toString();
             String subRouteName = str.split(".")[1].toLowerCase();
             String subRoute = '/home/$subRouteName';
-            Navigator.pushNamed(context, subRoute);
+            Navigator.pushReplacementNamed(context, subRoute);
           } else {
             // Mobile
             setState(() {
