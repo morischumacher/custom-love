@@ -18,6 +18,7 @@ from backend.exceptions.bad_request_exception import BadRequestException
 from backend.exceptions.credentials_exception import CredentialsException
 from backend.exceptions.not_found_exception import NotFoundException
 from backend.exceptions.validation_exception import ValidationException
+from backend.mapper.user_mapper import map_user_to_user_response
 from backend.models.interest import Interest
 from backend.models.message import Message, message_factory
 from backend.models.swipe_status import SwipeStatus, SwipeStatusType
@@ -192,7 +193,7 @@ def get_algo_user(algoId: int, user: Annotated[User, Depends(get_current_user)],
     match algoId:
         case 1:
             user = random.choice(users_list)
-            return db_user_to_response_model_user(user, user.interests)
+            return map_user_to_user_response(user)
         case 2:
             return get_user_with_common_interests(user, users_list)
         case 3:
@@ -212,32 +213,9 @@ def get_algo_user(algoId: int, user: Annotated[User, Depends(get_current_user)],
 
             user = [user for user in users_list if user.id == user_id_with_highest_prediction][0]
             # return the user with the user.id = user_id_with_highest_prediction
-            return db_user_to_response_model_user(user, user.interests)
+            return map_user_to_user_response(user)
         case _:
             return None
-
-
-def db_user_to_response_model_user(user, interests):
-    interests_list = []
-    for interest in interests:
-        interests_list.append(Interest(id=interest.id, name=interest.name, icon=interest.icon))
-
-    return UserResponse(
-        id=user.id,
-        first_name=user.first_name,
-        last_name=user.last_name,
-        email=user.email,
-        bio=user.bio,
-        date_of_birth=user.date_of_birth,
-        job=user.job,
-        search_radius=user.search_radius,
-        swipes_left=user.swipes_left,
-        swipe_limit_reset_date=user.swipe_limit_reset_date,
-        latitude=user.latitude,
-        longitude=user.longitude,
-        gender_identity_id=user.gender_identity_id,
-        interests=interests_list
-    )
 
 
 def get_user_with_common_interests(user, swipeable_user_list):
@@ -245,7 +223,7 @@ def get_user_with_common_interests(user, swipeable_user_list):
 
     most_common_user = max(swipeable_user_list, key=lambda su: len(set(user_interests).intersection(set(su.interests))),
                            default=None)
-    return db_user_to_response_model_user(most_common_user, most_common_user.interests) if most_common_user else None
+    return map_user_to_user_response(most_common_user) if most_common_user else None
 
 
 async def websocket_connect(websocket: WebSocket, user_token: str, db: Annotated[Session, Depends(create_session)]):
