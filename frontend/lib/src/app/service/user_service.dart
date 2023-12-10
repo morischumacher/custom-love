@@ -13,7 +13,12 @@ class UserService extends PaginatedService<User, UserApi> {
   Future<List<User>> getAllUsers() async {
     try {
       Map<int, User> users = await super.api.getAll();
-      return users.values as List<User>;
+
+      List<User> res = [];
+      for (var user in users.values) {
+        res.add(user);
+      }
+      return res;
     } on Exception {
       rethrow;
     }
