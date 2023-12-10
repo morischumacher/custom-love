@@ -1,13 +1,12 @@
-import random
-from typing import List, Annotated, Any, Type
 import datetime
+import random
 from typing import List, Annotated
 
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_pagination.ext.sqlmodel import paginate
 from geoalchemy2 import Geography
-from pydantic import BaseModel, Field, json
+from pydantic import BaseModel, Field
 from shapely import geometry, wkt
 from sqlalchemy import func, or_, and_
 from sqlmodel import Session, select
@@ -19,12 +18,14 @@ from backend.exceptions.bad_request_exception import BadRequestException
 from backend.exceptions.credentials_exception import CredentialsException
 from backend.exceptions.not_found_exception import NotFoundException
 from backend.exceptions.validation_exception import ValidationException
+from backend.models.interest import Interest
 from backend.models.message import Message, message_factory
 from backend.models.swipe_status import SwipeStatus, SwipeStatusType
 from backend.models.user import User
 from backend.repository.repository import create_session
 from backend.responses.notification import Notification, NotificationType
 from backend.responses.user_response import UserResponse
+from backend.services.expert_system import get_expert_system_by_user_id
 from backend.services.message import _save_message
 from backend.services.validation.user_validation import validate_new_user
 from backend.utils import passwords
@@ -32,8 +33,6 @@ from backend.utils.connection_manager import connection_manager
 from backend.utils.logger import Logger
 from backend.utils.pagination import PaginationParams
 from backend.utils.token import create_access_token, get_current_user
-from backend.services.expert_system import get_expert_system_by_user_id
-from backend.models.interest import Interest
 
 
 class UserUpdate(BaseModel):
@@ -169,7 +168,6 @@ def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: Annota
 
 def get_algo_user(algoId: int, user: Annotated[User, Depends(get_current_user)],
                   db: Annotated[Session, Depends(create_session)], request: Request) -> UserResponse | None:
-
     # Query to get all users in the given radius
     subquery = (
         select([User.location])
@@ -191,16 +189,12 @@ def get_algo_user(algoId: int, user: Annotated[User, Depends(get_current_user)],
     # Fetch the query
     users_list = db.exec(query).fetchall()
 
-
-
-
-
     match algoId:
         case 1:
             user = random.choice(users_list)
             return db_user_to_response_model_user(user, user.interests)
         case 2:
-            return None
+            return get_user_with_common_interests(user, users_list)
         case 3:
             # Get expertsytem of current user
             expert_system = get_expert_system_by_user_id(user.id, db)
@@ -217,14 +211,13 @@ def get_algo_user(algoId: int, user: Annotated[User, Depends(get_current_user)],
             user_id_with_highest_prediction, prediction = exsys.predict(users_list)
 
             user = [user for user in users_list if user.id == user_id_with_highest_prediction][0]
-            #return the user with the user.id = user_id_with_highest_prediction
+            # return the user with the user.id = user_id_with_highest_prediction
             return db_user_to_response_model_user(user, user.interests)
         case _:
             return None
 
 
 def db_user_to_response_model_user(user, interests):
-
     interests_list = []
     for interest in interests:
         interests_list.append(Interest(id=interest.id, name=interest.name, icon=interest.icon))
@@ -247,6 +240,14 @@ def db_user_to_response_model_user(user, interests):
     )
 
 
+def get_user_with_common_interests(user, swipeable_user_list):
+    user_interests = set(user.interests)
+
+    most_common_user = max(swipeable_user_list, key=lambda su: len(set(user_interests).intersection(set(su.interests))),
+                           default=None)
+    return db_user_to_response_model_user(most_common_user, most_common_user.interests) if most_common_user else None
+
+
 async def websocket_connect(websocket: WebSocket, user_token: str, db: Annotated[Session, Depends(create_session)]):
     user: User = get_current_user(user_token, db)
     Logger.debug(f"[websocket_connect]: connected on a websocket: {websocket} with the user: {user.id}")
@@ -256,7 +257,8 @@ async def websocket_connect(websocket: WebSocket, user_token: str, db: Annotated
         while True:
             notification: Notification = Notification(await websocket.receive_json())
             # data: Message = message_factory(await websocket.receive_json())
-            Logger.debug(f"[websocket_connect]: received a notification from: user #{user.id}, contents: {notification}")
+            Logger.debug(
+                f"[websocket_connect]: received a notification from: user #{user.id}, contents: {notification}")
 
             if notification.type == NotificationType.message:
                 message: Message = message_factory(notification.content)
