@@ -5,6 +5,9 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from backend.models.message import Message
 from backend.responses.notification import Notification, NotificationType
 from backend.utils.logger import Logger
+from typing import Any, List, Optional
+
+from pydantic import BaseModel, Field, Json
 
 
 MAX_CONNECTIONS = 10

@@ -98,6 +98,10 @@ class CustomLove extends StatelessWidget {
             final messageService = Provider.of<MessageService>(context);
             return HomeScreen(userService: userService);
           },
+          '/home/matches/messages': (context) {
+            final userService = Provider.of<UserService>(context);
+            return HomeScreen(userService: userService);
+          },
           '/logout': (context) {
             return const LogoutPage();
           }

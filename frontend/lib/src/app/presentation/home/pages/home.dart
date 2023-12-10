@@ -1,9 +1,11 @@
 import 'package:flutter/rendering.dart';
+import 'package:frontend/src/app/presentation/chat/pages/matches_page.dart';
+import 'package:frontend/src/app/presentation/chat/pages/messages_page.dart';
 import "package:universal_html/html.dart" as universal_html;
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 import 'package:flutter/material.dart';
-import 'package:frontend/src/app/presentation/chat/pages/conversation.dart';
+import 'package:frontend/src/app/presentation/chat/pages/conversations_page.dart';
 import 'package:frontend/src/app/presentation/swipe/util/shared_algorithm_event.dart';
 import 'package:frontend/src/config/theme.dart';
 import 'package:frontend/src/app/presentation/profile/pages/profile.dart';
@@ -46,6 +48,9 @@ class _HomeScreenState extends State<HomeScreen> {
       case 'matches':
         _currentPage = AppPage.Matches;
         break;
+      case 'messages':
+        _currentPage = AppPage.Matches;
+        break;
       default:
         _currentPage = AppPage.Profile;
     }
@@ -59,7 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Custom Love App'),
+        title: getTitle(),
         backgroundColor: _customLoveTheme.primaryColor,
         actions: [ _currentPage.index == 1 ?
           Padding(
@@ -154,7 +159,16 @@ class _HomeScreenState extends State<HomeScreen> {
       case AppPage.Swipe:
         return Swipe(userService: context.read<UserService>());
       case AppPage.Matches:
-        return const ConversationsPage();
+        return const MatchesPage();
     }
+  }
+
+  Widget getTitle() {
+    if (ModalRoute.of(context)!.settings.arguments is MessagesPageRouteArguments) {
+      final args = ModalRoute.of(context)!.settings.arguments as MessagesPageRouteArguments;
+      return Text("${args.user.firstName} ${args.user.lastName}");
+    }
+
+    return const Text("Custom Love App");
   }
 }

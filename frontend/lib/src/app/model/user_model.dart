@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:convert';
 
 import 'package:frontend/src/app/presentation/chat/components/avatar.dart';
 

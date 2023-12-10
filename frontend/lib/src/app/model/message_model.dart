@@ -1,5 +1,7 @@
+import 'dart:convert';
+
 class Message {
-  int id;
+  int? id;
   int conversationId;
   int senderId;
   int receiverId;
@@ -17,6 +19,17 @@ class Message {
       json['message'],
       DateTime.parse(json['timestamp'])
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'conversation_id': conversationId,
+      'sender_id': senderId,
+      'receiver_id': receiverId,
+      'message': message,
+      'timestamp': timestamp.toString()
+    };
   }
 
   String getPreview({int length = 40}) {
