@@ -15,3 +15,9 @@ class WrongEmailException implements Exception {
 
   WrongEmailException();
 }
+
+class NoNetworkException implements Exception {
+  final String message = "No Network";
+
+  NoNetworkException();
+}
