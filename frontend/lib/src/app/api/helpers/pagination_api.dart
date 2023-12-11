@@ -67,7 +67,6 @@ class PaginationApi {
     }
 
     // check if the currentPage is greater than the max amount of pages
-    // print("${!(_currentPage > _maxPage)}");
     return !(_currentPage > _maxPage);
   }
 

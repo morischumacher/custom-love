@@ -74,10 +74,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: ListTile(
                       title: const Text("Random Algorithm", style: TextStyle(fontSize: 13)),
                       onTap: () {
-                        print("selected");
                         Navigator.pop(context);
                         SharedAlgorithmEvent.algoId.changeAlgoId(1);
-                        print("broadcast happened");
                       },
                     ),
                   ),

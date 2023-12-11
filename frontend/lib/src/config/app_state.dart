@@ -165,7 +165,6 @@ class StateManager extends ChangeNotifier {
         NotificationModel notification = NotificationModel.fromJson(event);
         switch(notification.type) {
           case "message":
-            print(event);
         }
       },
       onDone: () {

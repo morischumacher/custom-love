@@ -15,7 +15,7 @@ class _ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
+        /*body: Center(
         child: FutureBuilder<List<User>>(
           future: widget.userService.getAllUsers(),
           builder: (context, snapshot) {
@@ -45,7 +45,7 @@ class _ProfileState extends State<Profile> {
             }
           },
         ),
-      ),
-    );
+      ),*/
+        );
   }
 }

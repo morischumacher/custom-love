@@ -167,21 +167,8 @@ class SwipingCard extends StatelessWidget {
                   } else {
                     SharedSwipeableEvent.swipeable.changeSwipeable(false);
                   }
-
-                  /*if(_wantsToLike) {
-                    print("Liked");
-                    String accessToken = await controller.retrieveAccessToken() as String;
-                    String result = await swipeStatusService.postLike(accessToken, int.parse(_swipeItem.content.id));
-                    print("result " + result);
-                  } else {
-                    print("Disliked");
-                    String accessToken = await controller.retrieveAccessToken() as String;
-                    await swipeStatusService.postView(accessToken, int.parse(_swipeItem.content.id));
-                  }*/
                 },
-                itemChanged: (SwipeItem item, int index) {
-                  print("item: ${item.content.firstName}, index: $index");
-                },
+                itemChanged: (SwipeItem item, int index) {},
                 leftSwipeAllowed: _swipeableTimer ? swipeable : false,
                 rightSwipeAllowed: _swipeableTimer ? swipeable : false,
                 fillSpace: true,
@@ -233,7 +220,6 @@ class SwipingCard extends StatelessWidget {
                   int tmpSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(_userId, userService);
                   if(tmpSwipesLeft > 0) {
                     await SwipesLeft.updateSwipeLeft(controller, userService);
-                    print("Disliked");
                     _matchEngine!.currentItem?.nope();
                   }
                 }
@@ -250,7 +236,6 @@ class SwipingCard extends StatelessWidget {
                   int tmpSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(_userId, userService);
                   if(tmpSwipesLeft > 0) {
                     await SwipesLeft.updateSwipeLeft(controller, userService);
-                    print("Liked");
                     _matchEngine!.currentItem?.like();
                   }
                 }

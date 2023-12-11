@@ -56,7 +56,6 @@ class _SwipeState extends State<Swipe> {
 
     _algoIdSubscription =
         SharedAlgorithmEvent.algoId.algoIdChanged.listen((int algoId) {
-      print("current algoID: $algoId");
       if (mounted) {
         setState(() {
           swipingAlgoId = algoId;
@@ -163,12 +162,8 @@ class _SwipeState extends State<Swipe> {
     }
 
     if (swipingAlgoId == 1) {
-      print("Random swiping algorithm is used");
     } else if (swipingAlgoId == 2) {
-      print("Interest-based swiping algorithm is used");
-    } else if (swipingAlgoId == 3) {
-      print("Preference-based swiping algorithm is used");
-    }
+    } else if (swipingAlgoId == 3) {}
 
     String accessToken = await _controller.retrieveAccessToken() as String;
     await widget.userService
@@ -235,15 +230,11 @@ class _SwipeState extends State<Swipe> {
             likeAction: () async {
               String accessToken = await _controller.retrieveAccessToken() as String;
               String result = await widget.swipeStatusService.postLike(accessToken, int.parse(_swipeItem.content.id));
-              print("result " + result);
-              print("Liked");
               _loadNextUser();
             },
             nopeAction: () async {
               String accessToken = await _controller.retrieveAccessToken() as String;
               String result = await widget.swipeStatusService.postView(accessToken, int.parse(_swipeItem.content.id));
-              print("result " + result);
-              print("Disliked");
               _loadNextUser();
             },
             onSlideUpdate: (SlideRegion? region) async {
