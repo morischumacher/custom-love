@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import 'package:frontend/src/app/model/user_model.dart';
+import 'package:frontend/src/app/presentation/swipe/util/swipe_status.dart';
 import 'package:frontend/src/app/presentation/swipe/util/content.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/presentation/swipe/util/shared_swipeable_event.dart';
+import 'package:frontend/src/app/service/swipe_status_service.dart';
 import 'package:swipe_cards/draggable_card.dart';
 import 'package:swipe_cards/swipe_cards.dart';
 import 'package:frontend/src/config/theme.dart';
@@ -15,12 +17,11 @@ import '../components/swiping_card.dart';
 import '../util/shared_algorithm_event.dart';
 import '../util/swipes_left.dart';
 
-
 class Swipe extends StatefulWidget {
   final UserService userService;
+  final SwipeStatusService swipeStatusService;
 
-  const Swipe({Key? key, required this.userService}) : super(key: key);
-
+  const Swipe({Key? key, required this.userService, required this.swipeStatusService}) : super(key: key);
 
   @override
   _SwipeState createState() => _SwipeState();
@@ -46,18 +47,14 @@ class _SwipeState extends State<Swipe> {
   StreamSubscription<int>? _algoIdSubscription;
   StreamSubscription<bool>? _swipeableSubscription;
 
-  final List<Content> _cards = [
-    Content(firstName: "Bravo", languages: ["english", "french"], bio: "hello,...", interests: ["sport", "reading", "movies", "IT"])];
-
-
   @override
   void initState() {
     super.initState();
 
     _fetchInitData();
 
-    _algoIdSubscription = SharedAlgorithmEvent.algoId.algoIdChanged.listen((int algoId) {
-      print("current algoID: $algoId");
+    _algoIdSubscription =
+        SharedAlgorithmEvent.algoId.algoIdChanged.listen((int algoId) {
       if (mounted) {
         setState(() {
           swipingAlgoId = algoId;
@@ -81,42 +78,48 @@ class _SwipeState extends State<Swipe> {
                     const Text('Choose your preferred matching algorithm!'),
                     const SizedBox(height: 10),
                     ElevatedButton(
-                        style: ElevatedButton.styleFrom(
+                      style: ElevatedButton.styleFrom(
                           elevation: 5,
-                          backgroundColor: _customLoveTheme.neutralBackgroundColor,
-                          fixedSize: const Size(200, 30)
-                        ),
-                        onPressed: (){
-                          Navigator.pop(context);
-                          SharedAlgorithmEvent.algoId.changeAlgoId(1);
-                        },
-                        child: Text("Random", style: TextStyle(fontSize: 13, color: _customLoveTheme.textColor)),
+                          backgroundColor:
+                              _customLoveTheme.neutralBackgroundColor,
+                          fixedSize: const Size(200, 30)),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        SharedAlgorithmEvent.algoId.changeAlgoId(1);
+                      },
+                      child: Text("Random",
+                          style: TextStyle(
+                              fontSize: 13, color: _customLoveTheme.textColor)),
                     ),
                     const SizedBox(height: 10),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                           elevation: 5,
-                          backgroundColor: _customLoveTheme.neutralBackgroundColor,
-                          fixedSize: const Size(200, 30)
-                      ),
-                      onPressed: (){
+                          backgroundColor:
+                              _customLoveTheme.neutralBackgroundColor,
+                          fixedSize: const Size(200, 30)),
+                      onPressed: () {
                         Navigator.pop(context);
                         SharedAlgorithmEvent.algoId.changeAlgoId(2);
                       },
-                      child: Text("Interest-based", style: TextStyle(fontSize: 13, color: _customLoveTheme.textColor)),
+                      child: Text("Interest-based",
+                          style: TextStyle(
+                              fontSize: 13, color: _customLoveTheme.textColor)),
                     ),
                     const SizedBox(height: 10),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                           elevation: 5,
-                          backgroundColor: _customLoveTheme.neutralBackgroundColor,
-                          fixedSize: const Size(200, 30)
-                      ),
-                      onPressed: (){
+                          backgroundColor:
+                              _customLoveTheme.neutralBackgroundColor,
+                          fixedSize: const Size(200, 30)),
+                      onPressed: () {
                         Navigator.pop(context);
                         SharedAlgorithmEvent.algoId.changeAlgoId(3);
                       },
-                      child: Text("Preference-based", style: TextStyle(fontSize: 13, color: _customLoveTheme.textColor)),
+                      child: Text("Preference-based",
+                          style: TextStyle(
+                              fontSize: 13, color: _customLoveTheme.textColor)),
                     ),
                   ],
                 ),
@@ -129,7 +132,8 @@ class _SwipeState extends State<Swipe> {
       hasVisitedSwipePage = true;
     }
 
-    _swipeableSubscription = SharedSwipeableEvent.swipeable.swipeableChanged.listen((bool swipeable) async {
+    _swipeableSubscription = SharedSwipeableEvent.swipeable.swipeableChanged
+        .listen((bool swipeable) async {
       if (mounted) {
         setState(() {
           swipesEvent = swipeable;
@@ -157,22 +161,19 @@ class _SwipeState extends State<Swipe> {
     }
 
     if (swipingAlgoId == 1) {
-      print("Random swiping algorithm is used");
     } else if (swipingAlgoId == 2) {
-      print("Interest-based swiping algorithm is used");
-    } else if (swipingAlgoId == 3) {
-      print("Preference-based swiping algorithm is used");
-    }
+    } else if (swipingAlgoId == 3) {}
 
     String accessToken = await _controller.retrieveAccessToken() as String;
-    await widget.userService.getAlgoUser(accessToken, swipingAlgoId).then((User? user) async {
+    await widget.userService
+        .getAlgoUser(accessToken, swipingAlgoId)
+        .then((User? user) async {
       var city = await _locationService.getCurrentLocation(
           user!.latitude, user.longitude);
       _setSwipingCard(user, city);
     }).whenComplete(() {
       isLoading = false;
     });
-
   }
 
   void _setSwipingCard(User? user, String? city) {
@@ -187,6 +188,7 @@ class _SwipeState extends State<Swipe> {
     } else {
       if (mounted) {
         setState(() {
+          var id = user.id;
           var firstName = user.firstName;
           List<dynamic>? interests = [];
           if (user.interests != null) {
@@ -198,7 +200,9 @@ class _SwipeState extends State<Swipe> {
 
           int age = todayDate.year - birthYear;
 
-          if (birthDate.month > todayDate.month || (birthDate.month == todayDate.month && birthDate.day > todayDate.day)) {
+          if (birthDate.month > todayDate.month ||
+              (birthDate.month == todayDate.month &&
+                  birthDate.day > todayDate.day)) {
             age--;
           }
 
@@ -215,11 +219,21 @@ class _SwipeState extends State<Swipe> {
           });
 
           _swipeItem = SwipeItem(
-            content: Content(firstName: firstName, age: age, city: city, bio: user.bio, interests: interests),
-            likeAction: () {
+            content: Content(
+                id: id.toString(),
+                firstName: firstName,
+                age: age,
+                city: city,
+                bio: user.bio,
+                interests: interests),
+            likeAction: () async {
+              String accessToken = await _controller.retrieveAccessToken() as String;
+              String result = await widget.swipeStatusService.postLike(accessToken, int.parse(_swipeItem.content.id));
               _loadNextUser();
             },
-            nopeAction: () {
+            nopeAction: () async {
+              String accessToken = await _controller.retrieveAccessToken() as String;
+              String result = await widget.swipeStatusService.postView(accessToken, int.parse(_swipeItem.content.id));
               _loadNextUser();
             },
             onSlideUpdate: (SlideRegion? region) async {
@@ -230,15 +244,17 @@ class _SwipeState extends State<Swipe> {
                   //ensure that after a swipe attempt the api call happens only once
                   if (!swiped) {
                     swiped = true;
-                    tmpSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(userId, widget.userService);
-                    if(tmpSwipesLeft > 0) {
+                    tmpSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(
+                        userId, widget.userService);
+                    if (tmpSwipesLeft > 0) {
                       //after reset_date is updated, it's possible to swipe again
                       setState(() {
                         swipeableTimer = true;
                       });
+                      // Dislike
                       SharedSwipeableEvent.swipeable.changeSwipeable(true);
-
                     } else {
+                      // Like
                       SharedSwipeableEvent.swipeable.changeSwipeable(false);
                     }
                   }
@@ -259,23 +275,32 @@ class _SwipeState extends State<Swipe> {
 
   @override
   Widget build(BuildContext context) {
-
-      return  swipingAlgoId !=0 ? Scaffold(
-        key: _scaffoldKey,
-        backgroundColor: _customLoveTheme.neutralColor,
-        body: isLoading
-            ? const Center(
-          child: CircularProgressIndicator(),
-        ):
-        Center(
-          child: SwipingCard(matchEngine: _matchEngine, customLoveTheme: _customLoveTheme, swipeItem: _swipeItem, swipeable: swipesEvent, swipeableTimer: swipeableTimer, userId: userId, controller: _controller, userService: widget.userService),
-        )
-      ):SizedBox();
+    return swipingAlgoId != 0
+        ? Scaffold(
+            key: _scaffoldKey,
+            backgroundColor: _customLoveTheme.neutralColor,
+            body: isLoading
+                ? const Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : Center(
+                    child: SwipingCard(
+                        matchEngine: _matchEngine,
+                        customLoveTheme: _customLoveTheme,
+                        swipeItem: _swipeItem,
+                        swipeable: swipesEvent,
+                        swipeableTimer: swipeableTimer,
+                        userId: userId,
+                        controller: _controller,
+                        userService: widget.userService,
+                        swipeStatusService: widget.swipeStatusService),
+                  ))
+        : SizedBox();
   }
 
   @override
   void dispose() {
-    if(timer.isActive) {
+    if (timer.isActive) {
       timer.cancel();
     }
 
@@ -284,5 +309,4 @@ class _SwipeState extends State<Swipe> {
 
     super.dispose();
   }
-
 }

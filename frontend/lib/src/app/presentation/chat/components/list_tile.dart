@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/presentation/chat/components/avatar.dart';
+import 'package:frontend/src/app/presentation/chat/pages/messages_page.dart';
 import 'package:frontend/src/config/app_state.dart';
 import 'package:provider/provider.dart';
 
@@ -24,6 +25,21 @@ class CustomListTile extends StatelessWidget {
     }
 
     return ListTile(
+      onTap: () {
+        final userStorage = Provider.of<UserStorage>(context, listen: false);
+        User? recipient = userStorage.users.items[conversation?.getOtherUserId(userId)];
+
+        if (recipient == null || conversation == null) {
+          // do nothing
+          return;
+        }
+
+        Navigator.pushNamed(
+          context,
+          "/home/matches/messages",
+          arguments: MessagesPageRouteArguments(recipient, conversation!)
+        );
+      },
       title: Consumer<UserStorage>(
         builder: (BuildContext context, UserStorage userStorage, Widget? child) {
           if (userStorage.loading) {
