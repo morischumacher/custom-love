@@ -50,13 +50,13 @@ class _HomeScreenState extends State<HomeScreen> {
         return (BuildContext context) => Profile(userService: context.read<UserService>());
       case 'swipe':
         setCurrentPage(AppPage.swipe);
-        return (BuildContext context) => Swipe(userService: context.read<UserService>());
+        return (BuildContext context) => Swipe(userService: context.read<UserService>(), swipeStatusService: context.read<SwipeStatusService>());
       case 'matches' || 'messages':
         setCurrentPage(AppPage.matches);
         return (BuildContext context) => const MatchesPage();
       default:
         setCurrentPage(AppPage.swipe);
-        return (BuildContext context) => Swipe(userService: context.read<UserService>());
+        return (BuildContext context) => Swipe(userService: context.read<UserService>(), swipeStatusService: context.read<SwipeStatusService>());
     }
   }
 
