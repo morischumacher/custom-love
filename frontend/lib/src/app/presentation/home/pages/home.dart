@@ -3,6 +3,7 @@ import 'package:frontend/src/app/presentation/authentification/pages/logout_page
 import 'package:frontend/src/app/presentation/chat/pages/matches_page.dart';
 import 'package:frontend/src/app/presentation/chat/pages/messages_page.dart';
 import 'package:go_router/go_router.dart';
+import 'package:frontend/src/app/service/swipe_status_service.dart';
 import "package:universal_html/html.dart" as universal_html;
 import 'package:flutter/foundation.dart' show kIsWeb;
 
@@ -22,7 +23,7 @@ import '../../authentification/controller/login_controller.dart';
 enum AppPage { profile, swipe, matches }
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key, required UserService userService})
+  const HomeScreen({Key? key, required UserService userService, SwipeStatusService? swipeStatusService})
       : super(key: key);
 
   @override
@@ -49,13 +50,13 @@ class _HomeScreenState extends State<HomeScreen> {
         return (BuildContext context) => Profile(userService: context.read<UserService>());
       case 'swipe':
         setCurrentPage(AppPage.swipe);
-        return (BuildContext context) => Swipe(userService: context.read<UserService>());
+        return (BuildContext context) => Swipe(userService: context.read<UserService>(), swipeStatusService: context.read<SwipeStatusService>());
       case 'matches' || 'messages':
         setCurrentPage(AppPage.matches);
         return (BuildContext context) => const MatchesPage();
       default:
         setCurrentPage(AppPage.swipe);
-        return (BuildContext context) => Swipe(userService: context.read<UserService>());
+        return (BuildContext context) => Swipe(userService: context.read<UserService>(), swipeStatusService: context.read<SwipeStatusService>());
     }
   }
 
@@ -105,10 +106,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: ListTile(
                       title: const Text("Random Algorithm", style: TextStyle(fontSize: 13)),
                       onTap: () {
-                        print("selected");
                         Navigator.pop(context);
                         SharedAlgorithmEvent.algoId.changeAlgoId(1);
-                        print("broadcast happened");
                       },
                     ),
                   ),

@@ -14,8 +14,10 @@ import 'app/api/login_api.dart';
 import 'app/api/match_api.dart';
 import 'app/api/message_api.dart';
 import 'app/api/user_api.dart';
+import 'app/api/swipe_status_api.dart';
 import 'app/service/login_service.dart';
 import 'app/service/user_service.dart';
+import 'app/service/swipe_status_service.dart';
 import 'config/app_state.dart';
 
 void main() {
@@ -67,7 +69,13 @@ class CustomLove extends StatelessWidget {
         ),
         ProxyProvider<MessageApi, MessageService>(
           update: (_, messageApi, __) => MessageService(messageApi),
-        )
+        ),
+        ProxyProvider<http.Client, SwipeStatusApi>(
+          update: (_, httpClient, __) => SwipeStatusApi(httpClient: httpClient),
+        ),
+        ProxyProvider<SwipeStatusApi, SwipeStatusService>(
+          update: (_, swipeStatusApi, __) => SwipeStatusService(swipeStatusApi),
+        ),
       ],
       child: MaterialApp(
         scrollBehavior: CustomScrollBehaviour(),
@@ -80,6 +88,7 @@ class CustomLove extends StatelessWidget {
             final conversationService = Provider.of<ConversationService>(context);
             final matchService = Provider.of<MatchService>(context);
             final messageService = Provider.of<MessageService>(context);
+            final swipeStatusService = Provider.of<SwipeStatusService>(context);
             return LoginPage(
                 loginService: loginService, userService: userService);
           },
@@ -89,7 +98,8 @@ class CustomLove extends StatelessWidget {
           },
           '/home/swipe': (context) {
             final userService = Provider.of<UserService>(context);
-            return HomeScreen(userService: userService);
+            final swipeStatusService = Provider.of<SwipeStatusService>(context);
+            return HomeScreen(userService: userService, swipeStatusService: swipeStatusService);
           },
           '/home/matches': (context) {
             final userService = Provider.of<UserService>(context);

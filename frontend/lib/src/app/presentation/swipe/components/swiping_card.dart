@@ -6,6 +6,8 @@ import 'package:frontend/src/app/presentation/swipe/util/shared_swipeable_event.
 import 'package:swipe_cards/swipe_cards.dart';
 import 'package:frontend/src/config/theme.dart';
 
+import '../../../service/swipe_status_service.dart';
+import '../util/swipe_status.dart';
 import '../util/interests.dart';
 
 import '../../../service/user_service.dart';
@@ -15,13 +17,14 @@ import '../util/swipes_left.dart';
 class SwipingCard extends StatelessWidget {
   final LoginController controller;
   final UserService userService;
+  final SwipeStatusService swipeStatusService;
 
   SwipingCard({
     super.key,
     required MatchEngine? matchEngine,
     required CustomLoveTheme customLoveTheme,
     required SwipeItem swipeItem,
-    required this.swipeable, swipeableTimer, userId, required this.controller, required this.userService,
+    required this.swipeable, swipeableTimer, userId, required this.controller, required this.userService, required this.swipeStatusService
   })
       : _matchEngine = matchEngine,
         _customLoveTheme = customLoveTheme,
@@ -163,9 +166,7 @@ class SwipingCard extends StatelessWidget {
                     SharedSwipeableEvent.swipeable.changeSwipeable(false);
                   }
                 },
-                itemChanged: (SwipeItem item, int index) {
-                  print("item: ${item.content.firstName}, index: $index");
-                },
+                itemChanged: (SwipeItem item, int index) {},
                 leftSwipeAllowed: _swipeableTimer ? swipeable : false,
                 rightSwipeAllowed: _swipeableTimer ? swipeable : false,
                 fillSpace: true,
@@ -216,8 +217,8 @@ class SwipingCard extends StatelessWidget {
                 if(_swipeableTimer) {
                   int tmpSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(_userId, userService);
                   if(tmpSwipesLeft > 0) {
-                    _matchEngine!.currentItem?.nope();
                     await SwipesLeft.updateSwipeLeft(controller, userService);
+                    _matchEngine!.currentItem?.nope();
                   }
                 }
               },
@@ -232,8 +233,8 @@ class SwipingCard extends StatelessWidget {
                 if(_swipeableTimer) {
                   int tmpSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(_userId, userService);
                   if(tmpSwipesLeft > 0) {
-                    _matchEngine!.currentItem?.like();
                     await SwipesLeft.updateSwipeLeft(controller, userService);
+                    _matchEngine!.currentItem?.like();
                   }
                 }
               },
