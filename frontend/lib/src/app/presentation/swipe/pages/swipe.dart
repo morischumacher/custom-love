@@ -43,7 +43,6 @@ class _SwipeState extends State<Swipe> {
   late int userId;
   bool swipesEvent = false;
   bool hasVisitedSwipePage = false;
-  bool wantsToLike = false;
   int swipingAlgoId = 0;
   StreamSubscription<int>? _algoIdSubscription;
   StreamSubscription<bool>? _swipeableSubscription;
@@ -259,16 +258,6 @@ class _SwipeState extends State<Swipe> {
                       SharedSwipeableEvent.swipeable.changeSwipeable(false);
                     }
                   }
-
-                  if (region == SlideRegion.inNopeRegion) {
-                    setState(() {
-                      wantsToLike = false;
-                    });
-                  } else if (region == SlideRegion.inLikeRegion) {
-                    setState(() {
-                      wantsToLike = true;
-                    });
-                  }
                 }
 
                 //when swipe card is in the initial state (null position), it should be possible to make the api call
@@ -304,8 +293,7 @@ class _SwipeState extends State<Swipe> {
                         userId: userId,
                         controller: _controller,
                         userService: widget.userService,
-                        swipeStatusService: widget.swipeStatusService,
-                        wantsToLike: wantsToLike),
+                        swipeStatusService: widget.swipeStatusService),
                   ))
         : SizedBox();
   }

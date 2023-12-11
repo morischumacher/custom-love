@@ -24,14 +24,13 @@ class SwipingCard extends StatelessWidget {
     required MatchEngine? matchEngine,
     required CustomLoveTheme customLoveTheme,
     required SwipeItem swipeItem,
-    required this.swipeable, swipeableTimer, userId, required this.controller, required this.userService, required this.swipeStatusService, wantsToLike
+    required this.swipeable, swipeableTimer, userId, required this.controller, required this.userService, required this.swipeStatusService
   })
       : _matchEngine = matchEngine,
         _customLoveTheme = customLoveTheme,
         _swipeItem = swipeItem,
         _swipeableTimer = swipeableTimer,
-        _userId = userId,
-        _wantsToLike = wantsToLike;
+        _userId = userId;
 
   final MatchEngine? _matchEngine;
   final CustomLoveTheme _customLoveTheme;
@@ -39,7 +38,6 @@ class SwipingCard extends StatelessWidget {
   bool swipeable = false;
   bool _swipeableTimer;
   final int _userId;
-  bool _wantsToLike;
 
   @override
   Widget build(BuildContext context) {

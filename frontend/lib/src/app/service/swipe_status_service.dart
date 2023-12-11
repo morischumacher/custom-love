@@ -10,8 +10,6 @@ class SwipeStatusService {
       final result = await _swipeStatusApi.postView(token, userId);
       return result;
     } catch (error) {
-      print('Could not post view: $error');
-      // Optionally rethrow the error if you want to handle it elsewhere
       rethrow;
     }
   }
@@ -21,8 +19,6 @@ class SwipeStatusService {
       final result = await _swipeStatusApi.postLike(token, userId);
       return result;
     } catch (error) {
-      print('Could not post like: $error');
-      // Optionally rethrow the error if you want to handle it elsewhere
       rethrow;
     }
   }
