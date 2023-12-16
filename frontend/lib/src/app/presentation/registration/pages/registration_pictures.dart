@@ -14,8 +14,10 @@ import '../../../../config/theme.dart';
 class RegistrationPictures extends StatefulWidget {
   const RegistrationPictures({
     Key? key,
-    required this.name,
+    required this.firstName,
+    required this.lastName,
     required this.email,
+    required this.password,
     required this.gender,
     required this.preference,
     required this.birthdate,
@@ -23,8 +25,10 @@ class RegistrationPictures extends StatefulWidget {
     required this.userInterestIdList
   }) : super(key: key);
 
-  final String? name;
+  final String? firstName;
+  final String? lastName;
   final String? email;
+  final String? password;
   final String? gender;
   final String? preference;
   final String? birthdate;
@@ -39,8 +43,10 @@ class _RegistrationPicturesState extends State<RegistrationPictures> {
   @override
   void initState() {
     super.initState();
-    name = widget.name;
+    firstName = widget.firstName;
+    lastName = widget.lastName;
     email = widget.email;
+    password = widget.password;
     gender = widget.gender;
     preference = widget.preference;
     birthdate = widget.birthdate;
@@ -49,8 +55,10 @@ class _RegistrationPicturesState extends State<RegistrationPictures> {
   }
 
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
-  late String? name;
+  late String? firstName;
+  late String? lastName;
   late String? email;
+  late String? password;
   late String? gender;
   late String? preference;
   late String? birthdate;
@@ -166,8 +174,10 @@ class _RegistrationPicturesState extends State<RegistrationPictures> {
       onPressed: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return RegistrationGenderPreference(
-            name: name,
+            firstName: firstName,
+            lastName: lastName,
             email: email,
+            password: password,
             gender: gender,
             preference: preference,
             birthdate: birthdate,
@@ -196,8 +206,10 @@ class _RegistrationPicturesState extends State<RegistrationPictures> {
       onPressed: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return RegistrationInterests(
-            name: name,
+            firstName: lastName,
+            lastName: lastName,
             email: email,
+            password: password,
             birthdate: birthdate,
             gender: gender,
             preference: preference,

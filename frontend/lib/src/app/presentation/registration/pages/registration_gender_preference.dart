@@ -12,8 +12,10 @@ import '../../../../config/theme.dart';
 class RegistrationGenderPreference extends StatefulWidget {
   const RegistrationGenderPreference({
     super.key,
-    required this.name,
+    required this.firstName,
+    required this.lastName,
     required this.email,
+    required this.password,
     required this.gender,
     required this.preference,
     required this.birthdate,
@@ -21,8 +23,10 @@ class RegistrationGenderPreference extends StatefulWidget {
     required this.userInterestIdList
   });
 
-  final String? name;
+  final String? firstName;
+  final String? lastName;
   final String? email;
+  final String? password;
   final String? gender;
   final String? preference;
   final String? birthdate;
@@ -37,8 +41,10 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
   @override
   void initState() {
     super.initState();
-    name = widget.name;
+    firstName = widget.firstName;
+    lastName = widget.lastName;
     email = widget.email;
+    password = widget.password;
     _selectedGender = widget.gender;
     _selectedPreference = widget.preference;
     _dateController.value = TextEditingValue(text: widget.birthdate == null ? "" : widget.birthdate as String);
@@ -46,8 +52,10 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
     userInterestIdList = widget.userInterestIdList;
   }
 
-  late String? name;
+  late String? firstName;
+  late String? lastName;
   late String? email;
+  late String? password;
   String? _selectedGender = "";
   String? _selectedPreference = "";
   late Uint8List? profilePicture;
@@ -118,8 +126,10 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
       onPressed: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return RegistrationNameEmail(
-            name: name,
+            firstName: firstName,
+            lastName: lastName,
             email: email,
+            password: password,
             gender: _selectedGender,
             preference: _selectedPreference,
             birthdate: _dateController.value.text,
@@ -148,8 +158,10 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
       onPressed: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return RegistrationPictures(
-              name: name,
+              firstName: firstName,
+              lastName: lastName,
               email: email,
+              password: password,
               gender: _selectedGender,
               preference: _selectedPreference,
               birthdate: _dateController.value.text,

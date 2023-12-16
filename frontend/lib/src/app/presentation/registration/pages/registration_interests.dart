@@ -11,8 +11,10 @@ import '../../../../config/theme.dart';
 class RegistrationInterests extends StatefulWidget {
   const RegistrationInterests({
     Key? key,
-    required this.name,
+    required this.firstName,
+    required this.lastName,
     required this.email,
+    required this.password,
     required this.gender,
     required this.preference,
     required this.birthdate,
@@ -20,8 +22,10 @@ class RegistrationInterests extends StatefulWidget {
     required this.userInterestIdList
   }) : super(key: key);
 
-  final String? name;
+  final String? firstName;
+  final String? lastName;
   final String? email;
+  final String? password;
   final String? gender;
   final String? preference;
   final String? birthdate;
@@ -36,8 +40,10 @@ class _RegistrationInterestsState extends State<RegistrationInterests> {
   @override
   void initState() {
     super.initState();
-    name = widget.name;
+    firstName = widget.firstName;
+    lastName = widget.lastName;
     email = widget.email;
+    password = widget.password;
     gender = widget.gender;
     preference = widget.preference;
     birthdate = widget.birthdate;
@@ -47,8 +53,10 @@ class _RegistrationInterestsState extends State<RegistrationInterests> {
 
   final RegistrationController _controller = RegistrationController();
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
-  late String? name;
+  late String? firstName;
+  late String? lastName;
   late String? email;
+  late String? password;
   late String? gender;
   late String? preference;
   late String? birthdate;
@@ -153,12 +161,14 @@ class _RegistrationInterestsState extends State<RegistrationInterests> {
       onPressed: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return RegistrationPictures(
-            name: null,
-            email: null,
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            password: password,
             birthdate: birthdate,
             gender: gender,
             preference: preference,
-            profilePicture: null,
+            profilePicture: profilePicture,
             userInterestIdList: userInterestIdList,
           );
         }));
@@ -184,10 +194,10 @@ class _RegistrationInterestsState extends State<RegistrationInterests> {
         Future<void>.value(
             _controller.handleRegistration(
                 context,
-              name,
-              "TEST",
+              firstName,
+              lastName,
               email,
-              "TEST1",
+              password,
               "TEST BIO",
               gender,
               preference,

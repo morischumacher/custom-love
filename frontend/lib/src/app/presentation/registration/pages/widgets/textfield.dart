@@ -4,11 +4,13 @@ class RegistrationTextfield extends StatelessWidget {
   // Accesses what the users fill into the text field
   final TextEditingController? controller;
   final String hintText;
+  final bool obscureText;
 
   const RegistrationTextfield({
     super.key,
     required this.controller,
     required this.hintText,
+    required this.obscureText
   });
 
   @override
@@ -17,6 +19,7 @@ class RegistrationTextfield extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 25.0),
       child: TextField(
         controller: controller,
+        obscureText: obscureText,
         decoration: InputDecoration(
             enabledBorder: const OutlineInputBorder(
                 borderSide: BorderSide(color: Colors.white)

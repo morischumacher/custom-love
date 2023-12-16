@@ -13,8 +13,10 @@ import '../../authentification/pages/login_page.dart';
 class RegistrationNameEmail extends StatefulWidget {
   const RegistrationNameEmail({
     super.key,
-    required this.name,
+    required this.firstName,
+    required this.lastName,
     required this.email,
+    required this.password,
     required this.gender,
     required this.preference,
     required this.birthdate,
@@ -22,8 +24,10 @@ class RegistrationNameEmail extends StatefulWidget {
     required this.userInterestIdList
   });
 
-  final String? name;
+  final String? firstName;
+  final String? lastName;
   final String? email;
+  final String? password;
   final String? gender;
   final String? preference;
   final String? birthdate;
@@ -38,8 +42,10 @@ class _RegistrationNameEmailState extends State<RegistrationNameEmail> {
   @override
   void initState() {
     super.initState();
-    usernameController.value = TextEditingValue(text: widget.name == null ? "" : widget.name as String);
+    firstName.value = TextEditingValue(text: widget.firstName == null ? "" : widget.firstName as String);
+    lastName.value = TextEditingValue(text: widget.lastName == null ? "" : widget.lastName as String);
     emailController.value = TextEditingValue(text: widget.email == null ? "" : widget.email as String);
+    passwordController.value = TextEditingValue(text: widget.password == null ? "" : widget.password as String);
     gender = widget.gender;
     preference = widget.preference;
     birthdate = widget.birthdate;
@@ -49,8 +55,10 @@ class _RegistrationNameEmailState extends State<RegistrationNameEmail> {
 
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
 
-  final usernameController = TextEditingController();
+  final firstName = TextEditingController();
+  final lastName = TextEditingController();
   final emailController = TextEditingController();
+  final passwordController = TextEditingController();
   late String? gender;
   late String? preference;
   late String? birthdate;
@@ -68,20 +76,35 @@ class _RegistrationNameEmailState extends State<RegistrationNameEmail> {
             child: Column(
               children: [
                 const PageTitle(
-                  title: "Profile Information",
-                  description: "Provide your Name and Email",
+                  title: "Profile Name",
+                  description: "Provide your first name and last name",
                   bottomPadding: 70.0,
                 ),
                 // Name
                 RegistrationTextfield(
-                  controller: usernameController,
-                  hintText: "Name",
+                  controller: firstName,
+                  hintText: "First Name",
+                  obscureText: false,
+                ),
+                const SizedBox(height: 19.0),
+                RegistrationTextfield(
+                  controller: lastName,
+                  hintText: "Last Name",
+                  obscureText: false,
                 ),
                 const SizedBox(height: 19.0),
                 // Email
                 RegistrationTextfield(
                   controller: emailController,
                   hintText: "Email",
+                  obscureText: false,
+                ),
+                const SizedBox(height: 19.0),
+                // Email
+                RegistrationTextfield(
+                  controller: passwordController,
+                  hintText: "Password",
+                  obscureText: true,
                 ),
                 const Spacer(),
                 // const Spacer(),
@@ -118,7 +141,7 @@ class _RegistrationNameEmailState extends State<RegistrationNameEmail> {
         }));
       },
       child: const Text(
-        "Previous",
+        "Return",
         style: TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.white
@@ -137,8 +160,10 @@ class _RegistrationNameEmailState extends State<RegistrationNameEmail> {
       onPressed: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return RegistrationGenderPreference(
-            name: usernameController.value.text,
+            firstName: firstName.value.text,
+            lastName: lastName.value.text,
             email: emailController.value.text,
+            password: passwordController.value.text,
             gender: gender,
             preference: preference,
             birthdate: birthdate,

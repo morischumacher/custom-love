@@ -127,8 +127,10 @@ class CustomLove extends StatelessWidget {
           '/registration': (context) {
             // return const RegistrationGenderPreference();
             return RegistrationNameEmail(
-              name: null,
+              firstName: null,
+              lastName: null,
               email: null,
+              password: null,
               gender: null,
               preference: null,
               birthdate: null,
