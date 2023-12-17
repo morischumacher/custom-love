@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/src/app/api/helpers/jwt_api.dart';
 import 'package:frontend/src/app/presentation/authentification/pages/logout_page.dart';
 import 'package:frontend/src/app/presentation/utils/CustomScrollBehaviour.dart';
 import 'package:frontend/src/app/service/conversation_service.dart';
@@ -20,16 +21,28 @@ import 'app/service/user_service.dart';
 import 'app/service/swipe_status_service.dart';
 import 'config/app_state.dart';
 
-void main() {
-  runApp(const CustomLove());
+void main() async {
+  try {
+    await JWTApi.retrieveAccessToken().then(
+            (token) => runApp(CustomLove(token: token))
+    );
+  } catch (e) {
+    runApp(CustomLove());
+  }
 }
 
 class CustomLove extends StatelessWidget {
-  const CustomLove({Key? key}) : super(key: key);
+  CustomLove({
+    Key? key,
+    this.token
+  }) : super(key: key);
+
+  String? token;
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
 
   @override
   Widget build(BuildContext context) {
+    print(token);
     final http.Client httpClient = http.Client();
     return MultiProvider(
       providers: [
@@ -89,24 +102,42 @@ class CustomLove extends StatelessWidget {
             final matchService = Provider.of<MatchService>(context);
             final messageService = Provider.of<MessageService>(context);
             final swipeStatusService = Provider.of<SwipeStatusService>(context);
-            return LoginPage(
-                loginService: loginService, userService: userService);
+            if (token != null) {
+              return HomeScreen(userService: userService, swipeStatusService: swipeStatusService);
+            } else {
+              return LoginPage(loginService: loginService, userService: userService);
+            }
           },
           '/home/profile': (context) {
+            final loginService = Provider.of<LoginService>(context);
             final userService = Provider.of<UserService>(context);
-            return HomeScreen(userService: userService);
+            if (token != null) {
+              return HomeScreen(userService: userService);
+            } else {
+              return LoginPage(loginService: loginService, userService: userService);
+            }
           },
           '/home/swipe': (context) {
+            final loginService = Provider.of<LoginService>(context);
             final userService = Provider.of<UserService>(context);
             final swipeStatusService = Provider.of<SwipeStatusService>(context);
-            return HomeScreen(userService: userService, swipeStatusService: swipeStatusService);
+            if (token != null) {
+              return HomeScreen(userService: userService, swipeStatusService: swipeStatusService);
+            } else {
+              return LoginPage(loginService: loginService, userService: userService);
+            }
           },
           '/home/matches': (context) {
+            final loginService = Provider.of<LoginService>(context);
             final userService = Provider.of<UserService>(context);
             final conversationService = Provider.of<ConversationService>(context);
             final matchService = Provider.of<MatchService>(context);
             final messageService = Provider.of<MessageService>(context);
-            return HomeScreen(userService: userService);
+            if (token != null) {
+              return HomeScreen(userService: userService);
+            } else {
+              return LoginPage(loginService: loginService, userService: userService);
+            }
           },
           '/home/matches/messages': (context) {
             final userService = Provider.of<UserService>(context);
