@@ -56,7 +56,6 @@ class _InterestState extends State<Interest> {
           elevation: 15,
           shadowColor: Colors.black,
           alignment: Alignment.center,
-          // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
           shape: StadiumBorder(
               side: BorderSide(
                   width: 2,
