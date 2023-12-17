@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../config/theme.dart';
+
 class PageTitle extends StatelessWidget {
   const PageTitle({
     Key? key,
@@ -12,6 +14,7 @@ class PageTitle extends StatelessWidget {
   final String title;
   final String description;
   final double bottomPadding;
+  final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
 
   @override
   Widget build(BuildContext context) {
@@ -19,20 +22,20 @@ class PageTitle extends StatelessWidget {
       const SizedBox(height: 51.0),
       SizedBox(
           child: Text(title,
-              style: const TextStyle(
+              style: TextStyle(
                   fontWeight: FontWeight.w700,
                   fontFamily: 'roboto',
                   fontSize: 34.0,
-                  color: Colors.black,
+                  color: _customLoveTheme.textColor,
                   decoration: TextDecoration.none))),
       SizedBox(
           child: Text(description,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 14.0,
-                fontWeight: FontWeight.w100,
+              style: TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.w600,
                 fontFamily: 'roboto',
-                color: Color(0xFF797C7B), // Colors.white70
+                color: _customLoveTheme.grayscale2, // Colors.white70
                 decoration: TextDecoration.none,
                 fontStyle: FontStyle.italic,
               ))),

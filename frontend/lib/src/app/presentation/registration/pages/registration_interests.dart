@@ -208,11 +208,6 @@ class _RegistrationInterestsState extends State<RegistrationInterests> {
               1
             )
         );
-        /*
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return HomeScreen(userService: Provider.of<UserService>(context));
-        }));
-         */
       },
       child: const Text(
         "Create Profile",

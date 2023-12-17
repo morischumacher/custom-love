@@ -99,7 +99,7 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
                         controller: _dateController,
                         context: context
                     ),
-                    const Spacer(),
+                  const SizedBox(height: 25.0),
                     Center(
                       child: Row(
                         children: [
@@ -139,7 +139,7 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
         }));
       },
       child: const Text(
-        "Return",
+        "Previous",
         style: TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.white

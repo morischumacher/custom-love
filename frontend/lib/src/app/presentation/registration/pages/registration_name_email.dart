@@ -72,56 +72,62 @@ class _RegistrationNameEmailState extends State<RegistrationNameEmail> {
         body: Center(
           child: Container(
             constraints: const BoxConstraints(maxWidth: 500),
-            padding: const EdgeInsets.fromLTRB(21.0, 0, 21.0, 51.0),
-            child: Column(
-              children: [
-                const PageTitle(
-                  title: "Profile Name",
-                  description: "Provide your first name and last name",
-                  bottomPadding: 70.0,
-                ),
-                // Name
-                RegistrationTextfield(
-                  controller: firstName,
-                  hintText: "First Name",
-                  obscureText: false,
-                ),
-                const SizedBox(height: 19.0),
-                RegistrationTextfield(
-                  controller: lastName,
-                  hintText: "Last Name",
-                  obscureText: false,
-                ),
-                const SizedBox(height: 19.0),
-                // Email
-                RegistrationTextfield(
-                  controller: emailController,
-                  hintText: "Email",
-                  obscureText: false,
-                ),
-                const SizedBox(height: 19.0),
-                // Email
-                RegistrationTextfield(
-                  controller: passwordController,
-                  hintText: "Password",
-                  obscureText: true,
-                ),
-                const Spacer(),
-                // const Spacer(),
-                Center(
-                  child: Row(
-                    children: [
-                      prevBtn(context),
-                      const Spacer(),
-                      nextBtn(context)
-                    ],
-                  ),
-                )
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(25.0, 0, 25.0, 51.0),
+                child: Column(
+                  children: [
+                    const PageTitle(
+                      title: "Profile Name",
+                      description: "Provide your first name and last name",
+                      bottomPadding: 70.0,
+                    ),
+                    // Name
+                    RegistrationTextfield(
+                      controller: firstName,
+                      hintText: "First Name",
+                      obscureText: false,
+                    ),
+                    const SizedBox(height: 19.0),
+                    RegistrationTextfield(
+                      controller: lastName,
+                      hintText: "Last Name",
+                      obscureText: false,
+                    ),
+                    const SizedBox(height: 19.0),
+                    // Email
+                    RegistrationTextfield(
+                      controller: emailController,
+                      hintText: "Email",
+                      obscureText: false,
+                    ),
+                    const SizedBox(height: 19.0),
+                    // Email
+                    RegistrationTextfield(
+                      controller: passwordController,
+                      hintText: "Password",
+                      obscureText: true,
+                    ),
+                    const SizedBox(height: 25.0),
+                    Container(
+                      constraints: const BoxConstraints(maxWidth: 500),
+                      child: Center(
+                        child: Row(
+                          children: [
+                            const SizedBox(height: 80),
+                            prevBtn(context),
+                            const Spacer(),
+                            nextBtn(context)
+                          ],
+                        ),
+                      ),
+                    )
 
-              ],
+                  ],
+                ),
+              ),
             ),
           ),
-        ));
+        );
 
   }
 

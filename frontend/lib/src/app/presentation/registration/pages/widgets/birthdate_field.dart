@@ -22,11 +22,11 @@ class BirthdateField extends StatelessWidget {
         selectDate();
       },
       decoration: InputDecoration(
-          fillColor: Colors.grey.shade200,
+          fillColor: _customLoveTheme.grayscale0,
           filled: true,
           suffixIcon: const Icon(Icons.calendar_today),
           labelText: "Birthday",
-          labelStyle: TextStyle(color: Colors.grey[500]),
+          labelStyle: TextStyle(color: _customLoveTheme.grayscale1),
           border: const OutlineInputBorder(),
           enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(color: _customLoveTheme.formFieldBorder)

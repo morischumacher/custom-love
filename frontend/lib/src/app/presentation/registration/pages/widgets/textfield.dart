@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../config/theme.dart';
+
 class RegistrationTextfield extends StatelessWidget {
   // Accesses what the users fill into the text field
   final TextEditingController? controller;
   final String hintText;
   final bool obscureText;
+  final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
 
   const RegistrationTextfield({
     super.key,
@@ -21,16 +24,16 @@ class RegistrationTextfield extends StatelessWidget {
         controller: controller,
         obscureText: obscureText,
         decoration: InputDecoration(
-            enabledBorder: const OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.white)
+            enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: _customLoveTheme.whiteColor)
             ),
             focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey.shade400)
+                borderSide: BorderSide(color: _customLoveTheme.grayscale2)
             ),
-            fillColor: Colors.grey.shade200,
+            fillColor: _customLoveTheme.grayscale0,
             filled: true,
             hintText: hintText,
-            hintStyle: TextStyle(color: Colors.grey[500])
+            hintStyle: TextStyle(color: _customLoveTheme.grayscale1)
         ),
       ),
     );

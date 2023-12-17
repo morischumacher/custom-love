@@ -53,12 +53,12 @@ class _DropDownListState extends State<DropDownList> {
         Icons.arrow_drop_down,
         color: Colors.black,
       ),
-      dropdownColor: Colors.grey.shade200,
+      dropdownColor: _customLoveTheme.grayscale0,
       decoration: InputDecoration(
           labelText: labelText,
-          fillColor: Colors.grey.shade200,
+          fillColor: _customLoveTheme.grayscale0,
           filled: true,
-          labelStyle: TextStyle(color: Colors.grey[500]),
+          labelStyle: TextStyle(color: _customLoveTheme.grayscale1),
           border: const OutlineInputBorder(),
           enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(color: _customLoveTheme.formFieldBorder)
