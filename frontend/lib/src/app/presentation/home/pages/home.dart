@@ -1,10 +1,10 @@
 import 'package:flutter/rendering.dart';
+import 'package:frontend/src/app/presentation/swipe/util/algo_id_notifier.dart';
 import "package:universal_html/html.dart" as universal_html;
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/presentation/chat/pages/conversation.dart';
-import 'package:frontend/src/app/presentation/swipe/util/shared_algorithm_event.dart';
 import 'package:frontend/src/config/theme.dart';
 import 'package:frontend/src/app/presentation/profile/pages/profile.dart';
 import 'package:frontend/src/app/presentation/swipe/pages/swipe.dart';
@@ -55,6 +55,13 @@ class _HomeScreenState extends State<HomeScreen> {
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
   final LoginController _controller = LoginController();
 
+  void _changeAlgoId(BuildContext context, int algoId) {
+    final algoIdNotifier = Provider.of<AlgoIdNotifier>(context, listen: false);
+    if (algoIdNotifier.algoId != algoId) {
+      algoIdNotifier.setAlgoId(algoId);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,51 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text('Custom Love App'),
         backgroundColor: _customLoveTheme.primaryColor,
         actions: [ _currentPage.index == 1 ?
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30),
-            child: PopupMenuButton(
-                color: _customLoveTheme.neutralBackgroundColor,
-                icon: const Icon(Icons.tune, size: 28, color: Colors.black,),
-                itemBuilder: (BuildContext context) => [
-                  PopupMenuItem(
-                    value: "Random Algorithm",
-                    child: ListTile(
-                      title: const Text("Random Algorithm", style: TextStyle(fontSize: 13)),
-                      onTap: () {
-                        print("selected");
-                        Navigator.pop(context);
-                        SharedAlgorithmEvent.algoId.changeAlgoId(1);
-                        print("broadcast happened");
-                      },
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: "Interest-based Algorithm",
-                    child: ListTile(
-                      title: const Text("Interest-based Algorithm", style: TextStyle(fontSize: 13)),
-                      onTap: () {
-                        print("selected");
-                        Navigator.pop(context);
-                        SharedAlgorithmEvent.algoId.changeAlgoId(2);
-                        print("broadcast happened");
-                      },
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: "Preference-based Algorithm",
-                    child: ListTile(
-                      title: const Text("Preference-based Algorithm", style: TextStyle(fontSize: 13)),
-                      onTap: () {
-                        print("selected");
-                        Navigator.pop(context);
-                        SharedAlgorithmEvent.algoId.changeAlgoId(3);
-                        print("broadcast happened");
-                      },
-                    ),
-                  )
-                ]
-            ),
-          ) : Container(),
+          algoSwitcherMenu() : Container(),
         ],
       ),
       body: getPage(_currentPage),
@@ -119,7 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
             String str = AppPage.values[index].toString();
             String subRouteName = str.split(".")[1].toLowerCase();
             String subRoute = '/home/$subRouteName';
-            Navigator.pushReplacementNamed(context, subRoute);
+            Navigator.pushNamed(context, subRoute);
           } else {
             // Mobile
             setState(() {
@@ -156,5 +119,47 @@ class _HomeScreenState extends State<HomeScreen> {
       case AppPage.Matches:
         return const ConversationsPage();
     }
+  }
+
+  Widget algoSwitcherMenu(){
+   return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 30),
+      child: PopupMenuButton(
+          color: _customLoveTheme.neutralBackgroundColor,
+          icon: const Icon(Icons.tune, size: 28, color: Colors.black,),
+          itemBuilder: (BuildContext context) => [
+            PopupMenuItem(
+              value: "Random Algorithm",
+              child: ListTile(
+                title: const Text("Random Algorithm", style: TextStyle(fontSize: 13)),
+                onTap: () {
+                  _changeAlgoId(context, 1);
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+            PopupMenuItem(
+              value: "Interest-based Algorithm",
+              child: ListTile(
+                title: const Text("Interest-based Algorithm", style: TextStyle(fontSize: 13)),
+                onTap: () {
+                  _changeAlgoId(context, 2);
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+            PopupMenuItem(
+              value: "Preference-based Algorithm",
+              child: ListTile(
+                title: const Text("Preference-based Algorithm", style: TextStyle(fontSize: 13)),
+                onTap: () {
+                  _changeAlgoId(context, 3);
+                  Navigator.pop(context);
+                },
+              ),
+            )
+          ]
+      ),
+    );
   }
 }

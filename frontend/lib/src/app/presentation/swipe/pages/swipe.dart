@@ -4,6 +4,7 @@ import 'package:frontend/src/app/model/user_model.dart';
 import 'package:frontend/src/app/presentation/swipe/util/content.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/presentation/swipe/util/shared_swipeable_event.dart';
+import 'package:provider/provider.dart';
 import 'package:swipe_cards/draggable_card.dart';
 import 'package:swipe_cards/swipe_cards.dart';
 import 'package:frontend/src/config/theme.dart';
@@ -12,7 +13,7 @@ import 'package:frontend/src/app/presentation/authentification/controller/login_
 import '../../../service/location_service.dart';
 import '../../../service/user_service.dart';
 import '../components/swiping_card.dart';
-import '../util/shared_algorithm_event.dart';
+import '../util/algo_id_notifier.dart';
 import '../util/swipes_left.dart';
 
 
@@ -26,7 +27,7 @@ class Swipe extends StatefulWidget {
   _SwipeState createState() => _SwipeState();
 }
 
-class _SwipeState extends State<Swipe> {
+class _SwipeState extends State<Swipe>{
   late SwipeItem _swipeItem;
   MatchEngine? _matchEngine;
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
@@ -45,10 +46,7 @@ class _SwipeState extends State<Swipe> {
   int swipingAlgoId = 0;
   StreamSubscription<int>? _algoIdSubscription;
   StreamSubscription<bool>? _swipeableSubscription;
-
-  final List<Content> _cards = [
-    Content(firstName: "Bravo", languages: ["english", "french"], bio: "hello,...", interests: ["sport", "reading", "movies", "IT"])];
-
+  bool _firstBuild = true;
 
   @override
   void initState() {
@@ -56,78 +54,16 @@ class _SwipeState extends State<Swipe> {
 
     _fetchInitData();
 
-    _algoIdSubscription = SharedAlgorithmEvent.algoId.algoIdChanged.listen((int algoId) {
-      print("current algoID: $algoId");
-      if (mounted) {
-        setState(() {
-          swipingAlgoId = algoId;
-        });
-      }
-      _loadNextUser();
-    });
+    print("init");
 
-    if (!hasVisitedSwipePage) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        showModalBottomSheet(
-          context: context,
-          builder: (BuildContext context) {
-            return SizedBox(
-              height: 350,
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    const Text('Choose your preferred matching algorithm!'),
-                    const SizedBox(height: 10),
-                    ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          elevation: 5,
-                          backgroundColor: _customLoveTheme.neutralBackgroundColor,
-                          fixedSize: const Size(200, 30)
-                        ),
-                        onPressed: (){
-                          Navigator.pop(context);
-                          SharedAlgorithmEvent.algoId.changeAlgoId(1);
-                        },
-                        child: Text("Random", style: TextStyle(fontSize: 13, color: _customLoveTheme.textColor)),
-                    ),
-                    const SizedBox(height: 10),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          elevation: 5,
-                          backgroundColor: _customLoveTheme.neutralBackgroundColor,
-                          fixedSize: const Size(200, 30)
-                      ),
-                      onPressed: (){
-                        Navigator.pop(context);
-                        SharedAlgorithmEvent.algoId.changeAlgoId(2);
-                      },
-                      child: Text("Interest-based", style: TextStyle(fontSize: 13, color: _customLoveTheme.textColor)),
-                    ),
-                    const SizedBox(height: 10),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          elevation: 5,
-                          backgroundColor: _customLoveTheme.neutralBackgroundColor,
-                          fixedSize: const Size(200, 30)
-                      ),
-                      onPressed: (){
-                        Navigator.pop(context);
-                        SharedAlgorithmEvent.algoId.changeAlgoId(3);
-                      },
-                      child: Text("Preference-based", style: TextStyle(fontSize: 13, color: _customLoveTheme.textColor)),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
+    /*if (_algoIdSubscription == null) {
+      print("algoIdSubscription is null");
+      _algoIdSubscription = SharedAlgorithmEvent.algoId.algoIdChanged.listen((int algoId) {
+        print("current algoID: $algoId");
+        swipingAlgoId = algoId;
+        _loadNextUser();
       });
-
-      hasVisitedSwipePage = true;
-    }
+    }*/
 
     _swipeableSubscription = SharedSwipeableEvent.swipeable.swipeableChanged.listen((bool swipeable) async {
       if (mounted) {
@@ -136,6 +72,21 @@ class _SwipeState extends State<Swipe> {
         });
       }
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    /*if (_firstBuild) {
+      print("why here?");
+      _firstBuild = false;
+    }*/
+
+    final algoIdNotifier = Provider.of<AlgoIdNotifier>(context);
+    if (swipingAlgoId != algoIdNotifier.algoId) {
+      swipingAlgoId = algoIdNotifier.algoId;
+      _loadNextUser();
+    }
   }
 
   void _fetchInitData() async {
@@ -259,7 +210,6 @@ class _SwipeState extends State<Swipe> {
 
   @override
   Widget build(BuildContext context) {
-
       return  swipingAlgoId !=0 ? Scaffold(
         key: _scaffoldKey,
         backgroundColor: _customLoveTheme.neutralColor,
@@ -270,7 +220,7 @@ class _SwipeState extends State<Swipe> {
         Center(
           child: SwipingCard(matchEngine: _matchEngine, customLoveTheme: _customLoveTheme, swipeItem: _swipeItem, swipeable: swipesEvent, swipeableTimer: swipeableTimer, userId: userId, controller: _controller, userService: widget.userService),
         )
-      ):SizedBox();
+      ) : const SizedBox();
   }
 
   @override
@@ -282,6 +232,7 @@ class _SwipeState extends State<Swipe> {
     }
 
     _algoIdSubscription?.cancel();
+    //_algoIdSubscription = null;
     _swipeableSubscription?.cancel();
 
     super.dispose();
