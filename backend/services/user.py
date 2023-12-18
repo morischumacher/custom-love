@@ -86,13 +86,15 @@ def get_users(user: Annotated[User, Depends(get_current_user)], db: Annotated[Se
                                      page=request.query_params.get("page")))
 
 
-def post_user(user: User, db: Annotated[Session, Depends(create_session)]) -> User:
+def registration(user: User, db: Annotated[Session, Depends(create_session)]) -> {}:
     """
     Create a user
     :param db: injected database
     :param user: a user object
     :return: a user object
     """
+    # TODO: Verify if password is long enough
+    # TODO: Move verification to the database
     user_validation: [str] = validate_new_user(user)
     if len(validate_new_user(user)) > 0:
         raise ValidationException(user_validation)
@@ -101,7 +103,9 @@ def post_user(user: User, db: Annotated[Session, Depends(create_session)]) -> Us
     db.commit()
     db.refresh(user)
 
-    return user
+    access_token = create_access_token(data={"sub": user.email})
+    # TODO: Remove sensitive material from the user key-value pair
+    return {"access_token": access_token, "token_type": "bearer", "user": user}
 
 
 def patch_user(updated_user: UserUpdate, user: Annotated[User, Depends(get_current_user)],

@@ -6,7 +6,7 @@ from starlette import status
 from backend.models.user import User
 from backend.responses.error_response import ErrorResponse
 from backend.responses.user_response import UserResponse, UserResponseWithInterests
-from backend.services.user import patch_user, get_algo_user, UserUpdate, get_user, post_user, get_users, login, \
+from backend.services.user import patch_user, get_algo_user, UserUpdate, get_user, registration, get_users, login, \
     websocket_connect
 from backend.utils.pagination import Page
 from backend.utils.token import Token
@@ -35,10 +35,10 @@ def get_user(commons: Annotated[dict, Depends(get_user)]):
     return commons
 
 
-@router.post('/', response_model=UserResponse, responses={
+@router.post('/', response_model=Token, responses={
     status.HTTP_422_UNPROCESSABLE_ENTITY: {"description": "Validation Error", "model": ErrorResponse}
 })
-def post_user(commons: Annotated[dict, Depends(post_user)]):
+def registration(commons: Annotated[dict, Depends(registration)]):
     """
     Stores a new user.
     :return: the user if stored successfully

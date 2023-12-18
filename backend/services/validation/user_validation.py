@@ -19,8 +19,6 @@ def validate_new_user(user: User) -> [str]:
         validation_exceptions.append("User email cannot be longer than 255 characters")
     if not __is_email_valid(user.email):
         validation_exceptions.append("Provided an email in an invalid format")
-    # if not __is_tel_number_valid(user.tel):
-    #     validation_exceptions.append("provided a phone number in an invalid format")
     # TODO: Check bio length
     if __is_under_18(user.date_of_birth):
         validation_exceptions.append("Users under 18 are not allowed on the app")
