@@ -10,16 +10,12 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/presentation/chat/pages/conversations_page.dart';
-import 'package:frontend/src/app/presentation/swipe/util/shared_algorithm_event.dart';
 import 'package:frontend/src/config/theme.dart';
 import 'package:frontend/src/app/presentation/profile/pages/profile.dart';
 import 'package:frontend/src/app/presentation/swipe/pages/swipe.dart';
 import 'package:frontend/src/app/service/user_service.dart';
 
 import 'package:provider/provider.dart';
-
-import '../../../../config/app_state.dart';
-import '../../authentification/controller/login_controller.dart';
 
 enum AppPage { profile, swipe, matches }
 
@@ -36,7 +32,6 @@ class _HomeScreenState extends State<HomeScreen> {
   late AppPage _currentPage;
 
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
-  final LoginController _controller = LoginController();
 
   void setCurrentPage(AppPage page) {
     setState(() {
@@ -67,6 +62,12 @@ class _HomeScreenState extends State<HomeScreen> {
     String subRoute = '/home/$subRouteName';
 
     if (!context.mounted) return;
+    if (subRouteName == "swipe") {
+      var prevRoute = ModalRoute.of(context);
+      if (prevRoute != null) {
+        Navigator.of(context).removeRouteBelow(prevRoute);
+      }
+    }
     Navigator.pushNamed(context, subRoute);
   }
 

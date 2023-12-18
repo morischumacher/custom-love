@@ -26,12 +26,13 @@ class Swipe extends StatefulWidget {
 
   @override
   _SwipeState createState() => _SwipeState();
+
 }
 
 class _SwipeState extends State<Swipe>{
   late SwipeItem _swipeItem;
   MatchEngine? _matchEngine;
-  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
   bool isLoading = false;
   bool swipeable = true;
   late bool swiped;
@@ -43,11 +44,8 @@ class _SwipeState extends State<Swipe>{
   late int tmpSwipesLeft;
   late int userId;
   bool swipesEvent = false;
-  bool hasVisitedSwipePage = false;
   int swipingAlgoId = 0;
-  StreamSubscription<int>? _algoIdSubscription;
   StreamSubscription<bool>? _swipeableSubscription;
-  bool _firstBuild = true;
 
   @override
   void initState() {
@@ -56,15 +54,6 @@ class _SwipeState extends State<Swipe>{
     _fetchInitData();
 
     print("init");
-
-    /*if (_algoIdSubscription == null) {
-      print("algoIdSubscription is null");
-      _algoIdSubscription = SharedAlgorithmEvent.algoId.algoIdChanged.listen((int algoId) {
-        print("current algoID: $algoId");
-        swipingAlgoId = algoId;
-        _loadNextUser();
-      });
-    }*/
 
     _swipeableSubscription = SharedSwipeableEvent.swipeable.swipeableChanged
         .listen((bool swipeable) async {
@@ -79,10 +68,6 @@ class _SwipeState extends State<Swipe>{
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    /*if (_firstBuild) {
-      print("why here?");
-      _firstBuild = false;
-    }*/
 
     final algoIdNotifier = Provider.of<AlgoIdNotifier>(context);
     if (swipingAlgoId != algoIdNotifier.algoId) {
@@ -109,9 +94,7 @@ class _SwipeState extends State<Swipe>{
       });
     }
 
-    if (swipingAlgoId == 1) {
-    } else if (swipingAlgoId == 2) {
-    } else if (swipingAlgoId == 3) {}
+    print("algo id: $swipingAlgoId");
 
     String accessToken = await _controller.retrieveAccessToken() as String;
     await widget.userService
@@ -177,12 +160,12 @@ class _SwipeState extends State<Swipe>{
                 interests: interests),
             likeAction: () async {
               String accessToken = await _controller.retrieveAccessToken() as String;
-              String result = await widget.swipeStatusService.postLike(accessToken, int.parse(_swipeItem.content.id));
+              await widget.swipeStatusService.postLike(accessToken, int.parse(_swipeItem.content.id));
               _loadNextUser();
             },
             nopeAction: () async {
               String accessToken = await _controller.retrieveAccessToken() as String;
-              String result = await widget.swipeStatusService.postView(accessToken, int.parse(_swipeItem.content.id));
+              await widget.swipeStatusService.postView(accessToken, int.parse(_swipeItem.content.id));
               _loadNextUser();
             },
             onSlideUpdate: (SlideRegion? region) async {
@@ -224,7 +207,7 @@ class _SwipeState extends State<Swipe>{
 
   @override
   Widget build(BuildContext context) {
-      return  swipingAlgoId !=0 ? Scaffold(
+      return swipingAlgoId !=0 ? Scaffold(
         key: _scaffoldKey,
         backgroundColor: _customLoveTheme.neutralColor,
         body: isLoading
@@ -232,9 +215,17 @@ class _SwipeState extends State<Swipe>{
           child: CircularProgressIndicator(),
         ):
         Center(
-          child: SwipingCard(matchEngine: _matchEngine, customLoveTheme: _customLoveTheme, swipeItem: _swipeItem, swipeable: swipesEvent, swipeableTimer: swipeableTimer, userId: userId, controller: _controller, userService: widget.userService),
-        )
-      ) : const SizedBox();
+          child: SwipingCard(
+              matchEngine: _matchEngine,
+              customLoveTheme: _customLoveTheme,
+              swipeItem: _swipeItem,
+              swipeable: swipesEvent,
+              swipeableTimer: swipeableTimer,
+              userId: userId,
+              controller: _controller,
+              userService: widget.userService,
+              swipeStatusService: widget.swipeStatusService),
+        )) : const SizedBox();
   }
 
   @override
@@ -245,8 +236,6 @@ class _SwipeState extends State<Swipe>{
       }
     }
 
-    _algoIdSubscription?.cancel();
-    //_algoIdSubscription = null;
     _swipeableSubscription?.cancel();
 
     super.dispose();

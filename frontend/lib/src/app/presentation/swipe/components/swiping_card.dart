@@ -36,7 +36,7 @@ class SwipingCard extends StatelessWidget {
   final CustomLoveTheme _customLoveTheme;
   final SwipeItem _swipeItem;
   bool swipeable = false;
-  bool _swipeableTimer;
+  final bool _swipeableTimer;
   final int _userId;
 
   @override
