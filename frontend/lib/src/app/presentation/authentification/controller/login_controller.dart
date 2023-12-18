@@ -94,7 +94,7 @@ class LoginController {
           }
         } else {
           if (context.mounted) {
-            errorMessage(context, "Error during Authentification");
+            errorMessage(context, "Error during Authentication");
           }
         }
       }

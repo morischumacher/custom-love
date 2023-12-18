@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:frontend/src/app/presentation/registration/controller/registration_controller.dart';
 import 'package:frontend/src/app/presentation/registration/pages/registration_gender_preference.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/page_title.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/textfield.dart';
@@ -39,6 +40,8 @@ class RegistrationNameEmail extends StatefulWidget {
 }
 
 class _RegistrationNameEmailState extends State<RegistrationNameEmail> {
+  final RegistrationController _controller = RegistrationController();
+
   @override
   void initState() {
     super.initState();
@@ -51,6 +54,10 @@ class _RegistrationNameEmailState extends State<RegistrationNameEmail> {
     birthdate = widget.birthdate;
     profilePicture = widget.profilePicture;
     userInterestIdList = widget.userInterestIdList;
+
+    print("registration_name_email.dart");
+    print(_controller.userLocation);
+    print("=========");
   }
 
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();

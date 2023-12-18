@@ -13,6 +13,7 @@ class RegistrationService {
       String bio,
       String birthdate,
       String job,
+      int searchRadius,
       int genderIdentityId
     ) async {
     try {
@@ -25,10 +26,14 @@ class RegistrationService {
           bio,
           birthdate,
           job,
-          genderIdentityId
+          searchRadius,
+          10,
+          genderIdentityId,
+          "2024-11-18T11:11:27.137918"
       );
       return body;
     } catch (e) {
+      print(e.toString());
       rethrow;
     }
   }
