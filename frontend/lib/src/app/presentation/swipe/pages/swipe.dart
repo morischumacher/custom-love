@@ -160,11 +160,13 @@ class _SwipeState extends State<Swipe>{
                 interests: interests),
             likeAction: () async {
               String accessToken = await _controller.retrieveAccessToken() as String;
+              await SwipesLeft.updateSwipeLeft(accessToken, widget.userService);
               await widget.swipeStatusService.postLike(accessToken, int.parse(_swipeItem.content.id));
               _loadNextUser();
             },
             nopeAction: () async {
               String accessToken = await _controller.retrieveAccessToken() as String;
+              await SwipesLeft.updateSwipeLeft(accessToken, widget.userService);
               await widget.swipeStatusService.postView(accessToken, int.parse(_swipeItem.content.id));
               _loadNextUser();
             },
@@ -183,10 +185,8 @@ class _SwipeState extends State<Swipe>{
                       setState(() {
                         swipeableTimer = true;
                       });
-                      // Dislike
                       SharedSwipeableEvent.swipeable.changeSwipeable(true);
                     } else {
-                      // Like
                       SharedSwipeableEvent.swipeable.changeSwipeable(false);
                     }
                   }
