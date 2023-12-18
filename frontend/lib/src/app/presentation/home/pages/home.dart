@@ -1,10 +1,16 @@
 import 'package:flutter/rendering.dart';
+import 'package:frontend/src/app/presentation/authentification/pages/logout_page.dart';
+import 'package:frontend/src/app/presentation/chat/pages/matches_page.dart';
+import 'package:frontend/src/app/presentation/chat/pages/messages_page.dart';
+import 'package:go_router/go_router.dart';
+import 'package:frontend/src/app/service/swipe_status_service.dart';
 import 'package:frontend/src/app/presentation/swipe/util/algo_id_notifier.dart';
 import "package:universal_html/html.dart" as universal_html;
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 import 'package:flutter/material.dart';
-import 'package:frontend/src/app/presentation/chat/pages/conversation.dart';
+import 'package:frontend/src/app/presentation/chat/pages/conversations_page.dart';
+import 'package:frontend/src/app/presentation/swipe/util/shared_algorithm_event.dart';
 import 'package:frontend/src/config/theme.dart';
 import 'package:frontend/src/app/presentation/profile/pages/profile.dart';
 import 'package:frontend/src/app/presentation/swipe/pages/swipe.dart';
@@ -15,11 +21,10 @@ import 'package:provider/provider.dart';
 import '../../../../config/app_state.dart';
 import '../../authentification/controller/login_controller.dart';
 
-
-enum AppPage { Profile, Swipe, Matches }
+enum AppPage { profile, swipe, matches }
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key, required UserService userService})
+  const HomeScreen({Key? key, required UserService userService, SwipeStatusService? swipeStatusService})
       : super(key: key);
 
   @override
@@ -28,32 +33,58 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late bool isOnSwipePage;
+  late AppPage _currentPage;
 
-  @override
-  void initState() {
-    super.initState();
-    isOnSwipePage = false;
-    var url = universal_html.window.location.href;
-    List<String> urlSubsections = url.split("/");
-    String subRoute = urlSubsections[urlSubsections.length - 1].toLowerCase();
-    switch(subRoute) {
+  final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
+  final LoginController _controller = LoginController();
+
+  void setCurrentPage(AppPage page) {
+    setState(() {
+      _currentPage = page;
+    });
+  }
+
+  Widget Function(BuildContext) routePage(String url) {
+    switch(url) {
       case 'profile':
-        _currentPage = AppPage.Profile;
-        break;
+        setCurrentPage(AppPage.profile);
+        return (BuildContext context) => Profile(userService: context.read<UserService>());
       case 'swipe':
-        _currentPage = AppPage.Swipe;
-        break;
-      case 'matches':
-        _currentPage = AppPage.Matches;
-        break;
+        setCurrentPage(AppPage.swipe);
+        return (BuildContext context) => Swipe(userService: context.read<UserService>(), swipeStatusService: context.read<SwipeStatusService>());
+      case 'matches' || 'messages':
+        setCurrentPage(AppPage.matches);
+        return (BuildContext context) => const MatchesPage();
       default:
-        _currentPage = AppPage.Profile;
+        setCurrentPage(AppPage.swipe);
+        return (BuildContext context) => Swipe(userService: context.read<UserService>(), swipeStatusService: context.read<SwipeStatusService>());
     }
   }
 
-  late AppPage _currentPage;
-  final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
-  final LoginController _controller = LoginController();
+  Future<void> changeRoute(int index, BuildContext context) async {
+    String str = AppPage.values[index].toString();
+    String subRouteName = str.split(".")[1].toLowerCase();
+    String subRoute = '/home/$subRouteName';
+
+    if (!context.mounted) return;
+    Navigator.pushNamed(context, subRoute);
+  }
+
+  String getUrl(BuildContext context) {
+    // navigator is corrupt - logout
+    if (ModalRoute.of(context) == null) {
+      Navigator.of(context).pushNamed(
+        "/logout",
+        arguments: const LogoutRouteArguments("Internal App Error: Navigator corrupt"),
+      );
+    }
+
+    var url = ModalRoute.of(context)!.settings.name!;
+    List<String> urlSubsections = url.split("/");
+    String subRoute = urlSubsections[urlSubsections.length - 1].toLowerCase();
+
+    return subRoute;
+  }
 
   void _changeAlgoId(BuildContext context, int algoId) {
     final algoIdNotifier = Provider.of<AlgoIdNotifier>(context, listen: false);
@@ -64,32 +95,21 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    String url = getUrl(context);
+    Widget Function(BuildContext context) route = routePage(url);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Custom Love App'),
+        title: getTitle(),
         backgroundColor: _customLoveTheme.primaryColor,
         actions: [ _currentPage.index == 1 ?
           algoSwitcherMenu() : Container(),
         ],
       ),
-      body: getPage(_currentPage),
+      body: route(context),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentPage.index,
-
-        onTap: (int index) {
-          if (kIsWeb) {
-            // Web
-            String str = AppPage.values[index].toString();
-            String subRouteName = str.split(".")[1].toLowerCase();
-            String subRoute = '/home/$subRouteName';
-            Navigator.pushNamed(context, subRoute);
-          } else {
-            // Mobile
-            setState(() {
-              _currentPage = AppPage.values[index];
-            });
-          }
-        },
+        onTap: (int index) => changeRoute(index, context),
         unselectedItemColor: Colors.grey,
         selectedItemColor: _customLoveTheme.primaryColor,
         items: const [
@@ -110,15 +130,13 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget getPage(AppPage page) {
-    switch (page) {
-      case AppPage.Profile:
-        return Profile(userService: context.read<UserService>());
-      case AppPage.Swipe:
-        return Swipe(userService: context.read<UserService>());
-      case AppPage.Matches:
-        return const ConversationsPage();
+  Widget getTitle() {
+    if (ModalRoute.of(context)!.settings.arguments is MessagesPageRouteArguments) {
+      final args = ModalRoute.of(context)!.settings.arguments as MessagesPageRouteArguments;
+      return Text("${args.user.firstName} ${args.user.lastName}");
     }
+
+    return const Text("Custom Love App");
   }
 
   Widget algoSwitcherMenu(){

@@ -33,7 +33,7 @@ class Message(SQLModel, table=True):
 
 def message_factory(_json: json):
     return Message(
-        conversation_id=_json['conversation_id'],
+        conversation_id=int(_json['conversation_id']),
         sender_id=_json['sender_id'],
         receiver_id=_json['receiver_id'],
         message=_json['message'],

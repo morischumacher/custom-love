@@ -14,3 +14,11 @@ class Interest(SQLModel, table=True):
     icon: str
 
     users: List["User"] = Relationship(back_populates="interests", link_model=UserHasInterest)
+
+    def __hash__(self):
+        return hash((self.icon, self.id, self.name))
+
+    def __eq__(self, other):
+        if not isinstance(other, type(self)):
+            return False
+        return (self.icon, self.id, self.name) == (other.icon, other.id, other.name)

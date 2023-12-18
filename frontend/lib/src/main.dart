@@ -5,6 +5,9 @@ import 'package:frontend/src/app/presentation/utils/CustomScrollBehaviour.dart';
 import 'package:frontend/src/app/service/conversation_service.dart';
 import 'package:frontend/src/app/service/match_service.dart';
 import 'package:frontend/src/app/service/message_service.dart';
+import 'package:frontend/src/app/api/registration_api.dart';
+import 'package:frontend/src/app/presentation/registration/pages/registration_name_email.dart';
+import 'package:frontend/src/app/service/registration_service.dart';
 import 'package:frontend/src/config/theme.dart';
 import 'package:frontend/src/app/presentation/authentification/pages/login_page.dart';
 import 'package:frontend/src/app/presentation/home/pages/home.dart';
@@ -15,8 +18,10 @@ import 'app/api/login_api.dart';
 import 'app/api/match_api.dart';
 import 'app/api/message_api.dart';
 import 'app/api/user_api.dart';
+import 'app/api/swipe_status_api.dart';
 import 'app/service/login_service.dart';
 import 'app/service/user_service.dart';
+import 'app/service/swipe_status_service.dart';
 import 'config/app_state.dart';
 
 void main() {
@@ -52,6 +57,12 @@ class CustomLove extends StatelessWidget {
         ProxyProvider<LoginApi, LoginService>(
           update: (_, loginApi, __) => LoginService(loginApi),
         ),
+        ProxyProvider<http.Client, RegistrationApi>(
+          update: (_, httpClient, __) => RegistrationApi(httpClient: httpClient),
+        ),
+        ProxyProvider<RegistrationApi, RegistrationService>(
+          update: (_, registrationApi, __) => RegistrationService(registrationApi),
+        ),
         ProxyProvider<http.Client, ConversationApi>(
           update: (_, httpClient, __) => ConversationApi(httpClient),
         ),
@@ -69,7 +80,13 @@ class CustomLove extends StatelessWidget {
         ),
         ProxyProvider<MessageApi, MessageService>(
           update: (_, messageApi, __) => MessageService(messageApi),
-        )
+        ),
+        ProxyProvider<http.Client, SwipeStatusApi>(
+          update: (_, httpClient, __) => SwipeStatusApi(httpClient: httpClient),
+        ),
+        ProxyProvider<SwipeStatusApi, SwipeStatusService>(
+          update: (_, swipeStatusApi, __) => SwipeStatusService(swipeStatusApi),
+        ),
       ],
       child: MaterialApp(
         scrollBehavior: CustomScrollBehaviour(),
@@ -82,6 +99,7 @@ class CustomLove extends StatelessWidget {
             final conversationService = Provider.of<ConversationService>(context);
             final matchService = Provider.of<MatchService>(context);
             final messageService = Provider.of<MessageService>(context);
+            final swipeStatusService = Provider.of<SwipeStatusService>(context);
             return LoginPage(
                 loginService: loginService, userService: userService);
           },
@@ -91,7 +109,8 @@ class CustomLove extends StatelessWidget {
           },
           '/home/swipe': (context) {
             final userService = Provider.of<UserService>(context);
-            return HomeScreen(userService: userService);
+            final swipeStatusService = Provider.of<SwipeStatusService>(context);
+            return HomeScreen(userService: userService, swipeStatusService: swipeStatusService);
           },
           '/home/matches': (context) {
             final userService = Provider.of<UserService>(context);
@@ -100,8 +119,26 @@ class CustomLove extends StatelessWidget {
             final messageService = Provider.of<MessageService>(context);
             return HomeScreen(userService: userService);
           },
+          '/home/matches/messages': (context) {
+            final userService = Provider.of<UserService>(context);
+            return HomeScreen(userService: userService);
+          },
           '/logout': (context) {
             return const LogoutPage();
+          },
+          '/registration': (context) {
+            // return const RegistrationGenderPreference();
+            return RegistrationNameEmail(
+              firstName: null,
+              lastName: null,
+              email: null,
+              password: null,
+              gender: null,
+              preference: null,
+              birthdate: null,
+              profilePicture: null,
+              userInterestIdList: Set<int>()
+            );
           }
         },
       ),

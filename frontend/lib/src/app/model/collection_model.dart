@@ -10,7 +10,7 @@ class Collection<T> {
   int get currentPage => _currentPage;
   int get size => _size;
 
-  Map<int, T> items = <int, T>{};
+  SplayTreeMap<int, T> items = SplayTreeMap((a, b) => a.compareTo(b));
 
   Collection(): this.custom(0, 50);
   Collection.custom(this._currentPage, this._size);
@@ -30,6 +30,7 @@ class Collection<T> {
 
   Future<void> getNextPage(PaginatedService<T, PaginatedApi<T>> service) async {
     items.addAll(await service.getNextPage(_currentPage, _size));
+    _currentPage++;
   }
 
   Future<bool> hasNext(PaginatedService<T, PaginatedApi<T>> service) async {

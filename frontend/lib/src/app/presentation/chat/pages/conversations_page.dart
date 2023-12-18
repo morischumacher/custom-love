@@ -20,6 +20,10 @@ class _ConversationsPageState extends State<ConversationsPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (!Provider.of<StateManager>(context).initialized) {
+      Provider.of<StateManager>(context).initialize(context);
+    }
+
     ScrollController matchesScrollController = ScrollController();
     ScrollController conversationsController = ScrollController();
 

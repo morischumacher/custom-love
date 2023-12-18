@@ -5,8 +5,8 @@ from pydantic import BaseModel
 from enum import Enum
 
 
-class NotificationType(Enum):
-    message = "message"
+class NotificationType(str, Enum):
+    message: str = "message"
 
 
 class Notification(BaseModel):

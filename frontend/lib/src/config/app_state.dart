@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -36,6 +37,28 @@ class ConversationStorage extends CollectionStorage {
 
 class MessageStorage extends CollectionStorage {
   Map<int, Collection<Message>> messages = <int, Collection<Message>>{};
+
+  Future<void> initializeFirstPage(int conversationId, MessageService messageService) async {
+    messages[conversationId] = Collection<Message>();
+
+    await messages[conversationId]!.getNextPage(messageService.copyWith("$conversationId"));
+    notifyListeners();
+  }
+
+  void addMessage(Message message, MessageService messageService) {
+    if (!messages.containsKey(message.conversationId)) {
+      messages[message.conversationId] = Collection<Message>();
+      messages[message.conversationId]!.getFirst(messageService.copyWith("${message.conversationId}"));
+    }
+
+    messages[message.conversationId]!.items.putIfAbsent(message.id!, () => message);
+    notifyListeners();
+  }
+
+  Future<void> getNextPage(int conversationId, MessageService messageService) async {
+    await messages[conversationId]?.getNextPage(messageService.copyWith("$conversationId"));
+    notifyListeners();
+  }
 }
 
 class MatchStorage extends CollectionStorage {
@@ -47,6 +70,7 @@ class StateManager extends ChangeNotifier {
   WebSocketChannel? socket;
   bool connected = false;
   int loginRetries = 10;
+  bool initialized = false;
 
   Future<void> registerUser(User user, BuildContext buildContext) async {
     // save the current user
@@ -66,6 +90,8 @@ class StateManager extends ChangeNotifier {
     for (Future<void> task in tasks) {
       await task;
     }
+
+    initialized = true;
   }
   
   Future<void> initializeUsers(BuildContext buildContext) async {
@@ -162,10 +188,10 @@ class StateManager extends ChangeNotifier {
 
     socket?.stream.listen(
       (event) {
-        NotificationModel notification = NotificationModel.fromJson(event);
+        NotificationModel notification = NotificationModel.fromJson(jsonDecode(jsonDecode(event)));
         switch(notification.type) {
           case "message":
-            print(event);
+            receiveMessage(Message.fromJson(notification.content), buildContext);
         }
       },
       onDone: () {
@@ -173,7 +199,6 @@ class StateManager extends ChangeNotifier {
         // the event will be handled in the onError callback
         if (socket?.closeCode == null) {
           // do nothing
-          print("onDone did nothing");
           return;
         }
 
@@ -228,5 +253,19 @@ class StateManager extends ChangeNotifier {
     } catch(e) {
       // do nothing
     }
+  }
+
+  Future<void> receiveMessage(Message message, BuildContext context) async {
+    if (!context.mounted) return;
+    Provider.of<MessageStorage>(context, listen: false).addMessage(
+        message,
+        Provider.of<MessageService>(context, listen: false)
+    );
+  }
+
+  Future<void> sendMessage(Message message, BuildContext context) async {
+    NotificationModel notification = NotificationModel("message", message.toJson());
+    socket?.sink.add(jsonEncode(notification));
+    //if (!context.mounted) return;
   }
 }
