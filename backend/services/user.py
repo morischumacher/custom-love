@@ -2,7 +2,8 @@ import datetime
 import random
 from typing import List, Annotated
 import json
-
+from dotenv import load_dotenv
+import os
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_pagination.ext.sqlmodel import paginate
@@ -35,7 +36,7 @@ from backend.utils.logger import Logger
 from backend.utils.pagination import PaginationParams
 from backend.utils.passwords import hash_pwd
 from backend.utils.token import create_access_token, get_current_user
-
+load_dotenv()
 
 class UserUpdate(BaseModel):
     latitude: float = Field(None, title="Latitude")
@@ -127,7 +128,7 @@ def patch_user(updated_user: UserUpdate, user: Annotated[User, Depends(get_curre
                     user.swipes_left = user.swipes_left - 1
             else:
                 user.swipe_limit_reset_date = datetime.datetime.now() + datetime.timedelta(hours=24)
-                user.swipes_left = 10
+                user.swipes_left = os.getenv('SWIPE_LIMIT')
         elif "algo_id" in key and updated_user.algo_id is not None:
             user.matching_algorithm = updated_user.algo_id
         elif "latitude" in key:
