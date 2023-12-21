@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:frontend/src/app/model/user_model.dart';
+import 'package:frontend/src/app/presentation/swipe/util/matching_algorithm.dart';
 import 'package:frontend/src/app/presentation/swipe/util/swipe_status.dart';
 import 'package:frontend/src/app/presentation/swipe/util/content.dart';
 import 'package:flutter/material.dart';
@@ -43,6 +44,7 @@ class _SwipeState extends State<Swipe> {
   late int userId;
   bool swipesEvent = false;
   bool hasVisitedSwipePage = false;
+  bool firstBuild = true;
   int swipingAlgoId = 0;
   StreamSubscription<int>? _algoIdSubscription;
   StreamSubscription<bool>? _swipeableSubscription;
@@ -142,15 +144,34 @@ class _SwipeState extends State<Swipe> {
     });
   }
 
+  @override
+  Future<void> didChangeDependencies() async {
+    super.didChangeDependencies();
+
+    if (firstBuild) {
+      firstBuild = false;
+      print("first build");
+    }
+  }
+
   void _fetchInitData() async {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await _getUserId();
+      await _getMatchingAlgorithm();
     });
   }
 
   Future<void> _getUserId() async {
     var userIdString = await _controller.retrieveUserId() as String;
     userId = int.parse(userIdString);
+  }
+
+  Future<void> _getMatchingAlgorithm() async {
+    var matchingAlgorithm = await MatchingAlgorithm.getCurrentMatchingAlgorithm(userId, widget.userService);
+    /*String accessToken = await _controller.retrieveAccessToken() as String;
+    var id = await MatchingAlgorithm.updateMatchingAlgorithm(accessToken, widget.userService, 1);*/
+    print("swipingAlgoId: $matchingAlgorithm");
+    //print("new id: $id");
   }
 
   void _loadNextUser() async {

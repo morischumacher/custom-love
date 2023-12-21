@@ -88,6 +88,31 @@ class UserApi extends PaginatedApi<User> {
     }
   }
 
+  Future<User> updateCurrentUserMatchingAlgorithm(var accessToken, int algoId) async {
+    final Map<String, dynamic> body = {
+      "algo_id": algoId,
+    };
+
+    final response = await http.patch(
+      Uri.parse('${ApiConfig.baseUrl}/users'),
+      headers: {
+        'Content-Type': 'application/json',
+        'accept': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+      body: jsonEncode(body),
+    );
+
+    if (response.statusCode == 200) {
+      final dynamic jsonItem = json.decode(response.body);
+      final User user = User.fromJson(jsonItem);
+      return user;
+    } else {
+      // TODO: Add custom exception
+      throw Exception('Failed to update user swipesLeft');
+    }
+  }
+
   Future<User> getAlgoUser(var accessToken, int algoId) async {
     final response = await http.get(
       Uri.parse(
