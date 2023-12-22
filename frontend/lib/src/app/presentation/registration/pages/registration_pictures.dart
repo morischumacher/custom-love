@@ -216,7 +216,7 @@ class _RegistrationPicturesState extends State<RegistrationPictures> {
       onPressed: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return RegistrationInterests(
-            firstName: lastName,
+            firstName: firstName,
             lastName: lastName,
             email: email,
             password: password,
