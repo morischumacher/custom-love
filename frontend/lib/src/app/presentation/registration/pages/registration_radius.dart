@@ -56,6 +56,7 @@ class _RegistrationRadiusState extends State<RegistrationRadius> {
     userInterestIdList = widget.userInterestIdList;
     userLocation = widget.location;
     searchRadius = widget.searchRadius ?? 1;
+    searchRadiusMiles = searchRadius != null ? (searchRadius! * 0.621371).roundToDouble() : 1;
   }
 
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
@@ -72,7 +73,7 @@ class _RegistrationRadiusState extends State<RegistrationRadius> {
   late Set<int> userInterestIdList;
   Position? userLocation;
   // Default searchRadius is in km
-  late double? searchRadius; double searchRadiusMiles = 1;
+  late double? searchRadius; double? searchRadiusMiles;
 
   @override
   Widget build(BuildContext context) {
