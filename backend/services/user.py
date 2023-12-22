@@ -33,6 +33,7 @@ from backend.utils import passwords
 from backend.utils.connection_manager import connection_manager
 from backend.utils.logger import Logger
 from backend.utils.pagination import PaginationParams
+from backend.utils.passwords import hash_pwd
 from backend.utils.token import create_access_token, get_current_user
 
 
@@ -99,6 +100,7 @@ def registration(user: User, db: Annotated[Session, Depends(create_session)]) ->
     if len(validate_new_user(user)) > 0:
         raise ValidationException(user_validation)
 
+    user.password = hash_pwd(user.password)
     db.add(user)
     db.commit()
     db.refresh(user)

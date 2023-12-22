@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:frontend/src/config/exceptions.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:frontend/src/config/api_config.dart';
 
@@ -35,9 +36,9 @@ class RegistrationApi {
     print('"swipe_limit_reset_date": $swipeLimitResetDate');
 
     var testing_body = json.encode(<String, String>{
-      "first_name": "Uniform",
-      "last_name": "Uniformson",
-      "email": "uniform@email.com",
+      "first_name": "Juliett",
+      "last_name": "Juliettson",
+      "email": "juliett@email.com",
       "password": "pass1",
       "bio": "Student and Employee",
       "date_of_birth": "1955-11-18T11:11:27.137918",
@@ -45,7 +46,21 @@ class RegistrationApi {
       "search_radius": 10.toString(),
       "swipes_left": 10.toString(),
       "gender_identity_id": 1.toString(),
-      "swipe_limit_reset_date": "2024-11-18T11:11:27.137918"
+      "swipe_limit_reset_date": "2024-11-18T11:11:27.137918",
+      "longitude": 45.0.toString(),
+      "latitude": 45.0.toString(),
+      "position": Position(
+    longitude: 20.0,
+    latitude: 20.0,
+    accuracy: 20.0,
+    timestamp: DateTime.now(),
+    altitude: 20.0,
+    altitudeAccuracy: 20.0,
+    heading: 20.0,
+    headingAccuracy: 20.0,
+    speed: 20.0,
+    speedAccuracy: 20.0
+    ).toString()
     });
 
     final response = await httpClient.post(

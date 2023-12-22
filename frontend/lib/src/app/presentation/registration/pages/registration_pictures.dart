@@ -108,7 +108,6 @@ class _RegistrationPicturesState extends State<RegistrationPictures> {
                 children: [
                   const PageTitle(
                       title: "Profile Pictures",
-                      // description: "Provide up to five pictures of yourself",
                       description: "Provide a profile picture of yourself",
                       bottomPadding: 70.0,
                   ),

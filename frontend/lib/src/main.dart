@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/presentation/authentification/pages/logout_page.dart';
+import 'package:frontend/src/app/presentation/registration/pages/registration_location.dart';
 import 'package:frontend/src/app/presentation/utils/CustomScrollBehaviour.dart';
 import 'package:frontend/src/app/service/conversation_service.dart';
 import 'package:frontend/src/app/service/match_service.dart';
@@ -125,17 +126,16 @@ class CustomLove extends StatelessWidget {
             return const LogoutPage();
           },
           '/registration': (context) {
-            // return const RegistrationGenderPreference();
-            return RegistrationNameEmail(
-              firstName: null,
-              lastName: null,
-              email: null,
-              password: null,
-              gender: null,
-              preference: null,
-              birthdate: null,
-              profilePicture: null,
-              userInterestIdList: Set<int>()
+            return RegistrationLocation(
+                firstName: null,
+                lastName: null,
+                email: null,
+                password: null,
+                gender: null,
+                preference: null,
+                birthdate: null,
+                profilePicture: null,
+                userInterestIdList: Set<int>()
             );
           }
         },

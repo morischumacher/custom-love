@@ -8,6 +8,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../config/app_state.dart';
+import '../../../model/user_model.dart';
 import '../../../service/user_service.dart';
 
 class RegistrationController {
@@ -54,17 +56,31 @@ class RegistrationController {
       var userId = registrationResult["user"]["id"];
       await storeUserId(userId.toString());
 
-      // If login is successful, navigate to '/home'
+      // If registration is successful, navigate to '/home/swipe'
       if (context.mounted) {
         print("UserLocation");
+        userLocation = Position(
+            longitude: 20.0,
+            latitude: 20.0,
+            accuracy: 20.0,
+            timestamp: DateTime.now(),
+            altitude: 20.0,
+            altitudeAccuracy: 20.0,
+            heading: 20.0,
+            headingAccuracy: 20.0,
+            speed: 20.0,
+            speedAccuracy: 20.0
+        );
         print(userLocation);
         userService.updateCurrentUserLocation(userLocation!, accessToken);
 
         // load users, conversations, matches and first messages
-        // unawaited(Provider.of<StateManager>(context, listen: false).initialize(context));
+        unawaited(Provider.of<StateManager>(context, listen: false).initialize(context));
 
         // save the user object and connect to a websocket
-        // Provider.of<StateManager>(context, listen: false).registerUser(User.fromJson(registrationResult['user']), context);
+        print("REGISTRATION RESULT");
+        print(registrationResult['user']);
+        Provider.of<StateManager>(context, listen: false).registerUser(User.fromJson(registrationResult['user']), context);
 
         Navigator.of(context).pushNamed('/home/swipe');
       }

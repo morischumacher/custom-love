@@ -40,8 +40,6 @@ class RegistrationNameEmail extends StatefulWidget {
 }
 
 class _RegistrationNameEmailState extends State<RegistrationNameEmail> {
-  final RegistrationController _controller = RegistrationController();
-
   @override
   void initState() {
     super.initState();
@@ -54,12 +52,9 @@ class _RegistrationNameEmailState extends State<RegistrationNameEmail> {
     birthdate = widget.birthdate;
     profilePicture = widget.profilePicture;
     userInterestIdList = widget.userInterestIdList;
-
-    print("registration_name_email.dart");
-    print(_controller.userLocation);
-    print("=========");
   }
 
+  final RegistrationController _controller = RegistrationController();
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
 
   final firstName = TextEditingController();
