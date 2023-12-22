@@ -75,6 +75,9 @@ class _RegistrationLocationState extends State<RegistrationLocation> {
 
   Future<void> checkLocationPermission() async {
     LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.deniedForever) {
+      userLocationDefined = true;
+    }
     if (permission == LocationPermission.denied) {
       await requestLocationPermission();
     } else {
@@ -88,6 +91,9 @@ class _RegistrationLocationState extends State<RegistrationLocation> {
         permission == LocationPermission.always) {
       saveCurrentLocation();
     } else {
+      setState(() {
+        userLocationDefined = true;
+      });
       logger.e("Location permission is denied.");
     }
   }
@@ -97,8 +103,10 @@ class _RegistrationLocationState extends State<RegistrationLocation> {
       Position position = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.high);
 
-      userLocation = position;
-      userLocationDefined = true;
+      setState(() {
+        userLocation = position;
+        userLocationDefined = true;
+      });
 
       var location = await _locationService.getCurrentLocation(
           position.latitude, position.longitude);
@@ -131,20 +139,25 @@ class _RegistrationLocationState extends State<RegistrationLocation> {
                         children: [
                           Icon(Icons.map, size: 150, color: _customLoveTheme.textColor),
                           Positioned(
-                            bottom: 0,
-                            right: -10,
-                            child: userLocation == null ?
-                              Icon(Icons.close, size: 80, color: Colors.red) :
+                            bottom: userLocationDefined ? 0 : 12,// 0,
+                            right: userLocationDefined ? -10 : 2, // -10,
+                            child: userLocationDefined == false ?
+                              const CircularProgressIndicator(strokeWidth: 7) :
+                            (userLocation == null ?
+                              Icon(Icons.close, size: 80, color: _customLoveTheme.redColor) :
                               Icon(Icons.check, size: 80, color: _customLoveTheme.androidGreen)
+                            )
                             ,
                           )
                         ],
                       ),
                       const SizedBox(height: 15.0),
                       Text(
-                        userLocation != null ?
-                        'Your location is specified' :
-                        'Allow access to your location on your device, so we can suggest suitable matches',
+                        userLocationDefined == false ?
+                            'Please allow your device to access your location' :
+                            (userLocation == null ?
+                            'You denied the app access to your location, please set the access to your location to enabled and reload the page' :
+                            'Your location is specified'),
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: _customLoveTheme.textColor,
@@ -153,8 +166,6 @@ class _RegistrationLocationState extends State<RegistrationLocation> {
                         ),
                       ),
                       const SizedBox(height: 15.0),
-                      if (userLocation == null)
-                        requestLocationButton(context),
                       Expanded(child: Container()),
                       Center(
                         child: Row(
@@ -162,9 +173,28 @@ class _RegistrationLocationState extends State<RegistrationLocation> {
                             prevBtn(context),
                             const Spacer(),
                             nextBtn(context),
-                            const SizedBox(height: 80),
                           ],
                         ),
+                      ),
+                      const SizedBox(height: 30.0),
+                      Center(
+                        child: Column(
+                          children: [
+                            InkWell(
+                              child: Text(
+                                'Return to Login',
+                                style: TextStyle(
+                                  color: _customLoveTheme.linkColor,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              onTap: () {
+                                Navigator.pushNamed(context, "/");
+                              },
+                            ),
+                            const SizedBox(height: 30)
+                          ],
+                        )
                       )
                     ],
                   ),
