@@ -97,15 +97,6 @@ class _RegistrationRadiusState extends State<RegistrationRadius> {
                       const SizedBox(height: 15.0),
                       Column(
                         children: [
-                          /*
-                            Text(
-                              '$searchRadius km',
-                              style: const TextStyle(
-                                  fontSize: 32,
-                                  fontWeight: FontWeight.bold
-                              ),
-                            ),
-                             */
                           RichText(
                             text: TextSpan(
                               // Note: Styles for TextSpans must be explicitly defined.
