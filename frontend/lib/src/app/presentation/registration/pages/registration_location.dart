@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:frontend/src/app/presentation/registration/pages/registration_name_email.dart';
+import 'package:frontend/src/app/presentation/registration/pages/registration_radius.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/page_title.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:logger/logger.dart';
@@ -24,7 +24,9 @@ class RegistrationLocation extends StatefulWidget {
     required this.preference,
     required this.birthdate,
     required this.profilePicture,
-    required this.userInterestIdList
+    required this.userInterestIdList,
+    required this.location,
+    required this.searchRadius
   }) : super(key: key);
 
   final String? firstName;
@@ -36,6 +38,8 @@ class RegistrationLocation extends StatefulWidget {
   final String? birthdate;
   final Uint8List? profilePicture;
   final Set<int> userInterestIdList;
+  final Position? location;
+  final double? searchRadius;
 
   @override
   State<RegistrationLocation> createState() => _RegistrationLocationState();
@@ -55,14 +59,14 @@ class _RegistrationLocationState extends State<RegistrationLocation> {
     birthdate = widget.birthdate;
     profilePicture = widget.profilePicture;
     userInterestIdList = widget.userInterestIdList;
+    userLocation = widget.location;
+    searchRadius = widget.searchRadius;
   }
 
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
   final logger = Logger();
   final LocationService _locationService = LocationService();
 
-  Position? userLocation;
-  bool userLocationDefined = false;
   late String? firstName;
   late String? lastName;
   late String? email;
@@ -72,6 +76,8 @@ class _RegistrationLocationState extends State<RegistrationLocation> {
   late String? birthdate;
   Uint8List? profilePicture;
   late Set<int> userInterestIdList;
+  Position? userLocation; bool userLocationDefined = false;
+  late double? searchRadius;
 
   Future<void> checkLocationPermission() async {
     LocationPermission permission = await Geolocator.checkPermission();
@@ -132,7 +138,7 @@ class _RegistrationLocationState extends State<RegistrationLocation> {
                     children: <Widget>[
                       const PageTitle(
                         title: "Profile Location",
-                        description: "Please specify your current location and matching radius",
+                        description: "Please specify your current location",
                         bottomPadding: 70.0,
                       ),
                       Stack(
@@ -205,7 +211,6 @@ class _RegistrationLocationState extends State<RegistrationLocation> {
         )
 
     );
-
   }
 
   OutlinedButton requestLocationButton(BuildContext context) {
@@ -264,7 +269,7 @@ class _RegistrationLocationState extends State<RegistrationLocation> {
       ),
       onPressed: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return RegistrationNameEmail(
+          return RegistrationRadius(
               firstName: firstName,
               lastName: lastName,
               email: email,
@@ -273,7 +278,9 @@ class _RegistrationLocationState extends State<RegistrationLocation> {
               preference: preference,
               birthdate: birthdate,
               profilePicture: profilePicture,
-              userInterestIdList: userInterestIdList
+              userInterestIdList: userInterestIdList,
+              location: userLocation,
+              searchRadius: searchRadius
           );
         }));
       },

@@ -23,10 +23,11 @@ class RegistrationController {
       final String? email,
       final String? password,
       final String? bio,
-      final String? gender,
-      final String? genderPreference,
       final String? birthdate,
       final String? job,
+      final double? searchRadius,
+      final String? gender,
+      final String? genderPreference,
       final Uint8List? profilePicture,
       final Set<int> userInterestIdList,
       final int genderIdentityId

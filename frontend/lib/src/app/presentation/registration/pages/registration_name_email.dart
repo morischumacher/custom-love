@@ -1,15 +1,12 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:frontend/src/app/presentation/registration/controller/registration_controller.dart';
 import 'package:frontend/src/app/presentation/registration/pages/registration_gender_preference.dart';
+import 'package:frontend/src/app/presentation/registration/pages/registration_radius.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/page_title.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/textfield.dart';
-import 'package:provider/provider.dart';
+import 'package:geolocator/geolocator.dart';
 import '../../../../config/theme.dart';
-import '../../../service/login_service.dart';
-import '../../../service/user_service.dart';
-import '../../authentification/pages/login_page.dart';
 
 class RegistrationNameEmail extends StatefulWidget {
   const RegistrationNameEmail({
@@ -22,7 +19,9 @@ class RegistrationNameEmail extends StatefulWidget {
     required this.preference,
     required this.birthdate,
     required this.profilePicture,
-    required this.userInterestIdList
+    required this.userInterestIdList,
+    required this.location,
+    required this.searchRadius
   });
 
   final String? firstName;
@@ -34,6 +33,8 @@ class RegistrationNameEmail extends StatefulWidget {
   final String? birthdate;
   final Uint8List? profilePicture;
   final Set<int> userInterestIdList;
+  final Position? location;
+  final double? searchRadius;
 
   @override
   State<RegistrationNameEmail> createState() => _RegistrationNameEmailState();
@@ -52,9 +53,10 @@ class _RegistrationNameEmailState extends State<RegistrationNameEmail> {
     birthdate = widget.birthdate;
     profilePicture = widget.profilePicture;
     userInterestIdList = widget.userInterestIdList;
+    userLocation = widget.location;
+    searchRadius = widget.searchRadius;
   }
 
-  final RegistrationController _controller = RegistrationController();
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
 
   final firstName = TextEditingController();
@@ -66,6 +68,8 @@ class _RegistrationNameEmailState extends State<RegistrationNameEmail> {
   late String? birthdate;
   late Uint8List? profilePicture;
   late Set<int> userInterestIdList;
+  Position? userLocation;
+  late double? searchRadius;
 
   @override
   Widget build(BuildContext context) {
@@ -142,9 +146,18 @@ class _RegistrationNameEmailState extends State<RegistrationNameEmail> {
       ),
       onPressed: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return LoginPage(
-            loginService: Provider.of<LoginService>(context),
-            userService: Provider.of<UserService>(context),
+          return RegistrationRadius(
+              firstName: firstName.value.text,
+              lastName: lastName.value.text,
+              email: emailController.value.text,
+              password: passwordController.value.text,
+              gender: gender,
+              preference: preference,
+              birthdate: birthdate,
+              profilePicture: profilePicture,
+              userInterestIdList: userInterestIdList,
+              location: userLocation,
+              searchRadius: searchRadius
           );
         }));
       },
@@ -176,7 +189,9 @@ class _RegistrationNameEmailState extends State<RegistrationNameEmail> {
             preference: preference,
             birthdate: birthdate,
             profilePicture: profilePicture,
-            userInterestIdList: userInterestIdList
+            userInterestIdList: userInterestIdList,
+            location: userLocation,
+            searchRadius: searchRadius,
           );
         }));
       },

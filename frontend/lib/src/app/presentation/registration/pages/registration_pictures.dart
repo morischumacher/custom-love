@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/src/app/presentation/registration/pages/registration_gender_preference.dart';
 import 'package:frontend/src/app/presentation/registration/pages/registration_interests.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/page_title.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../config/theme.dart';
@@ -22,7 +23,9 @@ class RegistrationPictures extends StatefulWidget {
     required this.preference,
     required this.birthdate,
     required this.profilePicture,
-    required this.userInterestIdList
+    required this.userInterestIdList,
+    required this.location,
+    required this.searchRadius
   }) : super(key: key);
 
   final String? firstName;
@@ -34,6 +37,8 @@ class RegistrationPictures extends StatefulWidget {
   final String? birthdate;
   final Uint8List? profilePicture;
   final Set<int> userInterestIdList;
+  final Position? location;
+  final double? searchRadius;
 
   @override
   State<RegistrationPictures> createState() => _RegistrationPicturesState();
@@ -52,6 +57,8 @@ class _RegistrationPicturesState extends State<RegistrationPictures> {
     birthdate = widget.birthdate;
     profilePicture = widget.profilePicture;
     userInterestIdList = widget.userInterestIdList;
+    userLocation = widget.location;
+    searchRadius = widget.searchRadius;
   }
 
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
@@ -64,6 +71,8 @@ class _RegistrationPicturesState extends State<RegistrationPictures> {
   late String? birthdate;
   Uint8List? profilePicture;
   late Set<int> userInterestIdList;
+  Position? userLocation;
+  late double? searchRadius;
 
   // Web
   String defaultImageUrl = 'https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fblogs.timesofindia.indiatimes.com%2Fwp-content%2Fuploads%2F2016%2F11%2FNarendra-Modi-10-1.jpg&f=1&nofb=1&ipt=2934f6195ba86ab161d54c942491f87a1c68cc89b426d0601667d9052cf98010&ipo=images';
@@ -181,7 +190,9 @@ class _RegistrationPicturesState extends State<RegistrationPictures> {
             preference: preference,
             birthdate: birthdate,
             profilePicture: profilePicture,
-            userInterestIdList: userInterestIdList
+            userInterestIdList: userInterestIdList,
+            location: userLocation,
+            searchRadius: searchRadius
           );
         }));
       },
@@ -214,6 +225,8 @@ class _RegistrationPicturesState extends State<RegistrationPictures> {
             preference: preference,
             profilePicture: profilePicture,
             userInterestIdList: userInterestIdList,
+            location: userLocation,
+            searchRadius: searchRadius
           );
         }));
       },

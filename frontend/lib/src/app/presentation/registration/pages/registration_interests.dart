@@ -5,6 +5,7 @@ import 'package:frontend/src/app/presentation/registration/controller/registrati
 import 'package:frontend/src/app/presentation/registration/pages/registration_pictures.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/interest.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/page_title.dart';
+import 'package:geolocator/geolocator.dart';
 
 import '../../../../config/theme.dart';
 
@@ -19,7 +20,9 @@ class RegistrationInterests extends StatefulWidget {
     required this.preference,
     required this.birthdate,
     required this.profilePicture,
-    required this.userInterestIdList
+    required this.userInterestIdList,
+    required this.location,
+    required this.searchRadius
   }) : super(key: key);
 
   final String? firstName;
@@ -31,6 +34,8 @@ class RegistrationInterests extends StatefulWidget {
   final String? birthdate;
   final Uint8List? profilePicture;
   final Set<int> userInterestIdList;
+  final Position? location;
+  final double? searchRadius;
 
   @override
   State<RegistrationInterests> createState() => _RegistrationInterestsState();
@@ -49,6 +54,8 @@ class _RegistrationInterestsState extends State<RegistrationInterests> {
     birthdate = widget.birthdate;
     profilePicture = widget.profilePicture;
     userInterestIdList = widget.userInterestIdList;
+    userLocation = widget.location;
+    searchRadius = widget.searchRadius;
   }
 
   final RegistrationController _controller = RegistrationController();
@@ -62,6 +69,8 @@ class _RegistrationInterestsState extends State<RegistrationInterests> {
   late String? birthdate;
   late Uint8List? profilePicture;
   late Set<int> userInterestIdList;
+  Position? userLocation;
+  late double? searchRadius;
 
   final interestDto = [
     {"id": 1, "name": "sports"},
@@ -170,6 +179,8 @@ class _RegistrationInterestsState extends State<RegistrationInterests> {
             preference: preference,
             profilePicture: profilePicture,
             userInterestIdList: userInterestIdList,
+            location: userLocation,
+            searchRadius: searchRadius
           );
         }));
       },
@@ -193,17 +204,18 @@ class _RegistrationInterestsState extends State<RegistrationInterests> {
       onPressed: () {
         Future<void>.value(
             _controller.handleRegistration(
-                context,
+              context,
               firstName,
               lastName,
               email,
               password,
-              "TEST BIO",
+              "",
+              birthdate,
+              "",
+              searchRadius,
               gender,
               preference,
-              birthdate,
-              "TEST JOB",
-              null,
+              profilePicture,
               userInterestIdList,
               1
             )

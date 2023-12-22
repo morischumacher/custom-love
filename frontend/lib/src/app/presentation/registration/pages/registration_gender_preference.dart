@@ -6,6 +6,7 @@ import 'package:frontend/src/app/presentation/registration/pages/registration_pi
 import 'package:frontend/src/app/presentation/registration/pages/widgets/birthdate_field.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/dropdown_list.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/page_title.dart';
+import 'package:geolocator/geolocator.dart';
 
 import '../../../../config/theme.dart';
 
@@ -20,7 +21,9 @@ class RegistrationGenderPreference extends StatefulWidget {
     required this.preference,
     required this.birthdate,
     required this.profilePicture,
-    required this.userInterestIdList
+    required this.userInterestIdList,
+    required this.location,
+    required this.searchRadius
   });
 
   final String? firstName;
@@ -32,6 +35,8 @@ class RegistrationGenderPreference extends StatefulWidget {
   final String? birthdate;
   final Uint8List? profilePicture;
   final Set<int> userInterestIdList;
+  final Position? location;
+  final double? searchRadius;
 
   @override
   State<RegistrationGenderPreference> createState() => _RegistrationGenderPreferenceState();
@@ -50,6 +55,8 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
     _dateController.value = TextEditingValue(text: widget.birthdate == null ? "" : widget.birthdate as String);
     profilePicture = widget.profilePicture;
     userInterestIdList = widget.userInterestIdList;
+    userLocation = widget.location;
+    searchRadius = widget.searchRadius;
   }
 
   late String? firstName;
@@ -60,6 +67,8 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
   String? _selectedPreference = "";
   late Uint8List? profilePicture;
   late Set<int> userInterestIdList;
+  Position? userLocation;
+  late double? searchRadius;
 
   final TextEditingController _dateController = TextEditingController();
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
@@ -134,7 +143,9 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
             preference: _selectedPreference,
             birthdate: _dateController.value.text,
             profilePicture: profilePicture,
-            userInterestIdList: userInterestIdList
+            userInterestIdList: userInterestIdList,
+            location: userLocation,
+            searchRadius: searchRadius
           );
         }));
       },
@@ -167,6 +178,8 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
               birthdate: _dateController.value.text,
               profilePicture: profilePicture,
               userInterestIdList: userInterestIdList,
+              location: userLocation,
+              searchRadius: searchRadius,
           );
         }));
       },
