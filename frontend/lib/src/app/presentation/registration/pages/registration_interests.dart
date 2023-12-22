@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:frontend/src/app/presentation/registration/controller/registration_controller.dart';
 import 'package:frontend/src/app/presentation/registration/pages/registration_pictures.dart';
+import 'package:frontend/src/app/presentation/registration/pages/registration_summary.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/interest.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/page_title.dart';
 import 'package:geolocator/geolocator.dart';
@@ -58,7 +58,6 @@ class _RegistrationInterestsState extends State<RegistrationInterests> {
     searchRadius = widget.searchRadius;
   }
 
-  final RegistrationController _controller = RegistrationController();
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
   late String? firstName;
   late String? lastName;
@@ -202,27 +201,24 @@ class _RegistrationInterestsState extends State<RegistrationInterests> {
           side: BorderSide.none
       ),
       onPressed: () {
-        Future<void>.value(
-            _controller.handleRegistration(
-              context,
-              firstName,
-              lastName,
-              email,
-              password,
-              "",
-              birthdate,
-              "",
-              searchRadius,
-              gender,
-              preference,
-              profilePicture,
-              userInterestIdList,
-              1
-            )
-        );
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return RegistrationSummary(
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            password: password,
+            gender: gender,
+            preference: preference,
+            birthdate: birthdate,
+            profilePicture: profilePicture,
+            userInterestIdList: userInterestIdList,
+            location: userLocation,
+            searchRadius: searchRadius,
+          );
+        }));
       },
       child: const Text(
-        "Create Profile",
+        "Next",
         style: TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.white
