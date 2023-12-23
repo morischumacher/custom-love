@@ -21,7 +21,7 @@ class RegistrationService {
       int genderIdentityId,
       int genderPreferenceId,
       Uint8List? profilePicture,
-      Set<int> userInterestIdSet
+      List<int> userInterestIdSet
     ) async {
     try {
       final body = _registrationApi.registerUser(

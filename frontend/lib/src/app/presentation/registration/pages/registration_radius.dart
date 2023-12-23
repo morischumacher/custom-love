@@ -9,6 +9,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:logger/logger.dart';
 
 import '../../../../config/theme.dart';
+import '../../../service/interest_service.dart';
 
 class RegistrationRadius extends StatefulWidget {
   const RegistrationRadius({Key? key,
@@ -33,7 +34,7 @@ class RegistrationRadius extends StatefulWidget {
   final String? preference;
   final String? birthdate;
   final Uint8List? profilePicture;
-  final Set<int> userInterestIdList;
+  final List<Interest> userInterestIdList;
   final Position? location;
   final double? searchRadius;
 
@@ -70,7 +71,7 @@ class _RegistrationRadiusState extends State<RegistrationRadius> {
   late String? preference;
   late String? birthdate;
   Uint8List? profilePicture;
-  late Set<int> userInterestIdList;
+  late List<Interest> userInterestIdList;
   Position? userLocation;
   // Default searchRadius is in km
   late double? searchRadius; double? searchRadiusMiles;

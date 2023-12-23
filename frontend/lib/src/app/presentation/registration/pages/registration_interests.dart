@@ -2,8 +2,9 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/footer/footer.dart';
-import 'package:frontend/src/app/presentation/registration/pages/widgets/interest.dart';
+import 'package:frontend/src/app/presentation/registration/pages/widgets/interest_button.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/page_title.dart';
+import 'package:frontend/src/app/service/interest_service.dart';
 import 'package:geolocator/geolocator.dart';
 
 import '../../../../config/theme.dart';
@@ -33,7 +34,7 @@ class RegistrationInterests extends StatefulWidget {
   final String? preference;
   final String? birthdate;
   final Uint8List? profilePicture;
-  final Set<int> userInterestIdList;
+  final List<Interest> userInterestIdList;
   final Position? location;
   final double? searchRadius;
 
@@ -56,9 +57,19 @@ class _RegistrationInterestsState extends State<RegistrationInterests> {
     userInterestIdList = widget.userInterestIdList;
     userLocation = widget.location;
     searchRadius = widget.searchRadius;
+    getInterests();
+  }
+
+  void getInterests() async {
+    await _interestService.getInterests().then((value) {
+      setState(() {
+        interestDto = value;
+      });
+    });
   }
 
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
+  final InterestService _interestService = InterestService();
   late String? firstName;
   late String? lastName;
   late String? email;
@@ -67,32 +78,11 @@ class _RegistrationInterestsState extends State<RegistrationInterests> {
   late String? preference;
   late String? birthdate;
   late Uint8List? profilePicture;
-  late Set<int> userInterestIdList;
+  List<Interest> userInterestIdList = List<Interest>.empty();
   Position? userLocation;
   late double? searchRadius;
 
-  final interestDto = [
-    {"id": 1, "name": "sports"},
-    {"id": 2, "name": "movies"},
-    {"id": 3, "name": "travel"},
-    {"id": 4, "name": "science"},
-    {"id": 5, "name": "books"},
-    {"id": 6, "name": "music"},
-    {"id": 7, "name": "art"},
-    {"id": 8, "name": "food"},
-    {"id": 9, "name": "technology"},
-    {"id": 10, "name": "fashion"},
-    {"id": 11, "name": "photography"},
-    {"id": 12, "name": "gaming"},
-    {"id": 13, "name": "nature"},
-    {"id": 14, "name": "history"},
-    {"id": 15, "name": "fitness"},
-    {"id": 16, "name": "crafts"},
-    {"id": 17, "name": "writing"},
-    {"id": 18, "name": "gardening"},
-    {"id": 19, "name": "philosophy"},
-    {"id": 20, "name": "coding"}
-  ];
+  late List<Interest> interestDto = List<Interest>.empty();
 
   @override
   Widget build(BuildContext context) {
@@ -116,6 +106,16 @@ class _RegistrationInterestsState extends State<RegistrationInterests> {
                       description: "Select a few interests you're passionate about",
                       bottomPadding: 49.0
                   ),
+                  if (interestDto.isEmpty)
+                    SizedBox(
+                        height: 100,
+                        width: 100,
+                        child: CircularProgressIndicator(
+                          color: _customLoveTheme.primaryColor,
+                          strokeWidth: 18
+                        )
+                    ),
+                  if (interestDto.isNotEmpty)
                   for (int i = 0; i < interestDto.length; i += 2)
                     Center(
                       child: Container(
@@ -125,9 +125,8 @@ class _RegistrationInterestsState extends State<RegistrationInterests> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Expanded(
-                                  child: Interest(
-                                      interestId: interestDto[i]['id'] as int,
-                                      interestName: interestDto[i]['name'].toString(),
+                                  child: InterestButton(
+                                      interest: interestDto[i],
                                       containsInterestFunction: containsInterest,
                                       addRemoveInterestFunction: addRemoveInterest
                                   ),
@@ -135,9 +134,8 @@ class _RegistrationInterestsState extends State<RegistrationInterests> {
                                 const SizedBox(width: 20),
                                 if (i + 1 < interestDto.length)
                                   Expanded(
-                                  child: Interest(
-                                    interestId: interestDto[i + 1]['id'] as int,
-                                    interestName: interestDto[i + 1]['name'].toString(),
+                                  child: InterestButton(
+                                    interest: interestDto[i + 1],
                                     containsInterestFunction: containsInterest,
                                       addRemoveInterestFunction: addRemoveInterest
                                   ),
@@ -173,13 +171,13 @@ class _RegistrationInterestsState extends State<RegistrationInterests> {
 
   }
 
-  bool containsInterest(int id) {
-    return userInterestIdList.contains(id);
+  bool containsInterest(Interest interest) {
+    return userInterestIdList.contains(interest);
   }
 
-  void addRemoveInterest(int id) {
-    containsInterest(id) ?
-    userInterestIdList.removeWhere((interestId) => interestId == id) :
-    userInterestIdList.add(id);
+  void addRemoveInterest(Interest interest) {
+    containsInterest(interest) ?
+    userInterestIdList.removeWhere((thisInterest) => interest.id == thisInterest.id) :
+    userInterestIdList.add(interest);
   }
 }

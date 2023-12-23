@@ -23,7 +23,7 @@ class RegistrationApi {
       int genderIdentityId,
       int genderPreferenceId,
       Uint8List? profilePicture,
-      Set<int> userInterestIdSet
+      List<int> interests
       ) async {
     // Following attributes are not forwarded by the frontend, but handled by
     // the backend: swipesLeft, swipeLimitResetDate
@@ -52,6 +52,7 @@ class RegistrationApi {
           "swipe_limit_reset_date": DateTime.now().toString(),
           "longitude": location.longitude.toString(),
           "latitude": location.latitude.toString(),
+          "interests": interests.toString()
         })
     );
 

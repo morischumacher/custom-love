@@ -5,6 +5,7 @@ import 'package:frontend/src/app/presentation/registration/enums/registration_pa
 import 'package:geolocator/geolocator.dart';
 
 import '../../../../../../config/theme.dart';
+import '../../../../../service/interest_service.dart';
 import 'navigation_button.dart';
 
 class Footer extends StatefulWidget {
@@ -33,7 +34,7 @@ class Footer extends StatefulWidget {
   final String? genderPreference;
   final String? birthdate;
   final Uint8List? profilePicture;
-  final Set<int> userInterestIdList;
+  final List<Interest> userInterestIdList;
   final Position? location;
   final double? searchRadius;
 

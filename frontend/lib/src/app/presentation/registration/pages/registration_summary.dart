@@ -8,6 +8,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:logger/logger.dart';
 
 import '../../../../config/theme.dart';
+import '../../../service/interest_service.dart';
 import '../enums/registration_page_enum.dart';
 
 class RegistrationSummary extends StatefulWidget {
@@ -33,7 +34,7 @@ class RegistrationSummary extends StatefulWidget {
   final String? preference;
   final String? birthdate;
   final Uint8List? profilePicture;
-  final Set<int> userInterestIdList;
+  final List<Interest> userInterestIdList;
   final Position? location;
   final double? searchRadius;
 
@@ -69,7 +70,7 @@ class _RegistrationSummaryState extends State<RegistrationSummary> {
   late String? preference;
   late String? birthdate;
   Uint8List? profilePicture;
-  late Set<int> userInterestIdList;
+  late List<Interest> userInterestIdList;
   Position? userLocation;
   late double? searchRadius;
 
@@ -124,7 +125,7 @@ class _RegistrationSummaryState extends State<RegistrationSummary> {
                         SummaryTextfield(label: "Password", input: password!),
 
                         // registration_gender_preference
-                        SummaryTextfield(label: "Gender", input: gender!),
+                        SummaryTextfield(label: "Gender Identity", input: gender!),
                         SummaryTextfield(label: "Gender Preference", input: preference!),
                         SummaryTextfield(label: "Birthdate", input: birthdate!),
 
@@ -132,7 +133,7 @@ class _RegistrationSummaryState extends State<RegistrationSummary> {
                         SummaryTextfield(label: "Search Radius", input: "${searchRadius} km / ${(searchRadius! * 0.621371).roundToDouble()} mi"),
 
                         // TODO: registration_interests
-                        SummaryTextfield(label: "Interests", input: "TODO"),
+                        SummaryTextfield(label: "Interests", input: interestsListToString(userInterestIdList)),
 
                         // registration_job_bio
                         SummaryTextfield(label: "Job", input: "TODO"),
@@ -161,5 +162,16 @@ class _RegistrationSummaryState extends State<RegistrationSummary> {
             ),
           ),
         ));
+  }
+
+  String interestsListToString(List<Interest> interests) {
+    if (interests.isEmpty) {
+      return "";
+    }
+    String interestStr = "";
+    for (Interest interest in interests) {
+      interestStr +=  "${interest.name}, ";
+    }
+    return interestStr.substring(0, interestStr.length - 2);
   }
 }

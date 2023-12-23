@@ -125,9 +125,10 @@ class CustomLove extends StatelessWidget {
             return const LogoutPage();
           },
           '/registration': (context) {
-            /*
+
             // Used for testing purposes
-            return RegistrationLocation(
+            /*
+            return RegistrationInterests(
                 firstName: "Airolo",
                 lastName: "Airolodottir",
                 email: "aaaaaaaaaaaaaaaaaaaaaairolo@email.com",
@@ -136,7 +137,7 @@ class CustomLove extends StatelessWidget {
                 preference: "Female",
                 birthdate: "1995-01-01",
                 profilePicture: null,
-                userInterestIdList: Set.from([1]),
+                userInterestIdList: [],
                 location: Position(
                     longitude: 20.0,
                     latitude: 20.0,
@@ -162,7 +163,7 @@ class CustomLove extends StatelessWidget {
                 gender: null,
                 preference: null,
                 profilePicture: null,
-                userInterestIdList: Set<int>(),
+                userInterestIdList: [],
                 location: null,
                 searchRadius: null,
             );

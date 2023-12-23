@@ -10,6 +10,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../config/theme.dart';
+import '../../../service/interest_service.dart';
 import '../enums/registration_page_enum.dart';
 
 class RegistrationPictures extends StatefulWidget {
@@ -36,7 +37,7 @@ class RegistrationPictures extends StatefulWidget {
   final String? preference;
   final String? birthdate;
   final Uint8List? profilePicture;
-  final Set<int> userInterestIdList;
+  final List<Interest> userInterestIdList;
   final Position? location;
   final double? searchRadius;
 
@@ -70,7 +71,7 @@ class _RegistrationPicturesState extends State<RegistrationPictures> {
   late String? preference;
   late String? birthdate;
   Uint8List? profilePicture;
-  late Set<int> userInterestIdList;
+  late List<Interest> userInterestIdList;
   Position? userLocation;
   late double? searchRadius;
 

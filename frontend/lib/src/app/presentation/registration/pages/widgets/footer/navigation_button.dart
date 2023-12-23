@@ -12,6 +12,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../../config/theme.dart';
+import '../../../../../service/interest_service.dart';
 import '../../../../../service/login_service.dart';
 import '../../../../../service/user_service.dart';
 import '../../../controller/registration_controller.dart';
@@ -48,7 +49,7 @@ class NavigationButton extends StatefulWidget {
   final String? genderPreference;
   final String? birthdate;
   final Uint8List? profilePicture;
-  final Set<int> userInterestIdList;
+  final List<Interest> userInterestIdList;
   final Position? location;
   final double? searchRadius;
 

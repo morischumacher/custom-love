@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../config/app_state.dart';
 import '../../../model/user_model.dart';
+import '../../../service/interest_service.dart';
 import '../../../service/user_service.dart';
 
 class RegistrationController {
@@ -28,7 +29,7 @@ class RegistrationController {
       final String? gender,
       final String? genderPreference,
       final Uint8List? profilePicture,
-      final Set<int> userInterestIdList
+      final List<Interest> userInterestIdList
     ) async {
 
     RegistrationService registrationService = context.read<RegistrationService>();
@@ -50,7 +51,7 @@ class RegistrationController {
           getGenderIdentityId(gender!),
           getGenderIdentityId(genderPreference!),
           null,
-          userInterestIdList
+          convertInterestListToInterestIdList(userInterestIdList)
       );
 
       var accessToken = registrationResult["access_token"];
@@ -93,6 +94,14 @@ class RegistrationController {
       default:
         throw Exception();
     }
+  }
+
+  List<int> convertInterestListToInterestIdList(List<Interest> interests) {
+    List<int> interestIds = List<int>.empty();
+    for (Interest interest in interests) {
+      interestIds.add(interest.id);
+    }
+    return interestIds;
   }
 
   // TODO: Duplicated code (included in login_controller)

@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/footer/footer.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/page_title.dart';
+import 'package:frontend/src/app/service/interest_service.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:logger/logger.dart';
 
@@ -34,7 +35,7 @@ class RegistrationLocation extends StatefulWidget {
   final String? preference;
   final String? birthdate;
   final Uint8List? profilePicture;
-  final Set<int> userInterestIdList;
+  final List<Interest> userInterestIdList;
   final Position? location;
   final double? searchRadius;
 
@@ -72,7 +73,7 @@ class _RegistrationLocationState extends State<RegistrationLocation> {
   late String? preference;
   late String? birthdate;
   Uint8List? profilePicture;
-  late Set<int> userInterestIdList;
+  late List<Interest> userInterestIdList;
   Position? userLocation; bool userLocationDefined = false;
   late double? searchRadius;
 
