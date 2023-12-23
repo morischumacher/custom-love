@@ -22,6 +22,7 @@ class PageTitle extends StatelessWidget {
       const SizedBox(height: 51.0),
       SizedBox(
           child: Text(title,
+              textAlign: TextAlign.center,
               style: TextStyle(
                   fontWeight: FontWeight.w700,
                   fontFamily: 'roboto',

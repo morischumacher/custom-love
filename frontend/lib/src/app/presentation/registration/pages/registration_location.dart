@@ -124,70 +124,73 @@ class _RegistrationLocationState extends State<RegistrationLocation> {
     return Scaffold(
         backgroundColor: _customLoveTheme.neutralColor,
         body: Center(
-          child: Container(
-            constraints: const BoxConstraints(maxWidth: 500),
-            child: CustomScrollView(
-              scrollBehavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
-              slivers: [
-                SliverFillRemaining(
-                  hasScrollBody: false,
-                  child: Column(
-                    children: <Widget>[
-                      const PageTitle(
-                        title: "Profile Location",
-                        description: "Please specify your current location",
-                        bottomPadding: 70.0,
-                      ),
-                      Stack(
-                        children: [
-                          Icon(Icons.map, size: 150, color: _customLoveTheme.textColor),
-                          Positioned(
-                            bottom: userLocationDefined ? 0 : 12,// 0,
-                            right: userLocationDefined ? -10 : 2, // -10,
-                            child: userLocationDefined == false ?
-                              const CircularProgressIndicator(strokeWidth: 7) :
-                            (userLocation == null ?
-                              Icon(Icons.close, size: 80, color: _customLoveTheme.redColor) :
-                              Icon(Icons.check, size: 80, color: _customLoveTheme.androidGreen)
-                            )
-                            ,
-                          )
-                        ],
-                      ),
-                      const SizedBox(height: 15.0),
-                      Text(
-                        userLocationDefined == false ?
-                            'Please allow your device to access your location' :
-                            (userLocation == null ?
-                            'You denied the app access to your location, please set the access to your location to enabled and reload the page' :
-                            'Your location is specified'),
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: _customLoveTheme.textColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(25.0, 0, 25, 0),
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 500),
+              child: CustomScrollView(
+                scrollBehavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
+                slivers: [
+                  SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: Column(
+                      children: <Widget>[
+                        const PageTitle(
+                          title: "Profile Location",
+                          description: "Please specify your current location",
+                          bottomPadding: 70.0,
                         ),
-                      ),
-                      const SizedBox(height: 15.0),
-                      Expanded(child: Container()),
-                      Footer(
-                          pageSection: RegistrationPageSection.location,
-                          firstName: firstName,
-                          lastName: lastName,
-                          email: email,
-                          password: password,
-                          gender: gender,
-                          genderPreference: preference,
-                          birthdate: birthdate,
-                          profilePicture: profilePicture,
-                          userInterestIdList: userInterestIdList,
-                          location: userLocation,
-                          searchRadius: searchRadius
-                      )
-                    ],
+                        Stack(
+                          children: [
+                            Icon(Icons.map, size: 150, color: _customLoveTheme.textColor),
+                            Positioned(
+                              bottom: userLocationDefined ? 0 : 12,// 0,
+                              right: userLocationDefined ? -10 : 2, // -10,
+                              child: userLocationDefined == false ?
+                                const CircularProgressIndicator(strokeWidth: 7) :
+                              (userLocation == null ?
+                                Icon(Icons.close, size: 80, color: _customLoveTheme.redColor) :
+                                Icon(Icons.check, size: 80, color: _customLoveTheme.androidGreen)
+                              )
+                              ,
+                            )
+                          ],
+                        ),
+                        const SizedBox(height: 15.0),
+                        Text(
+                          userLocationDefined == false ?
+                              'Please allow your device to access your location' :
+                              (userLocation == null ?
+                              'You denied the app access to your location, please set the access to your location to enabled and reload the page' :
+                              'Your location is specified'),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: _customLoveTheme.textColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        const SizedBox(height: 15.0),
+                        Expanded(child: Container()),
+                        Footer(
+                            pageSection: RegistrationPageSection.location,
+                            firstName: firstName,
+                            lastName: lastName,
+                            email: email,
+                            password: password,
+                            gender: gender,
+                            genderPreference: preference,
+                            birthdate: birthdate,
+                            profilePicture: profilePicture,
+                            userInterestIdList: userInterestIdList,
+                            location: userLocation,
+                            searchRadius: searchRadius
+                        )
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         )

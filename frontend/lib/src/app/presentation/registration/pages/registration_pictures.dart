@@ -108,75 +108,78 @@ class _RegistrationPicturesState extends State<RegistrationPictures> {
     return Scaffold(
       backgroundColor: _customLoveTheme.neutralColor,
       body: Center(
-        child: Container(
-            constraints: const BoxConstraints(maxWidth: 500),
-            child: CustomScrollView(
-              scrollBehavior:
-              ScrollConfiguration.of(context).copyWith(scrollbars: false),
-              slivers: [
-              SliverFillRemaining(
-              hasScrollBody: false,
-              child: Column(
-                children: [
-                  const PageTitle(
-                      title: "Profile Pictures",
-                      description: "Provide a profile picture of yourself",
-                      bottomPadding: 70.0,
-                  ),
-                  const SizedBox(height: 19.0),
-                  if (profilePicture != null && profilePicture!.isNotEmpty)
-                    Container(
-                      height: 250,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                            width: 5,
-                            color: _customLoveTheme.primaryColor
-                        )
-                      ),
-                      // child: kIsWeb ? Image.memory(profilePicture!) : (_selectedPhoneImage != null ? Image.file(_selectedPhoneImage) : ""),
-                      child: kIsWeb ? Image.memory(profilePicture!) : Image.file(_selectedPhoneImage!),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(25.0, 0, 25, 0),
+          child: Container(
+              constraints: const BoxConstraints(maxWidth: 500),
+              child: CustomScrollView(
+                scrollBehavior:
+                ScrollConfiguration.of(context).copyWith(scrollbars: false),
+                slivers: [
+                SliverFillRemaining(
+                hasScrollBody: false,
+                child: Column(
+                  children: [
+                    const PageTitle(
+                        title: "Profile Pictures",
+                        description: "Provide a profile picture of yourself",
+                        bottomPadding: 70.0,
                     ),
-                  const SizedBox(height: 19.0),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.075,
-                    child: ElevatedButton.icon(
-                        onPressed: () {
-                          if (kIsWeb) {
-                              _selectFile(true);
-                          } else {
-                            _pickImageFromPhoneGallery();
-                          }
-                          },
-                        icon: Icon(Icons.camera, color: _customLoveTheme.primaryColor,),
-                        label: Text(
-                          'Choose Image',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
+                    const SizedBox(height: 19.0),
+                    if (profilePicture != null && profilePicture!.isNotEmpty)
+                      Container(
+                        height: 250,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                              width: 5,
                               color: _customLoveTheme.primaryColor
-                          ),
-                        ))
-                  ),
-                  Expanded(child: Container()),
-                  Footer(
-                      pageSection: RegistrationPageSection.pictures,
-                      firstName: firstName,
-                      lastName: lastName,
-                      email: email,
-                      password: password,
-                      gender: gender,
-                      genderPreference: preference,
-                      birthdate: birthdate,
-                      profilePicture: profilePicture,
-                      userInterestIdList: userInterestIdList,
-                      location: userLocation,
-                      searchRadius: searchRadius
-                  )
+                          )
+                        ),
+                        // child: kIsWeb ? Image.memory(profilePicture!) : (_selectedPhoneImage != null ? Image.file(_selectedPhoneImage) : ""),
+                        child: kIsWeb ? Image.memory(profilePicture!) : Image.file(_selectedPhoneImage!),
+                      ),
+                    const SizedBox(height: 19.0),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.075,
+                      child: ElevatedButton.icon(
+                          onPressed: () {
+                            if (kIsWeb) {
+                                _selectFile(true);
+                            } else {
+                              _pickImageFromPhoneGallery();
+                            }
+                            },
+                          icon: Icon(Icons.camera, color: _customLoveTheme.primaryColor,),
+                          label: Text(
+                            'Choose Image',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: _customLoveTheme.primaryColor
+                            ),
+                          ))
+                    ),
+                    Expanded(child: Container()),
+                    Footer(
+                        pageSection: RegistrationPageSection.pictures,
+                        firstName: firstName,
+                        lastName: lastName,
+                        email: email,
+                        password: password,
+                        gender: gender,
+                        genderPreference: preference,
+                        birthdate: birthdate,
+                        profilePicture: profilePicture,
+                        userInterestIdList: userInterestIdList,
+                        location: userLocation,
+                        searchRadius: searchRadius
+                    )
+                  ],
+                ),
+                ),
                 ],
               ),
-              ),
-              ],
-            ),
+          ),
         ),
       ));
   }

@@ -79,59 +79,62 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
     return Scaffold(
         backgroundColor: _customLoveTheme.neutralColor,
         body: Center(
-          child: Container(
-              constraints: const BoxConstraints(maxWidth: 500),
-              child: CustomScrollView(
-                scrollBehavior:
-                ScrollConfiguration.of(context).copyWith(scrollbars: false),
-                slivers: [
-                SliverFillRemaining(
-                hasScrollBody: false,
-                child: Column(
-                  children: [
-                    const PageTitle(
-                        title: "Profile Details",
-                        description: "Provide some basic data about yourself",
-                        bottomPadding: 70.0,
-                    ),
-                    DropDownList(
-                        labelText: "Gender",
-                        value: _selectedGender,
-                        options: _genderList,
-                        callback: (val) => setState(() => _selectedGender = val),
-                    ),
-                    const SizedBox(height: 19.0),
-                    DropDownList(
-                        labelText: "Preference",
-                        value: _selectedPreference,
-                        options: _genderList,
-                        callback: (val) => setState(() => _selectedPreference = val),
-                    ),
-                    const SizedBox(height: 19.0),
-                    BirthdateField(
-                        controller: _dateController,
-                        callback: (val) => setState(() => _dateController = val),
-                    ),
-                    Expanded(child: Container()),
-                    Footer(
-                        pageSection: RegistrationPageSection.genderPreference,
-                        firstName: firstName,
-                        lastName: lastName,
-                        email: email,
-                        password: password,
-                        gender: _selectedGender,
-                        genderPreference: _selectedPreference,
-                        birthdate: _dateController,
-                        profilePicture: profilePicture,
-                        userInterestIdList: userInterestIdList,
-                        location: userLocation,
-                        searchRadius: searchRadius
-                    )
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(25.0, 0, 25, 0),
+            child: Container(
+                constraints: const BoxConstraints(maxWidth: 500),
+                child: CustomScrollView(
+                  scrollBehavior:
+                  ScrollConfiguration.of(context).copyWith(scrollbars: false),
+                  slivers: [
+                  SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Column(
+                    children: [
+                      const PageTitle(
+                          title: "Profile Details",
+                          description: "Provide some basic data about yourself",
+                          bottomPadding: 70.0,
+                      ),
+                      DropDownList(
+                          labelText: "Gender",
+                          value: _selectedGender,
+                          options: _genderList,
+                          callback: (val) => setState(() => _selectedGender = val),
+                      ),
+                      const SizedBox(height: 19.0),
+                      DropDownList(
+                          labelText: "Preference",
+                          value: _selectedPreference,
+                          options: _genderList,
+                          callback: (val) => setState(() => _selectedPreference = val),
+                      ),
+                      const SizedBox(height: 19.0),
+                      BirthdateField(
+                          controller: _dateController,
+                          callback: (val) => setState(() => _dateController = val),
+                      ),
+                      Expanded(child: Container()),
+                      Footer(
+                          pageSection: RegistrationPageSection.genderPreference,
+                          firstName: firstName,
+                          lastName: lastName,
+                          email: email,
+                          password: password,
+                          gender: _selectedGender,
+                          genderPreference: _selectedPreference,
+                          birthdate: _dateController,
+                          profilePicture: profilePicture,
+                          userInterestIdList: userInterestIdList,
+                          location: userLocation,
+                          searchRadius: searchRadius
+                      )
+                    ],
+                  ),
+                  ),
                   ],
                 ),
-                ),
-                ],
-              ),
+            ),
           ),
         ));
   }

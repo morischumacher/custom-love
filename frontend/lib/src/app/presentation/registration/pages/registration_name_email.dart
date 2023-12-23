@@ -76,70 +76,73 @@ class _RegistrationNameEmailState extends State<RegistrationNameEmail> {
     return Scaffold(
       backgroundColor: _customLoveTheme.neutralColor,
       body: Center(
-        child: Container(
-          constraints: const BoxConstraints(maxWidth: 500),
-          child: CustomScrollView(
-            scrollBehavior:
-            ScrollConfiguration.of(context).copyWith(scrollbars: false),
-            slivers: [
-            SliverFillRemaining(
-            hasScrollBody: false,
-                child: Column(
-                  children: [
-                    const PageTitle(
-                      title: "Profile Name",
-                      description: "Provide your first name and last name",
-                      bottomPadding: 70.0,
-                    ),
-                    // Name
-                    RegistrationTextfield(
-                      controller: firstName,
-                      hintText: "First Name",
-                      obscureText: false,
-                      callback: (val) => setState(() => firstName = val)
-                    ),
-                    const SizedBox(height: 19.0),
-                    RegistrationTextfield(
-                      controller: lastName,
-                      hintText: "Last Name",
-                      obscureText: false,
-                      callback: (val) => setState(() => lastName = val),
-                    ),
-                    const SizedBox(height: 19.0),
-                    // Email
-                    RegistrationTextfield(
-                      controller: emailController,
-                      hintText: "Email",
-                      obscureText: false,
-                      callback: (val) => setState(() => emailController = val),
-                    ),
-                    const SizedBox(height: 19.0),
-                    // Email
-                    RegistrationTextfield(
-                      controller: passwordController,
-                      hintText: "Password",
-                      obscureText: true,
-                      callback: (val) => setState(() => passwordController = val),
-                    ),
-                    Expanded(child: Container()),
-                    Footer(
-                        pageSection: RegistrationPageSection.nameEmail,
-                        firstName: firstName,
-                        lastName: lastName,
-                        email: emailController,
-                        password: passwordController,
-                        gender: gender,
-                        genderPreference: preference,
-                        birthdate: birthdate,
-                        profilePicture: profilePicture,
-                        userInterestIdList: userInterestIdList,
-                        location: userLocation,
-                        searchRadius: searchRadius
-                    )
-                  ],
-                ),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(25.0, 0, 25, 0),
+          child: Container(
+            constraints: const BoxConstraints(maxWidth: 500),
+            child: CustomScrollView(
+              scrollBehavior:
+              ScrollConfiguration.of(context).copyWith(scrollbars: false),
+              slivers: [
+              SliverFillRemaining(
+              hasScrollBody: false,
+                  child: Column(
+                    children: [
+                      const PageTitle(
+                        title: "Profile Name",
+                        description: "Provide your first name and last name",
+                        bottomPadding: 70.0,
+                      ),
+                      // Name
+                      RegistrationTextfield(
+                        controller: firstName,
+                        hintText: "First Name",
+                        obscureText: false,
+                        callback: (val) => setState(() => firstName = val)
+                      ),
+                      const SizedBox(height: 19.0),
+                      RegistrationTextfield(
+                        controller: lastName,
+                        hintText: "Last Name",
+                        obscureText: false,
+                        callback: (val) => setState(() => lastName = val),
+                      ),
+                      const SizedBox(height: 19.0),
+                      // Email
+                      RegistrationTextfield(
+                        controller: emailController,
+                        hintText: "Email",
+                        obscureText: false,
+                        callback: (val) => setState(() => emailController = val),
+                      ),
+                      const SizedBox(height: 19.0),
+                      // Email
+                      RegistrationTextfield(
+                        controller: passwordController,
+                        hintText: "Password",
+                        obscureText: true,
+                        callback: (val) => setState(() => passwordController = val),
+                      ),
+                      Expanded(child: Container()),
+                      Footer(
+                          pageSection: RegistrationPageSection.nameEmail,
+                          firstName: firstName,
+                          lastName: lastName,
+                          email: emailController,
+                          password: passwordController,
+                          gender: gender,
+                          genderPreference: preference,
+                          birthdate: birthdate,
+                          profilePicture: profilePicture,
+                          userInterestIdList: userInterestIdList,
+                          location: userLocation,
+                          searchRadius: searchRadius
+                      )
+                    ],
+                  ),
+              ),
+              ],
             ),
-            ],
           ),
         ),
       ));

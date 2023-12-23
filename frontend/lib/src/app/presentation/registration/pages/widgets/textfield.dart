@@ -22,26 +22,23 @@ class RegistrationTextfield extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 25.0),
-      child: TextFormField(
-        onChanged: (text) {
-          callback(text);
-        },
-        initialValue: controller,
-        obscureText: obscureText,
-        decoration: InputDecoration(
-            enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: _customLoveTheme.whiteColor)
-            ),
-            focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: _customLoveTheme.grayscale2)
-            ),
-            fillColor: _customLoveTheme.grayscale0,
-            filled: true,
-            hintText: hintText,
-            hintStyle: TextStyle(color: _customLoveTheme.grayscale1)
-        ),
+    return TextFormField(
+      onChanged: (text) {
+        callback(text);
+      },
+      initialValue: controller,
+      obscureText: obscureText,
+      decoration: InputDecoration(
+          enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: _customLoveTheme.whiteColor)
+          ),
+          focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: _customLoveTheme.grayscale2)
+          ),
+          fillColor: _customLoveTheme.grayscale0,
+          filled: true,
+          hintText: hintText,
+          hintStyle: TextStyle(color: _customLoveTheme.grayscale1)
       ),
     );
   }

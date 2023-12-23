@@ -78,50 +78,53 @@ class _RegistrationSummaryState extends State<RegistrationSummary> {
     return Scaffold(
         backgroundColor: _customLoveTheme.neutralColor,
         body: Center(
-          child: Container(
-            constraints: const BoxConstraints(maxWidth: 500),
-            child: CustomScrollView(
-              scrollBehavior:
-              ScrollConfiguration.of(context).copyWith(scrollbars: false),
-              slivers: [
-                SliverFillRemaining(
-                  hasScrollBody: false,
-                  child: Column(
-                    children: <Widget>[
-                      const PageTitle(
-                        title: "Profile Summary",
-                        description: "Please check if your profile details are correct",
-                        bottomPadding: 70.0,
-                      ),
-                      const SizedBox(height: 15.0),
-                      SummaryTextfield(label: "First name", input: firstName!),
-                      SummaryTextfield(label: "Last name", input: lastName!),
-                      SummaryTextfield(label: "Email", input: email!),
-                      SummaryTextfield(label: "Password", input: password!),
-                      SummaryTextfield(label: "Gender", input: gender!),
-                      SummaryTextfield(label: "Gender Preference", input: preference!),
-                      SummaryTextfield(label: "Birthdate", input: birthdate!),
-                      SummaryTextfield(label: "Search Radius", input: searchRadius!.toString()),
-                      // TODO: Add remaining input fields
-                      Expanded(child: Container()),
-                      Footer(
-                          pageSection: RegistrationPageSection.summary,
-                          firstName: firstName,
-                          lastName: lastName,
-                          email: email,
-                          password: password,
-                          gender: gender,
-                          genderPreference: preference,
-                          birthdate: birthdate,
-                          profilePicture: profilePicture,
-                          userInterestIdList: userInterestIdList,
-                          location: userLocation,
-                          searchRadius: searchRadius
-                      )
-                    ],
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(25.0, 0, 25, 0),
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 500),
+              child: CustomScrollView(
+                scrollBehavior:
+                ScrollConfiguration.of(context).copyWith(scrollbars: false),
+                slivers: [
+                  SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: Column(
+                      children: <Widget>[
+                        const PageTitle(
+                          title: "Profile Summary",
+                          description: "Please check if your profile details are correct",
+                          bottomPadding: 70.0,
+                        ),
+                        const SizedBox(height: 15.0),
+                        SummaryTextfield(label: "First name", input: firstName!),
+                        SummaryTextfield(label: "Last name", input: lastName!),
+                        SummaryTextfield(label: "Email", input: email!),
+                        SummaryTextfield(label: "Password", input: password!),
+                        SummaryTextfield(label: "Gender", input: gender!),
+                        SummaryTextfield(label: "Gender Preference", input: preference!),
+                        SummaryTextfield(label: "Birthdate", input: birthdate!),
+                        SummaryTextfield(label: "Search Radius", input: searchRadius!.toString()),
+                        // TODO: Add remaining input fields
+                        Expanded(child: Container()),
+                        Footer(
+                            pageSection: RegistrationPageSection.summary,
+                            firstName: firstName,
+                            lastName: lastName,
+                            email: email,
+                            password: password,
+                            gender: gender,
+                            genderPreference: preference,
+                            birthdate: birthdate,
+                            profilePicture: profilePicture,
+                            userInterestIdList: userInterestIdList,
+                            location: userLocation,
+                            searchRadius: searchRadius
+                        )
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ));

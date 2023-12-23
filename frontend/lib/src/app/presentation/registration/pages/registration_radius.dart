@@ -81,98 +81,101 @@ class _RegistrationRadiusState extends State<RegistrationRadius> {
     return Scaffold(
         backgroundColor: _customLoveTheme.neutralColor,
         body: Center(
-          child: Container(
-            constraints: const BoxConstraints(maxWidth: 500),
-            child: CustomScrollView(
-              scrollBehavior:
-                  ScrollConfiguration.of(context).copyWith(scrollbars: false),
-              slivers: [
-                SliverFillRemaining(
-                  hasScrollBody: false,
-                  child: Column(
-                    children: <Widget>[
-                      const PageTitle(
-                        title: "Profile Matching Radius",
-                        description: "Set your radius for potential Matches",
-                        bottomPadding: 70.0,
-                      ),
-                      const SizedBox(height: 15.0),
-                      Column(
-                        children: [
-                          RichText(
-                            text: TextSpan(
-                              // Note: Styles for TextSpans must be explicitly defined.
-                              // Child text spans will inherit styles from parent
-                              style: TextStyle(
-                                color: _customLoveTheme.primaryColor,
-                                fontSize: 32.0,
-                                fontWeight: FontWeight.bold
-                              ),
-                              children: <TextSpan>[
-                                TextSpan(text: searchRadius!.toString()),
-                                TextSpan(
-                                    text: searchRadius != 1 ? '  kilometers' : '  kilometer',
-                                    style: TextStyle(
-                                        color: _customLoveTheme.textColor)
-                                )
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 15.0),
-                          RichText(
-                            text: TextSpan(
-                              // Note: Styles for TextSpans must be explicitly defined.
-                              // Child text spans will inherit styles from parent
-                              style: TextStyle(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(25.0, 0, 25, 0),
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 500),
+              child: CustomScrollView(
+                scrollBehavior:
+                    ScrollConfiguration.of(context).copyWith(scrollbars: false),
+                slivers: [
+                  SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: Column(
+                      children: <Widget>[
+                        const PageTitle(
+                          title: "Matching Radius",
+                          description: "Set your radius for potential Matches",
+                          bottomPadding: 70.0,
+                        ),
+                        const SizedBox(height: 15.0),
+                        Column(
+                          children: [
+                            RichText(
+                              text: TextSpan(
+                                // Note: Styles for TextSpans must be explicitly defined.
+                                // Child text spans will inherit styles from parent
+                                style: TextStyle(
                                   color: _customLoveTheme.primaryColor,
                                   fontSize: 32.0,
                                   fontWeight: FontWeight.bold
+                                ),
+                                children: <TextSpan>[
+                                  TextSpan(text: searchRadius!.toString()),
+                                  TextSpan(
+                                      text: searchRadius != 1 ? '  kilometers' : '  kilometer',
+                                      style: TextStyle(
+                                          color: _customLoveTheme.textColor)
+                                  )
+                                ],
                               ),
-                              children: <TextSpan>[
-                                TextSpan(text: searchRadiusMiles.toString()),
-                                TextSpan(
-                                    text: searchRadiusMiles != 1 ? '  miles' : '  mile',
-                                    style: TextStyle(
-                                        color: _customLoveTheme.textColor)
-                                )
-                              ],
                             ),
-                          ),
-                          const SizedBox(height: 50.0),
-                          Slider(
-                              min: 1,
-                              max: 100,
-                              divisions: 99,
-                              label: searchRadius!.toString(),
-                              value: searchRadius!,
-                              activeColor: _customLoveTheme.primaryColor,
-                              onChanged: (value) {
-                                setState(() {
-                                  searchRadius = value.roundToDouble();
-                                  searchRadiusMiles = (value * 0.621371).roundToDouble();
-                                });
-                              }),
-                        ],
-                      ),
-                      Expanded(child: Container()),
-                      Footer(
-                          pageSection: RegistrationPageSection.radius,
-                          firstName: firstName,
-                          lastName: lastName,
-                          email: email,
-                          password: password,
-                          gender: gender,
-                          genderPreference: preference,
-                          birthdate: birthdate,
-                          profilePicture: profilePicture,
-                          userInterestIdList: userInterestIdList,
-                          location: userLocation,
-                          searchRadius: searchRadius
-                      )
-                    ],
+                            const SizedBox(height: 15.0),
+                            RichText(
+                              text: TextSpan(
+                                // Note: Styles for TextSpans must be explicitly defined.
+                                // Child text spans will inherit styles from parent
+                                style: TextStyle(
+                                    color: _customLoveTheme.primaryColor,
+                                    fontSize: 32.0,
+                                    fontWeight: FontWeight.bold
+                                ),
+                                children: <TextSpan>[
+                                  TextSpan(text: searchRadiusMiles.toString()),
+                                  TextSpan(
+                                      text: searchRadiusMiles != 1 ? '  miles' : '  mile',
+                                      style: TextStyle(
+                                          color: _customLoveTheme.textColor)
+                                  )
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 50.0),
+                            Slider(
+                                min: 1,
+                                max: 100,
+                                divisions: 99,
+                                label: searchRadius!.toString(),
+                                value: searchRadius!,
+                                activeColor: _customLoveTheme.primaryColor,
+                                onChanged: (value) {
+                                  setState(() {
+                                    searchRadius = value.roundToDouble();
+                                    searchRadiusMiles = (value * 0.621371).roundToDouble();
+                                  });
+                                }),
+                          ],
+                        ),
+                        Expanded(child: Container()),
+                        Footer(
+                            pageSection: RegistrationPageSection.radius,
+                            firstName: firstName,
+                            lastName: lastName,
+                            email: email,
+                            password: password,
+                            gender: gender,
+                            genderPreference: preference,
+                            birthdate: birthdate,
+                            profilePicture: profilePicture,
+                            userInterestIdList: userInterestIdList,
+                            location: userLocation,
+                            searchRadius: searchRadius
+                        )
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ));

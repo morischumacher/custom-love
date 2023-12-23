@@ -99,71 +99,74 @@ class _RegistrationInterestsState extends State<RegistrationInterests> {
     return Scaffold(
         backgroundColor: _customLoveTheme.neutralColor,
         body: Center(
-        child: Container(
-        constraints: const BoxConstraints(maxWidth: 500),
-    child: CustomScrollView(
-    scrollBehavior:
-    ScrollConfiguration.of(context).copyWith(scrollbars: false),
-    slivers: [
-    SliverFillRemaining(
-    hasScrollBody: false,
-            child: Column(
-              children: [
-                const PageTitle(
-                    title: "Your interests",
-                    description: "Select a few interests you're passionate about",
-                    bottomPadding: 49.0
-                ),
-                for (int i = 0; i < interestDto.length; i += 2)
-                  Center(
-                    child: Container(
-                      constraints: const BoxConstraints(maxWidth: 400),
-                      margin: const EdgeInsets.only(bottom: 20),
-                      child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: Interest(
-                                    interestId: interestDto[i]['id'] as int,
-                                    interestName: interestDto[i]['name'].toString(),
-                                    containsInterestFunction: containsInterest,
-                                    addRemoveInterestFunction: addRemoveInterest
-                                ),
-                              ),
-                              const SizedBox(width: 20),
-                              if (i + 1 < interestDto.length)
-                                Expanded(
-                                child: Interest(
-                                  interestId: interestDto[i + 1]['id'] as int,
-                                  interestName: interestDto[i + 1]['name'].toString(),
-                                  containsInterestFunction: containsInterest,
-                                    addRemoveInterestFunction: addRemoveInterest
-                                ),
-                              ) else Expanded(child: Container()),
-                            ],
-                          ),
-                    ),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(25.0, 0, 25, 0),
+          child: Container(
+          constraints: const BoxConstraints(maxWidth: 500),
+              child: CustomScrollView(
+              scrollBehavior:
+              ScrollConfiguration.of(context).copyWith(scrollbars: false),
+              slivers: [
+              SliverFillRemaining(
+              hasScrollBody: false,
+              child: Column(
+                children: [
+                  const PageTitle(
+                      title: "Your interests",
+                      description: "Select a few interests you're passionate about",
+                      bottomPadding: 49.0
                   ),
-                Expanded(child: Container()),
-                Footer(
-                    pageSection: RegistrationPageSection.interests,
-                    firstName: firstName,
-                    lastName: lastName,
-                    email: email,
-                    password: password,
-                    gender: gender,
-                    genderPreference: preference,
-                    birthdate: birthdate,
-                    profilePicture: profilePicture,
-                    userInterestIdList: userInterestIdList,
-                    location: userLocation,
-                    searchRadius: searchRadius
-                )
+                  for (int i = 0; i < interestDto.length; i += 2)
+                    Center(
+                      child: Container(
+                        constraints: const BoxConstraints(maxWidth: 400),
+                        margin: const EdgeInsets.only(bottom: 20),
+                        child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Interest(
+                                      interestId: interestDto[i]['id'] as int,
+                                      interestName: interestDto[i]['name'].toString(),
+                                      containsInterestFunction: containsInterest,
+                                      addRemoveInterestFunction: addRemoveInterest
+                                  ),
+                                ),
+                                const SizedBox(width: 20),
+                                if (i + 1 < interestDto.length)
+                                  Expanded(
+                                  child: Interest(
+                                    interestId: interestDto[i + 1]['id'] as int,
+                                    interestName: interestDto[i + 1]['name'].toString(),
+                                    containsInterestFunction: containsInterest,
+                                      addRemoveInterestFunction: addRemoveInterest
+                                  ),
+                                ) else Expanded(child: Container()),
+                              ],
+                            ),
+                      ),
+                    ),
+                  Expanded(child: Container()),
+                  Footer(
+                      pageSection: RegistrationPageSection.interests,
+                      firstName: firstName,
+                      lastName: lastName,
+                      email: email,
+                      password: password,
+                      gender: gender,
+                      genderPreference: preference,
+                      birthdate: birthdate,
+                      profilePicture: profilePicture,
+                      userInterestIdList: userInterestIdList,
+                      location: userLocation,
+                      searchRadius: searchRadius
+                  )
+                ],
+              ),
+              ),
               ],
-            ),
-    ),
-    ],
-    ),
+              ),
+          ),
         ),
         ));
 
