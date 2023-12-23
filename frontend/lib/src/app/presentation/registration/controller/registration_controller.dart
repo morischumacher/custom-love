@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../config/app_state.dart';
 import '../../../model/user_model.dart';
+import '../../../service/gender_service.dart';
 import '../../../service/interest_service.dart';
 import '../../../service/user_service.dart';
 
@@ -26,8 +27,8 @@ class RegistrationController {
       final String? job,
       final Position? location,
       final double? searchRadius,
-      final String? gender,
-      final String? genderPreference,
+      final Gender? gender,
+      final Gender? genderPreference,
       final Uint8List? profilePicture,
       final List<Interest> userInterestIdList
     ) async {
@@ -48,8 +49,8 @@ class RegistrationController {
           job!,
           location!,
           searchRadius!.toInt(),
-          getGenderIdentityId(gender!),
-          getGenderIdentityId(genderPreference!),
+          getGenderIdentityId(gender!.name),
+          getGenderIdentityId(genderPreference!.name),
           null,
           convertInterestListToInterestIdList(userInterestIdList)
       );

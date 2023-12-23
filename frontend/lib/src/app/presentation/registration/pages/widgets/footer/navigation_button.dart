@@ -8,6 +8,7 @@ import 'package:frontend/src/app/presentation/registration/pages/registration_lo
 import 'package:frontend/src/app/presentation/registration/pages/registration_pictures.dart';
 import 'package:frontend/src/app/presentation/registration/pages/registration_radius.dart';
 import 'package:frontend/src/app/presentation/registration/pages/registration_summary.dart';
+import 'package:frontend/src/app/service/gender_service.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 
@@ -45,8 +46,8 @@ class NavigationButton extends StatefulWidget {
   final String? lastName;
   final String? email;
   final String? password;
-  final String? gender;
-  final String? genderPreference;
+  final Gender? gender;
+  final Gender? genderPreference;
   final String? birthdate;
   final Uint8List? profilePicture;
   final List<Interest> userInterestIdList;

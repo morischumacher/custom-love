@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/src/app/service/gender_service.dart';
 
 import '../../../../../config/theme.dart';
 
-typedef void StringCallback(String val);
+typedef void GenderCallback(Gender val);
 
 class DropDownList extends StatefulWidget {
   const DropDownList({
@@ -13,10 +14,10 @@ class DropDownList extends StatefulWidget {
     required this.options,
   });
 
-  final StringCallback callback;
+  final GenderCallback callback;
   final String labelText;
-  final String? value;
-  final List<String> options;
+  final Gender? value;
+  final List<Gender> options;
 
   @override
   State<DropDownList> createState() => _DropDownListState();
@@ -32,8 +33,8 @@ class _DropDownListState extends State<DropDownList> {
   }
 
   late String labelText;
-  late String? value;
-  late List<String> options;
+  late Gender? value;
+  late List<Gender> options;
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
 
   @override
@@ -41,11 +42,11 @@ class _DropDownListState extends State<DropDownList> {
     return DropdownButtonFormField(
       value: value,
       items: options
-          .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+          .map((e) => DropdownMenuItem(value: e, child: Text(e.name)))
           .toList(),
       onChanged: (val) {
         setState(() {
-          value = val as String;
+          value = val as Gender;
           widget.callback(value!);
         });
       },

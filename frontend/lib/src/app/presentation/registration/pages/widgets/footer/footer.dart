@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/presentation/registration/enums/registration_page_enum.dart';
+import 'package:frontend/src/app/service/gender_service.dart';
 import 'package:geolocator/geolocator.dart';
 
 import '../../../../../../config/theme.dart';
@@ -30,8 +31,8 @@ class Footer extends StatefulWidget {
   final String? lastName;
   final String? email;
   final String? password;
-  final String? gender;
-  final String? genderPreference;
+  final Gender? gender;
+  final Gender? genderPreference;
   final String? birthdate;
   final Uint8List? profilePicture;
   final List<Interest> userInterestIdList;

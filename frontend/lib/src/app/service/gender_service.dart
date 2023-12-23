@@ -18,13 +18,19 @@ class Gender {
   String toString() {
     return '{ $id, $name }';
   }
+
+  @override
+  bool operator ==(other) => other is Gender && id == other.id && name == other.name;
+
+  @override
+  int get hashCode => Object.hash(id, name);
 }
 
 class GenderService {
   final Logger logger = Logger();
 
-  Future<List<Gender>> getInterests() async {
-    String url = "${ApiConfig.baseUrl}/interests/";
+  Future<List<Gender>> getGenders() async {
+    String url = "${ApiConfig.baseUrl}/gender-identities/";
     try {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {

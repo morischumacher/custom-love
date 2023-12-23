@@ -9,6 +9,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:logger/logger.dart';
 
 import '../../../../config/theme.dart';
+import '../../../service/gender_service.dart';
 import '../../../service/interest_service.dart';
 
 class RegistrationRadius extends StatefulWidget {
@@ -30,8 +31,8 @@ class RegistrationRadius extends StatefulWidget {
   final String? lastName;
   final String? email;
   final String? password;
-  final String? gender;
-  final String? preference;
+  final Gender? gender;
+  final Gender? preference;
   final String? birthdate;
   final Uint8List? profilePicture;
   final List<Interest> userInterestIdList;
@@ -67,8 +68,8 @@ class _RegistrationRadiusState extends State<RegistrationRadius> {
   late String? lastName;
   late String? email;
   late String? password;
-  late String? gender;
-  late String? preference;
+  late Gender? gender;
+  late Gender? preference;
   late String? birthdate;
   Uint8List? profilePicture;
   late List<Interest> userInterestIdList;

@@ -7,6 +7,7 @@ import 'package:frontend/src/app/presentation/registration/pages/widgets/page_ti
 import 'package:frontend/src/app/presentation/registration/pages/widgets/textfield.dart';
 import 'package:geolocator/geolocator.dart';
 import '../../../../config/theme.dart';
+import '../../../service/gender_service.dart';
 import '../../../service/interest_service.dart';
 
 class RegistrationNameEmail extends StatefulWidget {
@@ -29,8 +30,8 @@ class RegistrationNameEmail extends StatefulWidget {
   final String? lastName;
   final String? email;
   final String? password;
-  final String? gender;
-  final String? preference;
+  final Gender? gender;
+  final Gender? preference;
   final String? birthdate;
   final Uint8List? profilePicture;
   final List<Interest> userInterestIdList;
@@ -64,8 +65,8 @@ class _RegistrationNameEmailState extends State<RegistrationNameEmail> {
   late String? lastName;
   late String? emailController;
   late String? passwordController;
-  late String? gender;
-  late String? preference;
+  late Gender? gender;
+  late Gender? preference;
   late String? birthdate;
   late Uint8List? profilePicture;
   late List<Interest> userInterestIdList;

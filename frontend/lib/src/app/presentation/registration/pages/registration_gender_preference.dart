@@ -5,6 +5,7 @@ import 'package:frontend/src/app/presentation/registration/pages/widgets/birthda
 import 'package:frontend/src/app/presentation/registration/pages/widgets/dropdown_list.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/footer/footer.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/page_title.dart';
+import 'package:frontend/src/app/service/gender_service.dart';
 import 'package:geolocator/geolocator.dart';
 
 import '../../../../config/theme.dart';
@@ -31,8 +32,8 @@ class RegistrationGenderPreference extends StatefulWidget {
   final String? lastName;
   final String? email;
   final String? password;
-  final String? gender;
-  final String? preference;
+  final Gender? gender;
+  final Gender? preference;
   final String? birthdate;
   final Uint8List? profilePicture;
   final List<Interest> userInterestIdList;
@@ -58,22 +59,32 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
     userInterestIdList = widget.userInterestIdList;
     userLocation = widget.location;
     searchRadius = widget.searchRadius;
+    getGenders();
   }
 
+  void getGenders() async {
+    await _genderService.getGenders().then((value) {
+      setState(() {
+        genderDto = value;
+      });
+    });
+  }
+
+  final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
+  final GenderService _genderService = GenderService();
   late String? firstName;
   late String? lastName;
   late String? email;
   late String? password;
-  String? _selectedGender = "";
-  String? _selectedPreference = "";
+  Gender? _selectedGender;
+  Gender? _selectedPreference;
   String? _dateController;
   late Uint8List? profilePicture;
   late List<Interest> userInterestIdList;
   Position? userLocation;
   late double? searchRadius;
 
-  final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
-  final _genderList = ["Male", "Female", "Other"];
+  late List<Gender> genderDto = [];
 
   @override
   Widget build(BuildContext context) {
@@ -97,24 +108,36 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
                           description: "Provide some basic data about yourself",
                           bottomPadding: 70.0,
                       ),
-                      DropDownList(
+                      if (genderDto.isEmpty)
+                        SizedBox(
+                            height: 100,
+                            width: 100,
+                            child: CircularProgressIndicator(
+                                color: _customLoveTheme.primaryColor,
+                                strokeWidth: 18
+                            )
+                        ),
+                      if (genderDto.isNotEmpty)
+                        Column(children: [
+                        DropDownList(
                           labelText: "Gender",
                           value: _selectedGender,
-                          options: _genderList,
+                          options: genderDto,
                           callback: (val) => setState(() => _selectedGender = val),
-                      ),
-                      const SizedBox(height: 19.0),
-                      DropDownList(
+                        ),
+                        const SizedBox(height: 19.0),
+                        DropDownList(
                           labelText: "Preference",
                           value: _selectedPreference,
-                          options: _genderList,
+                          options: genderDto,
                           callback: (val) => setState(() => _selectedPreference = val),
-                      ),
-                      const SizedBox(height: 19.0),
-                      BirthdateField(
+                        ),
+                        const SizedBox(height: 19.0),
+                        BirthdateField(
                           controller: _dateController,
                           callback: (val) => setState(() => _dateController = val),
-                      ),
+                        ),
+                      ]),
                       const SizedBox(height: 25.0),
                       Expanded(child: Container()),
                       Footer(

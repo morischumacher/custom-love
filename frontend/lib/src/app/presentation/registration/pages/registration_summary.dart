@@ -8,6 +8,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:logger/logger.dart';
 
 import '../../../../config/theme.dart';
+import '../../../service/gender_service.dart';
 import '../../../service/interest_service.dart';
 import '../enums/registration_page_enum.dart';
 
@@ -30,8 +31,8 @@ class RegistrationSummary extends StatefulWidget {
   final String? lastName;
   final String? email;
   final String? password;
-  final String? gender;
-  final String? preference;
+  final Gender? gender;
+  final Gender? preference;
   final String? birthdate;
   final Uint8List? profilePicture;
   final List<Interest> userInterestIdList;
@@ -66,8 +67,8 @@ class _RegistrationSummaryState extends State<RegistrationSummary> {
   late String? lastName;
   late String? email;
   late String? password;
-  late String? gender;
-  late String? preference;
+  late Gender? gender;
+  late Gender? preference;
   late String? birthdate;
   Uint8List? profilePicture;
   late List<Interest> userInterestIdList;
@@ -125,8 +126,8 @@ class _RegistrationSummaryState extends State<RegistrationSummary> {
                         SummaryTextfield(label: "Password", input: password!),
 
                         // registration_gender_preference
-                        SummaryTextfield(label: "Gender Identity", input: gender!),
-                        SummaryTextfield(label: "Gender Preference", input: preference!),
+                        SummaryTextfield(label: "Gender Identity", input: gender!.name),
+                        SummaryTextfield(label: "Gender Preference", input: preference!.name),
                         SummaryTextfield(label: "Birthdate", input: birthdate!),
 
                         // registration_radius
