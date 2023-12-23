@@ -80,12 +80,12 @@ class _NavigationButtonState extends State<NavigationButton> {
               "",
               widget.birthdate,
               "",
+              widget.location,
               widget.searchRadius,
               widget.gender,
               widget.genderPreference,
               widget.profilePicture,
-              widget.userInterestIdList,
-              1
+              widget.userInterestIdList
             )
           );
         } else {

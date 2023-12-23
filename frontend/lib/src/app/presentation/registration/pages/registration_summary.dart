@@ -96,6 +96,27 @@ class _RegistrationSummaryState extends State<RegistrationSummary> {
                           bottomPadding: 70.0,
                         ),
                         const SizedBox(height: 15.0),
+                        /*
+                        Container(
+                          decoration: BoxDecoration(
+                            border: Border(bottom: BorderSide(color: _customLoveTheme.textColor, width: 2.0))
+                          ),
+                          child: Row(
+                            children: [
+                              Text(
+                                "Page 1",
+                                style: TextStyle(
+                                  color: _customLoveTheme.textColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 28.0
+                                )
+                              ),
+                              const Spacer(),
+                              const Icon(Icons.edit)
+                            ],
+                          ),
+                        ),
+                         */
                         SummaryTextfield(label: "First name", input: firstName!),
                         SummaryTextfield(label: "Last name", input: lastName!),
                         SummaryTextfield(label: "Email", input: email!),
