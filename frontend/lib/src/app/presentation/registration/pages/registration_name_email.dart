@@ -123,6 +123,7 @@ class _RegistrationNameEmailState extends State<RegistrationNameEmail> {
                         obscureText: true,
                         callback: (val) => setState(() => passwordController = val),
                       ),
+                      const SizedBox(height: 25.0),
                       Expanded(child: Container()),
                       Footer(
                           pageSection: RegistrationPageSection.nameEmail,

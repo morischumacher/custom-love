@@ -128,10 +128,15 @@ class _FooterState extends State<Footer> {
       case RegistrationPageSection.radius:
         return widget.searchRadius != null;
       case RegistrationPageSection.nameEmail:
-        return widget.firstName != null && 
+        return widget.firstName != null &&
+            widget.firstName!.trim().isNotEmpty &&
             widget.lastName != null && 
-            widget.email != null 
-            && widget.password != null;
+            widget.lastName!.trim().isNotEmpty &&
+            widget.lastName != null &&
+            widget.email != null &&
+            widget.email!.trim().isNotEmpty &&
+            widget.password != null &&
+            widget.password!.trim().isNotEmpty;
       case RegistrationPageSection.genderPreference:
         return widget.gender != null && 
             widget.genderPreference != null && 

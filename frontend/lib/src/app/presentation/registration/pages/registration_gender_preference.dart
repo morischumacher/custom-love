@@ -114,6 +114,7 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
                           controller: _dateController,
                           callback: (val) => setState(() => _dateController = val),
                       ),
+                      const SizedBox(height: 25.0),
                       Expanded(child: Container()),
                       Footer(
                           pageSection: RegistrationPageSection.genderPreference,

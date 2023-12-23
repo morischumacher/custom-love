@@ -156,6 +156,7 @@ class _RegistrationRadiusState extends State<RegistrationRadius> {
                                 }),
                           ],
                         ),
+                        const SizedBox(height: 25.0),
                         Expanded(child: Container()),
                         Footer(
                             pageSection: RegistrationPageSection.radius,

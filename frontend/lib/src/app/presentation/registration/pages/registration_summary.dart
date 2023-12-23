@@ -117,15 +117,27 @@ class _RegistrationSummaryState extends State<RegistrationSummary> {
                           ),
                         ),
                          */
+                        // registration_name_email
                         SummaryTextfield(label: "First name", input: firstName!),
                         SummaryTextfield(label: "Last name", input: lastName!),
                         SummaryTextfield(label: "Email", input: email!),
                         SummaryTextfield(label: "Password", input: password!),
+
+                        // registration_gender_preference
                         SummaryTextfield(label: "Gender", input: gender!),
                         SummaryTextfield(label: "Gender Preference", input: preference!),
                         SummaryTextfield(label: "Birthdate", input: birthdate!),
-                        SummaryTextfield(label: "Search Radius", input: searchRadius!.toString()),
-                        // TODO: Add remaining input fields
+
+                        // registration_radius
+                        SummaryTextfield(label: "Search Radius", input: "${searchRadius} km / ${(searchRadius! * 0.621371).roundToDouble()} mi"),
+
+                        // TODO: registration_interests
+                        SummaryTextfield(label: "Interests", input: "TODO"),
+
+                        // registration_job_bio
+                        SummaryTextfield(label: "Job", input: "TODO"),
+                        SummaryTextfield(label: "Bio", input: "TODO"),
+                        const SizedBox(height: 25.0),
                         Expanded(child: Container()),
                         Footer(
                             pageSection: RegistrationPageSection.summary,

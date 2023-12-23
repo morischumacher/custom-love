@@ -170,7 +170,7 @@ class _RegistrationLocationState extends State<RegistrationLocation> {
                             fontSize: 16,
                           ),
                         ),
-                        const SizedBox(height: 15.0),
+                        const SizedBox(height: 25.0),
                         Expanded(child: Container()),
                         Footer(
                             pageSection: RegistrationPageSection.location,

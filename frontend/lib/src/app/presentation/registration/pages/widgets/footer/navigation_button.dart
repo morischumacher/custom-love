@@ -126,10 +126,10 @@ class _NavigationButtonState extends State<NavigationButton> {
                 );
               case RegistrationPageSection.nameEmail:
                 return RegistrationNameEmail(
-                    firstName: widget.firstName,
-                    lastName: widget.lastName,
-                    email: widget.email,
-                    password: widget.password,
+                    firstName: widget.firstName != null ? widget.firstName!.trim() : widget.firstName,
+                    lastName: widget.lastName != null ? widget.lastName!.trim() : widget.lastName,
+                    email: widget.email != null ? widget.email!.trim() : widget.email,
+                    password: widget.password != null ? widget.password!.trim() : widget.password,
                     gender: widget.gender,
                     preference: widget.genderPreference,
                     birthdate: widget.birthdate,

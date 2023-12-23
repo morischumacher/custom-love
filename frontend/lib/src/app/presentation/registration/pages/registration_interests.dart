@@ -146,6 +146,7 @@ class _RegistrationInterestsState extends State<RegistrationInterests> {
                             ),
                       ),
                     ),
+                  const SizedBox(height: 25.0),
                   Expanded(child: Container()),
                   Footer(
                       pageSection: RegistrationPageSection.interests,
