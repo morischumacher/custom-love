@@ -74,12 +74,16 @@ class _RegistrationNameEmailState extends State<RegistrationNameEmail> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: _customLoveTheme.neutralColor,
-        body: Center(
-          child: Container(
-            constraints: const BoxConstraints(maxWidth: 500),
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(25.0, 0, 25.0, 51.0),
+      backgroundColor: _customLoveTheme.neutralColor,
+      body: Center(
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 500),
+          child: CustomScrollView(
+            scrollBehavior:
+            ScrollConfiguration.of(context).copyWith(scrollbars: false),
+            slivers: [
+            SliverFillRemaining(
+            hasScrollBody: false,
                 child: Column(
                   children: [
                     const PageTitle(
@@ -113,27 +117,42 @@ class _RegistrationNameEmailState extends State<RegistrationNameEmail> {
                       hintText: "Password",
                       obscureText: true,
                     ),
-                    const SizedBox(height: 25.0),
-                    Container(
-                      constraints: const BoxConstraints(maxWidth: 500),
-                      child: Center(
-                        child: Row(
-                          children: [
-                            const SizedBox(height: 80),
-                            prevBtn(context),
-                            const Spacer(),
-                            nextBtn(context)
-                          ],
-                        ),
+                    Expanded(child: Container()),
+                    Center(
+                      child: Row(
+                        children: [
+                          prevBtn(context),
+                          const Spacer(),
+                          nextBtn(context),
+                        ],
                       ),
-                    )
-
+                    ),
+                    const SizedBox(height: 30.0),
+                    Center(
+                        child: Column(
+                          children: [
+                            InkWell(
+                              child: Text(
+                                'Return to Login',
+                                style: TextStyle(
+                                  color: _customLoveTheme.linkColor,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              onTap: () {
+                                Navigator.pushNamed(context, "/");
+                              },
+                            ),
+                            const SizedBox(height: 30)
+                          ],
+                        ))
                   ],
                 ),
-              ),
             ),
+            ],
           ),
-        );
+        ),
+      ));
 
   }
 

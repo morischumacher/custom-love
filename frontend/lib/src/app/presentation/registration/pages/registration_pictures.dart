@@ -110,9 +110,12 @@ class _RegistrationPicturesState extends State<RegistrationPictures> {
       body: Center(
         child: Container(
             constraints: const BoxConstraints(maxWidth: 500),
-            color: _customLoveTheme.neutralColor,
-            padding: const EdgeInsets.fromLTRB(21.0, 0, 21.0, 51.0),
-            child: Center(
+            child: CustomScrollView(
+              scrollBehavior:
+              ScrollConfiguration.of(context).copyWith(scrollbars: false),
+              slivers: [
+              SliverFillRemaining(
+              hasScrollBody: false,
               child: Column(
                 children: [
                   const PageTitle(
@@ -154,22 +157,42 @@ class _RegistrationPicturesState extends State<RegistrationPictures> {
                           ),
                         ))
                   ),
-                  const Spacer(),
+                  Expanded(child: Container()),
                   Center(
                     child: Row(
                       children: [
                         prevBtn(context),
                         const Spacer(),
-                        nextBtn(context)
+                        nextBtn(context),
                       ],
                     ),
-                  )
+                  ),
+                  const SizedBox(height: 30.0),
+                  Center(
+                      child: Column(
+                        children: [
+                          InkWell(
+                            child: Text(
+                              'Return to Login',
+                              style: TextStyle(
+                                color: _customLoveTheme.linkColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            onTap: () {
+                              Navigator.pushNamed(context, "/");
+                            },
+                          ),
+                          const SizedBox(height: 30)
+                        ],
+                      ))
                 ],
               ),
-            )
+              ),
+              ],
+            ),
         ),
-      ),
-    );
+      ));
   }
 
   OutlinedButton prevBtn(BuildContext context) {

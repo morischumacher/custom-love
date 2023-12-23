@@ -77,12 +77,16 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _customLoveTheme.neutralColor,
+        backgroundColor: _customLoveTheme.neutralColor,
         body: Center(
           child: Container(
-            constraints: const BoxConstraints(maxWidth: 500),
-              padding: const EdgeInsets.fromLTRB(21.0, 0, 21.0, 51.0),
-              child: Center(
+              constraints: const BoxConstraints(maxWidth: 500),
+              child: CustomScrollView(
+                scrollBehavior:
+                ScrollConfiguration.of(context).copyWith(scrollbars: false),
+                slivers: [
+                SliverFillRemaining(
+                hasScrollBody: false,
                 child: Column(
                   children: [
                     const PageTitle(
@@ -108,20 +112,41 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
                         controller: _dateController,
                         context: context
                     ),
-                  const SizedBox(height: 25.0),
+                    Expanded(child: Container()),
                     Center(
                       child: Row(
                         children: [
                           prevBtn(context),
                           const Spacer(),
-                          nextBtn(context)
+                          nextBtn(context),
                         ],
                       ),
-                    )
-
+                    ),
+                    const SizedBox(height: 30.0),
+                    Center(
+                        child: Column(
+                          children: [
+                            InkWell(
+                              child: Text(
+                                'Return to Login',
+                                style: TextStyle(
+                                  color: _customLoveTheme.linkColor,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              onTap: () {
+                                Navigator.pushNamed(context, "/");
+                              },
+                            ),
+                            const SizedBox(height: 30)
+                          ],
+                        ))
                   ],
                 ),
-              )),
+                ),
+                ],
+              ),
+          ),
         ));
   }
 
