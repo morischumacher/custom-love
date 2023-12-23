@@ -2,37 +2,51 @@ import 'package:flutter/material.dart';
 
 import '../../../../../config/theme.dart';
 
-class BirthdateField extends StatelessWidget {
-  final TextEditingController? controller;
-  final BuildContext context;
-  final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
+typedef void StringCallback(String val);
 
-  const BirthdateField({
+class BirthdateField extends StatefulWidget {
+  BirthdateField({
     super.key,
+    required this.callback,
     required this.controller,
-    required this.context
   });
 
+  final StringCallback callback;
+  late String? controller;
+  final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
+
+
+  @override
+  State<BirthdateField> createState() => _BirthdateFieldState();
+}
+
+class _BirthdateFieldState extends State<BirthdateField> {
   @override
   Widget build(BuildContext context) {
     return TextField(
-      controller: controller,
+      controller: TextEditingController(text: widget.controller),
       readOnly: true,
       onTap: () {
-        selectDate();
+        selectDate().then((value) {
+          setState(() {
+            if (widget.controller != null) {
+              widget.callback(widget.controller!);
+            }
+          });
+        });
       },
       decoration: InputDecoration(
-          fillColor: _customLoveTheme.grayscale0,
+          fillColor: widget._customLoveTheme.grayscale0,
           filled: true,
           suffixIcon: const Icon(Icons.calendar_today),
           labelText: "Birthday",
-          labelStyle: TextStyle(color: _customLoveTheme.grayscale1),
+          labelStyle: TextStyle(color: widget._customLoveTheme.grayscale1),
           border: const OutlineInputBorder(),
           enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: _customLoveTheme.formFieldBorder)
+              borderSide: BorderSide(color: widget._customLoveTheme.formFieldBorder)
           ),
           focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: _customLoveTheme.formFieldBorder)
+              borderSide: BorderSide(color: widget._customLoveTheme.formFieldBorder)
           )
       ),
     );
@@ -48,7 +62,7 @@ class BirthdateField extends StatelessWidget {
     );
 
     if (_picked != null) {
-      controller?.text = _picked.toString().split(" ")[0];
+      widget.controller = _picked.toString().split(" ")[0];
     }
   }
 }

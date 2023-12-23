@@ -1,17 +1,14 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:frontend/src/app/presentation/registration/pages/registration_radius.dart';
+import 'package:frontend/src/app/presentation/registration/pages/widgets/footer/footer.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/page_title.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:logger/logger.dart';
-import 'package:provider/provider.dart';
 
 import '../../../../config/theme.dart';
 import '../../../service/location_service.dart';
-import '../../../service/login_service.dart';
-import '../../../service/user_service.dart';
-import '../../authentification/pages/login_page.dart';
+import '../enums/registration_page_enum.dart';
 
 class RegistrationLocation extends StatefulWidget {
   const RegistrationLocation({
@@ -173,34 +170,19 @@ class _RegistrationLocationState extends State<RegistrationLocation> {
                       ),
                       const SizedBox(height: 15.0),
                       Expanded(child: Container()),
-                      Center(
-                        child: Row(
-                          children: [
-                            prevBtn(context),
-                            const Spacer(),
-                            nextBtn(context),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 30.0),
-                      Center(
-                        child: Column(
-                          children: [
-                            InkWell(
-                              child: Text(
-                                'Return to Login',
-                                style: TextStyle(
-                                  color: _customLoveTheme.linkColor,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              onTap: () {
-                                Navigator.pushNamed(context, "/");
-                              },
-                            ),
-                            const SizedBox(height: 30)
-                          ],
-                        )
+                      Footer(
+                          pageSection: RegistrationPageSection.location,
+                          firstName: firstName,
+                          lastName: lastName,
+                          email: email,
+                          password: password,
+                          gender: gender,
+                          genderPreference: preference,
+                          birthdate: birthdate,
+                          profilePicture: profilePicture,
+                          userInterestIdList: userInterestIdList,
+                          location: userLocation,
+                          searchRadius: searchRadius
                       )
                     ],
                   ),
@@ -227,65 +209,6 @@ class _RegistrationLocationState extends State<RegistrationLocation> {
         },
       child: const Text(
         "Request Location Access",
-        style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white
-        ),
-      ),
-    );
-  }
-
-  OutlinedButton prevBtn(BuildContext context) {
-    return OutlinedButton(
-      style: OutlinedButton.styleFrom(
-          minimumSize: const Size(156, 56),
-          backgroundColor: _customLoveTheme.primaryColor,
-          side: BorderSide.none
-      ),
-      onPressed: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return LoginPage(
-            loginService: Provider.of<LoginService>(context),
-            userService: Provider.of<UserService>(context),
-          );
-        }));
-      },
-      child: const Text(
-        "Return",
-        style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white
-        ),
-      ),
-    );
-  }
-
-  OutlinedButton nextBtn(BuildContext context) {
-    return OutlinedButton(
-      style: OutlinedButton.styleFrom(
-          minimumSize: const Size(156, 56),
-          backgroundColor: _customLoveTheme.primaryColor,
-          side: BorderSide.none
-      ),
-      onPressed: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return RegistrationRadius(
-              firstName: firstName,
-              lastName: lastName,
-              email: email,
-              password: password,
-              gender: gender,
-              preference: preference,
-              birthdate: birthdate,
-              profilePicture: profilePicture,
-              userInterestIdList: userInterestIdList,
-              location: userLocation,
-              searchRadius: searchRadius
-          );
-        }));
-      },
-      child: const Text(
-        "Next",
         style: TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.white

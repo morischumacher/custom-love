@@ -1,14 +1,14 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:frontend/src/app/presentation/registration/pages/registration_name_email.dart';
-import 'package:frontend/src/app/presentation/registration/pages/registration_pictures.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/birthdate_field.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/dropdown_list.dart';
+import 'package:frontend/src/app/presentation/registration/pages/widgets/footer/footer.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/page_title.dart';
 import 'package:geolocator/geolocator.dart';
 
 import '../../../../config/theme.dart';
+import '../enums/registration_page_enum.dart';
 
 class RegistrationGenderPreference extends StatefulWidget {
   const RegistrationGenderPreference({
@@ -52,7 +52,7 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
     password = widget.password;
     _selectedGender = widget.gender;
     _selectedPreference = widget.preference;
-    _dateController.value = TextEditingValue(text: widget.birthdate == null ? "" : widget.birthdate as String);
+    _dateController = widget.birthdate;
     profilePicture = widget.profilePicture;
     userInterestIdList = widget.userInterestIdList;
     userLocation = widget.location;
@@ -65,12 +65,12 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
   late String? password;
   String? _selectedGender = "";
   String? _selectedPreference = "";
+  String? _dateController;
   late Uint8List? profilePicture;
   late Set<int> userInterestIdList;
   Position? userLocation;
   late double? searchRadius;
 
-  final TextEditingController _dateController = TextEditingController();
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
   final _genderList = ["Male", "Female", "Other"];
 
@@ -98,49 +98,35 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
                         labelText: "Gender",
                         value: _selectedGender,
                         options: _genderList,
-                        setParentValueFunction: setGender
+                        callback: (val) => setState(() => _selectedGender = val),
                     ),
                     const SizedBox(height: 19.0),
                     DropDownList(
                         labelText: "Preference",
                         value: _selectedPreference,
                         options: _genderList,
-                        setParentValueFunction: setPreference
+                        callback: (val) => setState(() => _selectedPreference = val),
                     ),
                     const SizedBox(height: 19.0),
                     BirthdateField(
                         controller: _dateController,
-                        context: context
+                        callback: (val) => setState(() => _dateController = val),
                     ),
                     Expanded(child: Container()),
-                    Center(
-                      child: Row(
-                        children: [
-                          prevBtn(context),
-                          const Spacer(),
-                          nextBtn(context),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 30.0),
-                    Center(
-                        child: Column(
-                          children: [
-                            InkWell(
-                              child: Text(
-                                'Return to Login',
-                                style: TextStyle(
-                                  color: _customLoveTheme.linkColor,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              onTap: () {
-                                Navigator.pushNamed(context, "/");
-                              },
-                            ),
-                            const SizedBox(height: 30)
-                          ],
-                        ))
+                    Footer(
+                        pageSection: RegistrationPageSection.genderPreference,
+                        firstName: firstName,
+                        lastName: lastName,
+                        email: email,
+                        password: password,
+                        gender: _selectedGender,
+                        genderPreference: _selectedPreference,
+                        birthdate: _dateController,
+                        profilePicture: profilePicture,
+                        userInterestIdList: userInterestIdList,
+                        location: userLocation,
+                        searchRadius: searchRadius
+                    )
                   ],
                 ),
                 ),
@@ -148,81 +134,5 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
               ),
           ),
         ));
-  }
-
-  OutlinedButton prevBtn(BuildContext context) {
-    return OutlinedButton(
-      style: OutlinedButton.styleFrom(
-          minimumSize: const Size(156, 56),
-          backgroundColor: _customLoveTheme.primaryColor,
-          side: BorderSide.none
-      ),
-      onPressed: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return RegistrationNameEmail(
-            firstName: firstName,
-            lastName: lastName,
-            email: email,
-            password: password,
-            gender: _selectedGender,
-            preference: _selectedPreference,
-            birthdate: _dateController.value.text,
-            profilePicture: profilePicture,
-            userInterestIdList: userInterestIdList,
-            location: userLocation,
-            searchRadius: searchRadius
-          );
-        }));
-      },
-      child: const Text(
-        "Previous",
-        style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white
-        ),
-      ),
-    );
-  }
-
-  OutlinedButton nextBtn(BuildContext context) {
-    return OutlinedButton(
-      style: OutlinedButton.styleFrom(
-          minimumSize: const Size(156, 56),
-          backgroundColor: _customLoveTheme.primaryColor,
-          side: BorderSide.none
-      ),
-      onPressed: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return RegistrationPictures(
-              firstName: firstName,
-              lastName: lastName,
-              email: email,
-              password: password,
-              gender: _selectedGender,
-              preference: _selectedPreference,
-              birthdate: _dateController.value.text,
-              profilePicture: profilePicture,
-              userInterestIdList: userInterestIdList,
-              location: userLocation,
-              searchRadius: searchRadius,
-          );
-        }));
-      },
-      child: const Text(
-        "Next",
-        style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white
-        ),
-      ),
-    );
-  }
-
-  void setGender(String gender) {
-    _selectedGender = gender;
-  }
-
-  void setPreference(String preference) {
-    _selectedPreference = preference;
   }
 }

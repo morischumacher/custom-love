@@ -125,6 +125,34 @@ class CustomLove extends StatelessWidget {
             return const LogoutPage();
           },
           '/registration': (context) {
+            /*
+            // Used for testing purposes
+            return RegistrationLocation(
+                firstName: "Airolo",
+                lastName: "Airolodottir",
+                email: "aaaaaaaaaaaaaaaaaaaaaairolo@email.com",
+                password: "pass1",
+                gender: "Female",
+                preference: "Female",
+                birthdate: "1995-01-01",
+                profilePicture: null,
+                userInterestIdList: Set.from([1]),
+                location: Position(
+                    longitude: 20.0,
+                    latitude: 20.0,
+                    accuracy: 20.0,
+                    timestamp: DateTime.now(),
+                    altitude: 20.0,
+                    altitudeAccuracy: 20.0,
+                    heading: 20.0,
+                    headingAccuracy: 20.0,
+                    speed: 20.0,
+                    speedAccuracy: 20.0
+                ),
+                searchRadius: 43
+            );
+             */
+
             return RegistrationLocation(
                 firstName: null,
                 lastName: null,

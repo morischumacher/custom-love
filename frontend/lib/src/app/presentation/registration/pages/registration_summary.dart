@@ -1,14 +1,14 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:frontend/src/app/presentation/registration/pages/registration_interests.dart';
+import 'package:frontend/src/app/presentation/registration/pages/widgets/footer/footer.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/page_title.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/summary_textfield.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:logger/logger.dart';
 
 import '../../../../config/theme.dart';
-import '../controller/registration_controller.dart';
+import '../enums/registration_page_enum.dart';
 
 class RegistrationSummary extends StatefulWidget {
   const RegistrationSummary({Key? key,
@@ -60,7 +60,6 @@ class _RegistrationSummaryState extends State<RegistrationSummary> {
 
   final logger = Logger();
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
-  final RegistrationController _controller = RegistrationController();
 
   late String? firstName;
   late String? lastName;
@@ -105,34 +104,20 @@ class _RegistrationSummaryState extends State<RegistrationSummary> {
                       SummaryTextfield(label: "Search Radius", input: searchRadius!.toString()),
                       // TODO: Add remaining input fields
                       Expanded(child: Container()),
-                      Center(
-                        child: Row(
-                          children: [
-                            prevBtn(context),
-                            const Spacer(),
-                            nextBtn(context),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 30.0),
-                      Center(
-                          child: Column(
-                            children: [
-                              InkWell(
-                                child: Text(
-                                  'Return to Login',
-                                  style: TextStyle(
-                                    color: _customLoveTheme.linkColor,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                onTap: () {
-                                  Navigator.pushNamed(context, "/");
-                                },
-                              ),
-                              const SizedBox(height: 30)
-                            ],
-                          ))
+                      Footer(
+                          pageSection: RegistrationPageSection.summary,
+                          firstName: firstName,
+                          lastName: lastName,
+                          email: email,
+                          password: password,
+                          gender: gender,
+                          genderPreference: preference,
+                          birthdate: birthdate,
+                          profilePicture: profilePicture,
+                          userInterestIdList: userInterestIdList,
+                          location: userLocation,
+                          searchRadius: searchRadius
+                      )
                     ],
                   ),
                 ),
@@ -140,76 +125,5 @@ class _RegistrationSummaryState extends State<RegistrationSummary> {
             ),
           ),
         ));
-  }
-
-  OutlinedButton prevBtn(BuildContext context) {
-    return OutlinedButton(
-      style: OutlinedButton.styleFrom(
-          minimumSize: const Size(156, 56),
-          backgroundColor: _customLoveTheme.primaryColor,
-          side: BorderSide.none
-      ),
-      onPressed: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return RegistrationInterests(
-              firstName: firstName,
-              lastName: lastName,
-              email: email,
-              password: password,
-              birthdate: birthdate,
-              gender: gender,
-              preference: preference,
-              profilePicture: profilePicture,
-              userInterestIdList: userInterestIdList,
-              location: userLocation,
-              searchRadius: searchRadius
-          );
-        }));
-      },
-      child: const Text(
-        "Previous",
-        style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white
-        ),
-      ),
-    );
-  }
-
-  OutlinedButton nextBtn(BuildContext context) {
-    return OutlinedButton(
-      style: OutlinedButton.styleFrom(
-          minimumSize: const Size(156, 56),
-          backgroundColor: _customLoveTheme.primaryColor,
-          side: BorderSide.none
-      ),
-      onPressed: () {
-        Future<void>.value(
-            _controller.handleRegistration(
-                context,
-                firstName,
-                lastName,
-                email,
-                password,
-                "",
-                birthdate,
-                "",
-                searchRadius,
-                gender,
-                preference,
-                profilePicture,
-                userInterestIdList,
-                1
-            )
-        );
-      },
-      child: const Text(
-        "Create Profile",
-        style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white
-        ),
-      ),
-    );
   }
 }

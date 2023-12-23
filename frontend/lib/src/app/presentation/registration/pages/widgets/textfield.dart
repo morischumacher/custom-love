@@ -2,15 +2,19 @@ import 'package:flutter/material.dart';
 
 import '../../../../../config/theme.dart';
 
+typedef void StringCallback(String val);
+
 class RegistrationTextfield extends StatelessWidget {
   // Accesses what the users fill into the text field
-  final TextEditingController? controller;
+  final StringCallback callback;
+  final String? controller;
   final String hintText;
   final bool obscureText;
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
 
   const RegistrationTextfield({
     super.key,
+    required this.callback,
     required this.controller,
     required this.hintText,
     required this.obscureText
@@ -20,8 +24,11 @@ class RegistrationTextfield extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 25.0),
-      child: TextField(
-        controller: controller,
+      child: TextFormField(
+        onChanged: (text) {
+          callback(text);
+        },
+        initialValue: controller,
         obscureText: obscureText,
         decoration: InputDecoration(
             enabledBorder: OutlineInputBorder(

@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:frontend/src/app/presentation/registration/pages/registration_gender_preference.dart';
-import 'package:frontend/src/app/presentation/registration/pages/registration_radius.dart';
+import 'package:frontend/src/app/presentation/registration/enums/registration_page_enum.dart';
+import 'package:frontend/src/app/presentation/registration/pages/widgets/footer/footer.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/page_title.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/textfield.dart';
 import 'package:geolocator/geolocator.dart';
@@ -44,10 +44,10 @@ class _RegistrationNameEmailState extends State<RegistrationNameEmail> {
   @override
   void initState() {
     super.initState();
-    firstName.value = TextEditingValue(text: widget.firstName == null ? "" : widget.firstName as String);
-    lastName.value = TextEditingValue(text: widget.lastName == null ? "" : widget.lastName as String);
-    emailController.value = TextEditingValue(text: widget.email == null ? "" : widget.email as String);
-    passwordController.value = TextEditingValue(text: widget.password == null ? "" : widget.password as String);
+    firstName = widget.firstName;
+    lastName = widget.lastName;
+    emailController = widget.email;
+    passwordController = widget.password;
     gender = widget.gender;
     preference = widget.preference;
     birthdate = widget.birthdate;
@@ -59,10 +59,10 @@ class _RegistrationNameEmailState extends State<RegistrationNameEmail> {
 
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
 
-  final firstName = TextEditingController();
-  final lastName = TextEditingController();
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
+  late String? firstName;
+  late String? lastName;
+  late String? emailController;
+  late String? passwordController;
   late String? gender;
   late String? preference;
   late String? birthdate;
@@ -96,12 +96,14 @@ class _RegistrationNameEmailState extends State<RegistrationNameEmail> {
                       controller: firstName,
                       hintText: "First Name",
                       obscureText: false,
+                      callback: (val) => setState(() => firstName = val)
                     ),
                     const SizedBox(height: 19.0),
                     RegistrationTextfield(
                       controller: lastName,
                       hintText: "Last Name",
                       obscureText: false,
+                      callback: (val) => setState(() => lastName = val),
                     ),
                     const SizedBox(height: 19.0),
                     // Email
@@ -109,6 +111,7 @@ class _RegistrationNameEmailState extends State<RegistrationNameEmail> {
                       controller: emailController,
                       hintText: "Email",
                       obscureText: false,
+                      callback: (val) => setState(() => emailController = val),
                     ),
                     const SizedBox(height: 19.0),
                     // Email
@@ -116,36 +119,23 @@ class _RegistrationNameEmailState extends State<RegistrationNameEmail> {
                       controller: passwordController,
                       hintText: "Password",
                       obscureText: true,
+                      callback: (val) => setState(() => passwordController = val),
                     ),
                     Expanded(child: Container()),
-                    Center(
-                      child: Row(
-                        children: [
-                          prevBtn(context),
-                          const Spacer(),
-                          nextBtn(context),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 30.0),
-                    Center(
-                        child: Column(
-                          children: [
-                            InkWell(
-                              child: Text(
-                                'Return to Login',
-                                style: TextStyle(
-                                  color: _customLoveTheme.linkColor,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              onTap: () {
-                                Navigator.pushNamed(context, "/");
-                              },
-                            ),
-                            const SizedBox(height: 30)
-                          ],
-                        ))
+                    Footer(
+                        pageSection: RegistrationPageSection.nameEmail,
+                        firstName: firstName,
+                        lastName: lastName,
+                        email: emailController,
+                        password: passwordController,
+                        gender: gender,
+                        genderPreference: preference,
+                        birthdate: birthdate,
+                        profilePicture: profilePicture,
+                        userInterestIdList: userInterestIdList,
+                        location: userLocation,
+                        searchRadius: searchRadius
+                    )
                   ],
                 ),
             ),
@@ -154,73 +144,5 @@ class _RegistrationNameEmailState extends State<RegistrationNameEmail> {
         ),
       ));
 
-  }
-
-  OutlinedButton prevBtn(BuildContext context) {
-    return OutlinedButton(
-      style: OutlinedButton.styleFrom(
-          minimumSize: const Size(156, 56),
-          backgroundColor: _customLoveTheme.primaryColor,
-          side: BorderSide.none
-      ),
-      onPressed: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return RegistrationRadius(
-              firstName: firstName.value.text,
-              lastName: lastName.value.text,
-              email: emailController.value.text,
-              password: passwordController.value.text,
-              gender: gender,
-              preference: preference,
-              birthdate: birthdate,
-              profilePicture: profilePicture,
-              userInterestIdList: userInterestIdList,
-              location: userLocation,
-              searchRadius: searchRadius
-          );
-        }));
-      },
-      child: const Text(
-        "Return",
-        style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white
-        ),
-      ),
-    );
-  }
-
-  OutlinedButton nextBtn(BuildContext context) {
-    return OutlinedButton(
-      style: OutlinedButton.styleFrom(
-          minimumSize: const Size(156, 56),
-          backgroundColor: _customLoveTheme.primaryColor,
-          side: BorderSide.none
-      ),
-      onPressed: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return RegistrationGenderPreference(
-            firstName: firstName.value.text,
-            lastName: lastName.value.text,
-            email: emailController.value.text,
-            password: passwordController.value.text,
-            gender: gender,
-            preference: preference,
-            birthdate: birthdate,
-            profilePicture: profilePicture,
-            userInterestIdList: userInterestIdList,
-            location: userLocation,
-            searchRadius: searchRadius,
-          );
-        }));
-      },
-      child: const Text(
-        "Next",
-        style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white
-        ),
-      ),
-    );
   }
 }
