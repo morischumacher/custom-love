@@ -21,8 +21,13 @@ class MessageInput extends StatelessWidget {
       return;
     }
 
-    Message message = Message(null, conversationId, senderId, receiverId,
-        textInputController.text, DateTime.now());
+    Message message = Message(
+      conversationId: conversationId,
+      senderId: senderId,
+      receiverId: receiverId,
+      message: textInputController.text,
+      timestamp: DateTime.now(),
+    );
 
     Provider.of<StateManager>(context, listen: false)
         .sendMessage(message, context);
