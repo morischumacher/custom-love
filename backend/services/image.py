@@ -16,10 +16,8 @@ from backend.utils.token import get_current_user
 from fastapi import Response
 
 
-# region chat images
-
-def get_image(image_id: int, user: Annotated[User, Depends(get_current_user)],
-              db: Annotated[Session, Depends(create_session)]):
+def get_image(user: Annotated[User, Depends(get_current_user)],
+              db: Annotated[Session, Depends(create_session)], image_id: int):
     image = db.exec(select(Image).where(Image.id == image_id)).first()
 
     if image is None:
@@ -68,44 +66,3 @@ async def post_image(receiver_id: int, user: Annotated[User, Depends(get_current
     db.refresh(message)
 
     return message
-
-# endregion
-
-
-# region profile pictures
-
-def get_profile_pictures(user: Annotated[User, Depends(get_current_user)], db: Annotated[Session, Depends(create_session)]):
-    return map(
-        lambda element: element.id,
-        db.exec(select(ProfilePicture).where(ProfilePicture.user_id == user.id)).all(),
-    )
-
-
-def get_profile_picture(image_id: int, user: Annotated[User, Depends(get_current_user)], db: Annotated[Session, Depends(create_session)]):
-    image = db.exec(select(ProfilePicture).where(ProfilePicture.id == image_id)).first()
-
-    if image is None:
-        raise NotFoundException(f"Image with the id: #{image_id} was not found")
-
-    if image.user_id != user.id:
-        raise CredentialsException("Unauthorized call")
-
-    return Response(content=image.content, media_type=image.content_type)
-
-
-def post_profile_picture(user: Annotated[User, Depends(get_current_user)],
-                     db: Annotated[Session, Depends(create_session)], file: UploadFile):
-    image = ProfilePicture(
-        user_id=user.id,
-        content=file.file.read(),
-        filename=file.filename,
-        content_type=file.content_type
-    )
-
-    db.add(image)
-    db.commit()
-    db.refresh(image)
-
-    return {"description": "Success"}
-
-# endregion

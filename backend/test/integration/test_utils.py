@@ -80,6 +80,29 @@ def user_beta():
     )
 
 
+def user_gamma():
+    return User(
+        first_name='Gamma',
+        last_name='Gammonson',
+        email='gamma.gammonson@email.com',
+        tel='+92 231 023 953',
+        bio='Test subject 2',
+        date_of_birth=datetime.today(),
+        job='Data Scientist',
+        search_radius=50,
+        swipe_limit_reset_date=datetime.today(),
+        swipes_left=5,
+        languages=[language("english"), language("french"), language("german")],
+        gender_preferences=[gender_identity("man"), gender_identity("woman")],
+        preferences=random_preferences(2),
+        gender_identity=gender_identity("woman"),
+        interests=[interest("travel"), interest("books"), interest("science")],
+        password=hash_pwd(RAW_PASSWORD),
+        latitude=48.227982,
+        longitude=16.372316
+    )
+
+
 def load_entities(entities: List[Any], session: Session):
     for entity in entities:
         session.add(entity)
@@ -99,4 +122,8 @@ def login(email: str, pwd: str, client):
 def authorized_request(token, client: TestClient, method, url, **kwargs):
     headers = {"accept": "application/json", "Content-Type": "application/x-www-form-urlencoded",
                "Authorization": f"Bearer {token}"}
+
+    if 'files' in kwargs:
+        headers = {"Authorization": f"Bearer {token}"}
+
     return method(client)(url, headers=headers, **kwargs)
