@@ -18,6 +18,12 @@ class Interest {
   String toString() {
     return '{ $id, $name }';
   }
+
+  @override
+  bool operator ==(other) => other is Interest && id == other.id && name == other.name;
+
+  @override
+  int get hashCode => Object.hash(id, name);
 }
 
 class InterestService {
