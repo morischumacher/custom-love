@@ -24,7 +24,9 @@ class RegistrationSummary extends StatefulWidget {
     required this.profilePicture,
     required this.userInterestIdList,
     required this.location,
-    required this.searchRadius
+    required this.searchRadius,
+    required this.job,
+    required this.bio
   }) : super(key: key);
 
   final String? firstName;
@@ -38,6 +40,8 @@ class RegistrationSummary extends StatefulWidget {
   final List<Interest> userInterestIdList;
   final Position? location;
   final double? searchRadius;
+  final String? job;
+  final String? bio;
 
   @override
   State<RegistrationSummary> createState() => _RegistrationSummaryState();
@@ -131,14 +135,13 @@ class _RegistrationSummaryState extends State<RegistrationSummary> {
                         SummaryTextfield(label: "Birthdate", input: birthdate!),
 
                         // registration_radius
-                        SummaryTextfield(label: "Search Radius", input: "${searchRadius} km / ${(searchRadius! * 0.621371).roundToDouble()} mi"),
+                        SummaryTextfield(label: "Search Radius", input: "$searchRadius km / ${(searchRadius! * 0.621371).roundToDouble()} mi"),
 
-                        // TODO: registration_interests
                         SummaryTextfield(label: "Interests", input: interestsListToString(userInterestIdList)),
 
                         // registration_job_bio
-                        SummaryTextfield(label: "Job", input: "TODO"),
-                        SummaryTextfield(label: "Bio", input: "TODO"),
+                        SummaryTextfield(label: "Job", input: widget.job == null ? "" : widget.job!),
+                        SummaryTextfield(label: "Bio", input: widget.bio == null ? "" : widget.bio!),
                         const SizedBox(height: 25.0),
                         Expanded(child: Container()),
                         Footer(
@@ -153,7 +156,9 @@ class _RegistrationSummaryState extends State<RegistrationSummary> {
                             profilePicture: profilePicture,
                             userInterestIdList: userInterestIdList,
                             location: userLocation,
-                            searchRadius: searchRadius
+                            searchRadius: searchRadius,
+                            job: widget.job,
+                            bio: widget.bio
                         )
                       ],
                     ),

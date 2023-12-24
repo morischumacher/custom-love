@@ -81,8 +81,8 @@ class _ProfileState extends State<Profile> {
                           SummaryTextfield(label: "Interests", input: "TODO"),
 
                           // registration_job_bio
-                          SummaryTextfield(label: "Job", input: "TODO"),
-                          SummaryTextfield(label: "Bio", input: "TODO"),
+                          SummaryTextfield(label: "Job", input: user!.job),
+                          SummaryTextfield(label: "Bio", input: user!.bio),
                         ]),
                       const SizedBox(height: 25.0),
                       Expanded(child: Container()),
@@ -93,7 +93,6 @@ class _ProfileState extends State<Profile> {
             ),
           ),
         ),
-
       ),
     );
   }

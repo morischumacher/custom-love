@@ -23,7 +23,9 @@ class RegistrationNameEmail extends StatefulWidget {
     required this.profilePicture,
     required this.userInterestIdList,
     required this.location,
-    required this.searchRadius
+    required this.searchRadius,
+    required this.job,
+    required this.bio
   });
 
   final String? firstName;
@@ -37,6 +39,8 @@ class RegistrationNameEmail extends StatefulWidget {
   final List<Interest> userInterestIdList;
   final Position? location;
   final double? searchRadius;
+  final String? job;
+  final String? bio;
 
   @override
   State<RegistrationNameEmail> createState() => _RegistrationNameEmailState();
@@ -50,13 +54,6 @@ class _RegistrationNameEmailState extends State<RegistrationNameEmail> {
     lastName = widget.lastName;
     emailController = widget.email;
     passwordController = widget.password;
-    gender = widget.gender;
-    preference = widget.preference;
-    birthdate = widget.birthdate;
-    profilePicture = widget.profilePicture;
-    userInterestIdList = widget.userInterestIdList;
-    userLocation = widget.location;
-    searchRadius = widget.searchRadius;
   }
 
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
@@ -65,13 +62,6 @@ class _RegistrationNameEmailState extends State<RegistrationNameEmail> {
   late String? lastName;
   late String? emailController;
   late String? passwordController;
-  late Gender? gender;
-  late Gender? preference;
-  late String? birthdate;
-  late Uint8List? profilePicture;
-  late List<Interest> userInterestIdList;
-  Position? userLocation;
-  late double? searchRadius;
 
   @override
   Widget build(BuildContext context) {
@@ -133,13 +123,15 @@ class _RegistrationNameEmailState extends State<RegistrationNameEmail> {
                           lastName: lastName,
                           email: emailController,
                           password: passwordController,
-                          gender: gender,
-                          genderPreference: preference,
-                          birthdate: birthdate,
-                          profilePicture: profilePicture,
-                          userInterestIdList: userInterestIdList,
-                          location: userLocation,
-                          searchRadius: searchRadius
+                          gender: widget.gender,
+                          genderPreference: widget.preference,
+                          birthdate: widget.birthdate,
+                          profilePicture: widget.profilePicture,
+                          userInterestIdList: widget.userInterestIdList,
+                          location: widget.location,
+                          searchRadius: widget.searchRadius,
+                          job: widget.job,
+                          bio: widget.bio
                       )
                     ],
                   ),
@@ -149,6 +141,5 @@ class _RegistrationNameEmailState extends State<RegistrationNameEmail> {
           ),
         ),
       ));
-
   }
 }

@@ -27,7 +27,9 @@ class RegistrationPictures extends StatefulWidget {
     required this.profilePicture,
     required this.userInterestIdList,
     required this.location,
-    required this.searchRadius
+    required this.searchRadius,
+    required this.job,
+    required this.bio,
   }) : super(key: key);
 
   final String? firstName;
@@ -41,6 +43,8 @@ class RegistrationPictures extends StatefulWidget {
   final List<Interest> userInterestIdList;
   final Position? location;
   final double? searchRadius;
+  final String? job;
+  final String? bio;
 
   @override
   State<RegistrationPictures> createState() => _RegistrationPicturesState();
@@ -50,31 +54,11 @@ class _RegistrationPicturesState extends State<RegistrationPictures> {
   @override
   void initState() {
     super.initState();
-    firstName = widget.firstName;
-    lastName = widget.lastName;
-    email = widget.email;
-    password = widget.password;
-    gender = widget.gender;
-    preference = widget.preference;
-    birthdate = widget.birthdate;
     profilePicture = widget.profilePicture;
-    userInterestIdList = widget.userInterestIdList;
-    userLocation = widget.location;
-    searchRadius = widget.searchRadius;
   }
 
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
-  late String? firstName;
-  late String? lastName;
-  late String? email;
-  late String? password;
-  late Gender? gender;
-  late Gender? preference;
-  late String? birthdate;
   Uint8List? profilePicture;
-  late List<Interest> userInterestIdList;
-  Position? userLocation;
-  late double? searchRadius;
 
   // Web
   String defaultImageUrl = 'https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fblogs.timesofindia.indiatimes.com%2Fwp-content%2Fuploads%2F2016%2F11%2FNarendra-Modi-10-1.jpg&f=1&nofb=1&ipt=2934f6195ba86ab161d54c942491f87a1c68cc89b426d0601667d9052cf98010&ipo=images';
@@ -165,17 +149,19 @@ class _RegistrationPicturesState extends State<RegistrationPictures> {
                     Expanded(child: Container()),
                     Footer(
                         pageSection: RegistrationPageSection.pictures,
-                        firstName: firstName,
-                        lastName: lastName,
-                        email: email,
-                        password: password,
-                        gender: gender,
-                        genderPreference: preference,
-                        birthdate: birthdate,
+                        firstName: widget.firstName,
+                        lastName: widget.lastName,
+                        email: widget.email,
+                        password: widget.password,
+                        gender: widget.gender,
+                        genderPreference: widget.preference,
+                        birthdate: widget.birthdate,
                         profilePicture: profilePicture,
-                        userInterestIdList: userInterestIdList,
-                        location: userLocation,
-                        searchRadius: searchRadius
+                        userInterestIdList: widget.userInterestIdList,
+                        location: widget.location,
+                        searchRadius: widget.searchRadius,
+                        job: widget.job,
+                        bio: widget.bio
                     )
                   ],
                 ),

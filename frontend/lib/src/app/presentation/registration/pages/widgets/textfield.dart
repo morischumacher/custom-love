@@ -33,7 +33,7 @@ class RegistrationTextfield extends StatelessWidget {
               borderSide: BorderSide(color: _customLoveTheme.whiteColor)
           ),
           focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: _customLoveTheme.grayscale2)
+              borderSide: BorderSide(color: _customLoveTheme.grayscale1)
           ),
           fillColor: _customLoveTheme.grayscale0,
           filled: true,

@@ -25,7 +25,9 @@ class RegistrationInterests extends StatefulWidget {
     required this.profilePicture,
     required this.userInterestIdList,
     required this.location,
-    required this.searchRadius
+    required this.searchRadius,
+    required this.job,
+    required this.bio
   }) : super(key: key);
 
   final String? firstName;
@@ -39,6 +41,8 @@ class RegistrationInterests extends StatefulWidget {
   final List<Interest> userInterestIdList;
   final Position? location;
   final double? searchRadius;
+  final String? job;
+  final String? bio;
 
   @override
   State<RegistrationInterests> createState() => _RegistrationInterestsState();
@@ -48,17 +52,7 @@ class _RegistrationInterestsState extends State<RegistrationInterests> {
   @override
   void initState() {
     super.initState();
-    firstName = widget.firstName;
-    lastName = widget.lastName;
-    email = widget.email;
-    password = widget.password;
-    gender = widget.gender;
-    preference = widget.preference;
-    birthdate = widget.birthdate;
-    profilePicture = widget.profilePicture;
     userInterestIdList = widget.userInterestIdList;
-    userLocation = widget.location;
-    searchRadius = widget.searchRadius;
     getInterests();
   }
 
@@ -72,18 +66,7 @@ class _RegistrationInterestsState extends State<RegistrationInterests> {
 
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
   final InterestService _interestService = InterestService();
-  late String? firstName;
-  late String? lastName;
-  late String? email;
-  late String? password;
-  late Gender? gender;
-  late Gender? preference;
-  late String? birthdate;
-  late Uint8List? profilePicture;
   late List<Interest> userInterestIdList = [];
-  Position? userLocation;
-  late double? searchRadius;
-
   late List<Interest> interestDto = [];
 
   @override
@@ -150,17 +133,19 @@ class _RegistrationInterestsState extends State<RegistrationInterests> {
                   Expanded(child: Container()),
                   Footer(
                       pageSection: RegistrationPageSection.interests,
-                      firstName: firstName,
-                      lastName: lastName,
-                      email: email,
-                      password: password,
-                      gender: gender,
-                      genderPreference: preference,
-                      birthdate: birthdate,
-                      profilePicture: profilePicture,
+                      firstName: widget.firstName,
+                      lastName: widget.lastName,
+                      email: widget.email,
+                      password: widget.password,
+                      gender: widget.gender,
+                      genderPreference: widget.preference,
+                      birthdate: widget.birthdate,
+                      profilePicture: widget.profilePicture,
                       userInterestIdList: userInterestIdList,
-                      location: userLocation,
-                      searchRadius: searchRadius
+                      location: widget.location,
+                      searchRadius: widget.searchRadius,
+                      job: widget.job,
+                      bio: widget.bio
                   )
                 ],
               ),

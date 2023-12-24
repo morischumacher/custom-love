@@ -42,13 +42,14 @@ class SummaryTextfield extends StatelessWidget {
                   Wrap(
                     children: [
                       Text(
-                          input,
+                          input.trim().isEmpty ? "Left blank" : input,
                           textAlign: TextAlign.start,
                           overflow: TextOverflow.clip,
                           style: TextStyle(
-                              color: _customLoveTheme.textColor,
+                              color: input.trim().isEmpty ? _customLoveTheme.grayscale1 : _customLoveTheme.textColor,
                               fontWeight: FontWeight.normal,
-                              fontSize: 20.0
+                              fontSize: 20.0,
+                              fontStyle: input.trim().isEmpty ? FontStyle.italic : FontStyle.normal
                           )
                       )
                     ],

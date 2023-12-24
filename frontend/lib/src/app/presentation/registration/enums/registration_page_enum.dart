@@ -6,6 +6,7 @@ enum RegistrationPageSection {
   genderPreference,
   pictures,
   interests,
+  jobBio,
   summary,
   submit
 }
@@ -25,8 +26,10 @@ extension RegistrationPageNavigation on RegistrationPageSection {
         return RegistrationPageSection.genderPreference;
       case RegistrationPageSection.interests:
         return RegistrationPageSection.pictures;
-      case RegistrationPageSection.summary:
+      case RegistrationPageSection.jobBio:
         return RegistrationPageSection.interests;
+      case RegistrationPageSection.summary:
+        return RegistrationPageSection.jobBio;
       default:
         return RegistrationPageSection.login;
     }
@@ -45,6 +48,8 @@ extension RegistrationPageNavigation on RegistrationPageSection {
       case RegistrationPageSection.pictures:
         return RegistrationPageSection.interests;
       case RegistrationPageSection.interests:
+        return RegistrationPageSection.jobBio;
+      case RegistrationPageSection.jobBio:
         return RegistrationPageSection.summary;
       case RegistrationPageSection.summary:
         return RegistrationPageSection.submit;

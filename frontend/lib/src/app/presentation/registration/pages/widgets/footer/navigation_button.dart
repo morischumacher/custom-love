@@ -6,6 +6,7 @@ import 'package:frontend/src/app/model/interest_model.dart';
 import 'package:frontend/src/app/presentation/authentification/pages/login_page.dart';
 import 'package:frontend/src/app/presentation/registration/pages/registration_gender_preference.dart';
 import 'package:frontend/src/app/presentation/registration/pages/registration_interests.dart';
+import 'package:frontend/src/app/presentation/registration/pages/registration_job_bio.dart';
 import 'package:frontend/src/app/presentation/registration/pages/registration_location.dart';
 import 'package:frontend/src/app/presentation/registration/pages/registration_pictures.dart';
 import 'package:frontend/src/app/presentation/registration/pages/registration_radius.dart';
@@ -36,7 +37,9 @@ class NavigationButton extends StatefulWidget {
     required this.profilePicture,
     required this.userInterestIdList,
     required this.location,
-    required this.searchRadius
+    required this.searchRadius,
+    required this.job,
+    required this.bio
   });
 
   final RegistrationPageSection nextPage;
@@ -53,6 +56,8 @@ class NavigationButton extends StatefulWidget {
   final List<Interest> userInterestIdList;
   final Position? location;
   final double? searchRadius;
+  final String? job;
+  final String? bio;
 
   @override
   State<NavigationButton> createState() => _NavigationButtonState();
@@ -79,9 +84,9 @@ class _NavigationButtonState extends State<NavigationButton> {
               widget.lastName,
               widget.email,
               widget.password,
-              "",
+              widget.bio,
               widget.birthdate,
-              "",
+              widget.job,
               widget.location,
               widget.searchRadius,
               widget.gender,
@@ -110,7 +115,9 @@ class _NavigationButtonState extends State<NavigationButton> {
                     profilePicture: widget.profilePicture,
                     userInterestIdList: widget.userInterestIdList,
                     location: widget.location,
-                    searchRadius: widget.searchRadius
+                    searchRadius: widget.searchRadius,
+                    job: widget.job,
+                    bio: widget.bio,
                 );
               case RegistrationPageSection.radius:
                 return RegistrationRadius(
@@ -124,7 +131,9 @@ class _NavigationButtonState extends State<NavigationButton> {
                     profilePicture: widget.profilePicture,
                     userInterestIdList: widget.userInterestIdList,
                     location: widget.location,
-                    searchRadius: widget.searchRadius
+                    searchRadius: widget.searchRadius,
+                    job: widget.job,
+                    bio: widget.bio
                 );
               case RegistrationPageSection.nameEmail:
                 return RegistrationNameEmail(
@@ -138,7 +147,9 @@ class _NavigationButtonState extends State<NavigationButton> {
                     profilePicture: widget.profilePicture,
                     userInterestIdList: widget.userInterestIdList,
                     location: widget.location,
-                    searchRadius: widget.searchRadius
+                    searchRadius: widget.searchRadius,
+                    job: widget.job,
+                    bio: widget.bio
                 );
               case RegistrationPageSection.genderPreference:
                 return RegistrationGenderPreference(
@@ -152,7 +163,9 @@ class _NavigationButtonState extends State<NavigationButton> {
                     profilePicture: widget.profilePicture,
                     userInterestIdList: widget.userInterestIdList,
                     location: widget.location,
-                    searchRadius: widget.searchRadius
+                    searchRadius: widget.searchRadius,
+                    job: widget.job,
+                    bio: widget.bio
                 );
               case RegistrationPageSection.pictures:
                 return RegistrationPictures(
@@ -166,7 +179,9 @@ class _NavigationButtonState extends State<NavigationButton> {
                     profilePicture: widget.profilePicture,
                     userInterestIdList: widget.userInterestIdList,
                     location: widget.location,
-                    searchRadius: widget.searchRadius
+                    searchRadius: widget.searchRadius,
+                    job: widget.job,
+                    bio: widget.bio
                 );
               case RegistrationPageSection.interests:
                 return RegistrationInterests(
@@ -180,7 +195,25 @@ class _NavigationButtonState extends State<NavigationButton> {
                     profilePicture: widget.profilePicture,
                     userInterestIdList: widget.userInterestIdList,
                     location: widget.location,
-                    searchRadius: widget.searchRadius
+                    searchRadius: widget.searchRadius,
+                    job: widget.job,
+                    bio: widget.bio
+                );
+              case RegistrationPageSection.jobBio:
+                return RegistrationJobBio(
+                    firstName: widget.firstName,
+                    lastName: widget.lastName,
+                    email: widget.email,
+                    password: widget.password,
+                    gender: widget.gender,
+                    preference: widget.genderPreference,
+                    birthdate: widget.birthdate,
+                    profilePicture: widget.profilePicture,
+                    userInterestIdList: widget.userInterestIdList,
+                    location: widget.location,
+                    searchRadius: widget.searchRadius,
+                    job: widget.job,
+                    bio: widget.bio
                 );
               case RegistrationPageSection.summary:
                 return RegistrationSummary(
@@ -194,7 +227,9 @@ class _NavigationButtonState extends State<NavigationButton> {
                     profilePicture: widget.profilePicture,
                     userInterestIdList: widget.userInterestIdList,
                     location: widget.location,
-                    searchRadius: widget.searchRadius
+                    searchRadius: widget.searchRadius,
+                    job: widget.job,
+                    bio: widget.bio
                 );
               default:
                 return RegistrationLocation(
@@ -208,7 +243,9 @@ class _NavigationButtonState extends State<NavigationButton> {
                     profilePicture: widget.profilePicture,
                     userInterestIdList: widget.userInterestIdList,
                     location: widget.location,
-                    searchRadius: widget.searchRadius
+                    searchRadius: widget.searchRadius,
+                    job: widget.job,
+                    bio: widget.bio
                 );
             }
           }));

@@ -26,7 +26,9 @@ class RegistrationGenderPreference extends StatefulWidget {
     required this.profilePicture,
     required this.userInterestIdList,
     required this.location,
-    required this.searchRadius
+    required this.searchRadius,
+    required this.job,
+    required this.bio
   });
 
   final String? firstName;
@@ -40,6 +42,8 @@ class RegistrationGenderPreference extends StatefulWidget {
   final List<Interest> userInterestIdList;
   final Position? location;
   final double? searchRadius;
+  final String? job;
+  final String? bio;
 
   @override
   State<RegistrationGenderPreference> createState() => _RegistrationGenderPreferenceState();
@@ -49,17 +53,9 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
   @override
   void initState() {
     super.initState();
-    firstName = widget.firstName;
-    lastName = widget.lastName;
-    email = widget.email;
-    password = widget.password;
     _selectedGender = widget.gender;
     _selectedPreference = widget.preference;
     _dateController = widget.birthdate;
-    profilePicture = widget.profilePicture;
-    userInterestIdList = widget.userInterestIdList;
-    userLocation = widget.location;
-    searchRadius = widget.searchRadius;
     getGenders();
   }
 
@@ -73,17 +69,9 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
 
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
   final GenderService _genderService = GenderService();
-  late String? firstName;
-  late String? lastName;
-  late String? email;
-  late String? password;
   Gender? _selectedGender;
   Gender? _selectedPreference;
   String? _dateController;
-  late Uint8List? profilePicture;
-  late List<Interest> userInterestIdList;
-  Position? userLocation;
-  late double? searchRadius;
 
   late List<Gender> genderDto = [];
 
@@ -143,17 +131,19 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
                       Expanded(child: Container()),
                       Footer(
                           pageSection: RegistrationPageSection.genderPreference,
-                          firstName: firstName,
-                          lastName: lastName,
-                          email: email,
-                          password: password,
+                          firstName: widget.firstName,
+                          lastName: widget.lastName,
+                          email: widget.email,
+                          password: widget.password,
                           gender: _selectedGender,
                           genderPreference: _selectedPreference,
                           birthdate: _dateController,
-                          profilePicture: profilePicture,
-                          userInterestIdList: userInterestIdList,
-                          location: userLocation,
-                          searchRadius: searchRadius
+                          profilePicture: widget.profilePicture,
+                          userInterestIdList: widget.userInterestIdList,
+                          location: widget.location,
+                          searchRadius: widget.searchRadius,
+                          job: widget.job,
+                          bio: widget.bio,
                       )
                     ],
                   ),

@@ -24,7 +24,9 @@ class RegistrationRadius extends StatefulWidget {
       required this.profilePicture,
       required this.userInterestIdList,
       required this.location,
-      required this.searchRadius
+      required this.searchRadius,
+      required this.job,
+      required this.bio
   }) : super(key: key);
 
   final String? firstName;
@@ -38,6 +40,8 @@ class RegistrationRadius extends StatefulWidget {
   final List<Interest> userInterestIdList;
   final Position? location;
   final double? searchRadius;
+  final String? job;
+  final String? bio;
 
   @override
   State<RegistrationRadius> createState() => _RegistrationRadiusState();
@@ -47,16 +51,6 @@ class _RegistrationRadiusState extends State<RegistrationRadius> {
   @override
   void initState() {
     super.initState();
-    firstName = widget.firstName;
-    lastName = widget.lastName;
-    email = widget.email;
-    password = widget.password;
-    gender = widget.gender;
-    preference = widget.preference;
-    birthdate = widget.birthdate;
-    profilePicture = widget.profilePicture;
-    userInterestIdList = widget.userInterestIdList;
-    userLocation = widget.location;
     searchRadius = widget.searchRadius ?? 1;
     searchRadiusMiles = searchRadius != null ? (searchRadius! * 0.621371).roundToDouble() : 1;
   }
@@ -64,18 +58,9 @@ class _RegistrationRadiusState extends State<RegistrationRadius> {
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
   final logger = Logger();
 
-  late String? firstName;
-  late String? lastName;
-  late String? email;
-  late String? password;
-  late Gender? gender;
-  late Gender? preference;
-  late String? birthdate;
-  Uint8List? profilePicture;
-  late List<Interest> userInterestIdList;
-  Position? userLocation;
   // Default searchRadius is in km
-  late double? searchRadius; double? searchRadiusMiles;
+  late double? searchRadius;
+  late double? searchRadiusMiles;
   late void Function() setFooterParams;
 
   @override
@@ -162,17 +147,19 @@ class _RegistrationRadiusState extends State<RegistrationRadius> {
                         Expanded(child: Container()),
                         Footer(
                             pageSection: RegistrationPageSection.radius,
-                            firstName: firstName,
-                            lastName: lastName,
-                            email: email,
-                            password: password,
-                            gender: gender,
-                            genderPreference: preference,
-                            birthdate: birthdate,
-                            profilePicture: profilePicture,
-                            userInterestIdList: userInterestIdList,
-                            location: userLocation,
-                            searchRadius: searchRadius
+                            firstName: widget.firstName,
+                            lastName: widget.lastName,
+                            email: widget.email,
+                            password: widget.password,
+                            gender: widget.gender,
+                            genderPreference: widget.preference,
+                            birthdate: widget.birthdate,
+                            profilePicture: widget.profilePicture,
+                            userInterestIdList: widget.userInterestIdList,
+                            location: widget.location,
+                            searchRadius: searchRadius,
+                            job: widget.job,
+                            bio: widget.bio
                         )
                       ],
                     ),

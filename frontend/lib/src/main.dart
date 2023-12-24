@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/presentation/authentification/pages/logout_page.dart';
+import 'package:frontend/src/app/presentation/registration/pages/registration_job_bio.dart';
 import 'package:frontend/src/app/presentation/registration/pages/registration_location.dart';
 import 'package:frontend/src/app/presentation/utils/CustomScrollBehaviour.dart';
 import 'package:frontend/src/app/service/conversation_service.dart';
@@ -154,6 +155,7 @@ class CustomLove extends StatelessWidget {
             );
              */
 
+            // DO NOT CHANGE TO CONST, OTHERWISE WILL MESS WITH LISTS
             return RegistrationLocation(
                 firstName: null,
                 lastName: null,
@@ -166,6 +168,8 @@ class CustomLove extends StatelessWidget {
                 userInterestIdList: [],
                 location: null,
                 searchRadius: null,
+                job: null,
+                bio: null
             );
           }
         },

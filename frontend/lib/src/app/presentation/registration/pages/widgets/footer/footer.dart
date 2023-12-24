@@ -23,7 +23,9 @@ class Footer extends StatefulWidget {
     required this.profilePicture,
     required this.userInterestIdList,
     required this.location,
-    required this.searchRadius
+    required this.searchRadius,
+    required this.job,
+    required this.bio
   });
 
   final RegistrationPageSection pageSection;
@@ -38,6 +40,8 @@ class Footer extends StatefulWidget {
   final List<Interest> userInterestIdList;
   final Position? location;
   final double? searchRadius;
+  final String? job;
+  final String? bio;
 
   @override
   State<Footer> createState() => _FooterState();
@@ -66,7 +70,9 @@ class _FooterState extends State<Footer> {
                   profilePicture: widget.profilePicture,
                   userInterestIdList: widget.userInterestIdList,
                   location: widget.location,
-                  searchRadius: widget.searchRadius
+                  searchRadius: widget.searchRadius,
+                  job: widget.job,
+                  bio: widget.bio
               ),
               const Spacer(),
               if (evaluateBtnAccessibility())
@@ -83,7 +89,9 @@ class _FooterState extends State<Footer> {
                     profilePicture: widget.profilePicture,
                     userInterestIdList: widget.userInterestIdList,
                     location: widget.location,
-                    searchRadius: widget.searchRadius
+                    searchRadius: widget.searchRadius,
+                    job: widget.job,
+                    bio: widget.bio
                 ),
               if (!evaluateBtnAccessibility())
                 TextButton(
@@ -144,10 +152,15 @@ class _FooterState extends State<Footer> {
             widget.genderPreference != null && 
             widget.birthdate != null;
       case RegistrationPageSection.pictures:
-        return widget.profilePicture != null;
+        // TODO: Make profilePicture mandatory once implemented in backend
+        // return widget.profilePicture != null;
+        return true;
         // TODO: Are interests required?
         // return widget.userInterestIdList.length != 0;
       case RegistrationPageSection.interests:
+        return true;
+      case RegistrationPageSection.jobBio:
+        // Not mandatory, therefore left true
         return true;
       case RegistrationPageSection.summary:
         return true;
