@@ -49,8 +49,8 @@ class RegistrationController {
           job!,
           location!,
           searchRadius!.toInt(),
-          getGenderIdentityId(gender!.name),
-          getGenderIdentityId(genderPreference!.name),
+          gender!.id,
+          genderPreference!.id,
           null,
           convertInterestListToInterestIdList(userInterestIdList)
       );
@@ -84,21 +84,8 @@ class RegistrationController {
     return "${date}T00:00:00.0";
   }
 
-  int getGenderIdentityId(String gender) {
-    switch(gender.toLowerCase()) {
-      case 'male':
-        return 1;
-      case 'female':
-        return 2;
-      case 'other':
-        return 3;
-      default:
-        throw Exception();
-    }
-  }
-
   List<int> convertInterestListToInterestIdList(List<Interest> interests) {
-    List<int> interestIds = List<int>.empty();
+    List<int> interestIds = [];
     for (Interest interest in interests) {
       interestIds.add(interest.id);
     }

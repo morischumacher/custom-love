@@ -79,7 +79,7 @@ class _RegistrationInterestsState extends State<RegistrationInterests> {
   late Gender? preference;
   late String? birthdate;
   late Uint8List? profilePicture;
-  List<Interest> userInterestIdList = List<Interest>.empty();
+  late List<Interest> userInterestIdList = [];
   Position? userLocation;
   late double? searchRadius;
 

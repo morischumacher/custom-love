@@ -48,11 +48,12 @@ class RegistrationApi {
           "job": job,
           "search_radius": searchRadius.toString(),
           "gender_identity_id": genderIdentityId.toString(),
+          "gender_preference_id": genderPreferenceId.toString(),
           "swipes_left": 10.toString(),
           "swipe_limit_reset_date": DateTime.now().toString(),
           "longitude": location.longitude.toString(),
           "latitude": location.latitude.toString(),
-          "interests": interests.toString()
+          "interest_ids": interests.toString()
         })
     );
 
