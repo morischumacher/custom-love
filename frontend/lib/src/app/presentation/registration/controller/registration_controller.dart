@@ -3,6 +3,8 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:frontend/src/app/model/gender_model.dart';
+import 'package:frontend/src/app/model/interest_model.dart';
 import 'package:frontend/src/app/service/registration_service.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:logger/logger.dart';
@@ -10,8 +12,6 @@ import 'package:provider/provider.dart';
 
 import '../../../../config/app_state.dart';
 import '../../../model/user_model.dart';
-import '../../../service/gender_service.dart';
-import '../../../service/interest_service.dart';
 import '../../../service/user_service.dart';
 
 class RegistrationController {

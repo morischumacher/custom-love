@@ -4,14 +4,14 @@ import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/src/app/model/gender_model.dart';
+import 'package:frontend/src/app/model/interest_model.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/footer/footer.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/page_title.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../config/theme.dart';
-import '../../../service/gender_service.dart';
-import '../../../service/interest_service.dart';
 import '../enums/registration_page_enum.dart';
 
 class RegistrationPictures extends StatefulWidget {

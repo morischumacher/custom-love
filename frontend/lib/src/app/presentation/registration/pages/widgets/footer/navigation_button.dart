@@ -1,6 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:frontend/src/app/model/gender_model.dart';
+import 'package:frontend/src/app/model/interest_model.dart';
 import 'package:frontend/src/app/presentation/authentification/pages/login_page.dart';
 import 'package:frontend/src/app/presentation/registration/pages/registration_gender_preference.dart';
 import 'package:frontend/src/app/presentation/registration/pages/registration_interests.dart';
@@ -8,12 +10,10 @@ import 'package:frontend/src/app/presentation/registration/pages/registration_lo
 import 'package:frontend/src/app/presentation/registration/pages/registration_pictures.dart';
 import 'package:frontend/src/app/presentation/registration/pages/registration_radius.dart';
 import 'package:frontend/src/app/presentation/registration/pages/registration_summary.dart';
-import 'package:frontend/src/app/service/gender_service.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../../config/theme.dart';
-import '../../../../../service/interest_service.dart';
 import '../../../../../service/login_service.dart';
 import '../../../../../service/user_service.dart';
 import '../../../controller/registration_controller.dart';

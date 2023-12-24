@@ -9,7 +9,8 @@ import 'package:frontend/src/app/service/gender_service.dart';
 import 'package:geolocator/geolocator.dart';
 
 import '../../../../config/theme.dart';
-import '../../../service/interest_service.dart';
+import '../../../model/gender_model.dart';
+import '../../../model/interest_model.dart';
 import '../enums/registration_page_enum.dart';
 
 class RegistrationGenderPreference extends StatefulWidget {

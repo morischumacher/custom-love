@@ -1,14 +1,14 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:frontend/src/app/model/gender_model.dart';
+import 'package:frontend/src/app/model/interest_model.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/footer/footer.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/page_title.dart';
-import 'package:frontend/src/app/service/interest_service.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:logger/logger.dart';
 
 import '../../../../config/theme.dart';
-import '../../../service/gender_service.dart';
 import '../../../service/location_service.dart';
 import '../enums/registration_page_enum.dart';
 

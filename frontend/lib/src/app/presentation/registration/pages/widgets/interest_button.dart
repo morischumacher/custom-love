@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/src/app/service/interest_service.dart';
+import 'package:frontend/src/app/model/interest_model.dart';
 
 import '../../../../../config/theme.dart';
 import '../../../swipe/util/interests.dart';

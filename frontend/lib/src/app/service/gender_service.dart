@@ -4,27 +4,7 @@ import 'package:http/http.dart' as http;
 import '../../config/api_config.dart';
 import 'package:logger/logger.dart';
 
-class Gender {
-  int id;
-  String name;
-
-  Gender(this.id, this.name);
-
-  factory Gender.fromJson(dynamic json) {
-    return Gender(json['id'] as int, json['name'] as String);
-  }
-
-  @override
-  String toString() {
-    return '{ $id, $name }';
-  }
-
-  @override
-  bool operator ==(other) => other is Gender && id == other.id && name == other.name;
-
-  @override
-  int get hashCode => Object.hash(id, name);
-}
+import '../model/gender_model.dart';
 
 class GenderService {
   final Logger logger = Logger();

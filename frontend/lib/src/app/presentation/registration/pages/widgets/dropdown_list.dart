@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/src/app/service/gender_service.dart';
+import 'package:frontend/src/app/model/gender_model.dart';
 
 import '../../../../../config/theme.dart';
 
