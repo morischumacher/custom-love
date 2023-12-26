@@ -84,9 +84,11 @@ def get_users(user: Annotated[User, Depends(get_current_user)], db: Annotated[Se
     """
     return paginate(db, select(User).join(SwipeStatus, onclause=and_(
         or_(SwipeStatus.user1_id == User.id, SwipeStatus.user2_id == User.id),
-        SwipeStatus.status == SwipeStatusType.match)).where(User.id != user.id),
-                    PaginationParams(size=request.query_params.get("size"),
-                                     page=request.query_params.get("page")))
+                    SwipeStatus.status == SwipeStatusType.match))
+                .where(and_(User.id != user.id,
+                    or_(SwipeStatus.user1_id == user.id, SwipeStatus.user2_id == user.id))),
+                PaginationParams(size=request.query_params.get("size"),
+                    page=request.query_params.get("page")))
 
 
 def registration(user: User, db: Annotated[Session, Depends(create_session)]) -> {}:

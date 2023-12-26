@@ -6,6 +6,7 @@ from starlette import status
 from backend.models.user import User
 from backend.responses.error_response import ErrorResponse
 from backend.responses.user_response import UserResponse, UserResponseWithInterestsAndDistance
+from backend.services.expert_system import update_expert_system
 from backend.services.user import patch_user, get_algo_user, UserUpdate, get_user, get_users, login, registration, \
     websocket_connect
 from backend.utils.pagination import Page
@@ -54,6 +55,15 @@ def patch_user(commons: Annotated[UserUpdate, Depends(patch_user)]):
     """
     Update current user information.
     :param db: Database session dependency.
+    :return: Updated user.
+    """
+    return commons
+
+
+@router.patch('/update/expertsystem')
+def patch_user(commons: Annotated[dict, Depends(update_expert_system)]):
+    """
+    Update current user information.
     :return: Updated user.
     """
     return commons
