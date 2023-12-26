@@ -3,6 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 from starlette import status
 
+from backend.models.expert_system import ExpertSystem
 from backend.models.user import User
 from backend.responses.error_response import ErrorResponse
 from backend.responses.user_response import UserResponse, UserResponseWithInterestsAndDistance
@@ -60,12 +61,14 @@ def patch_user(commons: Annotated[UserUpdate, Depends(patch_user)]):
     return commons
 
 
-@router.patch('/update/expertsystem')
+@router.patch('/update/expertsystem', response_model=ExpertSystem)
 def patch_user(commons: Annotated[dict, Depends(update_expert_system)]):
     """
     Update current user information.
     :return: Updated user.
     """
+    #TODO: Response model does not match to dict
+    #TODO: Handle case, is not updated because only one class present
     return commons
 
 

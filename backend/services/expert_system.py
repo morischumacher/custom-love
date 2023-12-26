@@ -77,6 +77,7 @@ def update_expert_system(user: Annotated[User, Depends(get_current_user)],
         viewed_users = get_viewed_users_not_trained_on(db, user.id)
 
         # Update Model of expert system with these users
+        #TODO: Checking if both classes exists
         exsys.update_model(liked_users, viewed_users)
 
         # Serialize the updated model and use for the expert system update

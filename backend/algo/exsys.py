@@ -153,7 +153,7 @@ def users_and_likes_to_x_train_y_train(user_list, like_decisions):
         inner_X_train = calculate_user_base_list(user)
 
         # Add users interests
-        inner_X_train.append(calculate_user_interests_list(user))
+        inner_X_train.extend(calculate_user_interests_list(user))
 
         X_train.append(inner_X_train)
 
