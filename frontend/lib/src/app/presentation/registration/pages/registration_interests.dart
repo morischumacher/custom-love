@@ -10,6 +10,7 @@ import 'package:frontend/src/app/service/interest_service.dart';
 import 'package:geolocator/geolocator.dart';
 
 import '../../../../config/theme.dart';
+import '../../../../config/widgets/exception_widget.dart';
 import '../enums/registration_page_enum.dart';
 
 class RegistrationInterests extends StatefulWidget {
@@ -57,17 +58,24 @@ class _RegistrationInterestsState extends State<RegistrationInterests> {
   }
 
   void getInterests() async {
-    await _interestService.getInterests().then((value) {
-      setState(() {
-        interestDto = value;
+    try {
+      await _interestService.getInterests().then((value) {
+        setState(() {
+          interestDto = value;
+        });
       });
-    });
+    } catch (e) {
+      setState(() {
+        httpError = true;
+      });
+    }
   }
 
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
   final InterestService _interestService = InterestService();
   late List<Interest> userInterestIdList = [];
   late List<Interest> interestDto = [];
+  late bool httpError = false;
 
   @override
   Widget build(BuildContext context) {
@@ -91,7 +99,12 @@ class _RegistrationInterestsState extends State<RegistrationInterests> {
                       description: "Select a few interests you're passionate about",
                       bottomPadding: 49.0
                   ),
-                  if (interestDto.isEmpty)
+                  if (httpError)
+                    const ExceptionWidget(
+                        httpStatus: "503",
+                        httpMessage: "Make sure that the backend is running"
+                    ),
+                  if (interestDto.isEmpty && !httpError)
                     SizedBox(
                         height: 100,
                         width: 100,

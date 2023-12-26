@@ -6,6 +6,7 @@ import 'package:frontend/src/app/presentation/registration/pages/widgets/dropdow
 import 'package:frontend/src/app/presentation/registration/pages/widgets/footer/footer.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/page_title.dart';
 import 'package:frontend/src/app/service/gender_service.dart';
+import 'package:frontend/src/config/widgets/exception_widget.dart';
 import 'package:geolocator/geolocator.dart';
 
 import '../../../../config/theme.dart';
@@ -53,27 +54,34 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
   @override
   void initState() {
     super.initState();
-    _selectedGender = widget.gender;
-    _selectedPreference = widget.preference;
-    _dateController = widget.birthdate;
+    gender = widget.gender;
+    genderPreference = widget.preference;
+    birthdate = widget.birthdate;
     getGenders();
   }
 
   void getGenders() async {
-    await _genderService.getGenders().then((value) {
-      setState(() {
-        genderDto = value;
+    try {
+      await _genderService.getGenders().then((value) {
+        setState(() {
+          genderDto = value;
+        });
       });
-    });
+    } catch (e) {
+      setState(() {
+        httpError = true;
+      });
+    }
   }
 
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
   final GenderService _genderService = GenderService();
-  Gender? _selectedGender;
-  Gender? _selectedPreference;
-  String? _dateController;
+  Gender? gender;
+  Gender? genderPreference;
+  String? birthdate;
 
   late List<Gender> genderDto = [];
+  late bool httpError = false;
 
   @override
   Widget build(BuildContext context) {
@@ -97,7 +105,12 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
                           description: "Provide some basic data about yourself",
                           bottomPadding: 70.0,
                       ),
-                      if (genderDto.isEmpty)
+                      if (httpError)
+                        const ExceptionWidget(
+                            httpStatus: "503",
+                            httpMessage: "Make sure that the backend is running"
+                        ),
+                      if (genderDto.isEmpty && !httpError)
                         SizedBox(
                             height: 100,
                             width: 100,
@@ -110,21 +123,21 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
                         Column(children: [
                         DropDownList(
                           labelText: "Gender",
-                          value: _selectedGender,
+                          value: gender,
                           options: genderDto,
-                          callback: (val) => setState(() => _selectedGender = val),
+                          callback: (val) => setState(() => gender = val),
                         ),
                         const SizedBox(height: 19.0),
                         DropDownList(
                           labelText: "Preference",
-                          value: _selectedPreference,
+                          value: genderPreference,
                           options: genderDto,
-                          callback: (val) => setState(() => _selectedPreference = val),
+                          callback: (val) => setState(() => genderPreference = val),
                         ),
                         const SizedBox(height: 19.0),
                         BirthdateField(
-                          controller: _dateController,
-                          callback: (val) => setState(() => _dateController = val),
+                          controller: birthdate,
+                          callback: (val) => setState(() => birthdate = val),
                         ),
                       ]),
                       const SizedBox(height: 25.0),
@@ -135,9 +148,9 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
                           lastName: widget.lastName,
                           email: widget.email,
                           password: widget.password,
-                          gender: _selectedGender,
-                          genderPreference: _selectedPreference,
-                          birthdate: _dateController,
+                          gender: gender,
+                          genderPreference: genderPreference,
+                          birthdate: birthdate,
                           profilePicture: widget.profilePicture,
                           userInterestIdList: widget.userInterestIdList,
                           location: widget.location,

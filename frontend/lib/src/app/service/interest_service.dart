@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:frontend/src/config/api_config.dart';
 import 'package:logger/logger.dart';
 
+import '../../config/exceptions.dart';
 import '../model/interest_model.dart';
 
 class InterestService {
@@ -20,6 +21,9 @@ class InterestService {
       }
     } catch (error) {
       logger.e('Error: $error');
+      if (error is http.ClientException) {
+        throw ServerNotRunningException();
+      }
     }
     return List<Interest>.empty();
   }

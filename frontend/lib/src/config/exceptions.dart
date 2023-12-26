@@ -27,3 +27,9 @@ class InvalidRegistrationInputsException implements Exception {
 
   InvalidRegistrationInputsException();
 }
+
+class ServerNotRunningException implements Exception {
+  final String message = "Make sure your backend is running";
+
+  ServerNotRunningException();
+}
