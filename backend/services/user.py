@@ -82,9 +82,9 @@ def get_users(user: Annotated[User, Depends(get_current_user)], db: Annotated[Se
     Retrieves all users, with whom the querying user has a match
     :return: a list of users
     """
-    return paginate(db, select(User).join(SwipeStatus, and_(
-        or_(SwipeStatus.user1_id == user.id, SwipeStatus.user2_id == user.id),
-        SwipeStatus.status == SwipeStatusType.match)),
+    return paginate(db, select(User).join(SwipeStatus, onclause=and_(
+        or_(SwipeStatus.user1_id == User.id, SwipeStatus.user2_id == User.id),
+        SwipeStatus.status == SwipeStatusType.match)).where(User.id != user.id),
                     PaginationParams(size=request.query_params.get("size"),
                                      page=request.query_params.get("page")))
 
