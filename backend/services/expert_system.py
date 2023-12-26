@@ -99,12 +99,12 @@ def get_liked_users_not_trained_on(db, userid) -> List[User]:
     :param userid: id of current user
     :return: a list of users
     """
-    statement = select(User).join(SwipeStatus, and_(SwipeStatus.used_for_model == False,
-                                                    and_(SwipeStatus.user1_id == userid,
-                                                    SwipeStatus.status == SwipeStatusType.like))).distinct()
+    statement = (select(User).join(SwipeStatus, onclause=and_(or_(SwipeStatus.user1_id == User.id,
+                SwipeStatus.user2_id == User.id), SwipeStatus.status == SwipeStatusType.like))
+                 .where(and_(User.id != userid, SwipeStatus.user1_id == userid)))
+
 
     user_list = db.exec(statement).all()
-    print(len(user_list))
 
     return user_list
 
@@ -117,9 +117,9 @@ def get_viewed_users_not_trained_on(db, userid) -> List[User]:
     :param userid: id of current user
     :return: a list of users
     """
-    statement = select(User).join(SwipeStatus, and_(SwipeStatus.used_for_model == False,
-                                                    and_(SwipeStatus.user1_id == userid,
-                                                    SwipeStatus.status == SwipeStatusType.view)))
+    statement = (select(User).join(SwipeStatus, onclause=and_(or_(SwipeStatus.user1_id == User.id,
+                SwipeStatus.user2_id == User.id), SwipeStatus.status == SwipeStatusType.view))
+                 .where(and_(User.id != userid, SwipeStatus.user1_id == userid)))
 
     user_list = db.exec(statement).all()
 
