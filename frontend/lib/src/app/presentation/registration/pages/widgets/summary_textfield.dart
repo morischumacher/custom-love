@@ -57,15 +57,6 @@ class SummaryTextfield extends StatelessWidget {
                 ],
               ),
             ),
-            /* TODO: Add option to edit inputs once main components are done
-            const SizedBox(width: 10),
-            const Column(
-              children: [
-                Icon(Icons.edit),
-              ],
-            ),
-             */
-            // const SizedBox(height: 15.0)
           ],
         ),
         const SizedBox(height: 8)

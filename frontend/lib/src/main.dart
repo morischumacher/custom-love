@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/presentation/authentification/pages/logout_page.dart';
-import 'package:frontend/src/app/presentation/registration/pages/registration_job_bio.dart';
 import 'package:frontend/src/app/presentation/registration/pages/registration_location.dart';
 import 'package:frontend/src/app/presentation/utils/CustomScrollBehaviour.dart';
 import 'package:frontend/src/app/service/conversation_service.dart';
@@ -126,35 +125,6 @@ class CustomLove extends StatelessWidget {
             return const LogoutPage();
           },
           '/registration': (context) {
-
-            // Used for testing purposes
-            /*
-            return RegistrationInterests(
-                firstName: "Airolo",
-                lastName: "Airolodottir",
-                email: "aaaaaaaaaaaaaaaaaaaaaairolo@email.com",
-                password: "pass1",
-                gender: "Female",
-                preference: "Female",
-                birthdate: "1995-01-01",
-                profilePicture: null,
-                userInterestIdList: [],
-                location: Position(
-                    longitude: 20.0,
-                    latitude: 20.0,
-                    accuracy: 20.0,
-                    timestamp: DateTime.now(),
-                    altitude: 20.0,
-                    altitudeAccuracy: 20.0,
-                    heading: 20.0,
-                    headingAccuracy: 20.0,
-                    speed: 20.0,
-                    speedAccuracy: 20.0
-                ),
-                searchRadius: 43
-            );
-             */
-
             // DO NOT CHANGE TO CONST, OTHERWISE WILL MESS WITH LISTS
             return RegistrationLocation(
                 firstName: null,
