@@ -32,6 +32,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   late bool isOnSwipePage;
   late AppPage _currentPage;
+  int swipingAlgoId = 0;
+  AlgoIdNotifier? algoIdNotifier;
 
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
 
@@ -90,10 +92,15 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _changeAlgoId(BuildContext context, int algoId) async {
-    final algoIdNotifier = Provider.of<AlgoIdNotifier>(context, listen: false);
-    if (algoIdNotifier.algoId != algoId) {
-      algoIdNotifier.setAlgoId(algoId);
+    if (algoIdNotifier?.algoId != algoId) {
+      algoIdNotifier?.setAlgoId(algoId);
     }
+  }
+
+  @override
+  Future<void> didChangeDependencies() async {
+    super.didChangeDependencies();
+    algoIdNotifier ??= Provider.of<AlgoIdNotifier>(context, listen: false);
   }
 
   @override
@@ -146,41 +153,51 @@ class _HomeScreenState extends State<HomeScreen> {
    return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 30),
       child: PopupMenuButton(
-          color: _customLoveTheme.neutralBackgroundColor,
           icon: const Icon(Icons.tune, size: 28, color: Colors.black,),
+          color: _customLoveTheme.neutralBackgroundColor,
           itemBuilder: (BuildContext context) => [
             PopupMenuItem(
               value: "Random Algorithm",
-              child: ListTile(
-                title: const Text("Random Algorithm", style: TextStyle(fontSize: 13)),
-                onTap: () {
-                  _changeAlgoId(context, 1);
-                  Navigator.pop(context);
-                },
+              child: Container(
+                color: algoIdNotifier?.algoId == 1 ? _customLoveTheme.neutralColor : _customLoveTheme.neutralBackgroundColor,
+                child: ListTile(
+                  title: const Text("Random Algorithm", style: TextStyle(fontSize: 13)),
+                  onTap: () {
+                    _changeAlgoId(context, 1);
+                    Navigator.pop(context);
+                  },
+                ),
               ),
             ),
             PopupMenuItem(
               value: "Interest-based Algorithm",
-              child: ListTile(
-                title: const Text("Interest-based Algorithm", style: TextStyle(fontSize: 13)),
-                onTap: () {
-                  _changeAlgoId(context, 2);
-                  Navigator.pop(context);
-                },
+              child: Container(
+                color: algoIdNotifier?.algoId == 2 ? _customLoveTheme.neutralColor : _customLoveTheme.neutralBackgroundColor,
+                child: ListTile(
+                  title: const Text("Interest-based Algorithm", style: TextStyle(fontSize: 13)),
+                  onTap: () {
+                    _changeAlgoId(context, 2);
+                    Navigator.pop(context);
+                  },
+                ),
               ),
             ),
             PopupMenuItem(
               value: "Preference-based Algorithm",
-              child: ListTile(
-                title: const Text("Preference-based Algorithm", style: TextStyle(fontSize: 13)),
-                onTap: () {
-                  _changeAlgoId(context, 3);
-                  Navigator.pop(context);
-                },
+              child: Container(
+                color: algoIdNotifier?.algoId == 3 ? _customLoveTheme.neutralColor : _customLoveTheme.neutralBackgroundColor,
+                child: ListTile(
+                  title: const Text("Preference-based Algorithm", style: TextStyle(fontSize: 13)),
+                  onTap: () {
+                    _changeAlgoId(context, 3);
+                    Navigator.pop(context);
+                  },
+                ),
               ),
             )
           ]
       ),
     );
   }
+
 }

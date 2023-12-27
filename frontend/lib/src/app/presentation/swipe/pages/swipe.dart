@@ -47,6 +47,7 @@ class _SwipeState extends State<Swipe>{
   bool swipesEvent = false;
   int swipingAlgoId = 0;
   StreamSubscription<bool>? _swipeableSubscription;
+  AlgoIdNotifier? algoIdNotifier;
 
   @override
   void initState() {
@@ -56,23 +57,26 @@ class _SwipeState extends State<Swipe>{
 
     print("init");
 
-    _swipeableSubscription = SharedSwipeableEvent.swipeable.swipeableChanged
-        .listen((bool swipeable) async {
-      if (mounted) {
-        setState(() {
-          swipesEvent = swipeable;
-        });
-      }
-    });
   }
 
   @override
   Future<void> didChangeDependencies() async {
     super.didChangeDependencies();
 
-    final algoIdNotifier = Provider.of<AlgoIdNotifier>(context);
-    if (swipingAlgoId != algoIdNotifier.algoId) {
-      swipingAlgoId = algoIdNotifier.algoId;
+    _swipeableSubscription ??= SharedSwipeableEvent.swipeable.swipeableChanged
+        .listen((bool swipeable) async {
+      if (mounted) {
+        setState(() {
+          print("set state swipeable: " + swipeable.toString());
+          swipesEvent = swipeable;
+        });
+      }
+    });
+
+    algoIdNotifier ??= Provider.of<AlgoIdNotifier>(context);
+
+    if (swipingAlgoId != algoIdNotifier?.algoId) {
+      swipingAlgoId = algoIdNotifier!.algoId;
       _loadNextUser();
       String accessToken = await _controller.retrieveAccessToken() as String;
       if (!context.mounted) return;
@@ -95,6 +99,7 @@ class _SwipeState extends State<Swipe>{
   Future<void> _getMatchingAlgorithm() async {
     var matchingAlgorithm = await MatchingAlgorithm.getCurrentMatchingAlgorithm(userId, widget.userService);
     swipingAlgoId = matchingAlgorithm;
+    algoIdNotifier?.setAlgoId(swipingAlgoId);
     _loadNextUser();
   }
 
@@ -147,16 +152,20 @@ class _SwipeState extends State<Swipe>{
             age--;
           }
 
-          setState(() {
-            swipeableTimer = false;
-          });
+          //if (mounted) {
+            setState(() {
+              swipeableTimer = false;
+            });
+          //}
 
           swiped = false;
 
           timer = Timer(const Duration(seconds: 10), () {
-            setState(() {
-              swipeableTimer = true;
-            });
+            //if (mounted) {
+              setState(() {
+                swipeableTimer = true;
+              });
+            //}
           });
 
           _swipeItem = SwipeItem(
@@ -195,6 +204,7 @@ class _SwipeState extends State<Swipe>{
                         swipeableTimer = true;
                       });
                       SharedSwipeableEvent.swipeable.changeSwipeable(true);
+                      print("swipes left" + tmpSwipesLeft.toString());
                     } else {
                       SharedSwipeableEvent.swipeable.changeSwipeable(false);
                     }
@@ -249,4 +259,5 @@ class _SwipeState extends State<Swipe>{
 
     super.dispose();
   }
+
 }
