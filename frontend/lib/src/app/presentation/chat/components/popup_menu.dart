@@ -37,8 +37,7 @@ class PopupMenu extends StatelessWidget {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return Container(
-          child: AlertDialog(
+        return AlertDialog(
             title: const Text('Upload image'),
             content: const SingleChildScrollView(
               child: ListBody(
@@ -48,7 +47,6 @@ class PopupMenu extends StatelessWidget {
               ),
             ),
             actions: buttons,
-          ),
         );
       }
     );
