@@ -2,7 +2,10 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/src/app/presentation/swipe/util/SwipeStateNotifier.dart';
 import 'package:frontend/src/app/presentation/swipe/util/shared_swipeable_event.dart';
+import 'package:frontend/src/app/presentation/swipe/util/swipe_state.dart';
+import 'package:provider/provider.dart';
 import 'package:swipe_cards/swipe_cards.dart';
 import 'package:frontend/src/config/theme.dart';
 
@@ -24,13 +27,14 @@ class SwipingCard extends StatelessWidget {
     required MatchEngine? matchEngine,
     required CustomLoveTheme customLoveTheme,
     required SwipeItem swipeItem,
-    required this.swipeable, swipeableTimer, userId, required this.controller, required this.userService, required this.swipeStatusService
+    required this.swipeable, swipeableTimer, userId, required this.controller, required this.userService, required this.swipeStatusService, swipeState
   })
       : _matchEngine = matchEngine,
         _customLoveTheme = customLoveTheme,
         _swipeItem = swipeItem,
         _swipeableTimer = swipeableTimer,
-        _userId = userId;
+        _userId = userId,
+        _swipeState = swipeState;
 
   final MatchEngine? _matchEngine;
   final CustomLoveTheme _customLoveTheme;
@@ -38,6 +42,8 @@ class SwipingCard extends StatelessWidget {
   bool swipeable = false;
   bool _swipeableTimer;
   final int _userId;
+  SwipeState _swipeState;
+
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +56,7 @@ class SwipingCard extends StatelessWidget {
           height: height - kToolbarHeight > 0 ? height - kToolbarHeight : height,
           width: !kIsWeb ? width * 0.90 : width * 0.65,
           child: Stack(
-            children: [
+            children: [ _swipeState == SwipeState.OKAY ?
             Card(
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
               clipBehavior: Clip.hardEdge,
@@ -189,7 +195,7 @@ class SwipingCard extends StatelessWidget {
                   child: const Text('Dislike'),
                 ),
               ),
-            ),
+            ) : Container(),
           ])),
     );
     }
@@ -219,6 +225,8 @@ class SwipingCard extends StatelessWidget {
                   if(tmpSwipesLeft > 0) {
                     await SwipesLeft.updateSwipeLeft(controller, userService);
                     _matchEngine!.currentItem?.nope();
+                  } else {
+                    _changeSwipeState(context, SwipeState.NO_SWIPES_LEFT);
                   }
                 }
               },
@@ -235,6 +243,8 @@ class SwipingCard extends StatelessWidget {
                   if(tmpSwipesLeft > 0) {
                     await SwipesLeft.updateSwipeLeft(controller, userService);
                     _matchEngine!.currentItem?.like();
+                  } else {
+                    _changeSwipeState(context, SwipeState.NO_SWIPES_LEFT);
                   }
                 }
               },
@@ -246,4 +256,12 @@ class SwipingCard extends StatelessWidget {
         ],
       );
     }
+
+  void _changeSwipeState(BuildContext context, SwipeState swipeState) {
+    final swipeStateNotifier = Provider.of<SwipeStateNotifier>(context, listen: false);
+    if (swipeStateNotifier.swipeState != swipeState) {
+      swipeStateNotifier.setAlgoId(swipeState);
+    }
+  }
+
 }

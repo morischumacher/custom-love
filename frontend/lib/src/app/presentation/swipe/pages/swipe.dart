@@ -1,11 +1,14 @@
 import 'dart:async';
 
 import 'package:frontend/src/app/model/user_model.dart';
+import 'package:frontend/src/app/presentation/swipe/util/SwipeStateNotifier.dart';
+import 'package:frontend/src/app/presentation/swipe/util/swipe_state.dart';
 import 'package:frontend/src/app/presentation/swipe/util/swipe_status.dart';
 import 'package:frontend/src/app/presentation/swipe/util/content.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/presentation/swipe/util/shared_swipeable_event.dart';
 import 'package:frontend/src/app/service/swipe_status_service.dart';
+import 'package:provider/provider.dart';
 import 'package:swipe_cards/draggable_card.dart';
 import 'package:swipe_cards/swipe_cards.dart';
 import 'package:frontend/src/config/theme.dart';
@@ -44,6 +47,7 @@ class _SwipeState extends State<Swipe> {
   bool swipesEvent = false;
   bool hasVisitedSwipePage = false;
   int swipingAlgoId = 0;
+  SwipeState swipeState = SwipeState.NO_ALGORITHM_SELECTED;
   StreamSubscription<int>? _algoIdSubscription;
   StreamSubscription<bool>? _swipeableSubscription;
 
@@ -141,6 +145,16 @@ class _SwipeState extends State<Swipe> {
       }
     });
   }
+
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final swipeStateNotifier = Provider.of<SwipeStateNotifier>(context);
+    if (swipeState != swipeStateNotifier.swipeState) {
+      swipeState = swipeStateNotifier.swipeState;
+    }
+  }
+
 
   void _fetchInitData() async {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -277,26 +291,35 @@ class _SwipeState extends State<Swipe> {
   Widget build(BuildContext context) {
     return swipingAlgoId != 0
         ? Scaffold(
-            key: _scaffoldKey,
-            backgroundColor: _customLoveTheme.neutralColor,
-            body: isLoading
-                ? const Center(
-                    child: CircularProgressIndicator(),
-                  )
-                : Center(
-                    child: SwipingCard(
-                        matchEngine: _matchEngine,
-                        customLoveTheme: _customLoveTheme,
-                        swipeItem: _swipeItem,
-                        swipeable: swipesEvent,
-                        swipeableTimer: swipeableTimer,
-                        userId: userId,
-                        controller: _controller,
-                        userService: widget.userService,
-                        swipeStatusService: widget.swipeStatusService),
-                  ))
-        : SizedBox();
+        key: _scaffoldKey,
+        backgroundColor: _customLoveTheme.neutralColor,
+        body: isLoading
+            ? const Center(
+          child: CircularProgressIndicator(),
+        )
+            : Center(
+          child: getSwipeCard()
+        ))
+        : const SizedBox();
   }
+
+  Widget getSwipeCard() {
+    var swipeItem;
+    var setSwipeable;
+    switch(SwipeState){
+      case SwipeState.OKAY:
+        swipeItem = _swipeItem;
+        setSwipeable = swipesEvent;
+      default:
+        swipeItem = SwipeItem(content: const Center(child: Text("No swipes left")));
+        setSwipeable = false;
+    }
+
+    return SwipingCard(matchEngine: _matchEngine, customLoveTheme: _customLoveTheme, swipeItem: swipeItem, swipeable: setSwipeable, controller: _controller, userService: widget.userService, swipeStatusService: widget.swipeStatusService, swipeState: swipeState);
+  }
+
+
+
 
   @override
   void dispose() {
