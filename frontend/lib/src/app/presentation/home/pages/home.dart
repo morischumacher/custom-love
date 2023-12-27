@@ -4,22 +4,18 @@ import 'package:frontend/src/app/presentation/chat/pages/matches_page.dart';
 import 'package:frontend/src/app/presentation/chat/pages/messages_page.dart';
 import 'package:go_router/go_router.dart';
 import 'package:frontend/src/app/service/swipe_status_service.dart';
+import 'package:frontend/src/app/presentation/swipe/util/algo_id_notifier.dart';
 import "package:universal_html/html.dart" as universal_html;
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/presentation/chat/pages/conversations_page.dart';
-import 'package:frontend/src/app/presentation/swipe/util/shared_algorithm_event.dart';
 import 'package:frontend/src/config/theme.dart';
 import 'package:frontend/src/app/presentation/profile/pages/profile.dart';
 import 'package:frontend/src/app/presentation/swipe/pages/swipe.dart';
 import 'package:frontend/src/app/service/user_service.dart';
 
 import 'package:provider/provider.dart';
-
-import '../../../../config/app_state.dart';
-import '../../authentification/controller/login_controller.dart';
-import '../../swipe/util/matching_algorithm.dart';
 
 enum AppPage { profile, swipe, matches }
 
@@ -36,7 +32,6 @@ class _HomeScreenState extends State<HomeScreen> {
   late AppPage _currentPage;
 
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
-  final LoginController _controller = LoginController();
 
   void setCurrentPage(AppPage page) {
     setState(() {
@@ -67,6 +62,12 @@ class _HomeScreenState extends State<HomeScreen> {
     String subRoute = '/home/$subRouteName';
 
     if (!context.mounted) return;
+    if (subRouteName == "swipe") {
+      var prevRoute = ModalRoute.of(context);
+      if (prevRoute != null) {
+        Navigator.of(context).removeRouteBelow(prevRoute);
+      }
+    }
     Navigator.pushNamed(context, subRoute);
   }
 
@@ -86,6 +87,13 @@ class _HomeScreenState extends State<HomeScreen> {
     return subRoute;
   }
 
+  void _changeAlgoId(BuildContext context, int algoId) {
+    final algoIdNotifier = Provider.of<AlgoIdNotifier>(context, listen: false);
+    if (algoIdNotifier.algoId != algoId) {
+      algoIdNotifier.setAlgoId(algoId);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     String url = getUrl(context);
@@ -96,55 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
         title: getTitle(),
         backgroundColor: _customLoveTheme.primaryColor,
         actions: [ _currentPage.index == 1 ?
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30),
-            child: PopupMenuButton(
-                color: _customLoveTheme.neutralBackgroundColor,
-                icon: const Icon(Icons.tune, size: 28, color: Colors.black,),
-                itemBuilder: (BuildContext context) => [
-                  PopupMenuItem(
-                    value: "Random Algorithm",
-                    child: ListTile(
-                      title: const Text("Random Algorithm", style: TextStyle(fontSize: 13)),
-                      onTap: () async {
-                        Navigator.pop(context);
-                        //SharedAlgorithmEvent.algoId.changeAlgoId(1);
-                        String accessToken = await _controller.retrieveAccessToken() as String;
-                        if (!context.mounted) return;
-                        await MatchingAlgorithm.updateMatchingAlgorithm(accessToken, context.read<UserService>(), 1);
-                      },
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: "Interest-based Algorithm",
-                    child: ListTile(
-                      title: const Text("Interest-based Algorithm", style: TextStyle(fontSize: 13)),
-                      onTap: () async {
-                        print("selected");
-                        Navigator.pop(context);
-                        //SharedAlgorithmEvent.algoId.changeAlgoId(2);
-                        String accessToken = await _controller.retrieveAccessToken() as String;
-                        if (!context.mounted) return;
-                        await MatchingAlgorithm.updateMatchingAlgorithm(accessToken, context.read<UserService>(), 2);
-                      },
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: "Preference-based Algorithm",
-                    child: ListTile(
-                      title: const Text("Preference-based Algorithm", style: TextStyle(fontSize: 13)),
-                      onTap: () async {
-                        Navigator.pop(context);
-                        //SharedAlgorithmEvent.algoId.changeAlgoId(3);
-                        String accessToken = await _controller.retrieveAccessToken() as String;
-                        if (!context.mounted) return;
-                        await MatchingAlgorithm.updateMatchingAlgorithm(accessToken, context.read<UserService>(), 3);
-                      },
-                    ),
-                  )
-                ]
-            ),
-          ) : Container(),
+          algoSwitcherMenu() : Container(),
         ],
       ),
       body: route(context),
@@ -178,5 +138,47 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     return const Text("Custom Love App");
+  }
+
+  Widget algoSwitcherMenu(){
+   return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 30),
+      child: PopupMenuButton(
+          color: _customLoveTheme.neutralBackgroundColor,
+          icon: const Icon(Icons.tune, size: 28, color: Colors.black,),
+          itemBuilder: (BuildContext context) => [
+            PopupMenuItem(
+              value: "Random Algorithm",
+              child: ListTile(
+                title: const Text("Random Algorithm", style: TextStyle(fontSize: 13)),
+                onTap: () {
+                  _changeAlgoId(context, 1);
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+            PopupMenuItem(
+              value: "Interest-based Algorithm",
+              child: ListTile(
+                title: const Text("Interest-based Algorithm", style: TextStyle(fontSize: 13)),
+                onTap: () {
+                  _changeAlgoId(context, 2);
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+            PopupMenuItem(
+              value: "Preference-based Algorithm",
+              child: ListTile(
+                title: const Text("Preference-based Algorithm", style: TextStyle(fontSize: 13)),
+                onTap: () {
+                  _changeAlgoId(context, 3);
+                  Navigator.pop(context);
+                },
+              ),
+            )
+          ]
+      ),
+    );
   }
 }
