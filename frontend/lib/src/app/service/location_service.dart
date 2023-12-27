@@ -30,9 +30,24 @@ class LocationService {
     try {
       var document = XmlDocument.parse(responseBody);
       //var result = document.rootElement.findElements('result').first.innerText;
-      var addressParts = document.rootElement.findElements('addressparts').first;
+      var addressParts =
+          document.rootElement.findElements('addressparts').first;
       var result = addressParts.findElements('city').first.innerText;
       return result;
+    } on StateError catch (error) {
+      logger.e("Error while converting current location to Address.");
+      logger.e(error);
+      logger.i("Trying again with different converter.");
+      try {
+        var document = XmlDocument.parse(responseBody);
+        var addressParts =
+            document.rootElement.findElements('addressparts').first;
+        var result = addressParts.findElements('village').first.innerText;
+        return result;
+      } catch (error) {
+        logger.e("Error while converting current location to Address.");
+        logger.e(error);
+      }
     } catch (error) {
       logger.e("Error while converting current location to Address.");
       logger.e(error);

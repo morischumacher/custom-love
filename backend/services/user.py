@@ -6,10 +6,10 @@ import json
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_pagination.ext.sqlmodel import paginate
-from geoalchemy2 import Geography
+from geoalchemy2 import functions, Geography
 from pydantic import BaseModel, Field
 from shapely import geometry, wkt
-from sqlalchemy import func, or_, and_, exists
+from sqlalchemy import func, or_, and_, exists, cast, text
 from sqlmodel import Session, select
 from starlette.requests import Request
 from starlette.websockets import WebSocket, WebSocketDisconnect
@@ -166,7 +166,7 @@ def get_swipeable_user(user, db):
     query = (
         select([User])
         .where(
-            func.ST_DWithin(
+            functions.ST_DWithin(
                 User.location.cast(Geography),
                 subquery.c.location.cast(Geography),
                 user.search_radius * 1000
@@ -259,3 +259,26 @@ async def websocket_connect(websocket: WebSocket, user_token: str, db: Annotated
 
     except WebSocketDisconnect:
         connection_manager.disconnect(websocket, user.id)
+
+
+def get_distance(current_user, swipeable_user, db):
+    query = text(
+        f"""
+        SELECT
+    ST_DistanceSphere(
+        u1.location::geometry,
+        u2.location::geometry
+    ) AS distance
+    FROM
+        "user" u1
+    JOIN
+        "user" u2 ON u1.id = {current_user.id} AND u2.id = {swipeable_user.id};
+        """
+    )
+
+    result = db.execute(query).first()[0]
+
+    # Distance in km
+    distance = round(result / 1000)
+
+    return distance
