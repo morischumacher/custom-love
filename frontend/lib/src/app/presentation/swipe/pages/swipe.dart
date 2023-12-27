@@ -168,10 +168,7 @@ class _SwipeState extends State<Swipe> {
 
   Future<void> _getMatchingAlgorithm() async {
     var matchingAlgorithm = await MatchingAlgorithm.getCurrentMatchingAlgorithm(userId, widget.userService);
-    /*String accessToken = await _controller.retrieveAccessToken() as String;
-    var id = await MatchingAlgorithm.updateMatchingAlgorithm(accessToken, widget.userService, 1);*/
     print("swipingAlgoId: $matchingAlgorithm");
-    //print("new id: $id");
   }
 
   void _loadNextUser() async {

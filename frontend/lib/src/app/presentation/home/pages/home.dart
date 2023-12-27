@@ -19,6 +19,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../config/app_state.dart';
 import '../../authentification/controller/login_controller.dart';
+import '../../swipe/util/matching_algorithm.dart';
 
 enum AppPage { profile, swipe, matches }
 
@@ -105,9 +106,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     value: "Random Algorithm",
                     child: ListTile(
                       title: const Text("Random Algorithm", style: TextStyle(fontSize: 13)),
-                      onTap: () {
+                      onTap: () async {
                         Navigator.pop(context);
-                        SharedAlgorithmEvent.algoId.changeAlgoId(1);
+                        //SharedAlgorithmEvent.algoId.changeAlgoId(1);
+                        String accessToken = await _controller.retrieveAccessToken() as String;
+                        if (!context.mounted) return;
+                        await MatchingAlgorithm.updateMatchingAlgorithm(accessToken, context.read<UserService>(), 1);
                       },
                     ),
                   ),
@@ -115,11 +119,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     value: "Interest-based Algorithm",
                     child: ListTile(
                       title: const Text("Interest-based Algorithm", style: TextStyle(fontSize: 13)),
-                      onTap: () {
+                      onTap: () async {
                         print("selected");
                         Navigator.pop(context);
-                        SharedAlgorithmEvent.algoId.changeAlgoId(2);
-                        print("broadcast happened");
+                        //SharedAlgorithmEvent.algoId.changeAlgoId(2);
+                        String accessToken = await _controller.retrieveAccessToken() as String;
+                        if (!context.mounted) return;
+                        await MatchingAlgorithm.updateMatchingAlgorithm(accessToken, context.read<UserService>(), 2);
                       },
                     ),
                   ),
@@ -127,11 +133,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     value: "Preference-based Algorithm",
                     child: ListTile(
                       title: const Text("Preference-based Algorithm", style: TextStyle(fontSize: 13)),
-                      onTap: () {
-                        print("selected");
+                      onTap: () async {
                         Navigator.pop(context);
-                        SharedAlgorithmEvent.algoId.changeAlgoId(3);
-                        print("broadcast happened");
+                        //SharedAlgorithmEvent.algoId.changeAlgoId(3);
+                        String accessToken = await _controller.retrieveAccessToken() as String;
+                        if (!context.mounted) return;
+                        await MatchingAlgorithm.updateMatchingAlgorithm(accessToken, context.read<UserService>(), 3);
                       },
                     ),
                   )
