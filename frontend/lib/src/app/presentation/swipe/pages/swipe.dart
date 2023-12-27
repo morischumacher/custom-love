@@ -67,13 +67,16 @@ class _SwipeState extends State<Swipe>{
   }
 
   @override
-  void didChangeDependencies() {
+  Future<void> didChangeDependencies() async {
     super.didChangeDependencies();
 
     final algoIdNotifier = Provider.of<AlgoIdNotifier>(context);
     if (swipingAlgoId != algoIdNotifier.algoId) {
       swipingAlgoId = algoIdNotifier.algoId;
       _loadNextUser();
+      String accessToken = await _controller.retrieveAccessToken() as String;
+      if (!context.mounted) return;
+      await MatchingAlgorithm.updateMatchingAlgorithm(accessToken, context.read<UserService>(), swipingAlgoId);
     }
   }
 
@@ -91,7 +94,8 @@ class _SwipeState extends State<Swipe>{
 
   Future<void> _getMatchingAlgorithm() async {
     var matchingAlgorithm = await MatchingAlgorithm.getCurrentMatchingAlgorithm(userId, widget.userService);
-    print("swipingAlgoId: $matchingAlgorithm");
+    swipingAlgoId = matchingAlgorithm;
+    _loadNextUser();
   }
 
   void _loadNextUser() async {
@@ -100,8 +104,6 @@ class _SwipeState extends State<Swipe>{
         isLoading = true;
       });
     }
-
-    print("algo id: $swipingAlgoId");
 
     String accessToken = await _controller.retrieveAccessToken() as String;
     await widget.userService

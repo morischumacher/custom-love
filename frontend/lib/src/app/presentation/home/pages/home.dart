@@ -17,6 +17,8 @@ import 'package:frontend/src/app/service/user_service.dart';
 
 import 'package:provider/provider.dart';
 
+import '../../swipe/util/matching_algorithm.dart';
+
 enum AppPage { profile, swipe, matches }
 
 class HomeScreen extends StatefulWidget {
@@ -87,7 +89,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return subRoute;
   }
 
-  void _changeAlgoId(BuildContext context, int algoId) {
+  Future<void> _changeAlgoId(BuildContext context, int algoId) async {
     final algoIdNotifier = Provider.of<AlgoIdNotifier>(context, listen: false);
     if (algoIdNotifier.algoId != algoId) {
       algoIdNotifier.setAlgoId(algoId);
