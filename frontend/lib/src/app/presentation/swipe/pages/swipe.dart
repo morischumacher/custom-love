@@ -122,6 +122,24 @@ class _SwipeState extends State<Swipe>{
     });
   }
 
+  Future<void> _swipeActionTaken(bool hasLiked) async {
+    String accessToken = await _controller.retrieveAccessToken() as String;
+    int swipingsLeftInt = await SwipesLeft.updateSwipeLeft(accessToken, widget.userService);
+    if (swipingsLeftInt > 0) {
+      SharedSwipeableEvent.swipeable.changeSwipeable(true);
+    } else {
+      SharedSwipeableEvent.swipeable.changeSwipeable(false);
+    }
+
+    if (hasLiked) {
+      await widget.swipeStatusService.postLike(accessToken, int.parse(_swipeItem.content.id));
+    } else {
+      await widget.swipeStatusService.postView(accessToken, int.parse(_swipeItem.content.id));
+    }
+
+    _loadNextUser();
+  }
+
   void _setSwipingCard(User? user, String? city) {
     if (user == null) {
       if (mounted) {
@@ -177,16 +195,10 @@ class _SwipeState extends State<Swipe>{
                 bio: user.bio,
                 interests: interests),
             likeAction: () async {
-              String accessToken = await _controller.retrieveAccessToken() as String;
-              await SwipesLeft.updateSwipeLeft(accessToken, widget.userService);
-              await widget.swipeStatusService.postLike(accessToken, int.parse(_swipeItem.content.id));
-              _loadNextUser();
+              _swipeActionTaken(true);
             },
             nopeAction: () async {
-              String accessToken = await _controller.retrieveAccessToken() as String;
-              await SwipesLeft.updateSwipeLeft(accessToken, widget.userService);
-              await widget.swipeStatusService.postView(accessToken, int.parse(_swipeItem.content.id));
-              _loadNextUser();
+              _swipeActionTaken(false);
             },
             onSlideUpdate: (SlideRegion? region) async {
               //check if it's possible to swipe (10 sec timer)
