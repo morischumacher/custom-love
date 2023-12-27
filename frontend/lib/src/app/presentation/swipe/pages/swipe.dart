@@ -109,6 +109,8 @@ class _SwipeState extends State<Swipe>{
       });
     }
 
+    print("algo id: $swipingAlgoId");
+
     String accessToken = await _controller.retrieveAccessToken() as String;
     await widget.userService
         .getAlgoUser(accessToken, swipingAlgoId)
@@ -192,7 +194,8 @@ class _SwipeState extends State<Swipe>{
                 age: age,
                 city: city,
                 bio: user.bio,
-                interests: interests),
+                interests: interests,
+                distance: user.distance),
             likeAction: () async {
               _swipeActionTaken(true);
             },
@@ -238,25 +241,27 @@ class _SwipeState extends State<Swipe>{
 
   @override
   Widget build(BuildContext context) {
-      return swipingAlgoId !=0 ? Scaffold(
-        key: _scaffoldKey,
-        backgroundColor: _customLoveTheme.neutralColor,
-        body: isLoading
-            ? const Center(
-          child: CircularProgressIndicator(),
-        ):
-        Center(
-          child: SwipingCard(
-              matchEngine: _matchEngine,
-              customLoveTheme: _customLoveTheme,
-              swipeItem: _swipeItem,
-              swipeable: swipesEvent,
-              swipeableTimer: swipeableTimer,
-              userId: userId,
-              controller: _controller,
-              userService: widget.userService,
-              swipeStatusService: widget.swipeStatusService),
-        )) : const SizedBox();
+    return swipingAlgoId != 0
+        ? Scaffold(
+            key: _scaffoldKey,
+            backgroundColor: _customLoveTheme.neutralColor,
+            body: isLoading
+                ? const Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : Center(
+                    child: SwipingCard(
+                        matchEngine: _matchEngine,
+                        customLoveTheme: _customLoveTheme,
+                        swipeItem: _swipeItem,
+                        swipeable: swipesEvent,
+                        swipeableTimer: swipeableTimer,
+                        userId: userId,
+                        controller: _controller,
+                        userService: widget.userService,
+                        swipeStatusService: widget.swipeStatusService),
+                  ))
+        : const SizedBox();
   }
 
   @override
@@ -267,5 +272,4 @@ class _SwipeState extends State<Swipe>{
 
     super.dispose();
   }
-
 }

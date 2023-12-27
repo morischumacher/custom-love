@@ -19,6 +19,7 @@ class User {
   final double latitude;
   final double longitude;
   final List<dynamic>? interests;
+  final int? distance;
 
   User({
     required this.id,
@@ -35,7 +36,8 @@ class User {
     required this.gender_identity_id,
     required this.latitude,
     required this.longitude,
-    required this.interests
+    required this.interests,
+    required this.distance
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -54,8 +56,9 @@ class User {
       gender_identity_id: json['gender_identity_id'] as int,
       latitude: json['latitude'] as double,
       longitude: json['longitude'] as double,
-      interests: json['interests'] as List<dynamic>?
-    );
+      interests: json['interests'] as List<dynamic>?,
+      distance: json['distance'] as int?);
+      );
   }
 
   Map<String, dynamic> toJson() {

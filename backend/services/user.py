@@ -25,7 +25,7 @@ from backend.models.swipe_status import SwipeStatus, SwipeStatusType
 from backend.models.user import User
 from backend.repository.repository import create_session
 from backend.responses.notification import Notification, NotificationType
-from backend.responses.user_response import UserResponse, UserResponseWithInterests
+from backend.responses.user_response import UserResponse, UserResponseWithInterestsAndDistance
 from backend.services.expert_system import get_expert_system_by_user_id
 from backend.services.message import _save_message
 from backend.services.validation.user_validation import validate_new_user
@@ -196,14 +196,17 @@ def get_swipeable_user(user, db):
 
 def get_algo_user(algoId: int, user: Annotated[User, Depends(get_current_user)],
                   db: Annotated[Session, Depends(create_session)],
-                  request: Request) -> UserResponseWithInterests | None:
+                  request: Request) -> UserResponseWithInterestsAndDistance | None:
     swipeable_user = get_swipeable_user(user, db)
     match algoId:
         case 1:
-            user = random.choice(swipeable_user)
-            return map_user_to_user_response_with_interests(user)
+            swipeable_user_choice = random.choice(swipeable_user)
+            return map_user_to_user_response_with_interests(
+                swipeable_user_choice,
+                get_distance(user, swipeable_user_choice, db)
+            )
         case 2:
-            return get_user_with_common_interests(user, swipeable_user)
+            return get_user_with_common_interests(user, swipeable_user, db)
         case 3:
             # Get expertsytem of current user
             expert_system = get_expert_system_by_user_id(user.id, db)
@@ -219,19 +222,19 @@ def get_algo_user(algoId: int, user: Annotated[User, Depends(get_current_user)],
             # TODO Use the prediction for something like: "Particularly Compatible! (#65)"
             user_id_with_highest_prediction, prediction = exsys.predict(swipeable_user)
 
-            user = [user for user in swipeable_user if user.id == user_id_with_highest_prediction][0]
+            swipeable_user_choice = [user for user in swipeable_user if user.id == user_id_with_highest_prediction][0]
             # return the user with the user.id = user_id_with_highest_prediction
-            return map_user_to_user_response_with_interests(user)
+            return map_user_to_user_response_with_interests(swipeable_user_choice, get_distance(user, swipeable_user_choice, db))
         case _:
             return None
 
 
-def get_user_with_common_interests(user, swipeable_user_list):
+def get_user_with_common_interests(user, swipeable_user_list, db):
     user_interests = set(user.interests)
 
     most_common_user = max(swipeable_user_list, key=lambda su: len(set(user_interests).intersection(set(su.interests))),
                            default=None)
-    return map_user_to_user_response_with_interests(most_common_user) if most_common_user else None
+    return map_user_to_user_response_with_interests(most_common_user, get_distance(user, most_common_user, db)) if most_common_user else None
 
 
 async def websocket_connect(websocket: WebSocket, user_token: str, db: Annotated[Session, Depends(create_session)]):
@@ -281,4 +284,5 @@ def get_distance(current_user, swipeable_user, db):
     # Distance in km
     distance = round(result / 1000)
 
-    return distance
+    # For safety reasons the lowest km which is shown is 5
+    return distance if distance > 5 else 5

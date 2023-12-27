@@ -106,8 +106,8 @@ class SwipingCard extends StatelessWidget {
                                           width: kIsWeb
                                               ? width * 0.20
                                               : width * 0.15),
-                                      locationWidget(
-                                          _swipeItem.content.city, 4),
+                                      locationWidget(_swipeItem.content.city,
+                                          _swipeItem.content.distance),
                                     ],
                                   ),
                                 ),

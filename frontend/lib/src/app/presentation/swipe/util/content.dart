@@ -6,6 +6,14 @@ class Content {
   final List<dynamic>? interests;
   final int? age;
   final String? city;
-  Content({this.firstName, this.id, this.age, this.city, this.languages, this.bio, this.interests});
-
+  final int? distance;
+  Content(
+      {this.firstName,
+      this.id,
+      this.age,
+      this.city,
+      this.languages,
+      this.bio,
+      this.interests,
+      this.distance});
 }
