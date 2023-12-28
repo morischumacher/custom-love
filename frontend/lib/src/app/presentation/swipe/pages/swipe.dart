@@ -54,9 +54,6 @@ class _SwipeState extends State<Swipe>{
     super.initState();
 
     _fetchInitData();
-
-    print("init");
-
   }
 
   @override
@@ -67,7 +64,6 @@ class _SwipeState extends State<Swipe>{
         .listen((bool swipeable) async {
       if (mounted) {
         setState(() {
-          print("set state swipeable: " + swipeable.toString());
           swipesEvent = swipeable;
         });
       }
@@ -170,20 +166,20 @@ class _SwipeState extends State<Swipe>{
             age--;
           }
 
-          //if (mounted) {
+          if (mounted) {
             setState(() {
               swipeableTimer = false;
             });
-          //}
+          }
 
           swiped = false;
 
           timer = Timer(const Duration(seconds: 10), () {
-            //if (mounted) {
+            if (mounted) {
               setState(() {
                 swipeableTimer = true;
               });
-            //}
+            }
           });
 
           _swipeItem = SwipeItem(
@@ -212,11 +208,12 @@ class _SwipeState extends State<Swipe>{
                         userId, widget.userService);
                     if (tmpSwipesLeft > 0) {
                       //after reset_date is updated, it's possible to swipe again
-                      setState(() {
-                        swipeableTimer = true;
-                      });
+                      if (mounted) {
+                        setState(() {
+                          swipeableTimer = true;
+                        });
+                      }
                       SharedSwipeableEvent.swipeable.changeSwipeable(true);
-                      print("swipes left" + tmpSwipesLeft.toString());
                     } else {
                       SharedSwipeableEvent.swipeable.changeSwipeable(false);
                     }
