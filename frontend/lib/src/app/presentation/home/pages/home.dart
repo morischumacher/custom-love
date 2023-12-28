@@ -153,50 +153,36 @@ class _HomeScreenState extends State<HomeScreen> {
    return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 30),
       child: PopupMenuButton(
-          icon: const Icon(Icons.tune, size: 28, color: Colors.black,),
           color: _customLoveTheme.neutralBackgroundColor,
-          itemBuilder: (BuildContext context) => [
-            PopupMenuItem(
-              value: "Random Algorithm",
-              child: Container(
-                color: algoIdNotifier?.algoId == 1 ? _customLoveTheme.neutralColor : _customLoveTheme.neutralBackgroundColor,
-                child: ListTile(
-                  title: const Text("Random Algorithm", style: TextStyle(fontSize: 13)),
-                  onTap: () {
-                    _changeAlgoId(context, 1);
-                    Navigator.pop(context);
-                  },
-                ),
-              ),
-            ),
-            PopupMenuItem(
-              value: "Interest-based Algorithm",
-              child: Container(
-                color: algoIdNotifier?.algoId == 2 ? _customLoveTheme.neutralColor : _customLoveTheme.neutralBackgroundColor,
-                child: ListTile(
-                  title: const Text("Interest-based Algorithm", style: TextStyle(fontSize: 13)),
-                  onTap: () {
-                    _changeAlgoId(context, 2);
-                    Navigator.pop(context);
-                  },
-                ),
-              ),
-            ),
-            PopupMenuItem(
-              value: "Preference-based Algorithm",
-              child: Container(
-                color: algoIdNotifier?.algoId == 3 ? _customLoveTheme.neutralColor : _customLoveTheme.neutralBackgroundColor,
-                child: ListTile(
-                  title: const Text("Preference-based Algorithm", style: TextStyle(fontSize: 13)),
-                  onTap: () {
-                    _changeAlgoId(context, 3);
-                    Navigator.pop(context);
-                  },
-                ),
-              ),
-            )
+          // surfaceTintColor has to be set to the desired background color
+          surfaceTintColor: _customLoveTheme.neutralBackgroundColor,
+          icon: const Icon(Icons.tune, size: 28, color: Colors.black,),
+          itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+            popUpMenuItem("Random Algorithm", 1),
+            popUpMenuItem("Interest-based Algorithm", 2),
+            popUpMenuItem("Preference-based Algorithm", 3),
           ]
       ),
+    );
+  }
+
+  PopupMenuEntry popUpMenuItem(value, algoId) {
+    return PopupMenuItem(
+      height: 0,
+      padding: const EdgeInsets.symmetric(horizontal: 2),
+      value: value,
+      child: Container(
+      decoration: BoxDecoration(
+        color: algoIdNotifier?.algoId == algoId ? _customLoveTheme.neutralColor : null,
+        borderRadius: const BorderRadius.all(Radius.circular(5))
+      ),
+      child: ListTile(
+        title: Text(value, style: const TextStyle(fontSize: 13)),
+        onTap: () {
+          _changeAlgoId(context, algoId);
+          Navigator.pop(context);
+        },
+      ))
     );
   }
 
