@@ -30,7 +30,8 @@ class MessageItem extends StatelessWidget {
               message?.message ?? "",
               message?.receiverId == userId,
               message != null ? message!.isImage : false,
-          )
+          ),
+          getMessageTime()
         ],
       ),
     );
@@ -51,5 +52,28 @@ class MessageItem extends StatelessWidget {
         return Text(sender.firstName);
       },
     );
+  }
+
+  Widget getMessageTime() {
+    if (message == null) {
+      return const Text("");
+    }
+
+    var now = DateTime.now();
+    var year = message!.timestamp.year;
+    var day = message!.timestamp.day;
+    var month = message!.timestamp.month;
+    var minute = message!.timestamp.minute;
+    var hour = message!.timestamp.hour;
+
+    String d = "$day.$month.$year";
+
+    if (now.year == year && now.month == month && now.day == day) {
+      d = "Today";
+    } else if (now.year == year) {
+      d = "$day.$month";
+    }
+
+    return Text("$d ∙ $hour:$minute");
   }
 }
