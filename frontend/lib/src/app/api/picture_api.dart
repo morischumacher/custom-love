@@ -1,4 +1,3 @@
-import 'dart:html';
 import 'dart:typed_data';
 
 import 'package:frontend/src/app/api/helpers/jwt_api.dart';

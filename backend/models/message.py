@@ -34,11 +34,14 @@ class Message(SQLModel, table=True):
 
 def message_factory(_json: json):
     is_image = False
-    if _json['is_image'] is not None:
+    id = None
+    if 'is_image' in _json:
         is_image = _json['is_image']
+    if 'id' in _json:
+        id = _json['id']
 
     return Message(
-        id=_json['id'],
+        id=id,
         is_image=is_image,
         conversation_id=int(_json['conversation_id']),
         sender_id=_json['sender_id'],
