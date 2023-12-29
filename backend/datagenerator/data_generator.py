@@ -6,6 +6,7 @@ from backend.models.gender_identity import GenderIdentity
 from backend.models.interest import Interest
 from backend.models.language import Language
 from backend.models.message import Message
+from backend.models.image import Image, ProfilePicture
 from backend.models.preference import Preference
 from backend.models.expert_system import ExpertSystem
 from backend.models.rating import Rating

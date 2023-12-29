@@ -1,6 +1,6 @@
 import json
 from datetime import datetime
-from typing import Optional, Any
+from typing import Optional, Any, List
 from typing import TYPE_CHECKING
 from sqlmodel import SQLModel, Field, Relationship
 from .conversation import Conversation
@@ -9,6 +9,7 @@ from .user import User
 
 class Message(SQLModel, table=True):
     id: Optional[int] = Field(primary_key=True)
+    is_image: bool = Field(default=False)
     conversation_id: int = Field(foreign_key="conversation.id")
     sender_id: int = Field(foreign_key="user.id")
     receiver_id: int = Field(foreign_key="user.id")
