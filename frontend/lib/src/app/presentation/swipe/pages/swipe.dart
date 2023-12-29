@@ -73,6 +73,7 @@ class _SwipeState extends State<Swipe>{
 
     if (swipingAlgoId != algoIdNotifier?.algoId) {
       swipingAlgoId = algoIdNotifier!.algoId;
+      print("loadNextUser didChnageDependencies");
       _loadNextUser();
       String accessToken = await _controller.retrieveAccessToken() as String;
       if (!context.mounted) return;
@@ -96,6 +97,7 @@ class _SwipeState extends State<Swipe>{
     var matchingAlgorithm = await MatchingAlgorithm.getCurrentMatchingAlgorithm(userId, widget.userService);
     swipingAlgoId = matchingAlgorithm;
     algoIdNotifier?.setAlgoId(swipingAlgoId);
+    print("loadNextUser getMatchingAlgorithm");
     _loadNextUser();
   }
 
@@ -258,11 +260,7 @@ class _SwipeState extends State<Swipe>{
 
   @override
   void dispose() {
-    if (timer != null) {
-      if(timer!.isActive) {
-        timer?.cancel();
-      }
-    }
+    timer?.cancel();
 
     _swipeableSubscription?.cancel();
 

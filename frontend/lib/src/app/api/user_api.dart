@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:frontend/src/app/api/helpers/pagination_api.dart';
+import 'package:frontend/src/app/exceptions/bad_request_exception.dart';
+import 'package:frontend/src/app/exceptions/not_found_exception.dart';
 import 'package:frontend/src/app/model/factories/user_factory.dart';
 import 'package:frontend/src/app/model/user_model.dart';
 import 'package:geolocator/geolocator.dart';
@@ -30,9 +32,12 @@ class UserApi extends PaginatedApi<User> {
       var tmp = json.decode(response.body);
       final User user = User.fromJson(tmp);
       return user;
+    } else if (response.statusCode == 404) {
+      throw NotFoundException("User not found");
+    } else if (response.statusCode == 400) {
+      throw BadRequestException("Bad request");
     } else {
-      // TODO: Add custom exception
-      throw Exception('Failed to fetch user');
+      throw Exception("Failed to load user");
     }
   }
 
@@ -57,9 +62,12 @@ class UserApi extends PaginatedApi<User> {
       final dynamic jsonItem = json.decode(response.body);
       final User user = User.fromJson(jsonItem);
       return user;
+    } else if (response.statusCode == 404) {
+      throw NotFoundException("User not found");
+    } else if (response.statusCode == 422) {
+      throw BadRequestException("Unprocessable entity");
     } else {
-      // TODO: Add custom exception
-      throw Exception("Failed to update user Location");
+      throw Exception("Failed to load user");
     }
   }
 
@@ -82,9 +90,12 @@ class UserApi extends PaginatedApi<User> {
       final dynamic jsonItem = json.decode(response.body);
       final User user = User.fromJson(jsonItem);
       return user;
+    } else if (response.statusCode == 404) {
+      throw NotFoundException("User not found");
+    } else if (response.statusCode == 422) {
+      throw BadRequestException("Unprocessable entity");
     } else {
-      // TODO: Add custom exception
-      throw Exception('Failed to update user swipesLeft');
+      throw Exception("Failed to load user");
     }
   }
 
@@ -107,9 +118,12 @@ class UserApi extends PaginatedApi<User> {
       final dynamic jsonItem = json.decode(response.body);
       final User user = User.fromJson(jsonItem);
       return user;
+    } else if (response.statusCode == 404) {
+      throw NotFoundException("User not found");
+    } else if (response.statusCode == 422) {
+      throw BadRequestException("Unprocessable entity");
     } else {
-      // TODO: Add custom exception
-      throw Exception('Failed to update user swipesLeft');
+      throw Exception("Failed to load user");
     }
   }
 
@@ -128,9 +142,12 @@ class UserApi extends PaginatedApi<User> {
       final dynamic jsonItem = json.decode(response.body);
       final User user = User.fromJson(jsonItem);
       return user;
+    } else if (response.statusCode == 404) {
+      throw NotFoundException("User not found");
+    } else if (response.statusCode == 400) {
+      throw BadRequestException("Bad request");
     } else {
-      // TODO: Add custom exception
-      throw Exception('Failed to fetch algo user');
+      throw Exception("Failed to load user");
     }
   }
 }
