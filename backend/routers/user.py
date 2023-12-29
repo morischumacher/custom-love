@@ -67,11 +67,9 @@ def patch_user(commons: Annotated[UserUpdate, Depends(patch_user)]):
 })
 def patch_expert_system(commons: Annotated[dict, Depends(update_expert_system)]):
     """
-    Update current user information.
-    :return: Updated user.
+    Update expert system of current user.
+    :return: String with message if successful.
     """
-    #TODO: Response model does not match to dict
-    #TODO: Handle case, is not updated because only one class present
     return commons
 
 
