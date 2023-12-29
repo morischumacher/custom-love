@@ -76,17 +76,20 @@ def update_expert_system(user: Annotated[User, Depends(get_current_user)],
         liked_users = get_liked_users_not_trained_on(db, user.id)
         viewed_users = get_viewed_users_not_trained_on(db, user.id)
 
-        # Update Model of expert system with these users
-        #TODO: Checking if both classes exists
-        exsys.update_model(liked_users, viewed_users)
+
+        # Logic regression Model only works with more than one class, so liked and viewed user have to exist
+        if len(liked_users) != 0 and len(viewed_users) != 0:
+            # Update Model of expert system with these users
+            exsys.update_model(liked_users, viewed_users)
+        else:
+            return "Expert System hat not been updated due missing at least one class (View/Like)"
 
         # Serialize the updated model and use for the expert system update
         expert_system.model = exsys.serialize_model()
-
         db.add(expert_system)
         db.commit()
         db.refresh(expert_system)
-        return expert_system
+        return "Updated Expert System"
     else:
         raise BadRequestException(f"A error occurred when updating the model of the expert system of the user with id ="
                                   f"{user.id}")

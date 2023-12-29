@@ -61,8 +61,11 @@ def patch_user(commons: Annotated[UserUpdate, Depends(patch_user)]):
     return commons
 
 
-@router.patch('/update/expertsystem', response_model=ExpertSystem)
-def patch_user(commons: Annotated[dict, Depends(update_expert_system)]):
+@router.patch('/update/expertsystem', response_model=str, responses={
+    status.HTTP_404_NOT_FOUND: {"description": "User not found", "model": ErrorResponse},
+    status.HTTP_400_BAD_REQUEST: {"description": "Validation Error", "model": ErrorResponse},
+})
+def patch_expert_system(commons: Annotated[dict, Depends(update_expert_system)]):
     """
     Update current user information.
     :return: Updated user.
