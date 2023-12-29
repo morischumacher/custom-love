@@ -10,6 +10,7 @@ from backend.models.swipe_status import SwipeStatus, SwipeStatusType
 from backend.models.user import User
 from backend.repository.repository import create_session
 from backend.utils.token import get_current_user
+from backend.services.swipe_status import set_swipe_status_trained_for_model_true
 
 
 def get_expert_system_by_user_id(user_id, db: Annotated[Session, Depends(create_session)]):
@@ -42,7 +43,6 @@ def post_expert_system(expert_system: ExpertSystem, db: Annotated[Session, Depen
     return expert_system
 
 
-# TODO Test in upcoming workflows
 def update_expert_system(user: Annotated[User, Depends(get_current_user)],
                          db: Annotated[Session, Depends(create_session)]):
     """
@@ -81,6 +81,9 @@ def update_expert_system(user: Annotated[User, Depends(get_current_user)],
         if len(liked_users) != 0 and len(viewed_users) != 0:
             # Update Model of expert system with these users
             exsys.update_model(liked_users, viewed_users)
+
+            # Set trained for model flags true
+            set_swipe_status_trained_for_model_true(db, user)
         else:
             return "Expert System hat not been updated due missing at least one class (View/Like)"
 
@@ -105,8 +108,8 @@ def get_liked_users_not_trained_on(db, userid) -> List[User]:
     """
     statement = (select(User).join(SwipeStatus, onclause=and_(or_(SwipeStatus.user1_id == User.id,
                 SwipeStatus.user2_id == User.id), SwipeStatus.status == SwipeStatusType.like))
-                 .where(and_(User.id != userid, SwipeStatus.user1_id == userid)))
-
+                 .where(and_(SwipeStatus.used_for_model == False,
+                             and_(User.id != userid, SwipeStatus.user1_id == userid))))
 
     user_list = db.exec(statement).all()
 
@@ -123,7 +126,8 @@ def get_viewed_users_not_trained_on(db, userid) -> List[User]:
     """
     statement = (select(User).join(SwipeStatus, onclause=and_(or_(SwipeStatus.user1_id == User.id,
                 SwipeStatus.user2_id == User.id), SwipeStatus.status == SwipeStatusType.view))
-                 .where(and_(User.id != userid, SwipeStatus.user1_id == userid)))
+                 .where(and_(SwipeStatus.used_for_model == False,
+                             and_(User.id != userid, SwipeStatus.user1_id == userid))))
 
     user_list = db.exec(statement).all()
 
