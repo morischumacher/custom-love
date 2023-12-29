@@ -92,16 +92,26 @@ class _SwipeState extends State<Swipe>{
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await _getUserId();
 
-      tmpSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(
-          userId, widget.userService);
-      if (tmpSwipesLeft > 0) {
-        //SharedSwipeableEvent.swipeable.changeSwipeable(true);
-        swipeStateNotifier?.setSwipeState(SwipeState.OKAY);
-      } else {
-        //SharedSwipeableEvent.swipeable.changeSwipeable(false);
-        swipeStateNotifier?.setSwipeState(SwipeState.NO_SWIPES_LEFT);
-      }
+      await _checkSwipesLeft(false);
     });
+  }
+
+  _checkSwipesLeft(bool userCardShown) async {
+    tmpSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(
+        userId, widget.userService);
+    if (tmpSwipesLeft > 0) {
+      //after reset_date is updated, it's possible to swipe again
+      if (userCardShown) {
+        setState(() {
+          swipeableTimer = true;
+        });
+      }
+      SharedSwipeableEvent.swipeable.changeSwipeable(true);
+      swipeStateNotifier?.setSwipeState(SwipeState.OKAY);
+    } else {
+      SharedSwipeableEvent.swipeable.changeSwipeable(false);
+      swipeStateNotifier?.setSwipeState(SwipeState.NO_SWIPES_LEFT);
+    }
   }
 
   Future<void> _getUserId() async {
@@ -177,17 +187,7 @@ class _SwipeState extends State<Swipe>{
                   //ensure that after a swipe attempt the api call happens only once
                   if (!swiped) {
                     swiped = true;
-                    tmpSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(
-                        userId, widget.userService);
-                    if (tmpSwipesLeft > 0) {
-                      //after reset_date is updated, it's possible to swipe again
-                      setState(() {
-                        swipeableTimer = true;
-                      });
-                      SharedSwipeableEvent.swipeable.changeSwipeable(true);
-                    } else {
-                      SharedSwipeableEvent.swipeable.changeSwipeable(false);
-                    }
+                    await _checkSwipesLeft(true);
                   }
                 }
 
