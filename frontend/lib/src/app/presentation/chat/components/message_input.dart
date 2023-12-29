@@ -37,7 +37,7 @@ class MessageInput extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        const PopupMenu(),
+        PopupMenu(receiverId),
         Expanded(
             child: TextField(
           decoration: const InputDecoration(

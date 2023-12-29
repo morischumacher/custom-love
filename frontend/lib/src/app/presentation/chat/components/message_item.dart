@@ -28,7 +28,8 @@ class MessageItem extends StatelessWidget {
           getMessageSender(),
           ChatBubble(
               message?.message ?? "",
-              message?.receiverId == userId
+              message?.receiverId == userId,
+              message != null ? message!.isImage : false,
           )
         ],
       ),

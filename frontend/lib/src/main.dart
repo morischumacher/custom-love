@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/src/app/api/picture_api.dart';
 import 'package:frontend/src/app/presentation/authentification/pages/logout_page.dart';
 import 'package:frontend/src/app/presentation/registration/pages/registration_location.dart';
 import 'package:frontend/src/app/presentation/swipe/util/algo_id_notifier.dart';
 import 'package:frontend/src/app/presentation/utils/CustomScrollBehaviour.dart';
 import 'package:frontend/src/app/service/conversation_service.dart';
+import 'package:frontend/src/app/service/image_service.dart';
 import 'package:frontend/src/app/service/match_service.dart';
 import 'package:frontend/src/app/service/message_service.dart';
 import 'package:frontend/src/app/api/registration_api.dart';
@@ -44,6 +46,7 @@ class CustomLove extends StatelessWidget {
             create: (_) => ConversationStorage()),
         ChangeNotifierProvider<MessageStorage>(create: (_) => MessageStorage()),
         ChangeNotifierProvider<MatchStorage>(create: (_) => MatchStorage()),
+        ChangeNotifierProvider<ImageStorage>(create: (_) => ImageStorage()),
         ChangeNotifierProvider(create: (context) => AlgoIdNotifier()),
         Provider<http.Client>.value(value: httpClient),
         ProxyProvider<http.Client, UserApi>(
@@ -91,6 +94,12 @@ class CustomLove extends StatelessWidget {
         ProxyProvider<SwipeStatusApi, SwipeStatusService>(
           update: (_, swipeStatusApi, __) => SwipeStatusService(swipeStatusApi),
         ),
+        ProxyProvider<http.Client, PictureApi>(
+            update: (_, httpClient, __) => PictureApi(httpClient)
+        ),
+        ProxyProvider<PictureApi, ImageService>(
+          update: (_, pictureApi, __) => ImageService(pictureApi)
+        )
       ],
       child: MaterialApp(
         scrollBehavior: CustomScrollBehaviour(),
