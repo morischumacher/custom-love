@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:frontend/src/app/model/user_model.dart';
-import 'package:frontend/src/app/presentation/swipe/util/SwipeStateNotifier.dart';
+import 'package:frontend/src/app/presentation/swipe/util/swipe_state_notifier.dart';
 import 'package:frontend/src/app/presentation/swipe/util/swipe_state.dart';
 import 'package:frontend/src/app/presentation/swipe/util/swipe_status.dart';
 import 'package:frontend/src/app/presentation/swipe/util/content.dart';

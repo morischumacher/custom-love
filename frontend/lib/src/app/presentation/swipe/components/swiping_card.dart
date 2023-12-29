@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend/src/app/presentation/swipe/util/SwipeStateNotifier.dart';
+import 'package:frontend/src/app/presentation/swipe/util/swipe_state_notifier.dart';
 import 'package:frontend/src/app/presentation/swipe/util/shared_swipeable_event.dart';
 import 'package:frontend/src/app/presentation/swipe/util/swipe_state.dart';
 import 'package:provider/provider.dart';
