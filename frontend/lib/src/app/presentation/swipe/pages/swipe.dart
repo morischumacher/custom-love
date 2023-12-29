@@ -48,6 +48,7 @@ class _SwipeState extends State<Swipe>{
   int swipingAlgoId = 0;
   StreamSubscription<bool>? _swipeableSubscription;
   AlgoIdNotifier? algoIdNotifier;
+  bool loginAlgoIsSet = false;
 
   @override
   void initState() {
@@ -71,9 +72,8 @@ class _SwipeState extends State<Swipe>{
 
     algoIdNotifier ??= Provider.of<AlgoIdNotifier>(context);
 
-    if (swipingAlgoId != algoIdNotifier?.algoId) {
+    if (swipingAlgoId != algoIdNotifier?.algoId || loginAlgoIsSet) {
       swipingAlgoId = algoIdNotifier!.algoId;
-      print("loadNextUser didChnageDependencies");
       _loadNextUser();
       String accessToken = await _controller.retrieveAccessToken() as String;
       if (!context.mounted) return;
@@ -95,10 +95,11 @@ class _SwipeState extends State<Swipe>{
 
   Future<void> _getMatchingAlgorithm() async {
     var matchingAlgorithm = await MatchingAlgorithm.getCurrentMatchingAlgorithm(userId, widget.userService);
-    swipingAlgoId = matchingAlgorithm;
-    algoIdNotifier?.setAlgoId(swipingAlgoId);
-    print("loadNextUser getMatchingAlgorithm");
-    _loadNextUser();
+    if (matchingAlgorithm != swipingAlgoId) {
+      swipingAlgoId = matchingAlgorithm;
+      algoIdNotifier?.setAlgoId(swipingAlgoId);
+      loginAlgoIsSet = true;
+    }
   }
 
   void _loadNextUser() async {
