@@ -17,7 +17,7 @@ import 'package:frontend/src/app/presentation/authentification/controller/login_
 import '../../../service/location_service.dart';
 import '../../../service/user_service.dart';
 import '../components/swiping_card.dart';
-import '../util/shared_algorithm_event.dart';
+import '../util/algo_id_notifier.dart';
 import '../util/swipes_left.dart';
 
 class Swipe extends StatefulWidget {
@@ -28,24 +28,24 @@ class Swipe extends StatefulWidget {
 
   @override
   _SwipeState createState() => _SwipeState();
+
 }
 
-class _SwipeState extends State<Swipe> {
+class _SwipeState extends State<Swipe>{
   late SwipeItem _swipeItem;
   MatchEngine? _matchEngine;
-  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
   bool isLoading = false;
   bool swipeable = true;
   late bool swiped;
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
   final LoginController _controller = LoginController();
   final LocationService _locationService = LocationService();
-  late Timer timer;
+  Timer? timer;
   bool swipeableTimer = true;
   late int tmpSwipesLeft;
   late int userId;
   bool swipesEvent = false;
-  bool hasVisitedSwipePage = false;
   int swipingAlgoId = 0;
   SwipeState swipeState = SwipeState.NO_ALGORITHM_SELECTED;
   StreamSubscription<int>? _algoIdSubscription;
@@ -57,84 +57,7 @@ class _SwipeState extends State<Swipe> {
 
     _fetchInitData();
 
-    _algoIdSubscription =
-        SharedAlgorithmEvent.algoId.algoIdChanged.listen((int algoId) {
-      if (mounted) {
-        setState(() {
-          swipingAlgoId = algoId;
-        });
-      }
-      _loadNextUser();
-    });
-
-    if (!hasVisitedSwipePage) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        showModalBottomSheet(
-          context: context,
-          builder: (BuildContext context) {
-            return SizedBox(
-              height: 350,
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    const Text('Choose your preferred matching algorithm!'),
-                    const SizedBox(height: 10),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          elevation: 5,
-                          backgroundColor:
-                              _customLoveTheme.neutralBackgroundColor,
-                          fixedSize: const Size(200, 30)),
-                      onPressed: () {
-                        Navigator.pop(context);
-                        SharedAlgorithmEvent.algoId.changeAlgoId(1);
-                      },
-                      child: Text("Random",
-                          style: TextStyle(
-                              fontSize: 13, color: _customLoveTheme.textColor)),
-                    ),
-                    const SizedBox(height: 10),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          elevation: 5,
-                          backgroundColor:
-                              _customLoveTheme.neutralBackgroundColor,
-                          fixedSize: const Size(200, 30)),
-                      onPressed: () {
-                        Navigator.pop(context);
-                        SharedAlgorithmEvent.algoId.changeAlgoId(2);
-                      },
-                      child: Text("Interest-based",
-                          style: TextStyle(
-                              fontSize: 13, color: _customLoveTheme.textColor)),
-                    ),
-                    const SizedBox(height: 10),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          elevation: 5,
-                          backgroundColor:
-                              _customLoveTheme.neutralBackgroundColor,
-                          fixedSize: const Size(200, 30)),
-                      onPressed: () {
-                        Navigator.pop(context);
-                        SharedAlgorithmEvent.algoId.changeAlgoId(3);
-                      },
-                      child: Text("Preference-based",
-                          style: TextStyle(
-                              fontSize: 13, color: _customLoveTheme.textColor)),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-      });
-
-      hasVisitedSwipePage = true;
-    }
+    print("init");
 
     _swipeableSubscription = SharedSwipeableEvent.swipeable.swipeableChanged
         .listen((bool swipeable) async {
@@ -144,6 +67,17 @@ class _SwipeState extends State<Swipe> {
         });
       }
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final algoIdNotifier = Provider.of<AlgoIdNotifier>(context);
+    if (swipingAlgoId != algoIdNotifier.algoId) {
+      swipingAlgoId = algoIdNotifier.algoId;
+      _loadNextUser();
+    }
   }
 
   void didChangeDependencies() {
@@ -174,9 +108,7 @@ class _SwipeState extends State<Swipe> {
       });
     }
 
-    if (swipingAlgoId == 1) {
-    } else if (swipingAlgoId == 2) {
-    } else if (swipingAlgoId == 3) {}
+    print("algo id: $swipingAlgoId");
 
     String accessToken = await _controller.retrieveAccessToken() as String;
     await widget.userService
@@ -242,12 +174,14 @@ class _SwipeState extends State<Swipe> {
                 interests: interests),
             likeAction: () async {
               String accessToken = await _controller.retrieveAccessToken() as String;
-              String result = await widget.swipeStatusService.postLike(accessToken, int.parse(_swipeItem.content.id));
+              await SwipesLeft.updateSwipeLeft(accessToken, widget.userService);
+              await widget.swipeStatusService.postLike(accessToken, int.parse(_swipeItem.content.id));
               _loadNextUser();
             },
             nopeAction: () async {
               String accessToken = await _controller.retrieveAccessToken() as String;
-              String result = await widget.swipeStatusService.postView(accessToken, int.parse(_swipeItem.content.id));
+              await SwipesLeft.updateSwipeLeft(accessToken, widget.userService);
+              await widget.swipeStatusService.postView(accessToken, int.parse(_swipeItem.content.id));
               _loadNextUser();
             },
             onSlideUpdate: (SlideRegion? region) async {
@@ -265,10 +199,8 @@ class _SwipeState extends State<Swipe> {
                       setState(() {
                         swipeableTimer = true;
                       });
-                      // Dislike
                       SharedSwipeableEvent.swipeable.changeSwipeable(true);
                     } else {
-                      // Like
                       SharedSwipeableEvent.swipeable.changeSwipeable(false);
                     }
                   }
@@ -289,18 +221,25 @@ class _SwipeState extends State<Swipe> {
 
   @override
   Widget build(BuildContext context) {
-    return swipingAlgoId != 0
-        ? Scaffold(
+      return swipingAlgoId !=0 ? Scaffold(
         key: _scaffoldKey,
         backgroundColor: _customLoveTheme.neutralColor,
         body: isLoading
             ? const Center(
           child: CircularProgressIndicator(),
-        )
-            : Center(
-          child: getSwipeCard()
-        ))
-        : const SizedBox();
+        ):
+        Center(
+          child: SwipingCard(
+              matchEngine: _matchEngine,
+              customLoveTheme: _customLoveTheme,
+              swipeItem: _swipeItem,
+              swipeable: swipesEvent,
+              swipeableTimer: swipeableTimer,
+              userId: userId,
+              controller: _controller,
+              userService: widget.userService,
+              swipeStatusService: widget.swipeStatusService),
+        )) : const SizedBox();
   }
 
   Widget getSwipeCard() {
@@ -323,11 +262,12 @@ class _SwipeState extends State<Swipe> {
 
   @override
   void dispose() {
-    if (timer.isActive) {
-      timer.cancel();
+    if (timer != null) {
+      if(timer!.isActive) {
+        timer?.cancel();
+      }
     }
 
-    _algoIdSubscription?.cancel();
     _swipeableSubscription?.cancel();
 
     super.dispose();

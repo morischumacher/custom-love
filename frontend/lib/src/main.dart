@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/presentation/authentification/pages/logout_page.dart';
 import 'package:frontend/src/app/presentation/swipe/util/swipe_state_notifier.dart';
+import 'package:frontend/src/app/presentation/swipe/util/algo_id_notifier.dart';
 import 'package:frontend/src/app/presentation/utils/CustomScrollBehaviour.dart';
 import 'package:frontend/src/app/service/conversation_service.dart';
 import 'package:frontend/src/app/service/match_service.dart';
@@ -43,6 +44,7 @@ class CustomLove extends StatelessWidget {
         ChangeNotifierProvider<ConversationStorage>(create: (_) => ConversationStorage()),
         ChangeNotifierProvider<MessageStorage>(create: (_) => MessageStorage()),
         ChangeNotifierProvider<MatchStorage>(create: (_) => MatchStorage()),
+        ChangeNotifierProvider(create: (context) => AlgoIdNotifier()),
         ChangeNotifierProvider(create: (context) => SwipeStateNotifier()),
         Provider<http.Client>.value(value: httpClient),
         ProxyProvider<http.Client, UserApi>(

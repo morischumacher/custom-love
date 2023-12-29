@@ -40,7 +40,7 @@ class SwipingCard extends StatelessWidget {
   final CustomLoveTheme _customLoveTheme;
   final SwipeItem _swipeItem;
   bool swipeable = false;
-  bool _swipeableTimer;
+  final bool _swipeableTimer;
   final int _userId;
   SwipeState _swipeState;
 
@@ -164,14 +164,7 @@ class SwipingCard extends StatelessWidget {
                       )
                   );
                 },
-                onStackFinished: () async {
-                  int swipingsLeftInt = await SwipesLeft.updateSwipeLeft(controller, userService);
-                  if (swipingsLeftInt > 0) {
-                    SharedSwipeableEvent.swipeable.changeSwipeable(true);
-                  } else {
-                    SharedSwipeableEvent.swipeable.changeSwipeable(false);
-                  }
-                },
+                onStackFinished: () {},
                 itemChanged: (SwipeItem item, int index) {},
                 leftSwipeAllowed: _swipeableTimer ? swipeable : false,
                 rightSwipeAllowed: _swipeableTimer ? swipeable : false,
@@ -223,7 +216,6 @@ class SwipingCard extends StatelessWidget {
                 if(_swipeableTimer) {
                   int tmpSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(_userId, userService);
                   if(tmpSwipesLeft > 0) {
-                    await SwipesLeft.updateSwipeLeft(controller, userService);
                     _matchEngine!.currentItem?.nope();
                   } else {
                     _changeSwipeState(context, SwipeState.NO_SWIPES_LEFT);
@@ -241,7 +233,6 @@ class SwipingCard extends StatelessWidget {
                 if(_swipeableTimer) {
                   int tmpSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(_userId, userService);
                   if(tmpSwipesLeft > 0) {
-                    await SwipesLeft.updateSwipeLeft(controller, userService);
                     _matchEngine!.currentItem?.like();
                   } else {
                     _changeSwipeState(context, SwipeState.NO_SWIPES_LEFT);
