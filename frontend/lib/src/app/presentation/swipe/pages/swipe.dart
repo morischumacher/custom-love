@@ -91,7 +91,6 @@ class _SwipeState extends State<Swipe>{
   void _fetchInitData() async {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await _getUserId();
-
       await _checkSwipesLeft(false);
     });
   }
@@ -180,26 +179,30 @@ class _SwipeState extends State<Swipe>{
               _loadNextUser();
             },
             onSlideUpdate: (SlideRegion? region) async {
-              //check if it's possible to swipe (10 sec timer)
-              if (swipeableTimer) {
-                //ignore the swipe left check if the card is just be tapped
-                if (region != null) {
-                  //ensure that after a swipe attempt the api call happens only once
-                  if (!swiped) {
-                    swiped = true;
-                    await _checkSwipesLeft(true);
-                  }
-                }
-
-                //when swipe card is in the initial state (null position), it should be possible to make the api call
-                if (region == null) {
-                  swiped = false;
-                }
-              }
+              _onSlideUpdate(region);
             },
           );
           _matchEngine = MatchEngine(swipeItems: [_swipeItem]);
         });
+      }
+    }
+  }
+
+  _onSlideUpdate(SlideRegion? region) async {
+    //check if it's possible to swipe (10 sec timer)
+    if (swipeableTimer) {
+      //ignore the swipe left check if the card is just be tapped
+      if (region != null) {
+        //ensure that after a swipe attempt the api call happens only once
+        if (!swiped) {
+          swiped = true;
+          await _checkSwipesLeft(true);
+        }
+      }
+
+      //when swipe card is in the initial state (null position), it should be possible to make the api call
+      if (region == null) {
+        swiped = false;
       }
     }
   }
