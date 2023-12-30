@@ -31,6 +31,7 @@ class User(SQLModel, table=True):
     date_of_birth: datetime
     job: str
     search_radius: int
+    matching_algorithm: int
     swipes_left: int
     swipe_limit_reset_date: datetime
     latitude: Optional[float]
