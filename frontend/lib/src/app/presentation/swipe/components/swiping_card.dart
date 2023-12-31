@@ -2,16 +2,13 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend/src/app/presentation/swipe/util/shared_swipeable_event.dart';
-import 'package:swipe_cards/swipe_cards.dart';
 import 'package:frontend/src/config/theme.dart';
+import 'package:swipe_cards/swipe_cards.dart';
 
 import '../../../service/swipe_status_service.dart';
-import '../util/swipe_status.dart';
-import '../util/interests.dart';
-
 import '../../../service/user_service.dart';
 import '../../authentification/controller/login_controller.dart';
+import '../util/interests.dart';
 import '../util/swipes_left.dart';
 
 class SwipingCard extends StatelessWidget {

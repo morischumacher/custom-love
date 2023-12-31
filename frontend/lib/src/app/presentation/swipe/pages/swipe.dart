@@ -1,17 +1,16 @@
 import 'dart:async';
 
-import 'package:frontend/src/app/model/user_model.dart';
-import 'package:frontend/src/app/presentation/swipe/util/matching_algorithm.dart';
-import 'package:frontend/src/app/presentation/swipe/util/swipe_status.dart';
-import 'package:frontend/src/app/presentation/swipe/util/content.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/src/app/model/user_model.dart';
+import 'package:frontend/src/app/presentation/authentification/controller/login_controller.dart';
+import 'package:frontend/src/app/presentation/swipe/util/content.dart';
+import 'package:frontend/src/app/presentation/swipe/util/matching_algorithm.dart';
 import 'package:frontend/src/app/presentation/swipe/util/shared_swipeable_event.dart';
 import 'package:frontend/src/app/service/swipe_status_service.dart';
+import 'package:frontend/src/config/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:swipe_cards/draggable_card.dart';
 import 'package:swipe_cards/swipe_cards.dart';
-import 'package:frontend/src/config/theme.dart';
-import 'package:frontend/src/app/presentation/authentification/controller/login_controller.dart';
 
 import '../../../service/location_service.dart';
 import '../../../service/user_service.dart';
@@ -23,14 +22,15 @@ class Swipe extends StatefulWidget {
   final UserService userService;
   final SwipeStatusService swipeStatusService;
 
-  const Swipe({Key? key, required this.userService, required this.swipeStatusService}) : super(key: key);
+  const Swipe(
+      {Key? key, required this.userService, required this.swipeStatusService})
+      : super(key: key);
 
   @override
   _SwipeState createState() => _SwipeState();
-
 }
 
-class _SwipeState extends State<Swipe>{
+class _SwipeState extends State<Swipe> {
   late SwipeItem _swipeItem;
   MatchEngine? _matchEngine;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
@@ -77,7 +77,8 @@ class _SwipeState extends State<Swipe>{
       _loadNextUser();
       String accessToken = await _controller.retrieveAccessToken() as String;
       if (!context.mounted) return;
-      await MatchingAlgorithm.updateMatchingAlgorithm(accessToken, context.read<UserService>(), swipingAlgoId);
+      await MatchingAlgorithm.updateMatchingAlgorithm(
+          accessToken, context.read<UserService>(), swipingAlgoId);
     }
   }
 
@@ -94,7 +95,8 @@ class _SwipeState extends State<Swipe>{
   }
 
   Future<void> _getMatchingAlgorithm() async {
-    var matchingAlgorithm = await MatchingAlgorithm.getCurrentMatchingAlgorithm(userId, widget.userService);
+    var matchingAlgorithm = await MatchingAlgorithm.getCurrentMatchingAlgorithm(
+        userId, widget.userService);
     if (matchingAlgorithm != swipingAlgoId) {
       swipingAlgoId = matchingAlgorithm;
       algoIdNotifier?.setAlgoId(swipingAlgoId);
@@ -125,7 +127,8 @@ class _SwipeState extends State<Swipe>{
 
   Future<void> _swipeActionTaken(bool hasLiked) async {
     String accessToken = await _controller.retrieveAccessToken() as String;
-    int swipingsLeftInt = await SwipesLeft.updateSwipeLeft(accessToken, widget.userService);
+    int swipingsLeftInt =
+        await SwipesLeft.updateSwipeLeft(accessToken, widget.userService);
     if (swipingsLeftInt > 0) {
       SharedSwipeableEvent.swipeable.changeSwipeable(true);
     } else {
@@ -133,9 +136,11 @@ class _SwipeState extends State<Swipe>{
     }
 
     if (hasLiked) {
-      await widget.swipeStatusService.postLike(accessToken, int.parse(_swipeItem.content.id));
+      await widget.swipeStatusService
+          .postLike(accessToken, int.parse(_swipeItem.content.id));
     } else {
-      await widget.swipeStatusService.postView(accessToken, int.parse(_swipeItem.content.id));
+      await widget.swipeStatusService
+          .postView(accessToken, int.parse(_swipeItem.content.id));
     }
 
     _loadNextUser();

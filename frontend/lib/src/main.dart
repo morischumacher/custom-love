@@ -40,7 +40,8 @@ class CustomLove extends StatelessWidget {
         //ChangeNotifierProvider<CustomLoveState>(create: (context) => CustomLoveState()),
         ChangeNotifierProvider<StateManager>(create: (_) => StateManager()),
         ChangeNotifierProvider<UserStorage>(create: (_) => UserStorage()),
-        ChangeNotifierProvider<ConversationStorage>(create: (_) => ConversationStorage()),
+        ChangeNotifierProvider<ConversationStorage>(
+            create: (_) => ConversationStorage()),
         ChangeNotifierProvider<MessageStorage>(create: (_) => MessageStorage()),
         ChangeNotifierProvider<MatchStorage>(create: (_) => MatchStorage()),
         ChangeNotifierProvider(create: (context) => AlgoIdNotifier()),
@@ -58,16 +59,19 @@ class CustomLove extends StatelessWidget {
           update: (_, loginApi, __) => LoginService(loginApi),
         ),
         ProxyProvider<http.Client, RegistrationApi>(
-          update: (_, httpClient, __) => RegistrationApi(httpClient: httpClient),
+          update: (_, httpClient, __) =>
+              RegistrationApi(httpClient: httpClient),
         ),
         ProxyProvider<RegistrationApi, RegistrationService>(
-          update: (_, registrationApi, __) => RegistrationService(registrationApi),
+          update: (_, registrationApi, __) =>
+              RegistrationService(registrationApi),
         ),
         ProxyProvider<http.Client, ConversationApi>(
           update: (_, httpClient, __) => ConversationApi(httpClient),
         ),
         ProxyProvider<ConversationApi, ConversationService>(
-          update: (_, conversationApi, __) => ConversationService(conversationApi),
+          update: (_, conversationApi, __) =>
+              ConversationService(conversationApi),
         ),
         ProxyProvider<http.Client, MatchApi>(
           update: (_, httpClient, __) => MatchApi(httpClient),
@@ -96,7 +100,8 @@ class CustomLove extends StatelessWidget {
           '/': (context) {
             final loginService = Provider.of<LoginService>(context);
             final userService = Provider.of<UserService>(context);
-            final conversationService = Provider.of<ConversationService>(context);
+            final conversationService =
+                Provider.of<ConversationService>(context);
             final matchService = Provider.of<MatchService>(context);
             final messageService = Provider.of<MessageService>(context);
             final swipeStatusService = Provider.of<SwipeStatusService>(context);
@@ -110,11 +115,14 @@ class CustomLove extends StatelessWidget {
           '/home/swipe': (context) {
             final userService = Provider.of<UserService>(context);
             final swipeStatusService = Provider.of<SwipeStatusService>(context);
-            return HomeScreen(userService: userService, swipeStatusService: swipeStatusService);
+            return HomeScreen(
+                userService: userService,
+                swipeStatusService: swipeStatusService);
           },
           '/home/matches': (context) {
             final userService = Provider.of<UserService>(context);
-            final conversationService = Provider.of<ConversationService>(context);
+            final conversationService =
+                Provider.of<ConversationService>(context);
             final matchService = Provider.of<MatchService>(context);
             final messageService = Provider.of<MessageService>(context);
             return HomeScreen(userService: userService);
@@ -133,7 +141,7 @@ class CustomLove extends StatelessWidget {
                 lastName: null,
                 email: null,
                 password: null,
-                birthdate: null,
+                birthdate:null,
                 gender: null,
                 preference: null,
                 profilePicture: null,
@@ -141,8 +149,7 @@ class CustomLove extends StatelessWidget {
                 location: null,
                 searchRadius: null,
                 job: null,
-                bio: null
-            );
+                bio: null);
           }
         },
       ),

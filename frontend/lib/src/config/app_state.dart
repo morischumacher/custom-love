@@ -1,26 +1,23 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:frontend/src/app/model/collection_model.dart';
 import 'package:frontend/src/app/presentation/authentification/pages/logout_page.dart';
 import 'package:frontend/src/app/service/match_service.dart';
 import 'package:frontend/src/app/service/message_service.dart';
 import 'package:frontend/src/app/service/user_service.dart';
 import 'package:frontend/src/config/api_config.dart';
-import 'package:frontend/src/config/exceptions.dart';
 import 'package:provider/provider.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '../app/api/helpers/jwt_api.dart';
 import '../app/model/conversation_model.dart';
-import '../app/model/notification_model.dart';
-import '../app/model/user_model.dart';
 import '../app/model/match_model.dart';
 import '../app/model/message_model.dart';
+import '../app/model/notification_model.dart';
+import '../app/model/user_model.dart';
 import '../app/service/conversation_service.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
 
 abstract class CollectionStorage extends ChangeNotifier {
   bool loading = false;
@@ -38,25 +35,32 @@ class ConversationStorage extends CollectionStorage {
 class MessageStorage extends CollectionStorage {
   Map<int, Collection<Message>> messages = <int, Collection<Message>>{};
 
-  Future<void> initializeFirstPage(int conversationId, MessageService messageService) async {
+  Future<void> initializeFirstPage(
+      int conversationId, MessageService messageService) async {
     messages[conversationId] = Collection<Message>();
 
-    await messages[conversationId]!.getNextPage(messageService.copyWith("$conversationId"));
+    await messages[conversationId]!
+        .getNextPage(messageService.copyWith("$conversationId"));
     notifyListeners();
   }
 
   void addMessage(Message message, MessageService messageService) {
     if (!messages.containsKey(message.conversationId)) {
       messages[message.conversationId] = Collection<Message>();
-      messages[message.conversationId]!.getFirst(messageService.copyWith("${message.conversationId}"));
+      messages[message.conversationId]!
+          .getFirst(messageService.copyWith("${message.conversationId}"));
     }
 
-    messages[message.conversationId]!.items.putIfAbsent(message.id!, () => message);
+    messages[message.conversationId]!
+        .items
+        .putIfAbsent(message.id!, () => message);
     notifyListeners();
   }
 
-  Future<void> getNextPage(int conversationId, MessageService messageService) async {
-    await messages[conversationId]?.getNextPage(messageService.copyWith("$conversationId"));
+  Future<void> getNextPage(
+      int conversationId, MessageService messageService) async {
+    await messages[conversationId]
+        ?.getNextPage(messageService.copyWith("$conversationId"));
     notifyListeners();
   }
 }
@@ -93,44 +97,47 @@ class StateManager extends ChangeNotifier {
 
     initialized = true;
   }
-  
+
   Future<void> initializeUsers(BuildContext buildContext) async {
     UserService userService = buildContext.read<UserService>();
-    UserStorage userStorage = Provider.of<UserStorage>(buildContext, listen: false);
+    UserStorage userStorage =
+        Provider.of<UserStorage>(buildContext, listen: false);
 
     if (userStorage.initiated) {
       // make sure the loading flag is off
       userStorage.loading = false;
-      
+
       // do nothing
       return;
     }
-    
+
     // set the loading flag and load all users
     userStorage.loading = true;
     await userStorage.users.getAll(userService);
-    
+
     userStorage.loading = false;
     userStorage.initiated = true;
 
     userStorage.notifyListeners();
   }
-  
+
   Future<void> initializeConversations(BuildContext buildContext) async {
-    ConversationService conversationService = buildContext.read<ConversationService>();
+    ConversationService conversationService =
+        buildContext.read<ConversationService>();
     MessageService messageService = buildContext.read<MessageService>();
 
-    ConversationStorage conversationStorage = Provider.of<ConversationStorage>(buildContext, listen: false);
-    MessageStorage messageStorage = Provider.of<MessageStorage>(buildContext, listen: false);
-
+    ConversationStorage conversationStorage =
+        Provider.of<ConversationStorage>(buildContext, listen: false);
+    MessageStorage messageStorage =
+        Provider.of<MessageStorage>(buildContext, listen: false);
 
     if (conversationStorage.initiated && messageStorage.initiated) {
       conversationStorage.loading = false;
       messageStorage.loading = false;
-      
+
       return;
     }
-    
+
     conversationStorage.loading = true;
     await conversationStorage.conversations.getAll(conversationService);
 
@@ -162,7 +169,8 @@ class StateManager extends ChangeNotifier {
 
   Future<void> initializeMatches(BuildContext buildContext) async {
     MatchService matchService = buildContext.read<MatchService>();
-    MatchStorage matchStorage = Provider.of<MatchStorage>(buildContext, listen: false);
+    MatchStorage matchStorage =
+        Provider.of<MatchStorage>(buildContext, listen: false);
 
     if (matchStorage.initiated) {
       matchStorage.loading = false;
@@ -183,74 +191,72 @@ class StateManager extends ChangeNotifier {
 
     // subscribe to a websocket
     socket = WebSocketChannel.connect(
-        Uri.parse("${ApiConfig.socketsUrl}/users/socket/$token")
-    );
+        Uri.parse("${ApiConfig.socketsUrl}/users/socket/$token"));
 
-    socket?.stream.listen(
-      (event) {
-        NotificationModel notification = NotificationModel.fromJson(jsonDecode(jsonDecode(event)));
-        switch(notification.type) {
-          case "message":
-            receiveMessage(Message.fromJson(notification.content), buildContext);
-        }
-      },
-      onDone: () {
-        // ignore the callback when the closeCode is null
-        // the event will be handled in the onError callback
-        if (socket?.closeCode == null) {
-          // do nothing
-          return;
-        }
-
-        // update the connected flag
-        connected = false;
-        notifyListeners();
-
-        if (socket?.closeReason == "logout") {
-          user = null;
-          Navigator.of(buildContext).pushNamed(
-            "/logout",
-            arguments: const LogoutRouteArguments("You have logged in on more than 10 devices. You have been logged out of this device"),
-          );
-
-          return;
-        }
-
-        // reconnect to the webSocket if the connection has been closed
-        unawaited(connect(buildContext));
-      },
-      onError: (error) {
-        // update the connected flag
-        connected = false;
-        notifyListeners();
-
-        // if the retry threshold has been exceeded, logout
-        if (loginRetries <= 0) {
-          loginRetries = 10;
-          user = null;
-          Navigator.of(buildContext).pushNamed(
-            "/logout",
-            arguments: const LogoutRouteArguments("The server is unreachable, you have been logged out."),
-          );
-
-          return;
-        }
-
-        // TODO: there should be a sleep(x seconds)
-        // TODO: implement a background worker
-        loginRetries -= 1;
-
-        // try to reconnect to the socket
-        unawaited(connect(buildContext));
+    socket?.stream.listen((event) {
+      NotificationModel notification =
+          NotificationModel.fromJson(jsonDecode(jsonDecode(event)));
+      switch (notification.type) {
+        case "message":
+          receiveMessage(Message.fromJson(notification.content), buildContext);
       }
-    );
+    }, onDone: () {
+      // ignore the callback when the closeCode is null
+      // the event will be handled in the onError callback
+      if (socket?.closeCode == null) {
+        // do nothing
+        return;
+      }
+
+      // update the connected flag
+      connected = false;
+      notifyListeners();
+
+      if (socket?.closeReason == "logout") {
+        user = null;
+        Navigator.of(buildContext).pushNamed(
+          "/logout",
+          arguments: const LogoutRouteArguments(
+              "You have logged in on more than 10 devices. You have been logged out of this device"),
+        );
+
+        return;
+      }
+
+      // reconnect to the webSocket if the connection has been closed
+      unawaited(connect(buildContext));
+    }, onError: (error) {
+      // update the connected flag
+      connected = false;
+      notifyListeners();
+
+      // if the retry threshold has been exceeded, logout
+      if (loginRetries <= 0) {
+        loginRetries = 10;
+        user = null;
+        Navigator.of(buildContext).pushNamed(
+          "/logout",
+          arguments: const LogoutRouteArguments(
+              "The server is unreachable, you have been logged out."),
+        );
+
+        return;
+      }
+
+      // TODO: there should be a sleep(x seconds)
+      // TODO: implement a background worker
+      loginRetries -= 1;
+
+      // try to reconnect to the socket
+      unawaited(connect(buildContext));
+    });
 
     // set the connected flag to true
     try {
       await socket?.ready;
       connected = true;
       notifyListeners();
-    } catch(e) {
+    } catch (e) {
       // do nothing
     }
   }
@@ -258,13 +264,12 @@ class StateManager extends ChangeNotifier {
   Future<void> receiveMessage(Message message, BuildContext context) async {
     if (!context.mounted) return;
     Provider.of<MessageStorage>(context, listen: false).addMessage(
-        message,
-        Provider.of<MessageService>(context, listen: false)
-    );
+        message, Provider.of<MessageService>(context, listen: false));
   }
 
   Future<void> sendMessage(Message message, BuildContext context) async {
-    NotificationModel notification = NotificationModel("message", message.toJson());
+    NotificationModel notification =
+        NotificationModel("message", message.toJson());
     socket?.sink.add(jsonEncode(notification));
     //if (!context.mounted) return;
   }

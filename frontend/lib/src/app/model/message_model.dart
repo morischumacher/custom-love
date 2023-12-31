@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 class Message {
   int? id;
   bool isImage;
@@ -21,14 +19,13 @@ class Message {
 
   factory Message.fromJson(Map<String, dynamic> json) {
     return Message(
-      id: json['id'],
-      isImage: json['is_image'],
-      conversationId: json['conversation_id'],
-      senderId: json['sender_id'],
-      receiverId: json['receiver_id'],
-      message: json['message'],
-      timestamp: DateTime.parse(json['timestamp'])
-    );
+        id: json['id'],
+        isImage: json['is_image'],
+        conversationId: json['conversation_id'],
+        senderId: json['sender_id'],
+        receiverId: json['receiver_id'],
+        message: json['message'],
+        timestamp: DateTime.parse(json['timestamp']));
   }
 
   Map<String, dynamic> toJson() {
