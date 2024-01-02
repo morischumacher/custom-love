@@ -168,13 +168,27 @@ class _SwipeState extends State<Swipe>{
             content: _getUserInfo(user, city!),
             likeAction: () async {
               String accessToken = await _controller.retrieveAccessToken() as String;
-              await SwipesLeft.updateSwipeLeft(accessToken, widget.userService);
+              //tmpSwipesLeft = await SwipesLeft.updateSwipeLeft(accessToken, widget.userService);
               await widget.swipeStatusService.postLike(accessToken, int.parse(_swipeItem.content.id));
               _loadNextUser();
+              /*if (tmpSwipesLeft > 0) {
+                if (mounted) {
+                  setState(() {
+                    swipeStateNotifier?.setSwipeState(SwipeState.OKAY);
+                  });
+                }
+                _loadNextUser();
+              } else {
+                if (mounted) {
+                  setState(() {
+                    swipeStateNotifier?.setSwipeState(SwipeState.NO_SWIPES_LEFT);
+                  });
+                }
+              }*/
             },
             nopeAction: () async {
               String accessToken = await _controller.retrieveAccessToken() as String;
-              await SwipesLeft.updateSwipeLeft(accessToken, widget.userService);
+              //tmpSwipesLeft = await SwipesLeft.updateSwipeLeft(accessToken, widget.userService);
               await widget.swipeStatusService.postView(accessToken, int.parse(_swipeItem.content.id));
               _loadNextUser();
             },
@@ -209,6 +223,7 @@ class _SwipeState extends State<Swipe>{
 
   @override
   Widget build(BuildContext context) {
+    //final swipeState = context.watch<SwipeStateNotifier>().swipeState;
     return swipingAlgoId !=0 ? Scaffold(
         key: _scaffoldKey,
         backgroundColor: _customLoveTheme.neutralColor,
@@ -217,8 +232,37 @@ class _SwipeState extends State<Swipe>{
           child: CircularProgressIndicator(),
         ):
         Center(
-            child: getSwipeCard()
+            child: swipeStateNotifier?.swipeState == SwipeState.OKAY ?
+                userSwipeCard() : noSwipesLeftCard()
         )) : const SizedBox();
+  }
+
+  Widget userSwipeCard() {
+    return SwipingCard(
+        matchEngine: _matchEngine,
+        customLoveTheme: _customLoveTheme,
+        swipeItem: _swipeItem,
+        swipeable: swipesEvent,
+        swipeableTimer: swipeableTimer,
+        userId: userId,
+        controller: _controller,
+        userService: widget.userService,
+        swipeStatusService: widget.swipeStatusService,
+        swipeStateNotifier: swipeStateNotifier);
+  }
+
+  Widget noSwipesLeftCard() {
+    return SwipingCard(
+        matchEngine: _matchEngine,
+        customLoveTheme: _customLoveTheme,
+        swipeItem: SwipeItem(content: "No swipes left  :("),
+        swipeable: false,
+        swipeableTimer: swipeableTimer,
+        userId: userId,
+        controller: _controller,
+        userService: widget.userService,
+        swipeStatusService: widget.swipeStatusService,
+        swipeStateNotifier: swipeStateNotifier);
   }
 
   Content _getUserInfo(User user, String city) {
@@ -249,18 +293,19 @@ class _SwipeState extends State<Swipe>{
         interests: interests);
   }
 
-  Widget getSwipeCard() {
+  /*Widget getSwipeCard() {
     SwipeItem swipeItem;
     bool setSwipeable;
     print("swipe state in get swipe card: ");
     print(swipeStateNotifier?.swipeState.toString());
 
-    switch(swipeState) {
+    switch(swipeStateNotifier!.swipeState) {
       case SwipeState.OKAY:
         swipeItem = _swipeItem;
         setSwipeable = swipesEvent;
         print("okay");
       default:
+        print("No swipes left  :(");
         swipeItem = SwipeItem(content: "No swipes left  :(");
         setSwipeable = false;
     }
@@ -276,7 +321,7 @@ class _SwipeState extends State<Swipe>{
         userService: widget.userService,
         swipeStatusService: widget.swipeStatusService,
         swipeStateNotifier: swipeStateNotifier);
-  }
+  }*/
 
 
 
