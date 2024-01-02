@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_arc_text/flutter_arc_text.dart';
 import 'package:frontend/src/app/presentation/swipe/util/swipe_state_notifier.dart';
 import 'package:frontend/src/app/presentation/swipe/util/shared_swipeable_event.dart';
 import 'package:frontend/src/app/presentation/swipe/util/swipe_state.dart';
@@ -16,6 +17,7 @@ import '../util/interests.dart';
 import '../../../service/user_service.dart';
 import '../../authentification/controller/login_controller.dart';
 import '../util/swipes_left.dart';
+import 'dart:math' as math;
 
 class SwipingCard extends StatefulWidget {
   final LoginController controller;
@@ -82,21 +84,33 @@ print("SwipeState in SwipingCard:"+ widget._swipeStateNotifier.swipeState.toStri
               color: widget._customLoveTheme.neutralBackgroundColor,
               child: ClipRect(
                 child: SingleChildScrollView(
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.start,
+                  child: Stack(
                       children: [
                         SizedBox(height: height * 0.08),
-                        FittedBox(
+                        const FittedBox(
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: kIsWeb ? 50 : 40),
-                            child: Text(
-                              widget._swipeItem.content,
-                              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                            padding: EdgeInsets.symmetric(horizontal: 190, vertical: 190),
+                            child: ArcText(
+                              radius: 100,
+                              text: "Sorry - No Swipes Left  :(",
+                              textStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                              startAngle: 0,
+                              stretchAngle: 3,
+                              startAngleAlignment: StartAngleAlignment.center,
+                              placement: Placement.middle,
+                              direction: Direction.clockwise,
                             ),
                           ),
                         ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: kIsWeb ? 120 : 105, vertical: kIsWeb ? 120 : 105),
+                          child: Stack(
+                            children: [
+                              Icon(Icons.amp_stories_rounded, size: 150, color: widget._customLoveTheme.textColor),
+                              Container(padding: const EdgeInsets.only(left: 52, top: 50), child: Icon(Icons.lock_clock_rounded, size: 45, color: widget._customLoveTheme.primaryColor)),
+                            ],
+                          ),
+                        )
                       ]
                   ),
                 ),
