@@ -69,4 +69,13 @@ class UserService extends PaginatedService<User, UserApi> {
       rethrow;
     }
   }
+
+  Future<String> updateExpertSystem(var accessToken) async {
+    try {
+      final updateExSys = super.api.updateExpertSystem(accessToken);
+      return updateExSys;
+    } on Exception {
+      rethrow;
+    }
+  }
 }

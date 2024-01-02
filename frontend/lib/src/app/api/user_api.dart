@@ -150,4 +150,27 @@ class UserApi extends PaginatedApi<User> {
       throw Exception("Failed to load user");
     }
   }
+
+  Future<String> updateExpertSystem(var accessToken) async {
+    const body = "Update Expert System";
+
+    final response = await http.patch(
+      Uri.parse('${ApiConfig.baseUrl}/users/update/expertsystem'),
+      headers: {
+        'Content-Type': 'application/json',
+        'accept': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+      body: jsonEncode(body),
+    );
+
+    if (response.statusCode == 200) {
+      final String message = json.decode(response.body);
+      print(message);
+      return message;
+    } else {
+      // TODO: Add custom exception
+      throw Exception('Failed to update user Expert System');
+    }
+  }
 }
