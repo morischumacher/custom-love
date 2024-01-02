@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:frontend/src/app/model/user_model.dart';
 import 'package:frontend/src/app/presentation/swipe/util/swipe_state_notifier.dart';
 import 'package:frontend/src/app/presentation/swipe/util/swipe_state.dart';
+import 'package:frontend/src/app/presentation/swipe/util/matching_algorithm.dart';
+import 'package:frontend/src/app/presentation/swipe/util/swipe_status.dart';
 import 'package:frontend/src/app/presentation/swipe/util/content.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/presentation/swipe/util/shared_swipeable_event.dart';
@@ -56,6 +58,7 @@ class _SwipeState extends State<Swipe>{
     super.initState();
 
     _fetchInitData();
+  }
 
     _swipeableSubscription ??= SharedSwipeableEvent.swipeable.swipeableChanged
         .listen((bool swipeable) async {
@@ -65,7 +68,6 @@ class _SwipeState extends State<Swipe>{
         });
       }
     });
-  }
 
   @override
   Future<void> didChangeDependencies() async {
@@ -171,6 +173,24 @@ class _SwipeState extends State<Swipe>{
     }).whenComplete(() {
       isLoading = false;
     });
+  }
+
+  Future<void> _swipeActionTaken(bool hasLiked) async {
+    String accessToken = await _controller.retrieveAccessToken() as String;
+    int swipingsLeftInt = await SwipesLeft.updateSwipeLeft(accessToken, widget.userService);
+    if (swipingsLeftInt > 0) {
+      SharedSwipeableEvent.swipeable.changeSwipeable(true);
+    } else {
+      SharedSwipeableEvent.swipeable.changeSwipeable(false);
+    }
+
+    if (hasLiked) {
+      await widget.swipeStatusService.postLike(accessToken, int.parse(_swipeItem.content.id));
+    } else {
+      await widget.swipeStatusService.postView(accessToken, int.parse(_swipeItem.content.id));
+    }
+
+    _loadNextUser();
   }
 
   void _setSwipingCard(User? user, String? city) {
@@ -294,4 +314,5 @@ class _SwipeState extends State<Swipe>{
 
     super.dispose();
   }
+
 }
