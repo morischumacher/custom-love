@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:frontend/src/app/model/user_model.dart';
 import 'package:frontend/src/app/presentation/swipe/util/swipe_state_notifier.dart';
 import 'package:frontend/src/app/presentation/swipe/util/swipe_state.dart';
-import 'package:frontend/src/app/presentation/swipe/util/swipe_status.dart';
 import 'package:frontend/src/app/presentation/swipe/util/content.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/presentation/swipe/util/shared_swipeable_event.dart';
@@ -47,7 +46,6 @@ class _SwipeState extends State<Swipe>{
   late int userId;
   bool swipesEvent = false;
   int swipingAlgoId = 0;
-  SwipeState swipeState = SwipeState.OKAY;
   SwipeStateNotifier? swipeStateNotifier;
   StreamSubscription<bool>? _swipeableSubscription;
 
@@ -56,8 +54,6 @@ class _SwipeState extends State<Swipe>{
     super.initState();
 
     _fetchInitData();
-
-    print("init");
 
     _swipeableSubscription = SharedSwipeableEvent.swipeable.swipeableChanged
         .listen((bool swipeable) async {
@@ -74,18 +70,42 @@ class _SwipeState extends State<Swipe>{
     super.didChangeDependencies();
 
     swipeStateNotifier ??= Provider.of<SwipeStateNotifier>(context);
-    print("swipe state notifier: ");
-    print(swipeStateNotifier?.swipeState.toString());
-
-    if (swipeState != swipeStateNotifier!.swipeState) {
-      swipeState = swipeStateNotifier!.swipeState;
-    }
 
     final algoIdNotifier = Provider.of<AlgoIdNotifier>(context);
     if (swipingAlgoId != algoIdNotifier.algoId) {
       swipingAlgoId = algoIdNotifier.algoId;
       _loadNextUser();
     }
+
+    if (mounted) {
+      setState(() {
+        swipeableTimer = false;
+      });
+    }
+
+    swiped = false;
+
+    timer = Timer(const Duration(seconds: 10), () {
+      if (mounted) {
+        setState(() {
+          swipeableTimer = true;
+        });
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return swipingAlgoId !=0 ? Scaffold(
+        key: _scaffoldKey,
+        backgroundColor: _customLoveTheme.neutralColor,
+        body: isLoading
+            ? Center(
+          child: CircularProgressIndicator(color: _customLoveTheme.primaryColor),
+        ):
+        Center(
+            child: getSwipeCard()
+        )) : const SizedBox();
   }
 
   void _fetchInitData() async {
@@ -125,8 +145,6 @@ class _SwipeState extends State<Swipe>{
       });
     }
 
-    print("algo id: $swipingAlgoId");
-
     String accessToken = await _controller.retrieveAccessToken() as String;
     await widget.userService
         .getAlgoUser(accessToken, swipingAlgoId)
@@ -151,46 +169,17 @@ class _SwipeState extends State<Swipe>{
     } else {
       if (mounted) {
         setState(() {
-
-          setState(() {
-            swipeableTimer = false;
-          });
-
-          swiped = false;
-
-          timer = Timer(const Duration(seconds: 10), () {
-            setState(() {
-              swipeableTimer = true;
-            });
-          });
-
           _swipeItem = SwipeItem(
             content: _getUserInfo(user, city!),
             likeAction: () async {
-              String accessToken = await _controller.retrieveAccessToken() as String;
-              //tmpSwipesLeft = await SwipesLeft.updateSwipeLeft(accessToken, widget.userService);
-              await widget.swipeStatusService.postLike(accessToken, int.parse(_swipeItem.content.id));
               _loadNextUser();
-              /*if (tmpSwipesLeft > 0) {
-                if (mounted) {
-                  setState(() {
-                    swipeStateNotifier?.setSwipeState(SwipeState.OKAY);
-                  });
-                }
-                _loadNextUser();
-              } else {
-                if (mounted) {
-                  setState(() {
-                    swipeStateNotifier?.setSwipeState(SwipeState.NO_SWIPES_LEFT);
-                  });
-                }
-              }*/
+              String accessToken = await _controller.retrieveAccessToken() as String;
+              await widget.swipeStatusService.postLike(accessToken, int.parse(_swipeItem.content.id));
             },
             nopeAction: () async {
-              String accessToken = await _controller.retrieveAccessToken() as String;
-              //tmpSwipesLeft = await SwipesLeft.updateSwipeLeft(accessToken, widget.userService);
-              await widget.swipeStatusService.postView(accessToken, int.parse(_swipeItem.content.id));
               _loadNextUser();
+              String accessToken = await _controller.retrieveAccessToken() as String;
+              await widget.swipeStatusService.postView(accessToken, int.parse(_swipeItem.content.id));
             },
             onSlideUpdate: (SlideRegion? region) async {
               _onSlideUpdate(region);
@@ -221,50 +210,6 @@ class _SwipeState extends State<Swipe>{
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    //final swipeState = context.watch<SwipeStateNotifier>().swipeState;
-    return swipingAlgoId !=0 ? Scaffold(
-        key: _scaffoldKey,
-        backgroundColor: _customLoveTheme.neutralColor,
-        body: isLoading
-            ? const Center(
-          child: CircularProgressIndicator(),
-        ):
-        Center(
-            child: swipeStateNotifier?.swipeState == SwipeState.OKAY ?
-                userSwipeCard() : noSwipesLeftCard()
-        )) : const SizedBox();
-  }
-
-  Widget userSwipeCard() {
-    return SwipingCard(
-        matchEngine: _matchEngine,
-        customLoveTheme: _customLoveTheme,
-        swipeItem: _swipeItem,
-        swipeable: swipesEvent,
-        swipeableTimer: swipeableTimer,
-        userId: userId,
-        controller: _controller,
-        userService: widget.userService,
-        swipeStatusService: widget.swipeStatusService,
-        swipeStateNotifier: swipeStateNotifier);
-  }
-
-  Widget noSwipesLeftCard() {
-    return SwipingCard(
-        matchEngine: _matchEngine,
-        customLoveTheme: _customLoveTheme,
-        swipeItem: SwipeItem(content: "No swipes left  :("),
-        swipeable: false,
-        swipeableTimer: swipeableTimer,
-        userId: userId,
-        controller: _controller,
-        userService: widget.userService,
-        swipeStatusService: widget.swipeStatusService,
-        swipeStateNotifier: swipeStateNotifier);
-  }
-
   Content _getUserInfo(User user, String city) {
     var id = user.id;
     var firstName = user.firstName;
@@ -293,19 +238,15 @@ class _SwipeState extends State<Swipe>{
         interests: interests);
   }
 
-  /*Widget getSwipeCard() {
+  Widget getSwipeCard() {
     SwipeItem swipeItem;
     bool setSwipeable;
-    print("swipe state in get swipe card: ");
-    print(swipeStateNotifier?.swipeState.toString());
 
     switch(swipeStateNotifier!.swipeState) {
       case SwipeState.OKAY:
         swipeItem = _swipeItem;
         setSwipeable = swipesEvent;
-        print("okay");
       default:
-        print("No swipes left  :(");
         swipeItem = SwipeItem(content: "No swipes left  :(");
         setSwipeable = false;
     }
@@ -321,10 +262,7 @@ class _SwipeState extends State<Swipe>{
         userService: widget.userService,
         swipeStatusService: widget.swipeStatusService,
         swipeStateNotifier: swipeStateNotifier);
-  }*/
-
-
-
+  }
 
   @override
   void dispose() {

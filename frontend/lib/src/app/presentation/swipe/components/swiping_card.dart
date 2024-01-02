@@ -19,7 +19,7 @@ import '../../authentification/controller/login_controller.dart';
 import '../util/swipes_left.dart';
 import 'dart:math' as math;
 
-class SwipingCard extends StatefulWidget {
+class SwipingCard extends StatelessWidget {
   final LoginController controller;
   final UserService userService;
   final SwipeStatusService swipeStatusService;
@@ -44,30 +44,23 @@ class SwipingCard extends StatefulWidget {
   bool swipeable = false;
   final bool _swipeableTimer;
   final int _userId;
-  //SwipeState _swipeState;
-   SwipeStateNotifier _swipeStateNotifier;
+  final SwipeStateNotifier _swipeStateNotifier;
 
-  @override
-  State<SwipingCard> createState() => _SwipingCardState();
-}
 
-class _SwipingCardState extends State<SwipingCard> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = min(MediaQuery.of(context).size.width, 750);
-print("SwipeState in SwipingCard:"+ widget._swipeStateNotifier.swipeState.toString());
-    //final swipeState = context.watch<SwipeStateNotifier>().swipeState;
-        return SafeArea(
-          child: Container(
-              alignment: Alignment.center,
-              height: height - kToolbarHeight > 0 ? height - kToolbarHeight : height,
-              width: !kIsWeb ? width * 0.90 : width * 0.65,
-              child: Stack(
-                  children: [ widget._swipeStateNotifier.swipeState != SwipeState.OKAY ? noSwipesLeftCard(height, width) :
-                  suggestionSwipeCard(height, width)
-                  ])),
-        );
+    return SafeArea(
+      child: Container(
+          alignment: Alignment.center,
+          height: height - kToolbarHeight > 0 ? height - kToolbarHeight : height,
+          width: !kIsWeb ? width * 0.90 : width * 0.65,
+          child: Stack(
+              children: [ _swipeStateNotifier.swipeState != SwipeState.OKAY ? noSwipesLeftCard(height, width) :
+              suggestionSwipeCard(height, width)
+              ])),
+    );
   }
 
   Widget noSwipesLeftCard(height, width) {
@@ -75,13 +68,13 @@ print("SwipeState in SwipingCard:"+ widget._swipeStateNotifier.swipeState.toStri
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       clipBehavior: Clip.hardEdge,
       child: SwipeCards(
-        matchEngine: widget._matchEngine!,
+        matchEngine: _matchEngine!,
         itemBuilder: (BuildContext context, int index) {
           return Container(
               height: double.infinity,
               width: double.infinity,
               alignment: Alignment.center,
-              color: widget._customLoveTheme.neutralBackgroundColor,
+              color: _customLoveTheme.neutralBackgroundColor,
               child: ClipRect(
                 child: SingleChildScrollView(
                   child: Stack(
@@ -106,8 +99,8 @@ print("SwipeState in SwipingCard:"+ widget._swipeStateNotifier.swipeState.toStri
                           padding: const EdgeInsets.symmetric(horizontal: kIsWeb ? 120 : 105, vertical: kIsWeb ? 120 : 105),
                           child: Stack(
                             children: [
-                              Icon(Icons.amp_stories_rounded, size: 150, color: widget._customLoveTheme.textColor),
-                              Container(padding: const EdgeInsets.only(left: 52, top: 50), child: Icon(Icons.lock_clock_rounded, size: 45, color: widget._customLoveTheme.primaryColor)),
+                              Icon(Icons.amp_stories_rounded, size: 150, color: _customLoveTheme.textColor),
+                              Container(padding: const EdgeInsets.only(left: 52, top: 50), child: Icon(Icons.lock_clock_rounded, size: 45, color: _customLoveTheme.primaryColor)),
                             ],
                           ),
                         )
@@ -118,12 +111,10 @@ print("SwipeState in SwipingCard:"+ widget._swipeStateNotifier.swipeState.toStri
           );
         },
         onStackFinished: () async {
-          print("on stack finished");
-          widget._swipeStateNotifier?.setSwipeState(SwipeState.OKAY);
-          print("OK no swipes left function");
+          _swipeStateNotifier.setSwipeState(SwipeState.OKAY);
         },
-        leftSwipeAllowed: widget.swipeable,
-        rightSwipeAllowed: widget.swipeable,
+        leftSwipeAllowed: swipeable,
+        rightSwipeAllowed: swipeable,
         fillSpace: true,
       ),
     );
@@ -134,13 +125,13 @@ print("SwipeState in SwipingCard:"+ widget._swipeStateNotifier.swipeState.toStri
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       clipBehavior: Clip.hardEdge,
       child: SwipeCards(
-        matchEngine: widget._matchEngine!,
+        matchEngine: _matchEngine!,
         itemBuilder: (BuildContext context, int index) {
           return Container(
               height: double.infinity,
               width: double.infinity,
               alignment: Alignment.center,
-              color: widget._customLoveTheme.neutralBackgroundColor,
+              color: _customLoveTheme.neutralBackgroundColor,
               child: ClipRect(
                 child: SingleChildScrollView(
                   child: Column(
@@ -153,7 +144,7 @@ print("SwipeState in SwipingCard:"+ widget._swipeStateNotifier.swipeState.toStri
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: kIsWeb ? 50 : 40),
                             child: Text(
-                              widget._swipeItem.content.firstName,
+                              _swipeItem.content.firstName,
                               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                             ),
                           ),
@@ -166,12 +157,12 @@ print("SwipeState in SwipingCard:"+ widget._swipeStateNotifier.swipeState.toStri
                               Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: kIsWeb ? 50 : 40),
                                 child: Text(
-                                  "Age: ${widget._swipeItem.content.age}",
+                                  "Age: ${_swipeItem.content.age}",
                                   style: const TextStyle(fontSize: kIsWeb ? 16 : 14, fontWeight: FontWeight.bold),
                                 ),
                               ),
                               SizedBox(width: kIsWeb ? width * 0.20 : width * 0.15),
-                              locationWidget(widget._swipeItem.content.city),
+                              locationWidget(_swipeItem.content.city),
                             ],
                           ),
                         ),
@@ -182,13 +173,13 @@ print("SwipeState in SwipingCard:"+ widget._swipeStateNotifier.swipeState.toStri
                             child: Wrap(
                               spacing: 25,
                               runSpacing: 4,
-                              children: widget._swipeItem.content.interests.length > 0 ? List<Widget>.generate(widget._swipeItem.content.interests.length,
+                              children: _swipeItem.content.interests.length > 0 ? List<Widget>.generate(_swipeItem.content.interests.length,
                                     (int i) {
-                                  Icon avatar = Interests.getIcon(widget._swipeItem.content.interests[i]["name"]);
+                                  Icon avatar = Interests.getIcon(_swipeItem.content.interests[i]["name"]);
                                   return ActionChip(
-                                    side: BorderSide(width: 1.5, color: widget._customLoveTheme.primaryColor),
+                                    side: BorderSide(width: 1.5, color: _customLoveTheme.primaryColor),
                                     avatar: avatar,
-                                    label: Text(widget._swipeItem.content.interests[i]["name"]),
+                                    label: Text(_swipeItem.content.interests[i]["name"]),
                                     onPressed: () {},
                                   );
                                 },
@@ -203,10 +194,10 @@ print("SwipeState in SwipingCard:"+ widget._swipeStateNotifier.swipeState.toStri
                             width: !kIsWeb ? width * 0.70 : width * 0.53,
                             margin: const EdgeInsets.symmetric(vertical: kIsWeb ? 50 : 30, horizontal: 35),
                             decoration: BoxDecoration(
-                              color: widget._customLoveTheme.neutralBackgroundColor,
+                              color: _customLoveTheme.neutralBackgroundColor,
                               boxShadow: [
                                 BoxShadow(
-                                  color: widget._customLoveTheme.textColor.withOpacity(0.3),
+                                  color: _customLoveTheme.textColor.withOpacity(0.3),
                                   spreadRadius: 3,
                                   blurRadius: 10,
                                   offset: const Offset(0, 3), // changes position of shadow
@@ -217,7 +208,7 @@ print("SwipeState in SwipingCard:"+ widget._swipeStateNotifier.swipeState.toStri
                             child: Padding(
                                 padding: const EdgeInsets.all(20),
                                 child: Text(
-                                    widget._swipeItem.content.bio,
+                                    _swipeItem.content.bio,
                                     style: const TextStyle(fontSize: kIsWeb ? 16 : 14),
                                     textAlign: TextAlign.left
                                 )
@@ -238,27 +229,11 @@ print("SwipeState in SwipingCard:"+ widget._swipeStateNotifier.swipeState.toStri
           );
         },
         onStackFinished: () async {
-          print("on stack finished");
-          String accessToken = await widget.controller.retrieveAccessToken() as String;
-          int tmpSwipesLeft = await SwipesLeft.updateSwipeLeft(accessToken, widget.userService);
-          if (tmpSwipesLeft > 0) {
-            /*    if (mounted) {
-                  setState(() {
-                    widget._swipeStateNotifier?.setSwipeState(SwipeState.OKAY);
-                    print("OK");
-                  });
-                }*/
-            widget._swipeStateNotifier?.setSwipeState(SwipeState.OKAY);
-            print("OK");
-          } else {
-            SharedSwipeableEvent.swipeable.changeSwipeable(false);
-            widget._swipeStateNotifier?.setSwipeState(SwipeState.NO_SWIPES_LEFT);
-            print("NO SWIPES LEFT");
-          }
+          _updateSwipesLeft(false, false);
         },
         itemChanged: (SwipeItem item, int index) {},
-        leftSwipeAllowed: widget._swipeableTimer ? widget.swipeable : false,
-        rightSwipeAllowed: widget._swipeableTimer ? widget.swipeable : false,
+        leftSwipeAllowed: _swipeableTimer ? swipeable : false,
+        rightSwipeAllowed: _swipeableTimer ? swipeable : false,
         fillSpace: true,
         likeTag: getTag("Like"),
         nopeTag: getTag("Dislike"),
@@ -272,7 +247,7 @@ print("SwipeState in SwipingCard:"+ widget._swipeStateNotifier.swipeState.toStri
       padding: const EdgeInsets.all(3.0),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: widget._customLoveTheme.primaryColor)
+          border: Border.all(color: _customLoveTheme.primaryColor)
       ),
       child: Text(tagString),
     );
@@ -298,70 +273,57 @@ print("SwipeState in SwipingCard:"+ widget._swipeStateNotifier.swipeState.toStri
       children: [
         ElevatedButton(
             onPressed: () async {
-              if(widget._swipeableTimer) {
-                int tmpSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(widget._userId, widget.userService);
+              if(_swipeableTimer) {
+                int tmpSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(_userId, userService);
                 if(tmpSwipesLeft > 0) {
-                  widget._matchEngine!.currentItem?.nope();
-                  String accessToken = await widget.controller.retrieveAccessToken() as String;
-                  tmpSwipesLeft = await SwipesLeft.updateSwipeLeft(accessToken, widget.userService);
-                  if (tmpSwipesLeft > 0) {
-                    widget._swipeStateNotifier?.setSwipeState(SwipeState.OKAY);
-                    print("OK");
-                  } else {
-                    SharedSwipeableEvent.swipeable.changeSwipeable(false);
-                    widget._swipeStateNotifier?.setSwipeState(SwipeState.NO_SWIPES_LEFT);
-                    print("NO SWIPES LEFT");
-                  }
+                  _updateSwipesLeft(true, false);
                 } else {
-                  widget._swipeStateNotifier.setSwipeState(SwipeState.NO_SWIPES_LEFT);
-
+                  _swipeStateNotifier.setSwipeState(SwipeState.NO_SWIPES_LEFT);
                 }
               }
             },
             style: ElevatedButton.styleFrom(
               padding: EdgeInsets.symmetric(vertical: buttonHeight, horizontal: buttonWidth),
-              backgroundColor: widget._customLoveTheme.primaryColor,
+              backgroundColor: _customLoveTheme.primaryColor,
             ),
-            child: Icon(Icons.close, size: buttonSize, color: widget._customLoveTheme.textColor)),
+            child: Icon(Icons.close, size: buttonSize, color: _customLoveTheme.textColor)),
         SizedBox(width: width * 0.1),
         ElevatedButton(
             onPressed: () async {
-              if(widget._swipeableTimer) {
-                int tmpSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(widget._userId, widget.userService);
+              if(_swipeableTimer) {
+                int tmpSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(_userId, userService);
                 if(tmpSwipesLeft > 0) {
-                  widget._matchEngine!.currentItem?.like();
-                  String accessToken = await widget.controller.retrieveAccessToken() as String;
-                  tmpSwipesLeft = await SwipesLeft.updateSwipeLeft(accessToken, widget.userService);
-                  if (tmpSwipesLeft > 0) {
-                    widget._swipeStateNotifier?.setSwipeState(SwipeState.OKAY);
-                    print("OK");
-                  } else {
-                    SharedSwipeableEvent.swipeable.changeSwipeable(false);
-                    widget._swipeStateNotifier?.setSwipeState(SwipeState.NO_SWIPES_LEFT);
-                    print("NO SWIPES LEFT");
-                  }
+                  _updateSwipesLeft(true, true);
                 } else {
-                  widget._swipeStateNotifier.setSwipeState(SwipeState.NO_SWIPES_LEFT);
-                  // _changeSwipeState(context, SwipeState.NO_SWIPES_LEFT);
+                  _swipeStateNotifier.setSwipeState(SwipeState.NO_SWIPES_LEFT);
                 }
               }
             },
             style: ElevatedButton.styleFrom(
               padding: EdgeInsets.symmetric(vertical: buttonHeight, horizontal: buttonWidth),
-              backgroundColor: widget._customLoveTheme.primaryColor,
+              backgroundColor: _customLoveTheme.primaryColor,
             ),
-            child: Icon(Icons.favorite_outline, size: buttonSize, color: widget._customLoveTheme.textColor)),
+            child: Icon(Icons.favorite_outline, size: buttonSize, color: _customLoveTheme.textColor)),
       ],
     );
   }
 
-  void _changeSwipeState(BuildContext context, SwipeState swipeState) {
-    //if (widget._swipeStateNotifier.swipeState != swipeState) {
-      setState(() {
-        widget._swipeStateNotifier.setSwipeState(swipeState);
-      });
-
-
-  //  }
+  Future<void> _updateSwipesLeft(bool swipedViaButton, bool hasLiked) async {
+    if (swipedViaButton) {
+      if (hasLiked) {
+        _matchEngine!.currentItem?.like();
+      } else {
+        _matchEngine!.currentItem?.nope();
+      }
+    }
+    String accessToken = await controller.retrieveAccessToken() as String;
+    int tmpSwipesLeft = await SwipesLeft.updateSwipeLeft(accessToken, userService);
+    if (tmpSwipesLeft > 0) {
+      _swipeStateNotifier.setSwipeState(SwipeState.OKAY);
+    } else {
+      SharedSwipeableEvent.swipeable.changeSwipeable(false);
+      _swipeStateNotifier.setSwipeState(SwipeState.NO_SWIPES_LEFT);
+    }
   }
+
 }
