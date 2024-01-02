@@ -48,6 +48,8 @@ class _SwipeState extends State<Swipe>{
   int swipingAlgoId = 0;
   SwipeStateNotifier? swipeStateNotifier;
   StreamSubscription<bool>? _swipeableSubscription;
+  AlgoIdNotifier? algoIdNotifier;
+  bool loginAlgoIsSet = false;
 
   @override
   void initState() {
@@ -55,7 +57,7 @@ class _SwipeState extends State<Swipe>{
 
     _fetchInitData();
 
-    _swipeableSubscription = SharedSwipeableEvent.swipeable.swipeableChanged
+    _swipeableSubscription ??= SharedSwipeableEvent.swipeable.swipeableChanged
         .listen((bool swipeable) async {
       if (mounted) {
         setState(() {
@@ -71,12 +73,16 @@ class _SwipeState extends State<Swipe>{
 
     swipeStateNotifier ??= Provider.of<SwipeStateNotifier>(context);
 
-    final algoIdNotifier = Provider.of<AlgoIdNotifier>(context);
-    if (swipingAlgoId != algoIdNotifier.algoId) {
-      swipingAlgoId = algoIdNotifier.algoId;
+    algoIdNotifier ??= Provider.of<AlgoIdNotifier>(context);
+    if (swipingAlgoId != algoIdNotifier?.algoId || loginAlgoIsSet) {
+      swipingAlgoId = algoIdNotifier!.algoId;
       _loadNextUser();
+      String accessToken = await _controller.retrieveAccessToken() as String;
+      if (!context.mounted) return;
+      await MatchingAlgorithm.updateMatchingAlgorithm(accessToken, context.read<UserService>(), swipingAlgoId);
     }
 
+    // 10 sec timer
     if (mounted) {
       setState(() {
         swipeableTimer = false;
@@ -111,6 +117,7 @@ class _SwipeState extends State<Swipe>{
   void _fetchInitData() async {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await _getUserId();
+      await _getMatchingAlgorithm();
       await _checkSwipesLeft(false);
     });
   }
@@ -136,6 +143,15 @@ class _SwipeState extends State<Swipe>{
   Future<void> _getUserId() async {
     var userIdString = await _controller.retrieveUserId() as String;
     userId = int.parse(userIdString);
+  }
+
+  Future<void> _getMatchingAlgorithm() async {
+    var matchingAlgorithm = await MatchingAlgorithm.getCurrentMatchingAlgorithm(userId, widget.userService);
+    if (matchingAlgorithm != swipingAlgoId) {
+      swipingAlgoId = matchingAlgorithm;
+      algoIdNotifier?.setAlgoId(swipingAlgoId);
+      loginAlgoIsSet = true;
+    }
   }
 
   void _loadNextUser() async {
@@ -172,14 +188,10 @@ class _SwipeState extends State<Swipe>{
           _swipeItem = SwipeItem(
             content: _getUserInfo(user, city!),
             likeAction: () async {
-              _loadNextUser();
-              String accessToken = await _controller.retrieveAccessToken() as String;
-              await widget.swipeStatusService.postLike(accessToken, int.parse(_swipeItem.content.id));
+              _swipeActionTaken(true);
             },
             nopeAction: () async {
-              _loadNextUser();
-              String accessToken = await _controller.retrieveAccessToken() as String;
-              await widget.swipeStatusService.postView(accessToken, int.parse(_swipeItem.content.id));
+              _swipeActionTaken(false);
             },
             onSlideUpdate: (SlideRegion? region) async {
               _onSlideUpdate(region);
@@ -207,6 +219,16 @@ class _SwipeState extends State<Swipe>{
       if (region == null) {
         swiped = false;
       }
+    }
+  }
+
+  void _swipeActionTaken(bool hasLiked) async {
+    _loadNextUser();
+    String accessToken = await _controller.retrieveAccessToken() as String;
+    if (hasLiked) {
+      await widget.swipeStatusService.postLike(accessToken, int.parse(_swipeItem.content.id));
+    } else {
+      await widget.swipeStatusService.postView(accessToken, int.parse(_swipeItem.content.id));
     }
   }
 
@@ -266,11 +288,7 @@ class _SwipeState extends State<Swipe>{
 
   @override
   void dispose() {
-    if (timer != null) {
-      if(timer!.isActive) {
-        timer?.cancel();
-      }
-    }
+    timer?.cancel();
 
     _swipeableSubscription?.cancel();
 
