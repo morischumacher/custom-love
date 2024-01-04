@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/src/app/presentation/chat/components/menu_item.dart';
 import 'package:frontend/src/app/presentation/chat/components/popup_menu.dart';
 import 'package:frontend/src/config/app_state.dart';
 import 'package:provider/provider.dart';

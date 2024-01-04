@@ -1,8 +1,7 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:frontend/src/config/theme.dart';
 import 'package:image_picker/image_picker.dart';
+
 import 'menu_item.dart';
 
 class PopupMenu extends StatelessWidget {
@@ -35,9 +34,9 @@ class PopupMenu extends StatelessWidget {
     ];
 
     showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
             title: const Text('Upload image'),
             content: const SingleChildScrollView(
               child: ListBody(
@@ -47,9 +46,8 @@ class PopupMenu extends StatelessWidget {
               ),
             ),
             actions: buttons,
-        );
-      }
-    );
+          );
+        });
   }
 
   @override
