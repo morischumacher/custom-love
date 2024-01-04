@@ -60,7 +60,7 @@ class CustomListTile extends StatelessWidget {
             return const CircularProgressIndicator();
           }
 
-          Message? message = messageStorage.messages[conversation?.getOtherUserId(userId)]?.items.values.elementAtOrNull(0);
+          Message? message = messageStorage.messages[conversation?.id]?.items.values.lastOrNull;
           if (message == null) {
             return const Text("no messages");
           }
