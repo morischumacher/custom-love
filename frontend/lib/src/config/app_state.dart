@@ -84,11 +84,11 @@ class StateManager extends ChangeNotifier {
     await connect(buildContext);
   }
 
-  Future<void> initialize(BuildContext buildContext) async {
+  Future<void> initialize(BuildContext buildContext, {bool force = false}) async {
     List<Future<void>> tasks = List<Future<void>>.from({
-      initializeUsers(buildContext),
-      initializeConversations(buildContext),
-      initializeMatches(buildContext)
+      initializeUsers(buildContext, force: force),
+      initializeConversations(buildContext, force: force),
+      initializeMatches(buildContext, force: force)
     });
 
     for (Future<void> task in tasks) {
@@ -98,10 +98,15 @@ class StateManager extends ChangeNotifier {
     initialized = true;
   }
 
-  Future<void> initializeUsers(BuildContext buildContext) async {
+  Future<void> initializeUsers(BuildContext buildContext, {bool force = false}) async {
     UserService userService = buildContext.read<UserService>();
     UserStorage userStorage =
         Provider.of<UserStorage>(buildContext, listen: false);
+
+    if (force) {
+      userStorage.initiated = false;
+      userStorage.users.items.clear();
+    }
 
     if (userStorage.initiated) {
       // make sure the loading flag is off
@@ -120,16 +125,21 @@ class StateManager extends ChangeNotifier {
 
     userStorage.notifyListeners();
   }
-
-  Future<void> initializeConversations(BuildContext buildContext) async {
-    ConversationService conversationService =
-        buildContext.read<ConversationService>();
+  
+  Future<void> initializeConversations(BuildContext buildContext, {bool force = false}) async {
+    ConversationService conversationService = buildContext.read<ConversationService>();
     MessageService messageService = buildContext.read<MessageService>();
 
-    ConversationStorage conversationStorage =
-        Provider.of<ConversationStorage>(buildContext, listen: false);
-    MessageStorage messageStorage =
-        Provider.of<MessageStorage>(buildContext, listen: false);
+    ConversationStorage conversationStorage = Provider.of<ConversationStorage>(buildContext, listen: false);
+    MessageStorage messageStorage = Provider.of<MessageStorage>(buildContext, listen: false);
+
+    if (force) {
+      conversationStorage.initiated = false;
+      messageStorage.initiated = false;
+
+      conversationStorage.conversations.items.clear();
+      messageStorage.messages.clear();
+    }
 
     if (conversationStorage.initiated && messageStorage.initiated) {
       conversationStorage.loading = false;
@@ -167,10 +177,15 @@ class StateManager extends ChangeNotifier {
     messageStorage.notifyListeners();
   }
 
-  Future<void> initializeMatches(BuildContext buildContext) async {
+  Future<void> initializeMatches(BuildContext buildContext, {bool force = false}) async {
     MatchService matchService = buildContext.read<MatchService>();
     MatchStorage matchStorage =
         Provider.of<MatchStorage>(buildContext, listen: false);
+
+    if (force) {
+      matchStorage.initiated = false;
+      matchStorage.matches.items.clear();
+    }
 
     if (matchStorage.initiated) {
       matchStorage.loading = false;
