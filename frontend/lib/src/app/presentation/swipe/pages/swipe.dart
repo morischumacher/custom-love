@@ -139,6 +139,34 @@ class _SwipeState extends State<Swipe>{
     _loadNextUser();
   }
 
+  void _setTimer() {
+    // 10 sec timer
+    if (mounted) {
+      setState(() {
+        swipeableTimer = false;
+      });
+    }
+
+    swiped = false;
+
+    timer = Timer(const Duration(seconds: 5), () {
+      if (mounted) {
+        setState(() {
+          swipeableTimer = true;
+          print("Timer completed");
+        });
+      }
+    });
+  }
+
+  void resetTimer() {
+    if( timer !=null && timer!.isActive){
+      timer?.cancel();
+    }
+    _setTimer();
+    print("Timer reset");
+  }
+
   void _setSwipingCard(User? user, String? city) {
     if (user == null) {
       if (mounted) {
@@ -169,21 +197,7 @@ class _SwipeState extends State<Swipe>{
             age--;
           }
 
-          if (mounted) {
-            setState(() {
-              swipeableTimer = false;
-            });
-          }
-
-          swiped = false;
-
-          timer = Timer(const Duration(seconds: 10), () {
-            if (mounted) {
-              setState(() {
-                swipeableTimer = true;
-              });
-            }
-          });
+          resetTimer();
 
           _swipeItem = SwipeItem(
             content: Content(
