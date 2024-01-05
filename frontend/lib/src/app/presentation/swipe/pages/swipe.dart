@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:frontend/src/app/model/user_model.dart';
 import 'package:frontend/src/app/presentation/swipe/util/matching_algorithm.dart';
-import 'package:frontend/src/app/presentation/swipe/util/swipe_status.dart';
 import 'package:frontend/src/app/presentation/swipe/util/content.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/presentation/swipe/util/shared_swipeable_event.dart';
@@ -40,8 +39,6 @@ class _SwipeState extends State<Swipe>{
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
   final LoginController _controller = LoginController();
   final LocationService _locationService = LocationService();
-  Timer? timer;
-  bool swipeableTimer = true;
   late int tmpSwipesLeft;
   late int userId;
   bool swipesEvent = false;
@@ -139,34 +136,6 @@ class _SwipeState extends State<Swipe>{
     _loadNextUser();
   }
 
-  void _setTimer() {
-    // 10 sec timer
-    if (mounted) {
-      setState(() {
-        swipeableTimer = false;
-      });
-    }
-
-    swiped = false;
-
-    timer = Timer(const Duration(seconds: 5), () {
-      if (mounted) {
-        setState(() {
-          swipeableTimer = true;
-          print("Timer completed");
-        });
-      }
-    });
-  }
-
-  void resetTimer() {
-    if( timer !=null && timer!.isActive){
-      timer?.cancel();
-    }
-    _setTimer();
-    print("Timer reset");
-  }
-
   void _setSwipingCard(User? user, String? city) {
     if (user == null) {
       if (mounted) {
@@ -197,7 +166,7 @@ class _SwipeState extends State<Swipe>{
             age--;
           }
 
-          resetTimer();
+          //resetTimer();
 
           _swipeItem = SwipeItem(
             content: Content(
@@ -214,8 +183,6 @@ class _SwipeState extends State<Swipe>{
               _swipeActionTaken(false);
             },
             onSlideUpdate: (SlideRegion? region) async {
-              //check if it's possible to swipe (10 sec timer)
-              if (swipeableTimer) {
                 //ignore the swipe left check if the card is just be tapped
                 if (region != null) {
                   //ensure that after a swipe attempt the api call happens only once
@@ -224,12 +191,6 @@ class _SwipeState extends State<Swipe>{
                     tmpSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(
                         userId, widget.userService);
                     if (tmpSwipesLeft > 0) {
-                      //after reset_date is updated, it's possible to swipe again
-                      if (mounted) {
-                        setState(() {
-                          swipeableTimer = true;
-                        });
-                      }
                       SharedSwipeableEvent.swipeable.changeSwipeable(true);
                     } else {
                       SharedSwipeableEvent.swipeable.changeSwipeable(false);
@@ -241,7 +202,6 @@ class _SwipeState extends State<Swipe>{
                 if (region == null) {
                   swiped = false;
                 }
-              }
             },
           );
           _matchEngine = MatchEngine(swipeItems: [_swipeItem]);
@@ -265,7 +225,6 @@ class _SwipeState extends State<Swipe>{
               customLoveTheme: _customLoveTheme,
               swipeItem: _swipeItem,
               swipeable: swipesEvent,
-              swipeableTimer: swipeableTimer,
               userId: userId,
               controller: _controller,
               userService: widget.userService,
@@ -275,8 +234,6 @@ class _SwipeState extends State<Swipe>{
 
   @override
   void dispose() {
-    timer?.cancel();
-
     _swipeableSubscription?.cancel();
 
     super.dispose();
