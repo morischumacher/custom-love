@@ -6,9 +6,11 @@ import 'package:frontend/src/app/presentation/registration/pages/widgets/page_ti
 import 'package:frontend/src/app/presentation/registration/pages/widgets/textfield.dart';
 import 'package:provider/provider.dart';
 import '../../../../config/theme.dart';
+import '../../../api/helpers/jwt_api.dart';
 import '../../../service/login_service.dart';
 import '../../../service/user_service.dart';
 import '../../authentification/pages/login_page.dart';
+import '../../loading_screen/loading_screen.dart';
 
 class RegistrationNameEmail extends StatefulWidget {
   const RegistrationNameEmail({
@@ -51,9 +53,27 @@ class _RegistrationNameEmailState extends State<RegistrationNameEmail> {
     birthdate = widget.birthdate;
     profilePicture = widget.profilePicture;
     userInterestIdList = widget.userInterestIdList;
+
+    getAccessToken().then((token){
+      if (token != null) {
+        Navigator.pushNamed(context, '/home/swipe');
+      }
+    });
+  }
+
+  Future<String?> getAccessToken() async {
+    try {
+      return await JWTApi.retrieveAccessToken();
+    } catch (e) {
+      setState(() {
+        _userLoggedIn = false;
+      });
+      return null;
+    }
   }
 
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
+  bool? _userLoggedIn;
 
   final firstName = TextEditingController();
   final lastName = TextEditingController();
@@ -67,7 +87,7 @@ class _RegistrationNameEmailState extends State<RegistrationNameEmail> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return _userLoggedIn == null ? const LoadingScreen() :  Scaffold(
         backgroundColor: _customLoveTheme.neutralColor,
         body: Center(
           child: Container(
