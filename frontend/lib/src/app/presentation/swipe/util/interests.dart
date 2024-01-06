@@ -35,4 +35,8 @@ class Interests {
       return interests["default"]!;
     }
   }
+
+  static IconData getIconData(String interest) {
+    return getIcon(interest).icon!;
+  }
 }

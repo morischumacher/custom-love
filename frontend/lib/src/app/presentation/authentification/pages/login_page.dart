@@ -232,12 +232,17 @@ class _LoginPageState extends State<LoginPage> {
                       style: TextStyle(color: _customLoveTheme.primaryColor),
                     ),
                     const SizedBox(width: 4),
-                    const Text(
-                      'Register now',
-                      style: TextStyle(
-                        color: Colors.blue,
-                        fontWeight: FontWeight.bold,
+                    InkWell(
+                      child: const Text(
+                        'Register now',
+                        style: TextStyle(
+                          color: Colors.blue,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
+                      onTap: () {
+                        Navigator.pushNamed(context, "/registration");
+                      },
                     ),
                   ],
                 )

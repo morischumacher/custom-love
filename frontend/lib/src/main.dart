@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/presentation/authentification/pages/logout_page.dart';
+import 'package:frontend/src/app/presentation/swipe/util/algo_id_notifier.dart';
 import 'package:frontend/src/app/presentation/utils/CustomScrollBehaviour.dart';
 import 'package:frontend/src/app/service/conversation_service.dart';
 import 'package:frontend/src/app/service/match_service.dart';
 import 'package:frontend/src/app/service/message_service.dart';
+import 'package:frontend/src/app/api/registration_api.dart';
+import 'package:frontend/src/app/presentation/registration/pages/registration_name_email.dart';
+import 'package:frontend/src/app/service/registration_service.dart';
 import 'package:frontend/src/config/theme.dart';
 import 'package:frontend/src/app/presentation/authentification/pages/login_page.dart';
 import 'package:frontend/src/app/presentation/home/pages/home.dart';
@@ -42,6 +46,7 @@ class CustomLove extends StatelessWidget {
         ChangeNotifierProvider<ConversationStorage>(create: (_) => ConversationStorage()),
         ChangeNotifierProvider<MessageStorage>(create: (_) => MessageStorage()),
         ChangeNotifierProvider<MatchStorage>(create: (_) => MatchStorage()),
+        ChangeNotifierProvider(create: (context) => AlgoIdNotifier()),
         Provider<http.Client>.value(value: httpClient),
         ProxyProvider<http.Client, UserApi>(
           update: (_, httpClient, __) => UserApi(httpClient),
@@ -54,6 +59,12 @@ class CustomLove extends StatelessWidget {
         ),
         ProxyProvider<LoginApi, LoginService>(
           update: (_, loginApi, __) => LoginService(loginApi),
+        ),
+        ProxyProvider<http.Client, RegistrationApi>(
+          update: (_, httpClient, __) => RegistrationApi(httpClient: httpClient),
+        ),
+        ProxyProvider<RegistrationApi, RegistrationService>(
+          update: (_, registrationApi, __) => RegistrationService(registrationApi),
         ),
         ProxyProvider<http.Client, ConversationApi>(
           update: (_, httpClient, __) => ConversationApi(httpClient),
@@ -119,6 +130,20 @@ class CustomLove extends StatelessWidget {
           },
           '/logout': (context) {
             return const LogoutPage();
+          },
+          '/registration': (context) {
+            // return const RegistrationGenderPreference();
+            return RegistrationNameEmail(
+              firstName: null,
+              lastName: null,
+              email: null,
+              password: null,
+              gender: null,
+              preference: null,
+              birthdate: null,
+              profilePicture: null,
+              userInterestIdList: Set<int>()
+            );
           }
         },
       ),

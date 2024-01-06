@@ -2,28 +2,39 @@ import 'dart:convert';
 
 class Message {
   int? id;
+  bool isImage;
   int conversationId;
   int senderId;
   int receiverId;
   String message;
   DateTime timestamp;
 
-  Message(this.id, this.conversationId, this.senderId, this.receiverId, this.message, this.timestamp);
+  Message({
+    this.id,
+    this.isImage = false,
+    required this.conversationId,
+    required this.senderId,
+    required this.receiverId,
+    required this.message,
+    required this.timestamp,
+  });
 
   factory Message.fromJson(Map<String, dynamic> json) {
     return Message(
-      json['id'],
-      json['conversation_id'],
-      json['sender_id'],
-      json['receiver_id'],
-      json['message'],
-      DateTime.parse(json['timestamp'])
+      id: json['id'],
+      isImage: json['is_image'],
+      conversationId: json['conversation_id'],
+      senderId: json['sender_id'],
+      receiverId: json['receiver_id'],
+      message: json['message'],
+      timestamp: DateTime.parse(json['timestamp'])
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'is_image': isImage,
       'conversation_id': conversationId,
       'sender_id': senderId,
       'receiver_id': receiverId,
