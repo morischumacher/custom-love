@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/src/app/presentation/home/pages/home.dart';
+import 'package:frontend/src/app/presentation/loading_screen/loading_screen.dart';
 import 'package:frontend/src/app/service/location_service.dart';
 import 'package:frontend/src/app/service/user_service.dart';
 import 'package:frontend/src/config/theme.dart';
@@ -10,6 +12,9 @@ import 'package:geolocator/geolocator.dart';
 
 import 'package:google_fonts/google_fonts.dart';
 import 'package:logger/logger.dart';
+import 'package:provider/provider.dart';
+
+import '../../../api/helpers/jwt_api.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage(
@@ -27,13 +32,30 @@ class _LoginPageState extends State<LoginPage> {
   final LoginController _controller = LoginController();
   final LocationService _locationService = LocationService();
   final logger = Logger();
+  bool? _userLoggedIn;
 
   @override
   void initState() {
     super.initState();
+    getAccessToken().then((token){
+      if (token != null) {
+        Navigator.pushNamed(context, '/home/swipe');
+      }
+    });
     checkLocationPermission();
   }
 
+  Future<String?> getAccessToken() async {
+    try {
+      return await JWTApi.retrieveAccessToken();
+    } catch (e) {
+      setState(() {
+        _userLoggedIn = false;
+      });
+      return null;
+    }
+  }
+  
   Future<void> checkLocationPermission() async {
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
@@ -70,7 +92,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return _userLoggedIn == null ? const LoadingScreen() : Scaffold(
       backgroundColor: _customLoveTheme.neutralColor,
       body: SafeArea(
         child: Center(
