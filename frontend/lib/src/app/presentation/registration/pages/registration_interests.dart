@@ -160,7 +160,7 @@ class _RegistrationInterestsState extends State<RegistrationInterests> {
                         TextSpan(
                             text: '$interestCounter',
                             style: TextStyle(
-                                color: interestCounter < 3 || interestCounter > 5 ?
+                                color: interestCounter < minInterests || interestCounter > maxInterests ?
                                 _customLoveTheme.redColor :
                                 _customLoveTheme.tertiaryColor
                             )
@@ -176,7 +176,7 @@ class _RegistrationInterestsState extends State<RegistrationInterests> {
                       ],
                     ),
                   ),
-                  if (interestCounter < 3 || interestCounter > 5)
+                  if (interestCounter < minInterests || interestCounter > maxInterests)
                     RichText(
                       text: TextSpan(
                         // Note: Styles for TextSpans must be explicitly defined.
@@ -187,7 +187,7 @@ class _RegistrationInterestsState extends State<RegistrationInterests> {
                             fontWeight: FontWeight.bold
                         ),
                         children: <TextSpan>[
-                          TextSpan(text: 'Please select ${interestCounter < 3 ? 'at least 3 interests' : (interestCounter > 5 ? 'at most 5 interests' : '3-5 interests')}')
+                          TextSpan(text: 'Please select ${interestCounter < minInterests ? 'at least 3 interests' : (interestCounter > maxInterests ? 'at most 5 interests' : '3-5 interests')}')
                         ],
                       ),
                     ),
