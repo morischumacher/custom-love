@@ -57,6 +57,7 @@ class _SwipeState extends State<Swipe>{
   bool _didChangeDependenciesCalled = false;
   bool _swipeItemLoaded = false;
   bool _initCompleted = false;
+  bool _listenerAdded = false;
 
 
 
@@ -90,9 +91,15 @@ class _SwipeState extends State<Swipe>{
     if(!_didChangeDependenciesCalled) {
       _didChangeDependenciesCalled = true;
 
-
       swipeStateNotifier ??= Provider.of<SwipeStateNotifier>(context);
       print("swipeStatNotifier set");
+
+      if (!_listenerAdded) {
+        swipeStateNotifier = Provider.of<SwipeStateNotifier>(context);
+        swipeStateNotifier?.addListener(_swipeStateListener);
+        _listenerAdded = true;
+      }
+
       algoIdNotifier ??= Provider.of<AlgoIdNotifier>(context);
       print("algoIdNotifier set");
 
@@ -128,6 +135,22 @@ class _SwipeState extends State<Swipe>{
 
     }
 
+  }
+
+  void _swipeStateListener() {
+    print("listened to swipeStateNotifier");
+    if (mounted) {
+      setState(() {
+
+        if(swipeStateNotifier!.swipeState == SwipeState.OKAY) {
+          _loadNextUser();
+        } else {
+          _swipeItemLoaded = true;
+        }
+
+        build(context);
+      });
+    }
   }
 
   Widget getSwipeCardsSwitch() {
@@ -665,6 +688,9 @@ class _SwipeState extends State<Swipe>{
 
   @override
   void dispose() {
+    print("remove to swipeStateNotifier");
+    swipeStateNotifier?.removeListener(_swipeStateListener);
+
     timer?.cancel();
 
     _swipeableSubscription?.cancel();
