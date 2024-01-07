@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:math';
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter_arc_text/flutter_arc_text.dart';
 import 'package:frontend/src/app/model/user_model.dart';
 import 'package:frontend/src/app/presentation/swipe/util/swipe_state_notifier.dart';
 import 'package:frontend/src/app/presentation/swipe/util/swipe_state.dart';
 import 'package:frontend/src/app/presentation/swipe/util/matching_algorithm.dart';
-import 'package:frontend/src/app/presentation/swipe/util/swipe_status.dart';
 import 'package:frontend/src/app/presentation/swipe/util/content.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/presentation/swipe/util/shared_swipeable_event.dart';
@@ -17,8 +19,8 @@ import 'package:frontend/src/app/presentation/authentification/controller/login_
 
 import '../../../service/location_service.dart';
 import '../../../service/user_service.dart';
-import '../components/swiping_card.dart';
 import '../util/algo_id_notifier.dart';
+import '../util/interests.dart';
 import '../util/swipes_left.dart';
 
 class Swipe extends StatefulWidget {
@@ -55,6 +57,8 @@ class _SwipeState extends State<Swipe>{
   bool _didChangeDependenciesCalled = false;
   bool _swipeItemLoaded = false;
   bool _initCompleted = false;
+
+
 
   @override
   void initState() {
@@ -126,8 +130,26 @@ class _SwipeState extends State<Swipe>{
 
   }
 
+  Widget getSwipeCardsSwitch() {
+
+   SwipeState state = swipeStateNotifier!.swipeState;
+
+    switch (state) {
+      case SwipeState.OKAY:
+        return getSuggestedUserSwipeCard();
+      case SwipeState.NO_SWIPES_LEFT:
+      case SwipeState.NO_MATCH_SUGGESTIONS:
+      case SwipeState.NO_SURROUNDING_USER:
+      case SwipeState.NO_ALGORITHM_SELECTED:
+        return noSwipesLeftCardStatic();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+
+    //return noSwipesLeftCardStatic();
+
     return swipingAlgoId !=0 ? Scaffold(
         key: _scaffoldKey,
         backgroundColor: _customLoveTheme.neutralColor,
@@ -136,8 +158,8 @@ class _SwipeState extends State<Swipe>{
           child: CircularProgressIndicator(color: _customLoveTheme.primaryColor),
         ):
         Center(
-            child:  _swipeItemLoaded ? getSwipeCard(): CircularProgressIndicator(color: _customLoveTheme.primaryColor)
-        )) : const SizedBox();
+            child:  _swipeItemLoaded ? getSwipeCardsSwitch(): CircularProgressIndicator(color: _customLoveTheme.primaryColor)
+        )) : CircularProgressIndicator(color: _customLoveTheme.primaryColor);
   }
 
   Future<void> _fetchInitData() async {
@@ -198,7 +220,7 @@ class _SwipeState extends State<Swipe>{
       print("Username: "+user!.firstName);
       var city = await _locationService.getCurrentLocation(
           user!.latitude, user.longitude);
-      _setSwipingCard(user, city);
+      _setUserSwipingCard(user, city);
 
     }).whenComplete(() {
       //  isLoading = false;
@@ -212,7 +234,7 @@ class _SwipeState extends State<Swipe>{
     });
   }
 
-  void _setSwipingCard(User? user, String? city) {
+  void _setUserSwipingCard(User? user, String? city) {
     if (user == null) {
       if (mounted) {
         setState(() {
@@ -226,7 +248,7 @@ class _SwipeState extends State<Swipe>{
       if (mounted) {
         setState(() {
           _swipeItem = SwipeItem(
-            content: _getUserInfo(user, city!),
+            content: _getSuggestedUserInfo(user, city!),
             likeAction: () async {
               _swipeActionTaken(true);
             },
@@ -266,16 +288,23 @@ class _SwipeState extends State<Swipe>{
 
   void _swipeActionTaken(bool hasLiked) async {
     String accessToken = await _controller.retrieveAccessToken() as String;
+    await _checkSwipesLeft(true);
+    int tmpSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(userId, widget.userService);
     if (hasLiked) {
       await widget.swipeStatusService.postLike(accessToken, int.parse(_swipeItem.content.id));
     } else {
       await widget.swipeStatusService.postView(accessToken, int.parse(_swipeItem.content.id));
     }
     _didChangeDependenciesCalled = false;
-    _loadNextUser();
+    if(tmpSwipesLeft != 0){
+      _loadNextUser();
+    } else {
+      setState(() {});
+    }
+
   }
 
-  Content _getUserInfo(User user, String city) {
+  Content _getSuggestedUserInfo(User user, String city) {
     var id = user.id;
     var firstName = user.firstName;
     List<dynamic>? interests = [];
@@ -303,30 +332,335 @@ class _SwipeState extends State<Swipe>{
         interests: interests);
   }
 
-  Widget getSwipeCard() {
-    SwipeItem swipeItem;
-    bool setSwipeable;
+  Widget noSwipesLeftCard(height, width) {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      clipBehavior: Clip.hardEdge,
+      child: SwipeCards(
+        matchEngine: _matchEngine!,
+        itemBuilder: (BuildContext context, int index) {
+          return Container(
+              height: double.infinity,
+              width: double.infinity,
+              alignment: Alignment.center,
+              color: _customLoveTheme.neutralBackgroundColor,
+              child: ClipRect(
+                child: SingleChildScrollView(
+                  child: Stack(
+                      children: [
+                        SizedBox(height: height * 0.08),
+                        const FittedBox(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 190, vertical: 190),
+                            child: ArcText(
+                              radius: 100,
+                              text: "Sorry - No Swipes Left  :(",
+                              textStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                              startAngle: 0,
+                              stretchAngle: 3,
+                              startAngleAlignment: StartAngleAlignment.center,
+                              placement: Placement.middle,
+                              direction: Direction.clockwise,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: kIsWeb ? 120 : 105, vertical: kIsWeb ? 120 : 105),
+                          child: Stack(
+                            children: [
+                              Icon(Icons.amp_stories_rounded, size: 150, color: _customLoveTheme.textColor),
+                              Container(padding: const EdgeInsets.only(left: 52, top: 50), child: Icon(Icons.lock_clock_rounded, size: 45, color: _customLoveTheme.primaryColor)),
+                            ],
+                          ),
+                        )
+                      ]
+                  ),
+                ),
+              )
+          );
+        },
+        onStackFinished: () async {
+          swipeStateNotifier!.setSwipeState(SwipeState.OKAY);
+        },
+        leftSwipeAllowed: swipeable,
+        rightSwipeAllowed: swipeable,
+        fillSpace: true,
+      ),
+    );
+  }
 
-    switch(swipeStateNotifier!.swipeState) {
-      case SwipeState.OKAY:
-        swipeItem = _swipeItem;
-        setSwipeable = swipesEvent;
-      default:
-        swipeItem = SwipeItem(content: "No swipes left  :(");
-        setSwipeable = false;
+  Widget noSwipesLeftCardStatic() {
+    final height = MediaQuery.of(context).size.height;
+    final width = min(MediaQuery.of(context).size.width, 750);
+
+    final swipeCardHeight = height - kToolbarHeight > 0 ? height - kToolbarHeight : height;
+    final swipeCardWidth = !kIsWeb ? width * 0.90 : width * 0.65;
+
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      clipBehavior: Clip.hardEdge,
+      child: Container(
+          height: swipeCardHeight,
+          width: swipeCardWidth,
+          alignment: Alignment.center,
+          color: _customLoveTheme.neutralBackgroundColor,
+          child: ClipRect(
+            child: SingleChildScrollView(
+              child: Stack(
+                  children: [
+                    SizedBox(height: height * 0.08),
+                    const FittedBox(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 190, vertical: 190),
+                        child: ArcText(
+                          radius: 100,
+                          text: "Sorry - No Swipes Left  :(",
+                          textStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                          startAngle: 0,
+                          stretchAngle: 3,
+                          startAngleAlignment: StartAngleAlignment.center,
+                          placement: Placement.middle,
+                          direction: Direction.clockwise,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: kIsWeb ? 120 : 105, vertical: kIsWeb ? 120 : 105),
+                      child: Stack(
+                        children: [
+                          Icon(Icons.amp_stories_rounded, size: 150, color: _customLoveTheme.textColor),
+                          Container(padding: const EdgeInsets.only(left: 52, top: 50), child: Icon(Icons.lock_clock_rounded, size: 45, color: _customLoveTheme.primaryColor)),
+                        ],
+                      ),
+                    )
+                  ]
+              ),
+            ),
+          )
+      ),
+    );
+  }
+
+  Widget getSuggestedUserSwipeCard() {
+
+    final height = MediaQuery.of(context).size.height;
+    final width = min(MediaQuery.of(context).size.width, 750);
+    return SafeArea(
+      child: Container(
+          alignment: Alignment.center,
+          height: height - kToolbarHeight > 0 ? height - kToolbarHeight : height,
+          width: !kIsWeb ? width * 0.90 : width * 0.65,
+          child: Stack(
+              children: [
+                suggestionSwipeCard(height, width)
+              ])),
+    );
+  }
+
+  Widget suggestionSwipeCard(height, width) {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      clipBehavior: Clip.hardEdge,
+      child: SwipeCards(
+        matchEngine: _matchEngine!,
+        itemBuilder: (BuildContext context, int index) {
+          return Container(
+              height: double.infinity,
+              width: double.infinity,
+              alignment: Alignment.center,
+              color: _customLoveTheme.neutralBackgroundColor,
+              child: ClipRect(
+                child: SingleChildScrollView(
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        SizedBox(height: height * 0.08),
+                        FittedBox(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: kIsWeb ? 50 : 40),
+                            child: Text(
+                              _swipeItem.content.firstName,
+                              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: height * 0.02),
+                        FittedBox(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: kIsWeb ? 50 : 40),
+                                child: Text(
+                                  "Age: ${_swipeItem.content.age}",
+                                  style: const TextStyle(fontSize: kIsWeb ? 16 : 14, fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              SizedBox(width: kIsWeb ? width * 0.20 : width * 0.15),
+                              locationWidget(_swipeItem.content.city),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: height * 0.02),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: kIsWeb ? 50 : 40),
+                          child: FittedBox(
+                            child: Wrap(
+                              spacing: 25,
+                              runSpacing: 4,
+                              children: _swipeItem.content.interests.length > 0 ? List<Widget>.generate(_swipeItem.content.interests.length,
+                                    (int i) {
+                                  Icon avatar = Interests.getIcon(_swipeItem.content.interests[i]["name"]);
+                                  return ActionChip(
+                                    side: BorderSide(width: 1.5, color: _customLoveTheme.primaryColor),
+                                    avatar: avatar,
+                                    label: Text(_swipeItem.content.interests[i]["name"]),
+                                    onPressed: () {},
+                                  );
+                                },
+                              ) : [Container()],
+                            ),
+                          ),
+                        ),
+                        Center(
+                          child: Container(
+                            //for small bio card
+                            height: height - height * 0.6,
+                            width: !kIsWeb ? width * 0.70 : width * 0.53,
+                            margin: const EdgeInsets.symmetric(vertical: kIsWeb ? 50 : 30, horizontal: 35),
+                            decoration: BoxDecoration(
+                              color: _customLoveTheme.neutralBackgroundColor,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: _customLoveTheme.textColor.withOpacity(0.3),
+                                  spreadRadius: 3,
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 3), // changes position of shadow
+                                ),
+                              ],
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            child: Padding(
+                                padding: const EdgeInsets.all(20),
+                                child: Text(
+                                    _swipeItem.content.bio,
+                                    style: const TextStyle(fontSize: kIsWeb ? 16 : 14),
+                                    textAlign: TextAlign.left
+                                )
+                            ),
+                          ),
+                        ),
+                        Align(
+                            alignment: Alignment.bottomCenter,
+                            heightFactor: !kIsWeb ? 0.85 : 1,
+                            child: FittedBox(
+                              child: buttonWidget(context, height, width),
+                            )
+                        )
+                      ]
+                  ),
+                ),
+              )
+          );
+        },
+        onStackFinished: () async {
+          _updateSwipesLeft(false, false);
+        },
+        itemChanged: (SwipeItem item, int index) {},
+        leftSwipeAllowed: swipeableTimer ? swipeable : false,
+        rightSwipeAllowed: swipeableTimer ? swipeable : false,
+        fillSpace: true,
+        likeTag: getTag("Like"),
+        nopeTag: getTag("Dislike"),
+      ),
+    );
+  }
+
+  Widget getTag(String tagString) {
+    return Container(
+      margin: const EdgeInsets.all(15.0),
+      padding: const EdgeInsets.all(3.0),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: _customLoveTheme.primaryColor)
+      ),
+      child: Text(tagString),
+    );
+  }
+
+  Widget locationWidget(city) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [const Icon(Icons.location_on, size: 18),
+        Text(
+          "Location: $city",
+          style: const TextStyle(fontSize: kIsWeb ? 16 : 14, fontWeight: FontWeight.bold),
+        )],);
+  }
+
+  Widget buttonWidget(context, height, width) {
+    final buttonHeight =  kIsWeb ? height * 0.037 : height * 0.022;
+    final buttonWidth = kIsWeb ? width * 0.046 : width * 0.055;
+    double buttonSize = kIsWeb ? 40 : 32;
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        ElevatedButton(
+            onPressed: () async {
+              if(swipeableTimer) {
+                int tmpSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(userId, widget.userService);
+                if(tmpSwipesLeft > 0) {
+                  _updateSwipesLeft(true, false);
+                } else {
+                  swipeStateNotifier!.setSwipeState(SwipeState.NO_SWIPES_LEFT);
+                }
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              padding: EdgeInsets.symmetric(vertical: buttonHeight, horizontal: buttonWidth),
+              backgroundColor: _customLoveTheme.primaryColor,
+            ),
+            child: Icon(Icons.close, size: buttonSize, color: _customLoveTheme.textColor)),
+        SizedBox(width: width * 0.1),
+        ElevatedButton(
+            onPressed: () async {
+              if(swipeableTimer) {
+                int tmpSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(userId, widget.userService);
+                if(tmpSwipesLeft > 0) {
+                  _updateSwipesLeft(true, true);
+                } else {
+                  swipeStateNotifier!.setSwipeState(SwipeState.NO_SWIPES_LEFT);
+                }
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              padding: EdgeInsets.symmetric(vertical: buttonHeight, horizontal: buttonWidth),
+              backgroundColor: _customLoveTheme.primaryColor,
+            ),
+            child: Icon(Icons.favorite_outline, size: buttonSize, color: _customLoveTheme.textColor)),
+      ],
+    );
+  }
+
+  Future<void> _updateSwipesLeft(bool swipedViaButton, bool hasLiked) async {
+    if (swipedViaButton) {
+      if (hasLiked) {
+        _matchEngine!.currentItem?.like();
+      } else {
+        _matchEngine!.currentItem?.nope();
+      }
     }
-
-    return SwipingCard(
-        matchEngine: _matchEngine,
-        customLoveTheme: _customLoveTheme,
-        swipeItem: swipeItem,
-        swipeable: setSwipeable,
-        swipeableTimer: swipeableTimer,
-        userId: userId,
-        controller: _controller,
-        userService: widget.userService,
-        swipeStatusService: widget.swipeStatusService,
-        swipeStateNotifier: swipeStateNotifier);
+    String accessToken = await _controller.retrieveAccessToken() as String;
+    int tmpSwipesLeft = await SwipesLeft.updateSwipeLeft(accessToken, widget.userService);
+    if (tmpSwipesLeft > 0) {
+      swipeStateNotifier!.setSwipeState(SwipeState.OKAY);
+    } else {
+      SharedSwipeableEvent.swipeable.changeSwipeable(false);
+      swipeStateNotifier!.setSwipeState(SwipeState.NO_SWIPES_LEFT);
+    }
   }
 
   @override
