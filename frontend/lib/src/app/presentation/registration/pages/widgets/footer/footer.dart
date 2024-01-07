@@ -156,9 +156,9 @@ class _FooterState extends State<Footer> {
         // return widget.profilePicture != null;
         return true;
         // TODO: Are interests required?
-        // return widget.userInterestIdList.length != 0;
       case RegistrationPageSection.interests:
-        return true;
+        return widget.userInterestIdList.length >= 3 &&
+            widget.userInterestIdList.length <= 5;
       case RegistrationPageSection.jobBio:
         // Not mandatory, therefore left true
         return true;

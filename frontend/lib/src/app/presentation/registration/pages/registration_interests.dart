@@ -54,6 +54,7 @@ class _RegistrationInterestsState extends State<RegistrationInterests> {
   void initState() {
     super.initState();
     userInterestIdList = widget.userInterestIdList;
+    interestCounter = userInterestIdList.length;
     getInterests();
   }
 
@@ -76,6 +77,9 @@ class _RegistrationInterestsState extends State<RegistrationInterests> {
   late List<Interest> userInterestIdList = [];
   late List<Interest> interestDto = [];
   late bool httpError = false;
+  int minInterests = 3;
+  int maxInterests = 5;
+  int interestCounter = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -96,7 +100,7 @@ class _RegistrationInterestsState extends State<RegistrationInterests> {
                 children: [
                   const PageTitle(
                       title: "Your interests",
-                      description: "Select a few interests you're passionate about",
+                      description: "Select 3 to 5 interests you're passionate about",
                       bottomPadding: 49.0
                   ),
                   if (httpError)
@@ -143,6 +147,51 @@ class _RegistrationInterestsState extends State<RegistrationInterests> {
                       ),
                     ),
                   const SizedBox(height: 25.0),
+                  RichText(
+                    text: TextSpan(
+                      // Note: Styles for TextSpans must be explicitly defined.
+                      // Child text spans will inherit styles from parent
+                      style: TextStyle(
+                          color: interestCounter < 3 || interestCounter > 5 ? _customLoveTheme.redColor : _customLoveTheme.primaryColor,
+                          fontSize: 32.0,
+                          fontWeight: FontWeight.bold
+                      ),
+                      children: <TextSpan>[
+                        TextSpan(
+                            text: '$interestCounter',
+                            style: TextStyle(
+                                color: interestCounter < 3 || interestCounter > 5 ?
+                                _customLoveTheme.redColor :
+                                _customLoveTheme.tertiaryColor
+                            )
+                        ),
+                        TextSpan(text: ' / ', style: TextStyle(color: _customLoveTheme.textColor)),
+                        TextSpan(text: '$maxInterests', style: TextStyle(color: _customLoveTheme.tertiaryColor)),
+                        TextSpan(
+                            text: ' interests selected',
+                            style: TextStyle(
+                                color: _customLoveTheme.textColor
+                            )
+                        )
+                      ],
+                    ),
+                  ),
+                  if (interestCounter < 3 || interestCounter > 5)
+                    RichText(
+                      text: TextSpan(
+                        // Note: Styles for TextSpans must be explicitly defined.
+                        // Child text spans will inherit styles from parent
+                        style: TextStyle(
+                            color: _customLoveTheme.redColor,
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.bold
+                        ),
+                        children: <TextSpan>[
+                          TextSpan(text: 'Please select ${interestCounter < 3 ? 'at least 3 interests' : (interestCounter > 5 ? 'at most 5 interests' : '3-5 interests')}')
+                        ],
+                      ),
+                    ),
+                  const SizedBox(height: 25.0),
                   Expanded(child: Container()),
                   Footer(
                       pageSection: RegistrationPageSection.interests,
@@ -176,8 +225,16 @@ class _RegistrationInterestsState extends State<RegistrationInterests> {
   }
 
   void addRemoveInterest(Interest interest) {
-    containsInterest(interest) ?
-    userInterestIdList.removeWhere((thisInterest) => interest.id == thisInterest.id) :
-    userInterestIdList.add(interest);
+    if (containsInterest(interest)) {
+      userInterestIdList.removeWhere((thisInterest) => interest.id == thisInterest.id);
+      setState(() {
+        interestCounter--;
+      });
+    } else {
+      userInterestIdList.add(interest);
+      setState(() {
+        interestCounter++;
+      });
+    }
   }
 }
