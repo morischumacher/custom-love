@@ -37,7 +37,7 @@ class _InterestButtonState extends State<InterestButton> {
         },
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.all(20.0),
-          backgroundColor: widget.containsInterestFunction(widget.interest) ? _customLoveTheme.androidGreen : Colors.white,
+          backgroundColor: widget.containsInterestFunction(widget.interest) ? _customLoveTheme.tertiaryColor : Colors.white,
           foregroundColor: widget.containsInterestFunction(widget.interest) ? Colors.white : _customLoveTheme.tertiaryColor,
           elevation: 15,
           shadowColor: Colors.black,
