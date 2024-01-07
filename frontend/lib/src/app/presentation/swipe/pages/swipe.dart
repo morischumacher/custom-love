@@ -94,14 +94,14 @@ class _SwipeState extends State<Swipe>{
       swipeStateNotifier ??= Provider.of<SwipeStateNotifier>(context);
       print("swipeStatNotifier set");
 
-      if (!_listenerAdded) {
-        swipeStateNotifier = Provider.of<SwipeStateNotifier>(context);
-        swipeStateNotifier?.addListener(_swipeStateListener);
-        _listenerAdded = true;
-      }
-
       algoIdNotifier ??= Provider.of<AlgoIdNotifier>(context);
       print("algoIdNotifier set");
+
+      if (!_listenerAdded) {
+        swipeStateNotifier?.addListener(_swipeStateListener);
+        algoIdNotifier?.addListener(_algoIdListener);
+        _listenerAdded = true;
+      }
 
       // 10 sec timer
       if (mounted) {
@@ -120,7 +120,7 @@ class _SwipeState extends State<Swipe>{
         }
       });
 
-      if (swipingAlgoId != algoIdNotifier?.algoId || loginAlgoIsSet) {
+     /* if (swipingAlgoId != algoIdNotifier?.algoId || loginAlgoIsSet) {
 
 
         print("SwipingAlgoId "+swipingAlgoId.toString());
@@ -128,13 +128,35 @@ class _SwipeState extends State<Swipe>{
 
         swipingAlgoId = algoIdNotifier!.algoId;
         _loadNextUser();
-        String accessToken = await _controller.retrieveAccessToken() as String;
-        if (!context.mounted) return;
-        await MatchingAlgorithm.updateMatchingAlgorithm(accessToken, context.read<UserService>(), swipingAlgoId);
-      }
 
+      }
+*/
     }
 
+  }
+
+  Future<void> _algoIdListener() async {
+    print("listened to algoIdNotifier");
+
+    print("algoIdNotifier "+algoIdNotifier!.algoId.toString());
+    print("swipingAlgoId "+swipingAlgoId.toString());
+
+    if(swipingAlgoId != algoIdNotifier!.algoId && swipeStateNotifier!.swipeState == SwipeState.OKAY) {
+      swipingAlgoId = algoIdNotifier!.algoId;
+      String accessToken = await _controller.retrieveAccessToken() as String;
+      if (!context.mounted) return;
+      await MatchingAlgorithm.updateMatchingAlgorithm(accessToken, context.read<UserService>(), swipingAlgoId);
+    }
+
+    if (mounted) {
+      setState(() {
+        if(swipeStateNotifier!.swipeState == SwipeState.OKAY) {
+          _loadNextUser();
+        } else {
+          _swipeItemLoaded = true;
+        }
+      });
+    }
   }
 
   void _swipeStateListener() {
@@ -690,6 +712,7 @@ class _SwipeState extends State<Swipe>{
   void dispose() {
     print("remove to swipeStateNotifier");
     swipeStateNotifier?.removeListener(_swipeStateListener);
+    algoIdNotifier?.removeListener(_algoIdListener);
 
     timer?.cancel();
 
