@@ -56,9 +56,8 @@ class _SwipeState extends State<Swipe>{
   bool loginAlgoIsSet = false;
   bool _didChangeDependenciesCalled = false;
   bool _swipeItemLoaded = false;
-  bool _initCompleted = false;
+  //bool _initCompleted = false;
   bool _listenerAdded = false;
-
 
 
   @override
@@ -250,6 +249,8 @@ class _SwipeState extends State<Swipe>{
   }
 
   void _loadNextUser() async {
+    if (isLoading) return;
+
     if (mounted) {
       setState(() {
         isLoading = true;
