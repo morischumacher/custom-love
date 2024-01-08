@@ -143,6 +143,7 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [ _currentPage.index == 1 ?
           algoSwitcherMenu() : Container(),
         ],
+        automaticallyImplyLeading: false,
       ),
       body: route(context),
       bottomNavigationBar: BottomNavigationBar(
