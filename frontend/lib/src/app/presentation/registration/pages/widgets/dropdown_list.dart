@@ -1,20 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/src/app/model/gender_model.dart';
 
 import '../../../../../config/theme.dart';
+
+typedef void GenderCallback(Gender val);
 
 class DropDownList extends StatefulWidget {
   const DropDownList({
     super.key,
+    required this.callback,
     required this.labelText,
     required this.value,
     required this.options,
-    required this.setParentValueFunction
   });
 
+  final GenderCallback callback;
   final String labelText;
-  final String? value;
-  final List<String> options;
-  final Function setParentValueFunction;
+  final Gender? value;
+  final List<Gender> options;
 
   @override
   State<DropDownList> createState() => _DropDownListState();
@@ -27,13 +30,11 @@ class _DropDownListState extends State<DropDownList> {
     labelText = widget.labelText;
     value = widget.value;
     options = widget.options;
-    setParentValueFunction = widget.setParentValueFunction;
   }
 
   late String labelText;
-  late String? value;
-  late List<String> options;
-  late Function setParentValueFunction;
+  late Gender? value;
+  late List<Gender> options;
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
 
   @override
@@ -41,12 +42,12 @@ class _DropDownListState extends State<DropDownList> {
     return DropdownButtonFormField(
       value: value,
       items: options
-          .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+          .map((e) => DropdownMenuItem(value: e, child: Text(e.name)))
           .toList(),
       onChanged: (val) {
         setState(() {
-          value = val as String;
-          setParentValueFunction(value);
+          value = val as Gender;
+          widget.callback(value!);
         });
       },
       icon: const Icon(

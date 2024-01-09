@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/presentation/authentification/pages/logout_page.dart';
+import 'package:frontend/src/app/presentation/registration/pages/registration_location.dart';
 import 'package:frontend/src/app/presentation/swipe/util/algo_id_notifier.dart';
 import 'package:frontend/src/app/presentation/utils/CustomScrollBehaviour.dart';
 import 'package:frontend/src/app/service/conversation_service.dart';
 import 'package:frontend/src/app/service/match_service.dart';
 import 'package:frontend/src/app/service/message_service.dart';
 import 'package:frontend/src/app/api/registration_api.dart';
-import 'package:frontend/src/app/presentation/registration/pages/registration_name_email.dart';
 import 'package:frontend/src/app/service/registration_service.dart';
 import 'package:frontend/src/config/theme.dart';
 import 'package:frontend/src/app/presentation/authentification/pages/login_page.dart';
@@ -132,17 +132,21 @@ class CustomLove extends StatelessWidget {
             return const LogoutPage();
           },
           '/registration': (context) {
-            // return const RegistrationGenderPreference();
-            return RegistrationNameEmail(
-              firstName: null,
-              lastName: null,
-              email: null,
-              password: null,
-              gender: null,
-              preference: null,
-              birthdate: null,
-              profilePicture: null,
-              userInterestIdList: Set<int>()
+            // DO NOT CHANGE TO CONST, OTHERWISE WILL MESS WITH LISTS
+            return RegistrationLocation(
+                firstName: null,
+                lastName: null,
+                email: null,
+                password: null,
+                birthdate: null,
+                gender: null,
+                preference: null,
+                profilePicture: null,
+                userInterestIdList: [],
+                location: null,
+                searchRadius: null,
+                job: null,
+                bio: null
             );
           }
         },

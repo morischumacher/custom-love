@@ -21,3 +21,15 @@ class NoNetworkException implements Exception {
 
   NoNetworkException();
 }
+
+class InvalidRegistrationInputsException implements Exception {
+  final String message = "Provided invalid inputs during the registration process";
+
+  InvalidRegistrationInputsException();
+}
+
+class ServerNotRunningException implements Exception {
+  final String message = "Make sure your backend is running";
+
+  ServerNotRunningException();
+}
