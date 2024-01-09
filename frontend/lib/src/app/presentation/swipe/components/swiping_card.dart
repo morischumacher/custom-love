@@ -212,7 +212,7 @@ class SwipingCard extends StatelessWidget {
     );
   }
 
-  Widget locationWidget(city, double distance) {
+  Widget locationWidget(city, int distance) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
