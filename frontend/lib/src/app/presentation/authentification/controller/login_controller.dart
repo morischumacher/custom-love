@@ -80,7 +80,8 @@ class LoginController {
           Provider.of<StateManager>(context, listen: false)
               .registerUser(User.fromJson(loginResult['user']), context);
 
-          Navigator.of(context).pushNamed('/home/swipe');
+          Navigator.of(context).popUntil((route) => route.isFirst);
+          Navigator.of(context).pushReplacementNamed('/home/swipe');
         }
       } catch (e) {
         // Handle different exceptions
