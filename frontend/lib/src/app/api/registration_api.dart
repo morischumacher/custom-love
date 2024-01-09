@@ -53,7 +53,8 @@ class RegistrationApi {
           "swipe_limit_reset_date": DateTime.now().toString(),
           "longitude": location.longitude.toString(),
           "latitude": location.latitude.toString(),
-          "interest_ids": interests.toString()
+          "interest_ids": interests.toString(),
+          "matching_algorithm": 1.toString()
         })
     );
 
