@@ -6,7 +6,7 @@ from starlette import status
 from backend.models.user import User
 from backend.responses.error_response import ErrorResponse
 from backend.responses.user_response import UserResponse, UserResponseWithInterestsAndDistance
-from backend.services.user import patch_user, get_algo_user, UserUpdate, get_user, post_user, get_users, login, \
+from backend.services.user import patch_user, get_algo_user, UserUpdate, get_user, get_users, login, registration, \
     websocket_connect
 from backend.utils.pagination import Page
 from backend.utils.token import Token
