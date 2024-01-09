@@ -59,17 +59,18 @@ class _SwipeState extends State<Swipe>{
   //bool _initCompleted = false;
   bool _listenerAdded = false;
 
+  late double height;
+  late double width;
 
   @override
   void initState() {
     super.initState();
 
-
     _swipeableSubscription ??= SharedSwipeableEvent.swipeable.swipeableChanged
-        .listen((bool swipeable) async {
+        .listen((bool gib) async {
       if (mounted) {
         setState(() {
-          swipesEvent = swipeable;
+          swipeable = gib;
           // build(context);
         });
       }
@@ -174,36 +175,41 @@ class _SwipeState extends State<Swipe>{
     }
   }
 
-  Widget getSwipeCardsSwitch() {
+  Widget getSwipeCard() {
+    SwipeState state = swipeStateNotifier!.swipeState;
 
-   SwipeState state = swipeStateNotifier!.swipeState;
+    return SafeArea(
+      child: Container(
+          alignment: Alignment.center,
+          height: height - kToolbarHeight > 0 ? height - kToolbarHeight : height,
+          width: !kIsWeb ? width * 0.90 : width * 0.65,
+          child: Stack(
+              children: [getSwipeCardSwitch(state)])),
+    );
+  }
 
+  Widget getSwipeCardSwitch(state) {
     switch (state) {
       case SwipeState.OKAY:
-        return getSuggestedUserSwipeCard();
+        return suggestionSwipeCard();
       case SwipeState.NO_SWIPES_LEFT:
-      case SwipeState.NO_MATCH_SUGGESTIONS:
       case SwipeState.NO_SURROUNDING_USER:
-      case SwipeState.NO_ALGORITHM_SELECTED:
-        return noSwipesLeftCardStatic();
+        return noSwipesLeftCard();
+      default:
+        return Center(child: Container());
     }
   }
 
   @override
   Widget build(BuildContext context) {
-
-    //return noSwipesLeftCardStatic();
-
-    return swipingAlgoId !=0 ? Scaffold(
+    height = MediaQuery.of(context).size.height;
+    width = min(MediaQuery.of(context).size.width, 750);
+    return Scaffold(
         key: _scaffoldKey,
         backgroundColor: _customLoveTheme.neutralColor,
-        body: isLoading
-            ? Center(
-          child: CircularProgressIndicator(color: _customLoveTheme.primaryColor),
-        ):
-        Center(
-            child:  _swipeItemLoaded ? getSwipeCardsSwitch(): CircularProgressIndicator(color: _customLoveTheme.primaryColor)
-        )) : CircularProgressIndicator(color: _customLoveTheme.primaryColor);
+        body: Center(
+            child:  _swipeItemLoaded ? getSwipeCard(): Center(child: CircularProgressIndicator(color: _customLoveTheme.primaryColor))
+        ));
   }
 
   Future<void> _fetchInitData() async {
@@ -215,22 +221,23 @@ class _SwipeState extends State<Swipe>{
     });
   }
 
-  _checkSwipesLeft(bool userCardShown) async {
+  Future<int> _checkSwipesLeft(bool userCardShown) async {
     tmpSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(
         userId, widget.userService);
     if (tmpSwipesLeft > 0) {
       //after reset_date is updated, it's possible to swipe again
-      if (userCardShown) {
+     /* if (userCardShown) {
         setState(() {
           swipeableTimer = true;
         });
-      }
+      }*/
       SharedSwipeableEvent.swipeable.changeSwipeable(true);
       swipeStateNotifier?.setSwipeState(SwipeState.OKAY);
     } else {
       SharedSwipeableEvent.swipeable.changeSwipeable(false);
       swipeStateNotifier?.setSwipeState(SwipeState.NO_SWIPES_LEFT);
     }
+    return tmpSwipesLeft;
   }
 
   Future<void> _getUserId() async {
@@ -253,8 +260,8 @@ class _SwipeState extends State<Swipe>{
 
     if (mounted) {
       setState(() {
+        _swipeItemLoaded = false;
         isLoading = true;
-
       });
     }
     print("Before accessToken");
@@ -314,8 +321,6 @@ class _SwipeState extends State<Swipe>{
   }
 
   _onSlideUpdate(SlideRegion? region) async {
-    //check if it's possible to swipe (10 sec timer)
-    if (swipeableTimer) {
       //ignore the swipe left check if the card is just be tapped
       if (region != null) {
         //ensure that after a swipe attempt the api call happens only once
@@ -329,13 +334,11 @@ class _SwipeState extends State<Swipe>{
       if (region == null) {
         swiped = false;
       }
-    }
   }
 
   void _swipeActionTaken(bool hasLiked) async {
     String accessToken = await _controller.retrieveAccessToken() as String;
-    await _checkSwipesLeft(true);
-    int tmpSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(userId, widget.userService);
+    int tmpSwipesLeft = await _checkSwipesLeft(true);
     if (hasLiked) {
       await widget.swipeStatusService.postLike(accessToken, int.parse(_swipeItem.content.id));
     } else {
@@ -378,12 +381,18 @@ class _SwipeState extends State<Swipe>{
         interests: interests);
   }
 
-  Widget noSwipesLeftCard(height, width) {
+  Widget noSwipesLeftCard() {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       clipBehavior: Clip.hardEdge,
       child: SwipeCards(
-        matchEngine: _matchEngine!,
+        matchEngine: _matchEngine = MatchEngine(swipeItems: [
+          SwipeItem(
+              content: "Sorry - No Swipes Left  :(",
+              onSlideUpdate: (SlideRegion? region) async {
+                _onSlideUpdate(region);
+              }),
+        ]),
         itemBuilder: (BuildContext context, int index) {
           return Container(
               height: double.infinity,
@@ -435,7 +444,7 @@ class _SwipeState extends State<Swipe>{
     );
   }
 
-  Widget noSwipesLeftCardStatic() {
+/*  Widget noSwipesLeftCardStatic() {
     final height = MediaQuery.of(context).size.height;
     final width = min(MediaQuery.of(context).size.width, 750);
 
@@ -485,25 +494,9 @@ class _SwipeState extends State<Swipe>{
           )
       ),
     );
-  }
+  }*/
 
-  Widget getSuggestedUserSwipeCard() {
-
-    final height = MediaQuery.of(context).size.height;
-    final width = min(MediaQuery.of(context).size.width, 750);
-    return SafeArea(
-      child: Container(
-          alignment: Alignment.center,
-          height: height - kToolbarHeight > 0 ? height - kToolbarHeight : height,
-          width: !kIsWeb ? width * 0.90 : width * 0.65,
-          child: Stack(
-              children: [
-                suggestionSwipeCard(height, width)
-              ])),
-    );
-  }
-
-  Widget suggestionSwipeCard(height, width) {
+  Widget suggestionSwipeCard() {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       clipBehavior: Clip.hardEdge,
