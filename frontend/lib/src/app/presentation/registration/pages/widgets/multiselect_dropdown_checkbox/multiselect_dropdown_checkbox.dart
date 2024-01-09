@@ -34,8 +34,6 @@ class _MultiselectDropdownCheckboxState extends State<MultiselectDropdownCheckbo
 
   @override
   Widget build(BuildContext context) {
-    return Container();
-    /*
     return AlertDialog(
       title: const Text('Select gender preferences'),
       content: SingleChildScrollView(
@@ -46,10 +44,13 @@ class _MultiselectDropdownCheckboxState extends State<MultiselectDropdownCheckbo
               title: Text(item),
               controlAffinity: ListTileControlAffinity.leading,
               onChanged: (isChecked) => _itemChange(item, isChecked!)
-          )),
+          )).toList(),
         )
       ),
+      actions: [
+        TextButton(onPressed: _cancel, child: const Text('Cancel')),
+        ElevatedButton(onPressed: _submit, child: const Text('Submit'))
+      ],
     );
-     */
   }
 }

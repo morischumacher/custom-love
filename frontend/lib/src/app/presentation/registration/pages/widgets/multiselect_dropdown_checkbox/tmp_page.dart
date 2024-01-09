@@ -34,6 +34,21 @@ class _TmpPageState extends State<TmpPage> {
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Multiselect'),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ElevatedButton(onPressed: _showMultiSelect, child: const Text('Select genders')),
+            const Divider(height: 30),
+            Wrap(children: _selectedItems.map((e) => Chip(label: Text(e), shadowColor: Colors.red,)).toList())
+          ],
+        ),
+      ),
+    );
   }
 }
