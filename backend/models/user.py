@@ -1,13 +1,10 @@
-from datetime import datetime
 from datetime import date
-from typing import TYPE_CHECKING, Optional, Any
+from datetime import datetime
+from typing import TYPE_CHECKING, Optional
 
-from geoalchemy2 import Geometry
 from shapely import geometry, wkt
-from sqlalchemy import Column
 from sqlmodel import SQLModel, Field, Relationship
 
-from .connectors.user_has_language import UserHasLanguage
 from .connectors.user_has_gender_preference import UserHasGenderPreference
 from .connectors.user_has_interest import UserHasInterest
 from .connectors.user_has_language import UserHasLanguage
@@ -49,9 +46,6 @@ class User(SQLModel, table=True):
     preferences: Optional["Preference"] = Relationship(back_populates="users", link_model=UserHasPreference)
     expert_system: Optional["ExpertSystem"] = Relationship(back_populates="users")
 
-
-
-
     @property
     def generate_location(self):
         if self.latitude is not None and self.longitude is not None:
@@ -70,7 +64,6 @@ class User(SQLModel, table=True):
 
     class Config:
         arbitrary_types_allowed = True
-
 
     def get_age(self):
         """

@@ -5,8 +5,8 @@ from starlette import status
 
 from backend.models.user import User
 from backend.responses.error_response import ErrorResponse
-from backend.responses.user_response import UserResponse, UserResponseWithInterests
-from backend.services.user import patch_user, get_algo_user, UserUpdate, get_user, registration, get_users, login, \
+from backend.responses.user_response import UserResponse, UserResponseWithInterestsAndDistance
+from backend.services.user import patch_user, get_algo_user, UserUpdate, get_user, get_users, login, registration, \
     websocket_connect
 from backend.utils.pagination import Page
 from backend.utils.token import Token
@@ -64,7 +64,7 @@ def login(commons: Annotated[Token, Depends(login)]):
     return commons
 
 
-@router.get('/algo/{algo_id}', response_model=UserResponseWithInterests, responses={
+@router.get('/algo/{algo_id}', response_model=UserResponseWithInterestsAndDistance, responses={
     status.HTTP_404_NOT_FOUND: {"description": "Not Found", "model": ErrorResponse},
     status.HTTP_400_BAD_REQUEST: {"description": "Bad Request", "model": ErrorResponse},
 })

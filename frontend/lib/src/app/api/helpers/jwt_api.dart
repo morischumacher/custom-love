@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
@@ -23,12 +21,12 @@ class JWTApi {
       throw Exception('Not logged in');
     }
 
-    http.Response response = await client.get(Uri.parse('${ApiConfig.baseUrl}/$url'),
-        headers: {
-          'Content-Type': 'application/json',
-          'accept': 'application/json',
-          'Authorization': 'Bearer $token',
-        });
+    http.Response response =
+        await client.get(Uri.parse('${ApiConfig.baseUrl}/$url'), headers: {
+      'Content-Type': 'application/json',
+      'accept': 'application/json',
+      'Authorization': 'Bearer $token',
+    });
 
     if (response.statusCode == 422) {
       // TODO: handle token refresh
