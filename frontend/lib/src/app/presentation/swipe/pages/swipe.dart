@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:frontend/src/app/model/user_model.dart';
+import 'package:frontend/src/app/presentation/swipe/util/matching_algorithm.dart';
 import 'package:frontend/src/app/presentation/swipe/util/swipe_status.dart';
 import 'package:frontend/src/app/presentation/swipe/util/content.dart';
 import 'package:flutter/material.dart';
@@ -46,16 +47,21 @@ class _SwipeState extends State<Swipe>{
   bool swipesEvent = false;
   int swipingAlgoId = 0;
   StreamSubscription<bool>? _swipeableSubscription;
+  AlgoIdNotifier? algoIdNotifier;
+  bool loginAlgoIsSet = false;
 
   @override
   void initState() {
     super.initState();
 
     _fetchInitData();
+  }
 
-    print("init");
+  @override
+  Future<void> didChangeDependencies() async {
+    super.didChangeDependencies();
 
-    _swipeableSubscription = SharedSwipeableEvent.swipeable.swipeableChanged
+    _swipeableSubscription ??= SharedSwipeableEvent.swipeable.swipeableChanged
         .listen((bool swipeable) async {
       if (mounted) {
         setState(() {
@@ -63,22 +69,22 @@ class _SwipeState extends State<Swipe>{
         });
       }
     });
-  }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+    algoIdNotifier ??= Provider.of<AlgoIdNotifier>(context);
 
-    final algoIdNotifier = Provider.of<AlgoIdNotifier>(context);
-    if (swipingAlgoId != algoIdNotifier.algoId) {
-      swipingAlgoId = algoIdNotifier.algoId;
+    if (swipingAlgoId != algoIdNotifier?.algoId || loginAlgoIsSet) {
+      swipingAlgoId = algoIdNotifier!.algoId;
       _loadNextUser();
+      String accessToken = await _controller.retrieveAccessToken() as String;
+      if (!context.mounted) return;
+      await MatchingAlgorithm.updateMatchingAlgorithm(accessToken, context.read<UserService>(), swipingAlgoId);
     }
   }
 
   void _fetchInitData() async {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await _getUserId();
+      await _getMatchingAlgorithm();
     });
   }
 
@@ -87,14 +93,21 @@ class _SwipeState extends State<Swipe>{
     userId = int.parse(userIdString);
   }
 
+  Future<void> _getMatchingAlgorithm() async {
+    var matchingAlgorithm = await MatchingAlgorithm.getCurrentMatchingAlgorithm(userId, widget.userService);
+    if (matchingAlgorithm != swipingAlgoId) {
+      swipingAlgoId = matchingAlgorithm;
+      algoIdNotifier?.setAlgoId(swipingAlgoId);
+      loginAlgoIsSet = true;
+    }
+  }
+
   void _loadNextUser() async {
     if (mounted) {
       setState(() {
         isLoading = true;
       });
     }
-
-    print("algo id: $swipingAlgoId");
 
     String accessToken = await _controller.retrieveAccessToken() as String;
     await widget.userService
@@ -106,6 +119,24 @@ class _SwipeState extends State<Swipe>{
     }).whenComplete(() {
       isLoading = false;
     });
+  }
+
+  Future<void> _swipeActionTaken(bool hasLiked) async {
+    String accessToken = await _controller.retrieveAccessToken() as String;
+    int swipingsLeftInt = await SwipesLeft.updateSwipeLeft(accessToken, widget.userService);
+    if (swipingsLeftInt > 0) {
+      SharedSwipeableEvent.swipeable.changeSwipeable(true);
+    } else {
+      SharedSwipeableEvent.swipeable.changeSwipeable(false);
+    }
+
+    if (hasLiked) {
+      await widget.swipeStatusService.postLike(accessToken, int.parse(_swipeItem.content.id));
+    } else {
+      await widget.swipeStatusService.postView(accessToken, int.parse(_swipeItem.content.id));
+    }
+
+    _loadNextUser();
   }
 
   void _setSwipingCard(User? user, String? city) {
@@ -138,16 +169,20 @@ class _SwipeState extends State<Swipe>{
             age--;
           }
 
-          setState(() {
-            swipeableTimer = false;
-          });
+          if (mounted) {
+            setState(() {
+              swipeableTimer = false;
+            });
+          }
 
           swiped = false;
 
           timer = Timer(const Duration(seconds: 10), () {
-            setState(() {
-              swipeableTimer = true;
-            });
+            if (mounted) {
+              setState(() {
+                swipeableTimer = true;
+              });
+            }
           });
 
           _swipeItem = SwipeItem(
@@ -159,16 +194,10 @@ class _SwipeState extends State<Swipe>{
                 bio: user.bio,
                 interests: interests),
             likeAction: () async {
-              String accessToken = await _controller.retrieveAccessToken() as String;
-              await SwipesLeft.updateSwipeLeft(accessToken, widget.userService);
-              await widget.swipeStatusService.postLike(accessToken, int.parse(_swipeItem.content.id));
-              _loadNextUser();
+              _swipeActionTaken(true);
             },
             nopeAction: () async {
-              String accessToken = await _controller.retrieveAccessToken() as String;
-              await SwipesLeft.updateSwipeLeft(accessToken, widget.userService);
-              await widget.swipeStatusService.postView(accessToken, int.parse(_swipeItem.content.id));
-              _loadNextUser();
+              _swipeActionTaken(false);
             },
             onSlideUpdate: (SlideRegion? region) async {
               //check if it's possible to swipe (10 sec timer)
@@ -182,9 +211,11 @@ class _SwipeState extends State<Swipe>{
                         userId, widget.userService);
                     if (tmpSwipesLeft > 0) {
                       //after reset_date is updated, it's possible to swipe again
-                      setState(() {
-                        swipeableTimer = true;
-                      });
+                      if (mounted) {
+                        setState(() {
+                          swipeableTimer = true;
+                        });
+                      }
                       SharedSwipeableEvent.swipeable.changeSwipeable(true);
                     } else {
                       SharedSwipeableEvent.swipeable.changeSwipeable(false);
@@ -230,14 +261,11 @@ class _SwipeState extends State<Swipe>{
 
   @override
   void dispose() {
-    if (timer != null) {
-      if(timer!.isActive) {
-        timer?.cancel();
-      }
-    }
+    timer?.cancel();
 
     _swipeableSubscription?.cancel();
 
     super.dispose();
   }
+
 }

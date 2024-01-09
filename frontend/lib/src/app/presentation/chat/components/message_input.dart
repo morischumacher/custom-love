@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/src/app/presentation/chat/components/menu_item.dart';
+import 'package:frontend/src/app/presentation/chat/components/popup_menu.dart';
 import 'package:frontend/src/config/app_state.dart';
 import 'package:provider/provider.dart';
 
@@ -10,13 +12,9 @@ class MessageInput extends StatelessWidget {
   final int senderId;
   final int receiverId;
 
-  const MessageInput(
-      this.textInputController,
-      this.conversationId,
-      this.senderId,
-      this.receiverId,
-      {super.key}
-  );
+  const MessageInput(this.textInputController, this.conversationId,
+      this.senderId, this.receiverId,
+      {super.key});
 
   Future<void> sendMessage(BuildContext context) async {
     if (textInputController.text.isEmpty) {
@@ -24,15 +22,15 @@ class MessageInput extends StatelessWidget {
     }
 
     Message message = Message(
-        null,
-        conversationId,
-        senderId,
-        receiverId,
-        textInputController.text,
-        DateTime.now()
+      conversationId: conversationId,
+      senderId: senderId,
+      receiverId: receiverId,
+      message: textInputController.text,
+      timestamp: DateTime.now(),
     );
 
-    Provider.of<StateManager>(context, listen: false).sendMessage(message, context);
+    Provider.of<StateManager>(context, listen: false)
+        .sendMessage(message, context);
     textInputController.clear();
   }
 
@@ -40,7 +38,9 @@ class MessageInput extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Expanded(child: TextField(
+        const PopupMenu(),
+        Expanded(
+            child: TextField(
           decoration: const InputDecoration(
             hintText: "Enter your message ...",
           ),
@@ -49,9 +49,13 @@ class MessageInput extends StatelessWidget {
           autofocus: true,
           maxLines: null,
         )),
-        IconButton(onPressed: () => sendMessage(context), icon: const Icon(Icons.arrow_upward, size: 40,)),
+        IconButton(
+            onPressed: () => sendMessage(context),
+            icon: const Icon(
+              Icons.send,
+              size: 40,
+            )),
       ],
     );
   }
-
 }

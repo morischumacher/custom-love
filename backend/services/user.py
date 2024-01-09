@@ -41,6 +41,7 @@ class UserUpdate(BaseModel):
     latitude: float = Field(None, title="Latitude")
     longitude: float = Field(None, title="Longitude")
     swiped: bool = Field(None, title="Swiped")
+    algo_id: int = Field(None, title="AlgoId")
 
 
 def get_user(user_id: int, db: Annotated[Session, Depends(create_session)]) -> User:
@@ -120,14 +121,15 @@ def patch_user(updated_user: UserUpdate, user: Annotated[User, Depends(get_curre
     """
     # TODO: check if the other fields should be updated
     for key in updated_user.__dict__.items():
-        if "swiped" in key:
+        if "swiped" in key and updated_user.swiped is not None:
             if datetime.datetime.now() < user.swipe_limit_reset_date:
                 if user.swipes_left != 0:
                     user.swipes_left = user.swipes_left - 1
             else:
                 user.swipe_limit_reset_date = datetime.datetime.now() + datetime.timedelta(hours=24)
                 user.swipes_left = 10
-
+        elif "algo_id" in key and updated_user.algo_id is not None:
+            user.matching_algorithm = updated_user.algo_id
         elif "latitude" in key:
             if updated_user.latitude is not None and updated_user.longitude is not None:
                 user.latitude = updated_user.latitude
