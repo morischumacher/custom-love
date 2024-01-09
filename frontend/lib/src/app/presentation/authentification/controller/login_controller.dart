@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/service/conversation_service.dart';
@@ -42,6 +41,13 @@ class LoginController {
   Future<String?> retrieveUserId() async {
     const FlutterSecureStorage storage = FlutterSecureStorage();
     return await storage.read(key: "user_id");
+  }
+
+  Future<void> handleLogout(BuildContext context) async {
+    const FlutterSecureStorage storage = FlutterSecureStorage();
+    storage.delete(key: 'access_token');
+    Navigator.of(context).popUntil((route) => route.isFirst);
+    Navigator.of(context).pushReplacementNamed('/');
   }
 
   Future<void> handleLogin(BuildContext context) async {

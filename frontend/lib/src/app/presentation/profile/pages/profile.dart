@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/model/user_model.dart';
+import 'package:frontend/src/app/presentation/authentification/components/sign_in_button.dart';
 import 'package:frontend/src/app/service/user_service.dart';
 
 import '../../../../config/theme.dart';
@@ -34,6 +35,7 @@ class _ProfileState extends State<Profile> {
 
   final LoginController _loginController = LoginController();
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
+  final LoginController _logoutController = LoginController();
   User? user;
 
   @override
@@ -83,6 +85,14 @@ class _ProfileState extends State<Profile> {
                           // registration_job_bio
                           SummaryTextfield(label: "Job", input: user!.job),
                           SummaryTextfield(label: "Bio", input: user!.bio),
+                          
+                          LoginButton(
+                            onTap: () {
+                              Future<void>.value(_logoutController.handleLogout(context));
+                              },
+                            color: _customLoveTheme.redColor,
+                            text: "Logout"
+                          )
                         ]),
                       const SizedBox(height: 25.0),
                       Expanded(child: Container()),

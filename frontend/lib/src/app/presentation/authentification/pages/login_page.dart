@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/src/app/presentation/home/pages/home.dart';
 import 'package:frontend/src/app/presentation/loading_screen/loading_screen.dart';
 import 'package:frontend/src/app/service/location_service.dart';
 import 'package:frontend/src/app/service/user_service.dart';
@@ -12,7 +11,6 @@ import 'package:geolocator/geolocator.dart';
 
 import 'package:google_fonts/google_fonts.dart';
 import 'package:logger/logger.dart';
-import 'package:provider/provider.dart';
 
 import '../../../api/helpers/jwt_api.dart';
 
@@ -189,6 +187,8 @@ class _LoginPageState extends State<LoginPage> {
                   onTap: () {
                     Future<void>.value(_controller.handleLogin(context));
                   },
+                  color: _customLoveTheme.primaryColor,
+                  text: "Sign In",
                 ),
                 const SizedBox(height: 50),
 
