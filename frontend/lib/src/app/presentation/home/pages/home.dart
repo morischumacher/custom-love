@@ -60,7 +60,8 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       return await JWTApi.retrieveAccessToken();
     } catch (e) {
-      Navigator.pushNamed(context, '/');
+      Navigator.of(context).popUntil((route) => route.isFirst);
+      Navigator.pushReplacementNamed(context, '/');
       return null;
     }
   }

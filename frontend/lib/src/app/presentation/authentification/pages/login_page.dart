@@ -37,7 +37,8 @@ class _LoginPageState extends State<LoginPage> {
     super.initState();
     getAccessToken().then((token){
       if (token != null) {
-        Navigator.pushNamed(context, '/home/swipe');
+        Navigator.of(context).popUntil((route) => route.isFirst);
+        Navigator.pushReplacementNamed(context, '/home/swipe');
       }
     });
     checkLocationPermission();
