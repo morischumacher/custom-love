@@ -35,43 +35,42 @@ class Swipe extends StatefulWidget {
 }
 
 class _SwipeState extends State<Swipe>{
-  late SwipeItem _swipeItem;
-  MatchEngine? _matchEngine;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
-  bool isLoading = false;
-  bool swipeable = true;
-  late bool swiped;
+
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
   final LoginController _controller = LoginController();
   final LocationService _locationService = LocationService();
-  Timer? timer;
-  bool swipeableTimer = true;
-  late int tmpSwipesLeft;
-  late int userId;
-  bool swipesEvent = false;
-  int swipingAlgoId = 0;
+
   SwipeStateNotifier? swipeStateNotifier;
   StreamSubscription<bool>? _swipeableSubscription;
   AlgoIdNotifier? algoIdNotifier;
-  bool loginAlgoIsSet = false;
-  bool _didChangeDependenciesCalled = false;
-  bool _swipeItemLoaded = false;
-  //bool _initCompleted = false;
-  bool _listenerAdded = false;
+  MatchEngine? _matchEngine;
+
+  Timer? timer;
 
   late double height;
   late double width;
+  late SwipeItem _swipeItem;
+  late bool swiped;
+  late int userId;
+
+  bool isLoading = false;
+  bool swipeable = true;
+  bool swipeableTimer = true;
+  bool _didChangeDependenciesCalled = false;
+  bool _swipeItemLoaded = false;
+  bool _listenerAdded = false;
+  int swipingAlgoId = 0;
 
   @override
   void initState() {
     super.initState();
 
     _swipeableSubscription ??= SharedSwipeableEvent.swipeable.swipeableChanged
-        .listen((bool gib) async {
+        .listen((bool swipeableChanged) async {
       if (mounted) {
         setState(() {
-          swipeable = gib;
-          // build(context);
+          swipeable = swipeableChanged;
         });
       }
     });
@@ -102,36 +101,9 @@ class _SwipeState extends State<Swipe>{
         algoIdNotifier?.addListener(_algoIdListener);
         _listenerAdded = true;
       }
-
-      // 10 sec timer
-      if (mounted) {
-        setState(() {
-          swipeableTimer = false;
-        });
-      }
-
-      swiped = false;
-
-      timer = Timer(const Duration(seconds: 5), () {
-        if (mounted) {
-          setState(() {
-            swipeableTimer = true;
-          });
-        }
-      });
-
-     /* if (swipingAlgoId != algoIdNotifier?.algoId || loginAlgoIsSet) {
-
-
-        print("SwipingAlgoId "+swipingAlgoId.toString());
-        print("LoginAlgoIsSet "+loginAlgoIsSet.toString());
-
-        swipingAlgoId = algoIdNotifier!.algoId;
-        _loadNextUser();
-
-      }
-*/
     }
+
+    resetTimer();
 
   }
 
@@ -173,6 +145,34 @@ class _SwipeState extends State<Swipe>{
         build(context);
       });
     }
+  }
+
+  void _setTimer() {
+    if (mounted) {
+      setState(() {
+        swipeableTimer = false;
+      });
+    }
+
+    print("setTimer");
+
+    swiped = false;
+
+    timer = Timer(const Duration(seconds: 10), () {
+      if (mounted) {
+        setState(() {
+          swipeableTimer = true;
+          print("resetTimer");
+        });
+      }
+    });
+  }
+
+  void resetTimer() {
+    if (timer != null && timer!.isActive) {
+      timer?.cancel();
+    }
+    _setTimer();
   }
 
   Widget getSwipeCard() {
@@ -217,25 +217,22 @@ class _SwipeState extends State<Swipe>{
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await _getUserId();
       await _getMatchingAlgorithm();
-      await _checkSwipesLeft(false);
+      int tmpSwipesLeft = await _checkSwipesLeft();
+      if (tmpSwipesLeft > 0) {
+        swipeStateNotifier!.setSwipeState(SwipeState.OKAY);
+      } else {
+        swipeStateNotifier!.setSwipeState(SwipeState.NO_SWIPES_LEFT);
+      }
     });
   }
 
-  Future<int> _checkSwipesLeft(bool userCardShown) async {
-    tmpSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(
+  Future<int> _checkSwipesLeft() async {
+    int tmpSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(
         userId, widget.userService);
     if (tmpSwipesLeft > 0) {
-      //after reset_date is updated, it's possible to swipe again
-     /* if (userCardShown) {
-        setState(() {
-          swipeableTimer = true;
-        });
-      }*/
       SharedSwipeableEvent.swipeable.changeSwipeable(true);
-      swipeStateNotifier?.setSwipeState(SwipeState.OKAY);
     } else {
       SharedSwipeableEvent.swipeable.changeSwipeable(false);
-      swipeStateNotifier?.setSwipeState(SwipeState.NO_SWIPES_LEFT);
     }
     return tmpSwipesLeft;
   }
@@ -250,13 +247,12 @@ class _SwipeState extends State<Swipe>{
       if (matchingAlgorithm != swipingAlgoId) {
         swipingAlgoId = matchingAlgorithm;
         algoIdNotifier?.setAlgoId(swipingAlgoId);
-        loginAlgoIsSet = true;
       }
     });
   }
 
   void _loadNextUser() async {
-    if (isLoading) return;
+    if (isLoading || swipeStateNotifier!.swipeState != SwipeState.OKAY) return;
 
     if (mounted) {
       setState(() {
@@ -326,7 +322,7 @@ class _SwipeState extends State<Swipe>{
         //ensure that after a swipe attempt the api call happens only once
         if (!swiped) {
           swiped = true;
-          await _checkSwipesLeft(true);
+          await _checkSwipesLeft();
         }
       }
 
@@ -338,13 +334,14 @@ class _SwipeState extends State<Swipe>{
 
   void _swipeActionTaken(bool hasLiked) async {
     String accessToken = await _controller.retrieveAccessToken() as String;
-    int tmpSwipesLeft = await _checkSwipesLeft(true);
     if (hasLiked) {
       await widget.swipeStatusService.postLike(accessToken, int.parse(_swipeItem.content.id));
     } else {
       await widget.swipeStatusService.postView(accessToken, int.parse(_swipeItem.content.id));
     }
     _didChangeDependenciesCalled = false;
+
+    int tmpSwipesLeft = await _checkSwipesLeft();
     if(tmpSwipesLeft != 0){
       _loadNextUser();
     } else {
@@ -443,58 +440,6 @@ class _SwipeState extends State<Swipe>{
       ),
     );
   }
-
-/*  Widget noSwipesLeftCardStatic() {
-    final height = MediaQuery.of(context).size.height;
-    final width = min(MediaQuery.of(context).size.width, 750);
-
-    final swipeCardHeight = height - kToolbarHeight > 0 ? height - kToolbarHeight : height;
-    final swipeCardWidth = !kIsWeb ? width * 0.90 : width * 0.65;
-
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      clipBehavior: Clip.hardEdge,
-      child: Container(
-          height: swipeCardHeight,
-          width: swipeCardWidth,
-          alignment: Alignment.center,
-          color: _customLoveTheme.neutralBackgroundColor,
-          child: ClipRect(
-            child: SingleChildScrollView(
-              child: Stack(
-                  children: [
-                    SizedBox(height: height * 0.08),
-                    const FittedBox(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 190, vertical: 190),
-                        child: ArcText(
-                          radius: 100,
-                          text: "Sorry - No Swipes Left  :(",
-                          textStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                          startAngle: 0,
-                          stretchAngle: 3,
-                          startAngleAlignment: StartAngleAlignment.center,
-                          placement: Placement.middle,
-                          direction: Direction.clockwise,
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: kIsWeb ? 120 : 105, vertical: kIsWeb ? 120 : 105),
-                      child: Stack(
-                        children: [
-                          Icon(Icons.amp_stories_rounded, size: 150, color: _customLoveTheme.textColor),
-                          Container(padding: const EdgeInsets.only(left: 52, top: 50), child: Icon(Icons.lock_clock_rounded, size: 45, color: _customLoveTheme.primaryColor)),
-                        ],
-                      ),
-                    )
-                  ]
-              ),
-            ),
-          )
-      ),
-    );
-  }*/
 
   Widget suggestionSwipeCard() {
     return Card(
@@ -605,6 +550,7 @@ class _SwipeState extends State<Swipe>{
           );
         },
         onStackFinished: () async {
+          print("onStackFinished called");
           _updateSwipesLeft(false, false);
         },
         itemChanged: (SwipeItem item, int index) {},
@@ -685,20 +631,23 @@ class _SwipeState extends State<Swipe>{
   }
 
   Future<void> _updateSwipesLeft(bool swipedViaButton, bool hasLiked) async {
+    String accessToken = await _controller.retrieveAccessToken() as String;
+    int tmpSwipesLeft = await SwipesLeft.updateSwipeLeft(accessToken, widget.userService);
+
+    if (tmpSwipesLeft > 0) {
+      SharedSwipeableEvent.swipeable.changeSwipeable(true);
+      swipeStateNotifier!.setSwipeState(SwipeState.OKAY);
+    } else {
+      SharedSwipeableEvent.swipeable.changeSwipeable(false);
+      swipeStateNotifier!.setSwipeState(SwipeState.NO_SWIPES_LEFT);
+    }
+
     if (swipedViaButton) {
       if (hasLiked) {
         _matchEngine!.currentItem?.like();
       } else {
         _matchEngine!.currentItem?.nope();
       }
-    }
-    String accessToken = await _controller.retrieveAccessToken() as String;
-    int tmpSwipesLeft = await SwipesLeft.updateSwipeLeft(accessToken, widget.userService);
-    if (tmpSwipesLeft > 0) {
-      swipeStateNotifier!.setSwipeState(SwipeState.OKAY);
-    } else {
-      SharedSwipeableEvent.swipeable.changeSwipeable(false);
-      swipeStateNotifier!.setSwipeState(SwipeState.NO_SWIPES_LEFT);
     }
   }
 
