@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/model/collection_model.dart';
 import 'package:frontend/src/app/presentation/authentification/pages/logout_page.dart';
@@ -272,5 +272,32 @@ class StateManager extends ChangeNotifier {
         NotificationModel("message", message.toJson());
     socket?.sink.add(jsonEncode(notification));
     //if (!context.mounted) return;
+  }
+}
+
+class ImageStorage extends ChangeNotifier {
+  Map<int, bool> flags = {};
+  Map<int, Uint8List> bytes = {};
+
+  bool loaded(int id) {
+    if (!flags.containsKey(id)) {
+      flags.putIfAbsent(id, () => false);
+    }
+
+    return flags[id]!;
+  }
+
+  Uint8List? getBytes(int id) {
+    if (!loaded(id)) {
+      return null;
+    }
+
+    return bytes[id];
+  }
+
+  void load(int id, Uint8List b) {
+    bytes[id] = b;
+    flags[id] = true;
+    notifyListeners();
   }
 }

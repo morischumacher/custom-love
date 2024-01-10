@@ -35,4 +35,25 @@ class JWTApi {
 
     return response;
   }
+
+  Future<http.StreamedResponse> handleRequest(http.Client client, http.BaseRequest req) async {
+    String? token = await JWTApi.retrieveAccessToken();
+    if (token == null) {
+      throw Exception('Not logged in');
+    }
+
+    req.headers.addAll({
+      'Content-Type': 'application/json',
+      'accept': 'application/json',
+      'Authorization': 'Bearer $token',
+    });
+    http.StreamedResponse response = await client.send(req);
+
+    if (response.statusCode == 422) {
+      // TODO: handle token refresh
+      throw Exception('JWT is corrupt');
+    }
+
+    return response;
+  }
 }
