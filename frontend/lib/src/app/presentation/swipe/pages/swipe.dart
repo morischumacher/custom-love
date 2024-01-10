@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_arc_text/flutter_arc_text.dart';
 import 'package:frontend/src/app/model/user_model.dart';
+import 'package:frontend/src/app/presentation/swipe/components/swiping_card.dart';
 import 'package:frontend/src/app/presentation/swipe/util/swipe_state_notifier.dart';
 import 'package:frontend/src/app/presentation/swipe/util/swipe_state.dart';
 import 'package:frontend/src/app/presentation/swipe/util/matching_algorithm.dart';
@@ -40,9 +41,6 @@ class _SwipeState extends State<Swipe>{
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
   final LoginController _controller = LoginController();
   final LocationService _locationService = LocationService();
-  Color _cardBackgroundColor = const CustomLoveTheme().neutralColor.withOpacity(0.80);
-  final Duration _timerduration = const Duration(seconds: 10);
-  final Curve _animationCurve = Curves.linear;
 
   SwipeStateNotifier? swipeStateNotifier;
   StreamSubscription<bool>? _swipeableSubscription;
@@ -69,6 +67,15 @@ class _SwipeState extends State<Swipe>{
   void initState() {
     super.initState();
 
+    _fetchInitData();
+  }
+
+
+
+  @override
+  Future<void> didChangeDependencies() async {
+    super.didChangeDependencies();
+
     _swipeableSubscription ??= SharedSwipeableEvent.swipeable.swipeableChanged
         .listen((bool swipeableChanged) async {
       if (mounted) {
@@ -78,26 +85,12 @@ class _SwipeState extends State<Swipe>{
       }
     });
 
-    _fetchInitData();
-
-  }
-
-
-
-  @override
-  Future<void> didChangeDependencies() async {
-    super.didChangeDependencies();
-
-    print("didChangeDependencies called");
-
     if(!_didChangeDependenciesCalled) {
       _didChangeDependenciesCalled = true;
 
       swipeStateNotifier ??= Provider.of<SwipeStateNotifier>(context);
-      print("swipeStatNotifier set");
 
       algoIdNotifier ??= Provider.of<AlgoIdNotifier>(context);
-      print("algoIdNotifier set");
 
       if (!_listenerAdded) {
         swipeStateNotifier?.addListener(_swipeStateListener);
@@ -106,28 +99,10 @@ class _SwipeState extends State<Swipe>{
       }
     }
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Future.delayed(const Duration(milliseconds: 50), () {
-        if (mounted) {
-          setState(() {
-            _cardBackgroundColor =
-                _customLoveTheme.neutralBackgroundColor;
-          });
-        }
-      });
-    });
-
-    resetTimer();
-
   }
 
   Future<void> _algoIdListener() async {
-    print("listened to algoIdNotifier");
-
-    print("algoIdNotifier "+algoIdNotifier!.algoId.toString());
-    print("swipingAlgoId "+swipingAlgoId.toString());
-
-    if(swipingAlgoId != algoIdNotifier!.algoId && swipeStateNotifier!.swipeState == SwipeState.OKAY) {
+    if(swipingAlgoId != algoIdNotifier!.algoId) {
       swipingAlgoId = algoIdNotifier!.algoId;
       String accessToken = await _controller.retrieveAccessToken() as String;
       if (!context.mounted) return;
@@ -146,7 +121,6 @@ class _SwipeState extends State<Swipe>{
   }
 
   void _swipeStateListener() {
-    print("listened to swipeStateNotifier");
     if (mounted) {
       setState(() {
 
@@ -156,7 +130,6 @@ class _SwipeState extends State<Swipe>{
           _swipeItemLoaded = true;
         }
 
-        build(context);
       });
     }
   }
@@ -168,15 +141,12 @@ class _SwipeState extends State<Swipe>{
       });
     }
 
-    print("setTimer");
-
     swiped = false;
 
     timer = Timer(const Duration(seconds: 10), () {
       if (mounted) {
         setState(() {
           swipeableTimer = true;
-          print("resetTimer");
         });
       }
     });
@@ -191,7 +161,6 @@ class _SwipeState extends State<Swipe>{
 
   Widget getSwipeCard() {
     SwipeState state = swipeStateNotifier!.swipeState;
-
     return SafeArea(
       child: Container(
           alignment: Alignment.center,
@@ -205,7 +174,16 @@ class _SwipeState extends State<Swipe>{
   Widget getSwipeCardSwitch(state) {
     switch (state) {
       case SwipeState.OKAY:
-        return suggestionSwipeCard();
+        return SwipingCard(
+          matchEngine: _matchEngine,
+          customLoveTheme: _customLoveTheme,
+          swipeItem: _swipeItem,
+          swipeable: swipeable,
+          controller: _controller,
+          userService: widget.userService,
+          swipeStatusService: widget.swipeStatusService,
+          userId: userId,
+        );
       case SwipeState.NO_SWIPES_LEFT:
       case SwipeState.NO_SURROUNDING_USER:
         return noSwipesLeftCard();
@@ -219,15 +197,18 @@ class _SwipeState extends State<Swipe>{
     height = MediaQuery.of(context).size.height;
     width = min(MediaQuery.of(context).size.width, 750);
     return Scaffold(
-        key: _scaffoldKey,
-        backgroundColor: _customLoveTheme.neutralColor,
-        body: Center(
-            child:  _swipeItemLoaded ? getSwipeCard(): Center(child: CircularProgressIndicator(color: _customLoveTheme.primaryColor))
-        ));
+      key: _scaffoldKey,
+      backgroundColor: _customLoveTheme.neutralColor,
+      body: Center(
+          child: _swipeItemLoaded
+              ? getSwipeCard()
+              : Center(
+                  child: CircularProgressIndicator(
+                      color: _customLoveTheme.primaryColor))),
+    );
   }
 
   Future<void> _fetchInitData() async {
-    print("fetchInitData called");
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await _getUserId();
       await _getMatchingAlgorithm();
@@ -274,19 +255,18 @@ class _SwipeState extends State<Swipe>{
         isLoading = true;
       });
     }
-    print("Before accessToken");
+
     String accessToken = await _controller.retrieveAccessToken() as String;
-    print("After accessToken "+accessToken);
+
     await widget.userService
         .getAlgoUser(accessToken, swipingAlgoId)
         .then((User? user) async {
-      print("Username: "+user!.firstName);
       var city = await _locationService.getCurrentLocation(
           user!.latitude, user.longitude);
+
       _setUserSwipingCard(user, city);
 
     }).whenComplete(() {
-      //  isLoading = false;
       if (mounted) {
         setState(() {
           isLoading = false;
@@ -355,20 +335,13 @@ class _SwipeState extends State<Swipe>{
     }
     _didChangeDependenciesCalled = false;
 
-    int currentSwipesLeft = await _checkSwipesLeft();
-    if(currentSwipesLeft != 0){
-      _loadNextUser();
-    } else {
-      if (mounted) {
-        setState(() {});
-      }
-    }
-
+    _updateSwipesLeft();
   }
 
   Content _getSuggestedUserInfo(User user, String city) {
     var id = user.id;
     var firstName = user.firstName;
+    var distance = user.distance;
     List<dynamic>? interests = [];
     if (user.interests != null) {
       interests = user.interests;
@@ -391,13 +364,16 @@ class _SwipeState extends State<Swipe>{
         age: age,
         city: city,
         bio: user.bio,
-        interests: interests);
+        interests: interests,
+        distance: distance);
   }
 
   Widget noSwipesLeftCard() {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       clipBehavior: Clip.hardEdge,
+      color: _customLoveTheme.neutralBackgroundColor,
+      surfaceTintColor: _customLoveTheme.neutralBackgroundColor,
       child: SwipeCards(
         matchEngine: _matchEngine = MatchEngine(swipeItems: [
           SwipeItem(
@@ -457,238 +433,24 @@ class _SwipeState extends State<Swipe>{
     );
   }
 
-  Widget suggestionSwipeCard() {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      clipBehavior: Clip.hardEdge,
-      child: SwipeCards(
-        matchEngine: _matchEngine!,
-        itemBuilder: (BuildContext context, int index) {
-          return AnimatedContainer(
-            decoration: BoxDecoration(
-                gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      _cardBackgroundColor,
-                      _cardBackgroundColor,
-                      _cardBackgroundColor,
-                      _cardBackgroundColor,
-                      _cardBackgroundColor,
-                      _cardBackgroundColor,
-                      _cardBackgroundColor,
-                      _customLoveTheme.neutralBackgroundColor,
-                    ])),
-            duration: _timerduration,
-            curve: _animationCurve,
-            child: Container(
-                height: double.infinity,
-                width: double.infinity,
-                alignment: Alignment.center,
-                color: _customLoveTheme.neutralBackgroundColor,
-                child: ClipRect(
-                  child: SingleChildScrollView(
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          SizedBox(height: height * 0.08),
-                          FittedBox(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: kIsWeb ? 50 : 40),
-                              child: Text(
-                                _swipeItem.content.firstName,
-                                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: height * 0.02),
-                          FittedBox(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: kIsWeb ? 50 : 40),
-                                  child: Text(
-                                    "Age: ${_swipeItem.content.age}",
-                                    style: const TextStyle(fontSize: kIsWeb ? 16 : 14, fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                                SizedBox(width: kIsWeb ? width * 0.20 : width * 0.15),
-                                locationWidget(_swipeItem.content.city),
-                              ],
-                            ),
-                          ),
-                          SizedBox(height: height * 0.02),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: kIsWeb ? 50 : 40),
-                            child: FittedBox(
-                              child: Wrap(
-                                spacing: 25,
-                                runSpacing: 4,
-                                children: _swipeItem.content.interests.length > 0 ? List<Widget>.generate(_swipeItem.content.interests.length,
-                                      (int i) {
-                                    Icon avatar = Interests.getIcon(_swipeItem.content.interests[i]["name"]);
-                                    return ActionChip(
-                                      side: BorderSide(width: 1.5, color: _customLoveTheme.primaryColor),
-                                      avatar: avatar,
-                                      label: Text(_swipeItem.content.interests[i]["name"]),
-                                      onPressed: () {},
-                                    );
-                                  },
-                                ) : [Container()],
-                              ),
-                            ),
-                          ),
-                          Center(
-                            child: Container(
-                              //for small bio card
-                              height: height - height * 0.6,
-                              width: !kIsWeb ? width * 0.70 : width * 0.53,
-                              margin: const EdgeInsets.symmetric(vertical: kIsWeb ? 50 : 30, horizontal: 35),
-                              decoration: BoxDecoration(
-                                color: _customLoveTheme.neutralBackgroundColor,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: _customLoveTheme.textColor.withOpacity(0.3),
-                                    spreadRadius: 3,
-                                    blurRadius: 10,
-                                    offset: const Offset(0, 3), // changes position of shadow
-                                  ),
-                                ],
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                              child: Padding(
-                                  padding: const EdgeInsets.all(20),
-                                  child: Text(
-                                      _swipeItem.content.bio,
-                                      style: const TextStyle(fontSize: kIsWeb ? 16 : 14),
-                                      textAlign: TextAlign.left
-                                  )
-                              ),
-                            ),
-                          ),
-                          Align(
-                              alignment: Alignment.bottomCenter,
-                              heightFactor: !kIsWeb ? 0.85 : 1,
-                              child: FittedBox(
-                                child: buttonWidget(context, height, width),
-                              )
-                          )
-                        ]
-                    ),
-                  ),
-                )
-            ),
-          );
-        },
-        onStackFinished: () async {
-          print("onStackFinished called");
-          _updateSwipesLeft();
-        },
-        itemChanged: (SwipeItem item, int index) {},
-        leftSwipeAllowed: swipeableTimer,
-        rightSwipeAllowed: swipeableTimer,
-        fillSpace: true,
-        likeTag: getTag("Like"),
-        nopeTag: getTag("Dislike"),
-      ),
-    );
-  }
-
-  Widget getTag(String tagString) {
-    return Container(
-      margin: const EdgeInsets.all(15.0),
-      padding: const EdgeInsets.all(3.0),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: _customLoveTheme.primaryColor)
-      ),
-      child: Text(tagString),
-    );
-  }
-
-  Widget locationWidget(city) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [const Icon(Icons.location_on, size: 18),
-        Text(
-          "Location: $city",
-          style: const TextStyle(fontSize: kIsWeb ? 16 : 14, fontWeight: FontWeight.bold),
-        )],);
-  }
-
-  Widget buttonWidget(context, height, width) {
-    final buttonHeight =  kIsWeb ? height * 0.037 : height * 0.022;
-    final buttonWidth = kIsWeb ? width * 0.046 : width * 0.055;
-    double buttonSize = kIsWeb ? 40 : 32;
-
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        AnimatedOpacity(
-          opacity: swipeableTimer ? 1.0 : 0.5,
-          duration: const Duration(milliseconds: 500),
-          child: ElevatedButton(
-              onPressed: () async {
-                if(swipeableTimer) {
-                  int currentSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(userId, widget.userService);
-                  if(currentSwipesLeft > 0) {
-                    await _updateSwipesLeft();
-                    _matchEngine!.currentItem?.nope();
-                  } else {
-                    swipeStateNotifier!.setSwipeState(SwipeState.NO_SWIPES_LEFT);
-                  }
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(vertical: buttonHeight, horizontal: buttonWidth),
-                backgroundColor: _customLoveTheme.primaryColor,
-              ),
-              child: Icon(Icons.close, size: buttonSize, color: _customLoveTheme.textColor)),
-        ),
-        SizedBox(width: width * 0.1),
-        AnimatedOpacity(
-          opacity: swipeableTimer ? 1.0 : 0.5,
-          duration: const Duration(milliseconds: 500),
-          child: ElevatedButton(
-              onPressed: () async {
-                if(swipeableTimer) {
-                  int currentSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(userId, widget.userService);
-                  if(currentSwipesLeft > 0) {
-                    await _updateSwipesLeft();
-                    _matchEngine!.currentItem?.like();
-                  } else {
-                    swipeStateNotifier!.setSwipeState(SwipeState.NO_SWIPES_LEFT);
-                  }
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(vertical: buttonHeight, horizontal: buttonWidth),
-                backgroundColor: _customLoveTheme.primaryColor,
-              ),
-              child: Icon(Icons.favorite_outline, size: buttonSize, color: _customLoveTheme.textColor)),
-        ),
-      ],
-    );
-  }
-
   Future<void> _updateSwipesLeft() async {
     String accessToken = await _controller.retrieveAccessToken() as String;
     int currentSwipesLeft = await SwipesLeft.updateSwipeLeft(accessToken, widget.userService);
 
     if (currentSwipesLeft > 0) {
       SharedSwipeableEvent.swipeable.changeSwipeable(true);
+      _loadNextUser();
     } else {
       SharedSwipeableEvent.swipeable.changeSwipeable(false);
       swipeStateNotifier!.setSwipeState(SwipeState.NO_SWIPES_LEFT);
+      if (mounted) {
+        setState(() {});
+      }
     }
   }
 
   @override
   void dispose() {
-    print("remove to swipeStateNotifier");
     swipeStateNotifier?.removeListener(_swipeStateListener);
     algoIdNotifier?.removeListener(_algoIdListener);
 

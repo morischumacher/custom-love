@@ -46,6 +46,7 @@ class LoginController {
     String password = passwordController.text;
     LoginService loginService = context.read<LoginService>();
     UserService userService = context.read<UserService>();
+    AlgoIdNotifier algoIdNotifier = context.read<AlgoIdNotifier>();
 
     if (email.isNotEmpty && password.isNotEmpty) {
       try {
