@@ -1,14 +1,13 @@
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:frontend/src/app/api/helpers/pagination_api.dart';
 import 'package:frontend/src/app/exceptions/bad_request_exception.dart';
 import 'package:frontend/src/app/exceptions/not_found_exception.dart';
 import 'package:frontend/src/app/model/factories/user_factory.dart';
 import 'package:frontend/src/app/model/user_model.dart';
+import 'package:frontend/src/config/api_config.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
-import 'package:frontend/src/config/api_config.dart';
 import 'package:logger/logger.dart';
 
 import 'interfaces/paginated_api.dart';
@@ -99,7 +98,8 @@ class UserApi extends PaginatedApi<User> {
     }
   }
 
-  Future<User> updateCurrentUserMatchingAlgorithm(var accessToken, int algoId) async {
+  Future<User> updateCurrentUserMatchingAlgorithm(
+      var accessToken, int algoId) async {
     final Map<String, dynamic> body = {
       "algo_id": algoId,
     };

@@ -12,8 +12,10 @@ from backend.models.image import Image, ProfilePicture
 from backend.models.message import Message
 from backend.models.user import User
 from backend.repository.repository import create_session
+from backend.responses.notification import Notification, NotificationType
 from backend.utils.token import get_current_user
 from fastapi import Response
+from backend.utils.connection_manager import connection_manager
 
 
 def get_image(user: Annotated[User, Depends(get_current_user)],
@@ -64,5 +66,12 @@ async def post_image(receiver_id: int, user: Annotated[User, Depends(get_current
     db.add(message)
     db.commit()
     db.refresh(message)
+
+    # prepare a notification object
+    notification = Notification.factory(message)
+
+    # send the notification to the receiver and sender
+    await connection_manager.send_notification(message.receiver_id, notification)
+    await connection_manager.send_notification(message.sender_id, notification)
 
     return message

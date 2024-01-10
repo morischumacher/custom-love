@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/src/app/presentation/chat/components/menu_item.dart';
 import 'package:frontend/src/app/presentation/chat/components/popup_menu.dart';
 import 'package:frontend/src/config/app_state.dart';
 import 'package:provider/provider.dart';
@@ -38,7 +37,7 @@ class MessageInput extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        const PopupMenu(),
+        PopupMenu(receiverId),
         Expanded(
             child: TextField(
           decoration: const InputDecoration(

@@ -5,12 +5,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:swipe_cards/swipe_cards.dart';
 import 'package:frontend/src/config/theme.dart';
+import 'package:swipe_cards/swipe_cards.dart';
 
 import '../../../service/swipe_status_service.dart';
 import '../util/interests.dart';
 
 import '../../../service/user_service.dart';
 import '../../authentification/controller/login_controller.dart';
+import '../util/interests.dart';
 import '../util/swipes_left.dart';
 
 class SwipingCard extends StatefulWidget {
@@ -292,16 +294,33 @@ class _SwipingCardState extends State<SwipingCard> {
     );
   }
 
-  Widget locationWidget(city) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
+  Widget locationWidget(city, int distance) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Icon(Icons.location_on, size: 18),
-        Text(
-          "Location: $city",
-          style: const TextStyle(
-              fontSize: kIsWeb ? 16 : 14, fontWeight: FontWeight.bold),
-        )
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            const Icon(Icons.location_on, size: 18),
+            Text(
+              "Location: $city",
+              style: const TextStyle(
+                  fontSize: kIsWeb ? 16 : 14, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        SizedBox(height: 4),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            const Icon(Icons.navigation, size: 18),
+            Text(
+              "Distance: $distance km",
+              style: const TextStyle(
+                  fontSize: kIsWeb ? 16 : 14, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
       ],
     );
   }

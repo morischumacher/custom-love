@@ -1,12 +1,17 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:frontend/src/app/presentation/registration/controller/registration_controller.dart';
-import 'package:frontend/src/app/presentation/registration/pages/registration_pictures.dart';
-import 'package:frontend/src/app/presentation/registration/pages/widgets/interest.dart';
+import 'package:frontend/src/app/model/gender_model.dart';
+import 'package:frontend/src/app/model/interest_model.dart';
+import 'package:frontend/src/app/presentation/registration/pages/widgets/footer/footer.dart';
+import 'package:frontend/src/app/presentation/registration/pages/widgets/interest_button.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/page_title.dart';
+import 'package:frontend/src/app/service/interest_service.dart';
+import 'package:geolocator/geolocator.dart';
 
 import '../../../../config/theme.dart';
+import '../../../../config/widgets/exception_widget.dart';
+import '../enums/registration_page_enum.dart';
 
 class RegistrationInterests extends StatefulWidget {
   const RegistrationInterests({
@@ -19,18 +24,26 @@ class RegistrationInterests extends StatefulWidget {
     required this.preference,
     required this.birthdate,
     required this.profilePicture,
-    required this.userInterestIdList
+    required this.userInterestIdList,
+    required this.location,
+    required this.searchRadius,
+    required this.job,
+    required this.bio
   }) : super(key: key);
 
   final String? firstName;
   final String? lastName;
   final String? email;
   final String? password;
-  final String? gender;
-  final String? preference;
+  final Gender? gender;
+  final Gender? preference;
   final String? birthdate;
   final Uint8List? profilePicture;
-  final Set<int> userInterestIdList;
+  final List<Interest> userInterestIdList;
+  final Position? location;
+  final double? searchRadius;
+  final String? job;
+  final String? bio;
 
   @override
   State<RegistrationInterests> createState() => _RegistrationInterestsState();
@@ -40,192 +53,188 @@ class _RegistrationInterestsState extends State<RegistrationInterests> {
   @override
   void initState() {
     super.initState();
-    firstName = widget.firstName;
-    lastName = widget.lastName;
-    email = widget.email;
-    password = widget.password;
-    gender = widget.gender;
-    preference = widget.preference;
-    birthdate = widget.birthdate;
-    profilePicture = widget.profilePicture;
     userInterestIdList = widget.userInterestIdList;
+    interestCounter = userInterestIdList.length;
+    getInterests();
   }
 
-  final RegistrationController _controller = RegistrationController();
-  final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
-  late String? firstName;
-  late String? lastName;
-  late String? email;
-  late String? password;
-  late String? gender;
-  late String? preference;
-  late String? birthdate;
-  late Uint8List? profilePicture;
-  late Set<int> userInterestIdList;
+  void getInterests() async {
+    try {
+      await _interestService.getInterests().then((value) {
+        setState(() {
+          interestDto = value;
+        });
+      });
+    } catch (e) {
+      setState(() {
+        httpError = true;
+      });
+    }
+  }
 
-  final interestDto = [
-    {"id": 1, "name": "sports"},
-    {"id": 2, "name": "movies"},
-    {"id": 3, "name": "travel"},
-    {"id": 4, "name": "science"},
-    {"id": 5, "name": "books"},
-    {"id": 6, "name": "music"},
-    {"id": 7, "name": "art"},
-    {"id": 8, "name": "food"},
-    {"id": 9, "name": "technology"},
-    {"id": 10, "name": "fashion"},
-    {"id": 11, "name": "photography"},
-    {"id": 12, "name": "gaming"},
-    {"id": 13, "name": "nature"},
-    {"id": 14, "name": "history"},
-    {"id": 15, "name": "fitness"},
-    {"id": 16, "name": "crafts"},
-    {"id": 17, "name": "writing"},
-    {"id": 18, "name": "gardening"},
-    {"id": 19, "name": "philosophy"},
-    {"id": 20, "name": "coding"}
-  ];
+  final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
+  final InterestService _interestService = InterestService();
+  late List<Interest> userInterestIdList = [];
+  late List<Interest> interestDto = [];
+  late bool httpError = false;
+  int minInterests = 3;
+  int maxInterests = 5;
+  int interestCounter = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _customLoveTheme.neutralColor,
-      body: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(21.0, 0, 21.0, 51.0),
-          child: Center(
-            child: Column(
-              children: [
-                const PageTitle(
-                    title: "Your interests",
-                    description: "Select a few interests and let everyone know what you're passionate about",
-                    bottomPadding: 49.0
-                ),
-                for (int i = 0; i < interestDto.length; i += 2)
-                  Center(
-                    child: Container(
-                      constraints: const BoxConstraints(maxWidth: 400),
-                      margin: const EdgeInsets.only(bottom: 20),
-                      child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: Interest(
-                                    interestId: interestDto[i]['id'] as int,
-                                    interestName: interestDto[i]['name'].toString(),
-                                    containsInterestFunction: containsInterest,
-                                    addRemoveInterestFunction: addRemoveInterest
-                                ),
-                              ),
-                              const SizedBox(width: 20),
-                              if (i + 1 < interestDto.length)
-                                Expanded(
-                                child: Interest(
-                                  interestId: interestDto[i + 1]['id'] as int,
-                                  interestName: interestDto[i + 1]['name'].toString(),
-                                  containsInterestFunction: containsInterest,
-                                    addRemoveInterestFunction: addRemoveInterest
-                                ),
-                              ) else Expanded(child: Container()),
-                            ],
-                          ),
-                    ),
+        backgroundColor: _customLoveTheme.neutralColor,
+        body: Center(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(25.0, 0, 25, 0),
+          child: Container(
+          constraints: const BoxConstraints(maxWidth: 500),
+              child: CustomScrollView(
+              scrollBehavior:
+              ScrollConfiguration.of(context).copyWith(scrollbars: false),
+              slivers: [
+              SliverFillRemaining(
+              hasScrollBody: false,
+              child: Column(
+                children: [
+                  const PageTitle(
+                      title: "Your interests",
+                      description: "Select 3 to 5 interests you're passionate about",
+                      bottomPadding: 49.0
                   ),
-                Container(
-                  constraints: const BoxConstraints(maxWidth: 500),
-                  child: Center(
-                    child: Row(
-                      children: [
-                        const SizedBox(height: 80),
-                        prevBtn(context),
-                        const Spacer(),
-                        nextBtn(context)
+                  if (httpError)
+                    const ExceptionWidget(
+                        httpStatus: "503",
+                        httpMessage: "Make sure that the backend is running"
+                    ),
+                  if (interestDto.isEmpty && !httpError)
+                    SizedBox(
+                        height: 100,
+                        width: 100,
+                        child: CircularProgressIndicator(
+                          color: _customLoveTheme.primaryColor,
+                          strokeWidth: 18
+                        )
+                    ),
+                  if (interestDto.isNotEmpty)
+                  for (int i = 0; i < interestDto.length; i += 2)
+                    Center(
+                      child: Container(
+                        constraints: const BoxConstraints(maxWidth: 400),
+                        margin: const EdgeInsets.only(bottom: 20),
+                        child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: InterestButton(
+                                      interest: interestDto[i],
+                                      containsInterestFunction: containsInterest,
+                                      addRemoveInterestFunction: addRemoveInterest
+                                  ),
+                                ),
+                                const SizedBox(width: 20),
+                                if (i + 1 < interestDto.length)
+                                  Expanded(
+                                  child: InterestButton(
+                                    interest: interestDto[i + 1],
+                                    containsInterestFunction: containsInterest,
+                                      addRemoveInterestFunction: addRemoveInterest
+                                  ),
+                                ) else Expanded(child: Container()),
+                              ],
+                            ),
+                      ),
+                    ),
+                  const SizedBox(height: 25.0),
+                  RichText(
+                    text: TextSpan(
+                      // Note: Styles for TextSpans must be explicitly defined.
+                      // Child text spans will inherit styles from parent
+                      style: TextStyle(
+                          color: interestCounter < 3 || interestCounter > 5 ? _customLoveTheme.redColor : _customLoveTheme.primaryColor,
+                          fontSize: 32.0,
+                          fontWeight: FontWeight.bold
+                      ),
+                      children: <TextSpan>[
+                        TextSpan(
+                            text: '$interestCounter',
+                            style: TextStyle(
+                                color: interestCounter < minInterests || interestCounter > maxInterests ?
+                                _customLoveTheme.redColor :
+                                _customLoveTheme.tertiaryColor
+                            )
+                        ),
+                        TextSpan(text: ' / ', style: TextStyle(color: _customLoveTheme.textColor)),
+                        TextSpan(text: '$maxInterests', style: TextStyle(color: _customLoveTheme.tertiaryColor)),
+                        TextSpan(
+                            text: ' interests selected',
+                            style: TextStyle(
+                                color: _customLoveTheme.textColor
+                            )
+                        )
                       ],
                     ),
                   ),
-                )
+                  if (interestCounter < minInterests || interestCounter > maxInterests)
+                    RichText(
+                      text: TextSpan(
+                        // Note: Styles for TextSpans must be explicitly defined.
+                        // Child text spans will inherit styles from parent
+                        style: TextStyle(
+                            color: _customLoveTheme.redColor,
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.bold
+                        ),
+                        children: <TextSpan>[
+                          TextSpan(text: 'Please select ${interestCounter < minInterests ? 'at least 3 interests' : (interestCounter > maxInterests ? 'at most 5 interests' : '3-5 interests')}')
+                        ],
+                      ),
+                    ),
+                  const SizedBox(height: 25.0),
+                  Expanded(child: Container()),
+                  Footer(
+                      pageSection: RegistrationPageSection.interests,
+                      firstName: widget.firstName,
+                      lastName: widget.lastName,
+                      email: widget.email,
+                      password: widget.password,
+                      gender: widget.gender,
+                      genderPreference: widget.preference,
+                      birthdate: widget.birthdate,
+                      profilePicture: widget.profilePicture,
+                      userInterestIdList: userInterestIdList,
+                      location: widget.location,
+                      searchRadius: widget.searchRadius,
+                      job: widget.job,
+                      bio: widget.bio
+                  )
+                ],
+              ),
+              ),
               ],
-            ),
-          )
-      ),
-    );
-
-  }
-
-  OutlinedButton prevBtn(BuildContext context) {
-    return OutlinedButton(
-      style: OutlinedButton.styleFrom(
-          minimumSize: const Size(156, 56),
-          backgroundColor: _customLoveTheme.primaryColor,
-          side: BorderSide.none
-      ),
-      onPressed: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return RegistrationPictures(
-            firstName: firstName,
-            lastName: lastName,
-            email: email,
-            password: password,
-            birthdate: birthdate,
-            gender: gender,
-            preference: preference,
-            profilePicture: profilePicture,
-            userInterestIdList: userInterestIdList,
-          );
-        }));
-      },
-      child: const Text(
-        "Previous",
-        style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white
+              ),
+          ),
         ),
-      ),
-    );
+        ));
+
   }
 
-  OutlinedButton nextBtn(BuildContext context) {
-    return OutlinedButton(
-      style: OutlinedButton.styleFrom(
-          minimumSize: const Size(156, 56),
-          backgroundColor: _customLoveTheme.primaryColor,
-          side: BorderSide.none
-      ),
-      onPressed: () {
-        Future<void>.value(
-            _controller.handleRegistration(
-                context,
-              firstName,
-              lastName,
-              email,
-              password,
-              "TEST BIO",
-              gender,
-              preference,
-              birthdate,
-              "TEST JOB",
-              null,
-              userInterestIdList,
-              1
-            )
-        );
-      },
-      child: const Text(
-        "Create Profile",
-        style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white
-        ),
-      ),
-    );
+  bool containsInterest(Interest interest) {
+    return userInterestIdList.contains(interest);
   }
 
-  bool containsInterest(int id) {
-    return userInterestIdList.contains(id);
-  }
-
-  void addRemoveInterest(int id) {
-    containsInterest(id) ?
-    userInterestIdList.removeWhere((interestId) => interestId == id) :
-    userInterestIdList.add(id);
+  void addRemoveInterest(Interest interest) {
+    if (containsInterest(interest)) {
+      userInterestIdList.removeWhere((thisInterest) => interest.id == thisInterest.id);
+      setState(() {
+        interestCounter--;
+      });
+    } else {
+      userInterestIdList.add(interest);
+      setState(() {
+        interestCounter++;
+      });
+    }
   }
 }

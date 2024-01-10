@@ -1,4 +1,7 @@
+import 'dart:typed_data';
+
 import 'package:frontend/src/app/api/registration_api.dart';
+import 'package:geolocator/geolocator.dart';
 
 class RegistrationService {
   final RegistrationApi _registrationApi;
@@ -13,10 +16,14 @@ class RegistrationService {
       String bio,
       String birthdate,
       String job,
-      int genderIdentityId
+      Position location,
+      int searchRadius,
+      int genderIdentityId,
+      int genderPreferenceId,
+      Uint8List? profilePicture,
+      List<int> userInterestIdSet
     ) async {
     try {
-      print("REGISTRATION API");
       final body = _registrationApi.registerUser(
           firstName,
           lastName,
@@ -25,10 +32,16 @@ class RegistrationService {
           bio,
           birthdate,
           job,
-          genderIdentityId
+          location,
+          searchRadius,
+          genderIdentityId,
+          genderPreferenceId,
+          null,
+          userInterestIdSet
       );
       return body;
     } catch (e) {
+      print(e.toString());
       rethrow;
     }
   }

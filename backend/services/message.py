@@ -14,11 +14,8 @@ from backend.models.conversation import Conversation
 from backend.models.message import Message
 from backend.models.user import User
 from backend.repository.repository import create_session
-from backend.utils.connection_manager import ConnectionManager
 from backend.utils.pagination import PaginationParams
 from backend.utils.token import get_current_user, create_access_token
-
-connection_manager = ConnectionManager()
 
 
 def get_messages(conversation_id: int, db: Annotated[Session, Depends(create_session)],

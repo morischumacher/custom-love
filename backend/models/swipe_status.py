@@ -17,6 +17,7 @@ class SwipeStatus(SQLModel, table=True):
     id: Optional[int] = Field(primary_key=True)
     user1_id: int = Field(default=None, foreign_key="user.id")
     user2_id: int = Field(default=None, foreign_key="user.id")
+    used_for_model: bool = Field(default=False)
     status: SwipeStatusType = Field(sa_column=Column(Enum(SwipeStatusType)))
 
     match_user1: "User" = Relationship(sa_relationship_kwargs={
