@@ -144,7 +144,7 @@ class DataGenerator:
                 last_name='Bravonson',
                 email='bravo.bravonson@email.com',
                 bio="Exploring the world one movie at a time. Movie buff and aspiring filmmaker.",
-                date_of_birth=calculate_birthdate(18),
+                date_of_birth=calculate_birthdate(19),
                 job='Data Scientist',
                 search_radius=50,
                 matching_algorithm=1,
@@ -416,7 +416,7 @@ class DataGenerator:
                 last_name='Paintingson',
                 email='painting.paintingson@email.com',
                 bio="Adventurous soul seeking the thrill of the unknown. Life is a journey, not a destination.",
-                date_of_birth=calculate_birthdate(18),
+                date_of_birth=calculate_birthdate(19),
                 job='Visual Artist',
                 search_radius=18,
                 matching_algorithm=1,
@@ -521,7 +521,7 @@ class DataGenerator:
                 last_name='Urbanoson',
                 email='urban.urbanoson@email.com',
                 bio="Green thumb and plant whisperer. Gardening is my therapy.",
-                date_of_birth=calculate_birthdate(18),
+                date_of_birth=calculate_birthdate(19),
                 job='Urban Planner',
                 search_radius=25,
                 matching_algorithm=1,
@@ -626,4 +626,5 @@ class DataGenerator:
             session.add(ExpertSystem(model=serialized_model, user_id=19))
             session.add(ExpertSystem(model=serialized_model, user_id=20))
             session.add(ExpertSystem(model=serialized_model, user_id=21))
+            session.add(ExpertSystem(model=serialized_model, user_id=22))
             session.commit()
