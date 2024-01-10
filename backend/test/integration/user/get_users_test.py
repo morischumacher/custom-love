@@ -19,4 +19,4 @@ def test_get_users(client: TestClient, session: Session):
     response = authorized_request(token, client, lambda c: c.get, "/users")
 
     assert response.status_code == status.HTTP_200_OK
-    assert response.json()['total'] == 2
+    assert response.json()['total'] == 1

@@ -2,7 +2,8 @@ import datetime
 import random
 from typing import List, Annotated
 import json
-
+from dotenv import load_dotenv
+import os
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_pagination.ext.sqlmodel import paginate
@@ -34,8 +35,9 @@ from backend.utils.connection_manager import connection_manager
 from backend.utils.logger import Logger
 from backend.utils.pagination import PaginationParams
 from backend.utils.passwords import hash_pwd
+from backend.services.expert_system import update_expert_system
 from backend.utils.token import create_access_token, get_current_user
-
+load_dotenv()
 
 class UserUpdate(BaseModel):
     latitude: float = Field(None, title="Latitude")
@@ -81,11 +83,13 @@ def get_users(user: Annotated[User, Depends(get_current_user)], db: Annotated[Se
     Retrieves all users, with whom the querying user has a match
     :return: a list of users
     """
-    return paginate(db, select(User).join(SwipeStatus, and_(
-        or_(SwipeStatus.user1_id == user.id, SwipeStatus.user2_id == user.id),
-        SwipeStatus.status == SwipeStatusType.match)),
-                    PaginationParams(size=request.query_params.get("size"),
-                                     page=request.query_params.get("page")))
+    return paginate(db, select(User).join(SwipeStatus, onclause=and_(
+        or_(SwipeStatus.user1_id == User.id, SwipeStatus.user2_id == User.id),
+                    SwipeStatus.status == SwipeStatusType.match))
+                .where(and_(User.id != user.id,
+                    or_(SwipeStatus.user1_id == user.id, SwipeStatus.user2_id == user.id))),
+                PaginationParams(size=request.query_params.get("size"),
+                    page=request.query_params.get("page")))
 
 
 def registration(user: User, db: Annotated[Session, Depends(create_session)]) -> {}:
@@ -126,8 +130,9 @@ def patch_user(updated_user: UserUpdate, user: Annotated[User, Depends(get_curre
                 if user.swipes_left != 0:
                     user.swipes_left = user.swipes_left - 1
             else:
+                update_expert_system(user, db)
                 user.swipe_limit_reset_date = datetime.datetime.now() + datetime.timedelta(hours=24)
-                user.swipes_left = 10
+                user.swipes_left = os.getenv('SWIPE_LIMIT')
         elif "algo_id" in key and updated_user.algo_id is not None:
             user.matching_algorithm = updated_user.algo_id
         elif "latitude" in key:

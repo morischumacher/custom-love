@@ -63,15 +63,19 @@ class ExSys:
         return model
 
     # TODO Testing in comming Workflow
-    def update_model(self, user_list: List[User], like_decisions: List[bool]):
+    def update_model(self, liked_user: List[User], viewed_user: List[User]):
         """
         Retrieves a model and trainingsdata to update the model with the data. length(user_list)==length(like_decisions)
         param: model, existing logic regression model
-        param: user_list, list of user to train the model
-        param: like_decisions, array of boolean which predict if the user liked(=1) or disliked(=0) the at the
+        param: liked_user, list of liked user to train the model
+        param: viewed_user, list of viewed user to train the model
         corresponding index
-         return the model updated with the trainingsdata.
+        return the model updated with the trainingsdata.
         """
+        user_list = liked_user + viewed_user
+        liked_decisions = [1] * len(liked_user)
+        viewed_decisions = [0] * len(viewed_user)
+        like_decisions = liked_decisions + viewed_decisions
 
         # Build input for model
         X_train, y_train = users_and_likes_to_x_train_y_train(user_list, like_decisions)
@@ -130,7 +134,7 @@ class ExSys:
         return highest_predicted_user, highest_prediction
 
 
-def users_and_likes_to_x_train_y_train(user_list: List[User], like_decisions: List[bool]):
+def users_and_likes_to_x_train_y_train(user_list, like_decisions):
     """
     Calculates X_train and y_train for a given user list and the like decision on them
     param: user_list, a list of user recent swiped users
@@ -149,7 +153,7 @@ def users_and_likes_to_x_train_y_train(user_list: List[User], like_decisions: Li
         inner_X_train = calculate_user_base_list(user)
 
         # Add users interests
-        inner_X_train.append(calculate_user_interests_list(user))
+        inner_X_train.extend(calculate_user_interests_list(user))
 
         X_train.append(inner_X_train)
 
