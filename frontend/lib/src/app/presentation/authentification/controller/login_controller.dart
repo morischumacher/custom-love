@@ -66,7 +66,7 @@ class LoginController {
 
           // load users, conversations, matches and first messages
           unawaited(Provider.of<StateManager>(context, listen: false)
-              .initialize(context));
+              .initialize(context, force: true));
 
           // save the user object and connect to a websocket
           Provider.of<StateManager>(context, listen: false)
