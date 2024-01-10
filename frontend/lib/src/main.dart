@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/api/picture_api.dart';
 import 'package:frontend/src/app/presentation/authentification/pages/logout_page.dart';
+import 'package:frontend/src/app/presentation/registration/pages/exsys_training.dart';
 import 'package:frontend/src/app/presentation/registration/pages/registration_location.dart';
 import 'package:frontend/src/app/presentation/swipe/util/swipe_state_notifier.dart';
 import 'package:frontend/src/app/presentation/swipe/util/algo_id_notifier.dart';
@@ -157,7 +158,7 @@ class CustomLove extends StatelessWidget {
                 lastName: null,
                 email: null,
                 password: null,
-                birthdate:null,
+                birthdate: null,
                 gender: null,
                 preference: null,
                 profilePicture: null,
@@ -166,7 +167,11 @@ class CustomLove extends StatelessWidget {
                 searchRadius: null,
                 job: null,
                 bio: null);
-          }
+          },
+          '/trainingsdata': (context) {
+            final userService = Provider.of<UserService>(context);
+            return TrainingsDataPage(userService: userService);
+          },
         },
       ),
     );
