@@ -7,6 +7,7 @@ import 'package:frontend/src/app/presentation/registration/enums/registration_pa
 import 'package:geolocator/geolocator.dart';
 
 import '../../../../../../config/theme.dart';
+import '../../../../../model/language_model.dart';
 import 'navigation_button.dart';
 
 class Footer extends StatefulWidget {
@@ -25,7 +26,8 @@ class Footer extends StatefulWidget {
     required this.location,
     required this.searchRadius,
     required this.job,
-    required this.bio
+    required this.bio,
+    required this.languages
   });
 
   final RegistrationPageSection pageSection;
@@ -42,6 +44,7 @@ class Footer extends StatefulWidget {
   final double? searchRadius;
   final String? job;
   final String? bio;
+  final List<Language> languages;
 
   @override
   State<Footer> createState() => _FooterState();
@@ -72,7 +75,8 @@ class _FooterState extends State<Footer> {
                   location: widget.location,
                   searchRadius: widget.searchRadius,
                   job: widget.job,
-                  bio: widget.bio
+                  bio: widget.bio,
+                  languages: widget.languages
               ),
               const Spacer(),
               if (evaluateBtnAccessibility())
@@ -91,7 +95,8 @@ class _FooterState extends State<Footer> {
                     location: widget.location,
                     searchRadius: widget.searchRadius,
                     job: widget.job,
-                    bio: widget.bio
+                    bio: widget.bio,
+                    languages: widget.languages
                 ),
               if (!evaluateBtnAccessibility())
                 TextButton(

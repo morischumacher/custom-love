@@ -140,7 +140,8 @@ class CustomLove extends StatelessWidget {
                 location: null,
                 searchRadius: null,
                 job: null,
-                bio: null
+                bio: null,
+                languages: [],
             );
           }
         },

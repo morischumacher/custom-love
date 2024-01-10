@@ -23,7 +23,8 @@ class RegistrationApi {
       int genderIdentityId,
       List<int> genderPreferenceIds,
       Uint8List? profilePicture,
-      List<int> interests
+      List<int> interests,
+      List<int> languages
       ) async {
     // Following attributes are not forwarded by the frontend, but handled by
     // the backend: swipesLeft, swipeLimitResetDate
@@ -54,7 +55,8 @@ class RegistrationApi {
           "longitude": location.longitude.toString(),
           "latitude": location.latitude.toString(),
           "interest_ids": interests.toString(),
-          "matching_algorithm": 1.toString()
+          "matching_algorithm": 1.toString(),
+          "language_ids": languages
         })
     );
 

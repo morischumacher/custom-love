@@ -14,6 +14,7 @@ import 'package:multi_dropdown/multiselect_dropdown.dart';
 import '../../../../config/theme.dart';
 import '../../../model/gender_model.dart';
 import '../../../model/interest_model.dart';
+import '../../../model/language_model.dart';
 import '../enums/registration_page_enum.dart';
 
 class RegistrationGenderPreference extends StatefulWidget {
@@ -31,7 +32,8 @@ class RegistrationGenderPreference extends StatefulWidget {
     required this.location,
     required this.searchRadius,
     required this.job,
-    required this.bio
+    required this.bio,
+    required this.languages
   });
 
   final String? firstName;
@@ -47,6 +49,7 @@ class RegistrationGenderPreference extends StatefulWidget {
   final double? searchRadius;
   final String? job;
   final String? bio;
+  final List<Language> languages;
 
   @override
   State<RegistrationGenderPreference> createState() => _RegistrationGenderPreferenceState();
@@ -166,6 +169,7 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
                           searchRadius: widget.searchRadius,
                           job: widget.job,
                           bio: widget.bio,
+                          languages: widget.languages,
                       )
                     ],
                   ),

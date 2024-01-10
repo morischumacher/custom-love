@@ -9,6 +9,7 @@ import 'package:frontend/src/app/presentation/registration/pages/widgets/page_ti
 import 'package:frontend/src/app/presentation/registration/pages/widgets/textfield.dart';
 import 'package:geolocator/geolocator.dart';
 import '../../../../config/theme.dart';
+import '../../../model/language_model.dart';
 
 class RegistrationNameEmail extends StatefulWidget {
   const RegistrationNameEmail({
@@ -25,7 +26,8 @@ class RegistrationNameEmail extends StatefulWidget {
     required this.location,
     required this.searchRadius,
     required this.job,
-    required this.bio
+    required this.bio,
+    required this.languages
   });
 
   final String? firstName;
@@ -41,6 +43,7 @@ class RegistrationNameEmail extends StatefulWidget {
   final double? searchRadius;
   final String? job;
   final String? bio;
+  final List<Language> languages;
 
   @override
   State<RegistrationNameEmail> createState() => _RegistrationNameEmailState();
@@ -131,7 +134,8 @@ class _RegistrationNameEmailState extends State<RegistrationNameEmail> {
                           location: widget.location,
                           searchRadius: widget.searchRadius,
                           job: widget.job,
-                          bio: widget.bio
+                          bio: widget.bio,
+                          languages: widget.languages,
                       )
                     ],
                   ),

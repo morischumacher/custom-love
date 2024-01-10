@@ -21,7 +21,8 @@ class RegistrationService {
       int genderIdentityId,
       List<int> genderPreferenceIds,
       Uint8List? profilePicture,
-      List<int> userInterestIdSet
+      List<int> userInterestIdSet,
+      List<int> languageIdSet
     ) async {
     try {
       final body = _registrationApi.registerUser(
@@ -37,7 +38,8 @@ class RegistrationService {
           genderIdentityId,
           genderPreferenceIds,
           null,
-          userInterestIdSet
+          userInterestIdSet,
+          languageIdSet
       );
       return body;
     } catch (e) {

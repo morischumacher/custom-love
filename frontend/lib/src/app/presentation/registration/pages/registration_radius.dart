@@ -11,6 +11,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:logger/logger.dart';
 
 import '../../../../config/theme.dart';
+import '../../../model/language_model.dart';
 
 class RegistrationRadius extends StatefulWidget {
   const RegistrationRadius({Key? key,
@@ -26,7 +27,8 @@ class RegistrationRadius extends StatefulWidget {
       required this.location,
       required this.searchRadius,
       required this.job,
-      required this.bio
+      required this.bio,
+      required this.languages
   }) : super(key: key);
 
   final String? firstName;
@@ -42,6 +44,7 @@ class RegistrationRadius extends StatefulWidget {
   final double? searchRadius;
   final String? job;
   final String? bio;
+  final List<Language> languages;
 
   @override
   State<RegistrationRadius> createState() => _RegistrationRadiusState();
@@ -159,7 +162,8 @@ class _RegistrationRadiusState extends State<RegistrationRadius> {
                             location: widget.location,
                             searchRadius: searchRadius,
                             job: widget.job,
-                            bio: widget.bio
+                            bio: widget.bio,
+                            languages: widget.languages,
                         )
                       ],
                     ),

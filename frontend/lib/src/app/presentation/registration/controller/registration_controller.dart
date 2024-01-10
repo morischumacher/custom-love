@@ -11,6 +11,7 @@ import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../config/app_state.dart';
+import '../../../model/language_model.dart';
 import '../../../model/user_model.dart';
 import '../../../service/user_service.dart';
 
@@ -30,7 +31,8 @@ class RegistrationController {
       final Gender? gender,
       final List<Gender> genderPreferences,
       final Uint8List? profilePicture,
-      final List<Interest> userInterestIdList
+      final List<Interest> userInterestIdList,
+      final List<Language> languages
     ) async {
 
     RegistrationService registrationService = context.read<RegistrationService>();
@@ -52,7 +54,8 @@ class RegistrationController {
           gender!.id,
           convertGenderListToGenderIdList(genderPreferences),
           null,
-          convertInterestListToInterestIdList(userInterestIdList)
+          convertInterestListToInterestIdList(userInterestIdList),
+          convertLanguageListToLanguageIdList(languages)
       );
 
       var accessToken = registrationResult["access_token"];
@@ -98,6 +101,14 @@ class RegistrationController {
       genderIds.add(gender.id);
     }
     return genderIds;
+  }
+
+  List<int> convertLanguageListToLanguageIdList(List<Language> languages) {
+    List<int> languageIds = [];
+    for (Language language in languages) {
+      languageIds.add(language.id);
+    }
+    return languageIds;
   }
 
   // TODO: Duplicated code (included in login_controller)

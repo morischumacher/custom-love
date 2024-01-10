@@ -15,6 +15,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../../config/theme.dart';
+import '../../../../../model/language_model.dart';
 import '../../../../../service/login_service.dart';
 import '../../../../../service/user_service.dart';
 import '../../../controller/registration_controller.dart';
@@ -39,7 +40,8 @@ class NavigationButton extends StatefulWidget {
     required this.location,
     required this.searchRadius,
     required this.job,
-    required this.bio
+    required this.bio,
+    required this.languages
   });
 
   final RegistrationPageSection nextPage;
@@ -58,6 +60,7 @@ class NavigationButton extends StatefulWidget {
   final double? searchRadius;
   final String? job;
   final String? bio;
+  final List<Language> languages;
 
   @override
   State<NavigationButton> createState() => _NavigationButtonState();
@@ -92,7 +95,8 @@ class _NavigationButtonState extends State<NavigationButton> {
               widget.gender,
               widget.genderPreference,
               widget.profilePicture,
-              widget.userInterestIdList
+              widget.userInterestIdList,
+              widget.languages
             )
           );
         } else {
@@ -118,6 +122,7 @@ class _NavigationButtonState extends State<NavigationButton> {
                     searchRadius: widget.searchRadius,
                     job: widget.job,
                     bio: widget.bio,
+                    languages: widget.languages,
                 );
               case RegistrationPageSection.radius:
                 return RegistrationRadius(
@@ -133,7 +138,8 @@ class _NavigationButtonState extends State<NavigationButton> {
                     location: widget.location,
                     searchRadius: widget.searchRadius,
                     job: widget.job,
-                    bio: widget.bio
+                    bio: widget.bio,
+                    languages: widget.languages,
                 );
               case RegistrationPageSection.nameEmail:
                 return RegistrationNameEmail(
@@ -149,7 +155,8 @@ class _NavigationButtonState extends State<NavigationButton> {
                     location: widget.location,
                     searchRadius: widget.searchRadius,
                     job: widget.job,
-                    bio: widget.bio
+                    bio: widget.bio,
+                    languages: widget.languages,
                 );
               case RegistrationPageSection.genderPreference:
                 return RegistrationGenderPreference(
@@ -165,7 +172,8 @@ class _NavigationButtonState extends State<NavigationButton> {
                     location: widget.location,
                     searchRadius: widget.searchRadius,
                     job: widget.job,
-                    bio: widget.bio
+                    bio: widget.bio,
+                    languages: widget.languages,
                 );
               case RegistrationPageSection.pictures:
                 return RegistrationPictures(
@@ -181,7 +189,8 @@ class _NavigationButtonState extends State<NavigationButton> {
                     location: widget.location,
                     searchRadius: widget.searchRadius,
                     job: widget.job,
-                    bio: widget.bio
+                    bio: widget.bio,
+                    languages: widget.languages,
                 );
               case RegistrationPageSection.interests:
                 return RegistrationInterests(
@@ -197,7 +206,8 @@ class _NavigationButtonState extends State<NavigationButton> {
                     location: widget.location,
                     searchRadius: widget.searchRadius,
                     job: widget.job,
-                    bio: widget.bio
+                    bio: widget.bio,
+                    languages: widget.languages,
                 );
               case RegistrationPageSection.jobBio:
                 return RegistrationJobBio(
@@ -213,7 +223,8 @@ class _NavigationButtonState extends State<NavigationButton> {
                     location: widget.location,
                     searchRadius: widget.searchRadius,
                     job: widget.job,
-                    bio: widget.bio
+                    bio: widget.bio,
+                    languages: widget.languages,
                 );
               case RegistrationPageSection.summary:
                 return RegistrationSummary(
@@ -229,7 +240,8 @@ class _NavigationButtonState extends State<NavigationButton> {
                     location: widget.location,
                     searchRadius: widget.searchRadius,
                     job: widget.job,
-                    bio: widget.bio
+                    bio: widget.bio,
+                    languages: widget.languages,
                 );
               default:
                 return RegistrationLocation(
@@ -245,7 +257,8 @@ class _NavigationButtonState extends State<NavigationButton> {
                     location: widget.location,
                     searchRadius: widget.searchRadius,
                     job: widget.job,
-                    bio: widget.bio
+                    bio: widget.bio,
+                    languages: widget.languages,
                 );
             }
           }));

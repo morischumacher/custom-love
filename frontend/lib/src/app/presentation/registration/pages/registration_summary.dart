@@ -10,6 +10,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:logger/logger.dart';
 
 import '../../../../config/theme.dart';
+import '../../../model/language_model.dart';
 import '../enums/registration_page_enum.dart';
 
 class RegistrationSummary extends StatefulWidget {
@@ -26,7 +27,8 @@ class RegistrationSummary extends StatefulWidget {
     required this.location,
     required this.searchRadius,
     required this.job,
-    required this.bio
+    required this.bio,
+    required this.languages
   }) : super(key: key);
 
   final String? firstName;
@@ -42,6 +44,7 @@ class RegistrationSummary extends StatefulWidget {
   final double? searchRadius;
   final String? job;
   final String? bio;
+  final List<Language> languages;
 
   @override
   State<RegistrationSummary> createState() => _RegistrationSummaryState();
@@ -118,9 +121,10 @@ class _RegistrationSummaryState extends State<RegistrationSummary> {
 
                         SummaryTextfield(label: "Interests", input: interestsListToString(userInterestIdList)),
 
-                        // registration_job_bio
+                        // registration_job_bio + languages
                         SummaryTextfield(label: "Job", input: widget.job == null ? "" : widget.job!),
                         SummaryTextfield(label: "Bio", input: widget.bio == null ? "" : widget.bio!),
+                        SummaryTextfield(label: "Languages", input: languageListToString(widget.languages)),
                         const SizedBox(height: 25.0),
                         Expanded(child: Container()),
                         Footer(
@@ -137,7 +141,8 @@ class _RegistrationSummaryState extends State<RegistrationSummary> {
                             location: userLocation,
                             searchRadius: searchRadius,
                             job: widget.job,
-                            bio: widget.bio
+                            bio: widget.bio,
+                            languages: widget.languages,
                         )
                       ],
                     ),
@@ -169,5 +174,16 @@ class _RegistrationSummaryState extends State<RegistrationSummary> {
       genderStr +=  "${gender.name}, ";
     }
     return genderStr.substring(0, genderStr.length - 2);
+  }
+
+  String languageListToString(List<Language> languages) {
+    if (languages.isEmpty) {
+      return "";
+    }
+    String languageStr = "";
+    for (Language language in languages) {
+      languageStr +=  "${language.name}, ";
+    }
+    return languageStr.substring(0, languageStr.length - 2);
   }
 }
