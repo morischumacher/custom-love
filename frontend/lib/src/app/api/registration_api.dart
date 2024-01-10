@@ -21,7 +21,7 @@ class RegistrationApi {
       Position location,
       int searchRadius,
       int genderIdentityId,
-      int genderPreferenceId,
+      List<int> genderPreferenceIds,
       Uint8List? profilePicture,
       List<int> interests
       ) async {
@@ -38,7 +38,7 @@ class RegistrationApi {
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
-        body: json.encode(<String, String>{
+        body: json.encode(<String, dynamic>{
           "first_name": firstName,
           "last_name": lastName,
           "email": email,
@@ -48,7 +48,7 @@ class RegistrationApi {
           "job": job,
           "search_radius": searchRadius.toString(),
           "gender_identity_id": genderIdentityId.toString(),
-          "gender_preference_id": genderPreferenceId.toString(),
+          "gender_preference_ids": genderPreferenceIds.toString(),
           "swipes_left": 10.toString(),
           "swipe_limit_reset_date": DateTime.now().toString(),
           "longitude": location.longitude.toString(),

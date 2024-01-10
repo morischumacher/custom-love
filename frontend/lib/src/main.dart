@@ -100,8 +100,7 @@ class CustomLove extends StatelessWidget {
             final matchService = Provider.of<MatchService>(context);
             final messageService = Provider.of<MessageService>(context);
             final swipeStatusService = Provider.of<SwipeStatusService>(context);
-            return LoginPage(
-                loginService: loginService, userService: userService);
+            return LoginPage(loginService: loginService, userService: userService);
           },
           '/home/profile': (context) {
             final userService = Provider.of<UserService>(context);
@@ -135,7 +134,7 @@ class CustomLove extends StatelessWidget {
                 password: null,
                 birthdate: null,
                 gender: null,
-                preference: null,
+                preference: [],
                 profilePicture: null,
                 userInterestIdList: [],
                 location: null,

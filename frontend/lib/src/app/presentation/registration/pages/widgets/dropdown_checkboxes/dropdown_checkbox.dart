@@ -1,21 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/src/app/model/gender_model.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:multi_dropdown/multiselect_dropdown.dart';
 
-import '../../../../../config/theme.dart';
+import '../../../../../../config/theme.dart';
+
+typedef void MultiSelectCallback(MultiSelectController<Gender> val);
 
 class DropdownCheckbox extends StatefulWidget {
 
   const DropdownCheckbox({
-    super.key
+    super.key,
+    required this.callback,
+    required this.pickedGenderPreferences
   });
+
+  final MultiSelectCallback callback;
+  final MultiSelectController<Gender> pickedGenderPreferences;
 
   @override
   State<DropdownCheckbox> createState() => _DropdownCheckboxState();
 }
 
 class _DropdownCheckboxState extends State<DropdownCheckbox> {
-  var controller = MultiSelectController();
+  @override
+  void initState() {
+    super.initState();
+  }
+
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
 
   @override
@@ -23,8 +35,8 @@ class _DropdownCheckboxState extends State<DropdownCheckbox> {
     return Center(
       child: Column(
           children: [
-            MultiSelectDropDown(
-              padding: const EdgeInsets.all(0),
+            MultiSelectDropDown<Gender>(
+              padding: EdgeInsets.fromLTRB(widget.pickedGenderPreferences.selectedOptions.isEmpty ? 0 : 12, 0, 12, 0),
               hint: "Preference",
               hintStyle: TextStyle(
                 color: _customLoveTheme.grayscale1,
@@ -34,26 +46,22 @@ class _DropdownCheckboxState extends State<DropdownCheckbox> {
               fieldBackgroundColor: _customLoveTheme.grayscale0,
               borderRadius: 5.0,
               showClearIcon: true,
-              controller: controller,
-              onOptionSelected: (options) {
-                debugPrint(options.toString());
-              },
-              options: const <ValueItem>[
-                ValueItem(label: 'Option 1', value: '1'),
-                ValueItem(label: 'Option 2', value: '2'),
-                ValueItem(label: 'Option 3', value: '3'),
-                ValueItem(label: 'Option 4', value: '4'),
-                ValueItem(label: 'Option 5', value: '5'),
-                ValueItem(label: 'Option 6', value: '6'),
-              ],
-              disabledOptions: const [ValueItem(label: 'Option 1', value: '1')],
+              controller: widget.pickedGenderPreferences,
+              options: widget.pickedGenderPreferences.options,
               selectionType: SelectionType.multi,
               chipConfig: const ChipConfig(wrapType: WrapType.wrap),
-              dropdownHeight: 250,
+              dropdownHeight: 125,
               optionTextStyle: const TextStyle(fontSize: 16),
-              optionsBackgroundColor: _customLoveTheme.grayscale1,
+              optionsBackgroundColor: _customLoveTheme.grayscale0,
               selectedOptionIcon: const Icon(Icons.check_circle),
               borderColor: _customLoveTheme.formFieldBorder,
+              selectedOptionTextColor: _customLoveTheme.formFieldBorder,
+              selectedOptionBackgroundColor: _customLoveTheme.primaryColor,
+              onOptionSelected: (List<ValueItem<Gender>> selectedOptions) {
+                setState(() {
+                  widget.callback(widget.pickedGenderPreferences);
+                });
+              },
             ),
           ],
         ),

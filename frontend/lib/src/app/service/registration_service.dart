@@ -19,7 +19,7 @@ class RegistrationService {
       Position location,
       int searchRadius,
       int genderIdentityId,
-      int genderPreferenceId,
+      List<int> genderPreferenceIds,
       Uint8List? profilePicture,
       List<int> userInterestIdSet
     ) async {
@@ -35,7 +35,7 @@ class RegistrationService {
           location,
           searchRadius,
           genderIdentityId,
-          genderPreferenceId,
+          genderPreferenceIds,
           null,
           userInterestIdSet
       );

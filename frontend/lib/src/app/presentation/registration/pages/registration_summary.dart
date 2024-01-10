@@ -34,7 +34,7 @@ class RegistrationSummary extends StatefulWidget {
   final String? email;
   final String? password;
   final Gender? gender;
-  final Gender? preference;
+  final List<Gender> preference;
   final String? birthdate;
   final Uint8List? profilePicture;
   final List<Interest> userInterestIdList;
@@ -72,7 +72,7 @@ class _RegistrationSummaryState extends State<RegistrationSummary> {
   late String? email;
   late String? password;
   late Gender? gender;
-  late Gender? preference;
+  late List<Gender> preference;
   late String? birthdate;
   Uint8List? profilePicture;
   late List<Interest> userInterestIdList;
@@ -110,7 +110,7 @@ class _RegistrationSummaryState extends State<RegistrationSummary> {
 
                         // registration_gender_preference
                         SummaryTextfield(label: "Gender Identity", input: gender!.name),
-                        SummaryTextfield(label: "Gender Preference", input: preference!.name),
+                        SummaryTextfield(label: "Gender Preferences", input: genderListToString(preference)),
                         SummaryTextfield(label: "Birthdate", input: birthdate!),
 
                         // registration_radius
@@ -158,5 +158,16 @@ class _RegistrationSummaryState extends State<RegistrationSummary> {
       interestStr +=  "${interest.name}, ";
     }
     return interestStr.substring(0, interestStr.length - 2);
+  }
+
+  String genderListToString(List<Gender> genders) {
+    if (genders.isEmpty) {
+      return "";
+    }
+    String genderStr = "";
+    for (Gender gender in genders) {
+      genderStr +=  "${gender.name}, ";
+    }
+    return genderStr.substring(0, genderStr.length - 2);
   }
 }

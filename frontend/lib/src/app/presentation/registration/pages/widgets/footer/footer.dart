@@ -34,7 +34,7 @@ class Footer extends StatefulWidget {
   final String? email;
   final String? password;
   final Gender? gender;
-  final Gender? genderPreference;
+  final List<Gender> genderPreference;
   final String? birthdate;
   final Uint8List? profilePicture;
   final List<Interest> userInterestIdList;
@@ -149,7 +149,7 @@ class _FooterState extends State<Footer> {
             widget.password!.trim().isNotEmpty;
       case RegistrationPageSection.genderPreference:
         return widget.gender != null && 
-            widget.genderPreference != null && 
+            widget.genderPreference.isNotEmpty &&
             widget.birthdate != null;
       case RegistrationPageSection.pictures:
         // TODO: Make profilePicture mandatory once implemented in backend

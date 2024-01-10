@@ -50,7 +50,7 @@ class NavigationButton extends StatefulWidget {
   final String? email;
   final String? password;
   final Gender? gender;
-  final Gender? genderPreference;
+  final List<Gender> genderPreference;
   final String? birthdate;
   final Uint8List? profilePicture;
   final List<Interest> userInterestIdList;

@@ -28,7 +28,7 @@ class RegistrationController {
       final Position? location,
       final double? searchRadius,
       final Gender? gender,
-      final Gender? genderPreference,
+      final List<Gender> genderPreferences,
       final Uint8List? profilePicture,
       final List<Interest> userInterestIdList
     ) async {
@@ -50,7 +50,7 @@ class RegistrationController {
           location!,
           searchRadius!.toInt(),
           gender!.id,
-          genderPreference!.id,
+          convertGenderListToGenderIdList(genderPreferences),
           null,
           convertInterestListToInterestIdList(userInterestIdList)
       );
@@ -90,6 +90,14 @@ class RegistrationController {
       interestIds.add(interest.id);
     }
     return interestIds;
+  }
+
+  List<int> convertGenderListToGenderIdList(List<Gender> genders) {
+    List<int> genderIds = [];
+    for (Gender gender in genders) {
+      genderIds.add(gender.id);
+    }
+    return genderIds;
   }
 
   // TODO: Duplicated code (included in login_controller)
