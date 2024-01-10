@@ -1,4 +1,7 @@
 import 'dart:convert';
+import 'dart:typed_data';
+import 'package:frontend/src/config/exceptions.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:frontend/src/config/api_config.dart';
 
@@ -15,8 +18,21 @@ class RegistrationApi {
       String bio,
       String birthdate,
       String job,
-      int genderIdentityId
+      Position location,
+      int searchRadius,
+      int genderIdentityId,
+      int genderPreferenceId,
+      Uint8List? profilePicture,
+      List<int> interests
       ) async {
+    // Following attributes are not forwarded by the frontend, but handled by
+    // the backend: swipesLeft, swipeLimitResetDate
+
+    // TODO: Change body according to userDto
+    // Missing:
+    //   * genderPreferenceId
+    //   * interests
+    //   * profilePicture (separate issue)
     final response = await httpClient.post(
         Uri.parse('${ApiConfig.baseUrl}/users/'),
         headers: <String, String>{
@@ -27,24 +43,27 @@ class RegistrationApi {
           "last_name": lastName,
           "email": email,
           "password": password,
-          "bio": "",
+          "bio": bio,
           "date_of_birth": birthdate,
-          "job": "",
-          "search_radius": "",
-          "swipes_left": "",
+          "job": job,
+          "search_radius": searchRadius.toString(),
           "gender_identity_id": genderIdentityId.toString(),
-          "address_id": "",
-          "swipe_limit_reset_date": ""
+          "gender_preference_id": genderPreferenceId.toString(),
+          "swipes_left": 10.toString(),
+          "swipe_limit_reset_date": DateTime.now().toString(),
+          "longitude": location.longitude.toString(),
+          "latitude": location.latitude.toString(),
+          "interest_ids": interests.toString(),
+          "matching_algorithm": 1.toString()
         })
     );
 
     if (response.statusCode == 200) {
-      // Successful login, return the response body as a map
       return json.decode(response.body);
-      // TODO: Add all types of possible exceptions
+    } else if (response.statusCode == 422) {
+      throw InvalidRegistrationInputsException();
     } else {
-      print(response.body);
-      throw Exception('Error during Authentication');
+      throw Exception('Error during Registration');
     }
   }
 }

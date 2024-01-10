@@ -1,28 +1,22 @@
-import 'package:flutter/rendering.dart';
+import 'package:flutter/material.dart';
 import 'package:frontend/src/app/presentation/authentification/pages/logout_page.dart';
 import 'package:frontend/src/app/presentation/chat/pages/matches_page.dart';
 import 'package:frontend/src/app/presentation/chat/pages/messages_page.dart';
-import 'package:go_router/go_router.dart';
-import 'package:frontend/src/app/service/swipe_status_service.dart';
-import 'package:frontend/src/app/presentation/swipe/util/algo_id_notifier.dart';
-import "package:universal_html/html.dart" as universal_html;
-import 'package:flutter/foundation.dart' show kIsWeb;
-
-import 'package:flutter/material.dart';
-import 'package:frontend/src/app/presentation/chat/pages/conversations_page.dart';
-import 'package:frontend/src/config/theme.dart';
 import 'package:frontend/src/app/presentation/profile/pages/profile.dart';
 import 'package:frontend/src/app/presentation/swipe/pages/swipe.dart';
+import 'package:frontend/src/app/presentation/swipe/util/algo_id_notifier.dart';
+import 'package:frontend/src/app/service/swipe_status_service.dart';
 import 'package:frontend/src/app/service/user_service.dart';
-
+import 'package:frontend/src/config/theme.dart';
 import 'package:provider/provider.dart';
-
-import '../../swipe/util/matching_algorithm.dart';
 
 enum AppPage { profile, swipe, matches }
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key, required UserService userService, SwipeStatusService? swipeStatusService})
+  const HomeScreen(
+      {Key? key,
+      required UserService userService,
+      SwipeStatusService? swipeStatusService})
       : super(key: key);
 
   @override
@@ -44,19 +38,24 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget Function(BuildContext) routePage(String url) {
-    switch(url) {
+    switch (url) {
       case 'profile':
         setCurrentPage(AppPage.profile);
-        return (BuildContext context) => Profile(userService: context.read<UserService>());
+        return (BuildContext context) =>
+            Profile(userService: context.read<UserService>());
       case 'swipe':
         setCurrentPage(AppPage.swipe);
-        return (BuildContext context) => Swipe(userService: context.read<UserService>(), swipeStatusService: context.read<SwipeStatusService>());
+        return (BuildContext context) => Swipe(
+            userService: context.read<UserService>(),
+            swipeStatusService: context.read<SwipeStatusService>());
       case 'matches' || 'messages':
         setCurrentPage(AppPage.matches);
         return (BuildContext context) => const MatchesPage();
       default:
         setCurrentPage(AppPage.swipe);
-        return (BuildContext context) => Swipe(userService: context.read<UserService>(), swipeStatusService: context.read<SwipeStatusService>());
+        return (BuildContext context) => Swipe(
+            userService: context.read<UserService>(),
+            swipeStatusService: context.read<SwipeStatusService>());
     }
   }
 
@@ -80,7 +79,8 @@ class _HomeScreenState extends State<HomeScreen> {
     if (ModalRoute.of(context) == null) {
       Navigator.of(context).pushNamed(
         "/logout",
-        arguments: const LogoutRouteArguments("Internal App Error: Navigator corrupt"),
+        arguments:
+            const LogoutRouteArguments("Internal App Error: Navigator corrupt"),
       );
     }
 
@@ -112,8 +112,8 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: getTitle(),
         backgroundColor: _customLoveTheme.primaryColor,
-        actions: [ _currentPage.index == 1 ?
-          algoSwitcherMenu() : Container(),
+        actions: [
+          _currentPage.index == 1 ? algoSwitcherMenu() : Container(),
         ],
       ),
       body: route(context),
@@ -141,49 +141,53 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget getTitle() {
-    if (ModalRoute.of(context)!.settings.arguments is MessagesPageRouteArguments) {
-      final args = ModalRoute.of(context)!.settings.arguments as MessagesPageRouteArguments;
+    if (ModalRoute.of(context)!.settings.arguments
+        is MessagesPageRouteArguments) {
+      final args = ModalRoute.of(context)!.settings.arguments
+          as MessagesPageRouteArguments;
       return Text("${args.user.firstName} ${args.user.lastName}");
     }
 
     return const Text("Custom Love App");
   }
 
-  Widget algoSwitcherMenu(){
-   return Padding(
+  Widget algoSwitcherMenu() {
+    return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 30),
       child: PopupMenuButton(
           color: _customLoveTheme.neutralBackgroundColor,
           // surfaceTintColor has to be set to the desired background color
           surfaceTintColor: _customLoveTheme.neutralBackgroundColor,
-          icon: const Icon(Icons.tune, size: 28, color: Colors.black,),
+          icon: const Icon(
+            Icons.tune,
+            size: 28,
+            color: Colors.black,
+          ),
           itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-            popUpMenuItem("Random Algorithm", 1),
-            popUpMenuItem("Interest-based Algorithm", 2),
-            popUpMenuItem("Preference-based Algorithm", 3),
-          ]
-      ),
+                popUpMenuItem("Random Algorithm", 1),
+                popUpMenuItem("Interest-based Algorithm", 2),
+                popUpMenuItem("Preference-based Algorithm", 3),
+              ]),
     );
   }
 
   PopupMenuEntry popUpMenuItem(value, algoId) {
     return PopupMenuItem(
-      height: 0,
-      padding: const EdgeInsets.symmetric(horizontal: 2),
-      value: value,
-      child: Container(
-      decoration: BoxDecoration(
-        color: algoIdNotifier?.algoId == algoId ? _customLoveTheme.neutralColor : null,
-        borderRadius: const BorderRadius.all(Radius.circular(5))
-      ),
-      child: ListTile(
-        title: Text(value, style: const TextStyle(fontSize: 13)),
-        onTap: () {
-          _changeAlgoId(context, algoId);
-          Navigator.pop(context);
-        },
-      ))
-    );
+        height: 0,
+        padding: const EdgeInsets.symmetric(horizontal: 2),
+        value: value,
+        child: Container(
+            decoration: BoxDecoration(
+                color: algoIdNotifier?.algoId == algoId
+                    ? _customLoveTheme.neutralColor
+                    : null,
+                borderRadius: const BorderRadius.all(Radius.circular(5))),
+            child: ListTile(
+              title: Text(value, style: const TextStyle(fontSize: 13)),
+              onTap: () {
+                _changeAlgoId(context, algoId);
+                Navigator.pop(context);
+              },
+            )));
   }
-
 }

@@ -1,13 +1,18 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:frontend/src/app/presentation/registration/pages/registration_name_email.dart';
-import 'package:frontend/src/app/presentation/registration/pages/registration_pictures.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/birthdate_field.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/dropdown_list.dart';
+import 'package:frontend/src/app/presentation/registration/pages/widgets/footer/footer.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/page_title.dart';
+import 'package:frontend/src/app/service/gender_service.dart';
+import 'package:frontend/src/config/widgets/exception_widget.dart';
+import 'package:geolocator/geolocator.dart';
 
 import '../../../../config/theme.dart';
+import '../../../model/gender_model.dart';
+import '../../../model/interest_model.dart';
+import '../enums/registration_page_enum.dart';
 
 class RegistrationGenderPreference extends StatefulWidget {
   const RegistrationGenderPreference({
@@ -20,18 +25,26 @@ class RegistrationGenderPreference extends StatefulWidget {
     required this.preference,
     required this.birthdate,
     required this.profilePicture,
-    required this.userInterestIdList
+    required this.userInterestIdList,
+    required this.location,
+    required this.searchRadius,
+    required this.job,
+    required this.bio
   });
 
   final String? firstName;
   final String? lastName;
   final String? email;
   final String? password;
-  final String? gender;
-  final String? preference;
+  final Gender? gender;
+  final Gender? preference;
   final String? birthdate;
   final Uint8List? profilePicture;
-  final Set<int> userInterestIdList;
+  final List<Interest> userInterestIdList;
+  final Position? location;
+  final double? searchRadius;
+  final String? job;
+  final String? bio;
 
   @override
   State<RegistrationGenderPreference> createState() => _RegistrationGenderPreferenceState();
@@ -41,150 +54,117 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
   @override
   void initState() {
     super.initState();
-    firstName = widget.firstName;
-    lastName = widget.lastName;
-    email = widget.email;
-    password = widget.password;
-    _selectedGender = widget.gender;
-    _selectedPreference = widget.preference;
-    _dateController.value = TextEditingValue(text: widget.birthdate == null ? "" : widget.birthdate as String);
-    profilePicture = widget.profilePicture;
-    userInterestIdList = widget.userInterestIdList;
+    gender = widget.gender;
+    genderPreference = widget.preference;
+    birthdate = widget.birthdate;
+    getGenders();
   }
 
-  late String? firstName;
-  late String? lastName;
-  late String? email;
-  late String? password;
-  String? _selectedGender = "";
-  String? _selectedPreference = "";
-  late Uint8List? profilePicture;
-  late Set<int> userInterestIdList;
+  void getGenders() async {
+    try {
+      await _genderService.getGenders().then((value) {
+        setState(() {
+          genderDto = value;
+        });
+      });
+    } catch (e) {
+      setState(() {
+        httpError = true;
+      });
+    }
+  }
 
-  final TextEditingController _dateController = TextEditingController();
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
-  final _genderList = ["Male", "Female", "Other"];
+  final GenderService _genderService = GenderService();
+  Gender? gender;
+  Gender? genderPreference;
+  String? birthdate;
+
+  late List<Gender> genderDto = [];
+  late bool httpError = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _customLoveTheme.neutralColor,
+        backgroundColor: _customLoveTheme.neutralColor,
         body: Center(
-          child: Container(
-            constraints: const BoxConstraints(maxWidth: 500),
-              padding: const EdgeInsets.fromLTRB(21.0, 0, 21.0, 51.0),
-              child: Center(
-                child: Column(
-                  children: [
-                    const PageTitle(
-                        title: "Profile Details",
-                        description: "Provide some basic data about yourself",
-                        bottomPadding: 70.0,
-                    ),
-                    DropDownList(
-                        labelText: "Gender",
-                        value: _selectedGender,
-                        options: _genderList,
-                        setParentValueFunction: setGender
-                    ),
-                    const SizedBox(height: 19.0),
-                    DropDownList(
-                        labelText: "Preference",
-                        value: _selectedPreference,
-                        options: _genderList,
-                        setParentValueFunction: setPreference
-                    ),
-                    const SizedBox(height: 19.0),
-                    BirthdateField(
-                        controller: _dateController,
-                        context: context
-                    ),
-                  const SizedBox(height: 25.0),
-                    Center(
-                      child: Row(
-                        children: [
-                          prevBtn(context),
-                          const Spacer(),
-                          nextBtn(context)
-                        ],
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(25.0, 0, 25, 0),
+            child: Container(
+                constraints: const BoxConstraints(maxWidth: 500),
+                child: CustomScrollView(
+                  scrollBehavior:
+                  ScrollConfiguration.of(context).copyWith(scrollbars: false),
+                  slivers: [
+                  SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Column(
+                    children: [
+                      const PageTitle(
+                          title: "Profile Details",
+                          description: "Provide some basic data about yourself",
+                          bottomPadding: 70.0,
                       ),
-                    )
-
+                      if (httpError)
+                        const ExceptionWidget(
+                            httpStatus: "503",
+                            httpMessage: "Make sure that the backend is running"
+                        ),
+                      if (genderDto.isEmpty && !httpError)
+                        SizedBox(
+                            height: 100,
+                            width: 100,
+                            child: CircularProgressIndicator(
+                                color: _customLoveTheme.primaryColor,
+                                strokeWidth: 18
+                            )
+                        ),
+                      if (genderDto.isNotEmpty)
+                        Column(children: [
+                        DropDownList(
+                          labelText: "Gender",
+                          value: gender,
+                          options: genderDto,
+                          callback: (val) => setState(() => gender = val),
+                        ),
+                        const SizedBox(height: 19.0),
+                        DropDownList(
+                          labelText: "Preference",
+                          value: genderPreference,
+                          options: genderDto,
+                          callback: (val) => setState(() => genderPreference = val),
+                        ),
+                        const SizedBox(height: 19.0),
+                        BirthdateField(
+                          controller: birthdate,
+                          callback: (val) => setState(() => birthdate = val),
+                        ),
+                      ]),
+                      const SizedBox(height: 25.0),
+                      Expanded(child: Container()),
+                      Footer(
+                          pageSection: RegistrationPageSection.genderPreference,
+                          firstName: widget.firstName,
+                          lastName: widget.lastName,
+                          email: widget.email,
+                          password: widget.password,
+                          gender: gender,
+                          genderPreference: genderPreference,
+                          birthdate: birthdate,
+                          profilePicture: widget.profilePicture,
+                          userInterestIdList: widget.userInterestIdList,
+                          location: widget.location,
+                          searchRadius: widget.searchRadius,
+                          job: widget.job,
+                          bio: widget.bio,
+                      )
+                    ],
+                  ),
+                  ),
                   ],
                 ),
-              )),
+            ),
+          ),
         ));
-  }
-
-  OutlinedButton prevBtn(BuildContext context) {
-    return OutlinedButton(
-      style: OutlinedButton.styleFrom(
-          minimumSize: const Size(156, 56),
-          backgroundColor: _customLoveTheme.primaryColor,
-          side: BorderSide.none
-      ),
-      onPressed: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return RegistrationNameEmail(
-            firstName: firstName,
-            lastName: lastName,
-            email: email,
-            password: password,
-            gender: _selectedGender,
-            preference: _selectedPreference,
-            birthdate: _dateController.value.text,
-            profilePicture: profilePicture,
-            userInterestIdList: userInterestIdList
-          );
-        }));
-      },
-      child: const Text(
-        "Previous",
-        style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white
-        ),
-      ),
-    );
-  }
-
-  OutlinedButton nextBtn(BuildContext context) {
-    return OutlinedButton(
-      style: OutlinedButton.styleFrom(
-          minimumSize: const Size(156, 56),
-          backgroundColor: _customLoveTheme.primaryColor,
-          side: BorderSide.none
-      ),
-      onPressed: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return RegistrationPictures(
-              firstName: firstName,
-              lastName: lastName,
-              email: email,
-              password: password,
-              gender: _selectedGender,
-              preference: _selectedPreference,
-              birthdate: _dateController.value.text,
-              profilePicture: profilePicture,
-              userInterestIdList: userInterestIdList,
-          );
-        }));
-      },
-      child: const Text(
-        "Next",
-        style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white
-        ),
-      ),
-    );
-  }
-
-  void setGender(String gender) {
-    _selectedGender = gender;
-  }
-
-  void setPreference(String preference) {
-    _selectedPreference = preference;
   }
 }

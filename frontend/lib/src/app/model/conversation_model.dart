@@ -1,10 +1,3 @@
-import 'dart:collection';
-
-import 'package:flutter/material.dart';
-import 'package:frontend/src/app/model/user_model.dart';
-
-import 'message_model.dart';
-
 class Conversation {
   int id;
   int user1Id;
@@ -28,4 +21,3 @@ class Conversation {
     return user1Id;
   }
 }
-

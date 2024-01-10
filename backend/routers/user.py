@@ -3,10 +3,12 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 from starlette import status
 
+from backend.models.expert_system import ExpertSystem
 from backend.models.user import User
 from backend.responses.error_response import ErrorResponse
-from backend.responses.user_response import UserResponse, UserResponseWithInterests
-from backend.services.user import patch_user, get_algo_user, UserUpdate, get_user, post_user, get_users, login, \
+from backend.responses.user_response import UserResponse, UserResponseWithInterestsAndDistance
+from backend.services.expert_system import update_expert_system
+from backend.services.user import patch_user, get_algo_user, UserUpdate, get_user, get_users, login, registration, \
     websocket_connect
 from backend.utils.pagination import Page
 from backend.utils.token import Token
@@ -35,10 +37,10 @@ def get_user(commons: Annotated[dict, Depends(get_user)]):
     return commons
 
 
-@router.post('/', response_model=UserResponse, responses={
+@router.post('/', response_model=Token, responses={
     status.HTTP_422_UNPROCESSABLE_ENTITY: {"description": "Validation Error", "model": ErrorResponse}
 })
-def post_user(commons: Annotated[dict, Depends(post_user)]):
+def registration(commons: Annotated[dict, Depends(registration)]):
     """
     Stores a new user.
     :return: the user if stored successfully
@@ -48,6 +50,7 @@ def post_user(commons: Annotated[dict, Depends(post_user)]):
 
 @router.patch('', response_model=UserResponse, responses={
     status.HTTP_404_NOT_FOUND: {"description": "User not found", "model": ErrorResponse},
+    status.HTTP_400_BAD_REQUEST: {"description": "Validation Error", "model": ErrorResponse},
     status.HTTP_422_UNPROCESSABLE_ENTITY: {"description": "Validation Error", "model": ErrorResponse}
 })
 def patch_user(commons: Annotated[UserUpdate, Depends(patch_user)]):
@@ -64,7 +67,7 @@ def login(commons: Annotated[Token, Depends(login)]):
     return commons
 
 
-@router.get('/algo/{algo_id}', response_model=UserResponseWithInterests, responses={
+@router.get('/algo/{algo_id}', response_model=UserResponseWithInterestsAndDistance, responses={
     status.HTTP_404_NOT_FOUND: {"description": "Not Found", "model": ErrorResponse},
     status.HTTP_400_BAD_REQUEST: {"description": "Bad Request", "model": ErrorResponse},
 })

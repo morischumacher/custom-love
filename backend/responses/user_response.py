@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from backend.models.interest import Interest
 
 
-class UserResponseWithInterests(BaseModel):
+class UserResponseWithInterestsAndDistance(BaseModel):
     id: Optional[int] = None
     first_name: str
     last_name: str
@@ -22,6 +22,7 @@ class UserResponseWithInterests(BaseModel):
     longitude: Optional[float]
     gender_identity_id: Optional[int] = None
     interests: list[Interest]
+    distance: Optional[int]
 
 
 class UserResponse(BaseModel):

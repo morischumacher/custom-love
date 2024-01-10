@@ -14,6 +14,8 @@ class CustomLoveTheme extends ThemeExtension<CustomLoveTheme> {
     this.whiteColor = Colors.white,
     this.textColor = const Color(0xFF000000), // Black
     this.androidGreen = const Color(0xFF32DE84),
+    this.redColor = const Color(0xFFFF0000),
+    this.linkColor = const Color(0xFF2196F3),
     this.neutralBackgroundColor = const Color(0xFFFFFFFF),
     this.formFieldBorder = const Color(0xFFFFFFFF),
     this.inputWidth = 327,
@@ -25,7 +27,7 @@ class CustomLoveTheme extends ThemeExtension<CustomLoveTheme> {
 
   final Color primaryColor, tertiaryColor, neutralColor, textColor, neutralBackgroundColor;
   final Color grayscale0, grayscale1, grayscale2, whiteColor;
-  final Color formFieldBorder, androidGreen;
+  final Color formFieldBorder, androidGreen, redColor, linkColor;
   final double inputWidth, inputHeight;
   final InputDecoration? textFieldDecoration;
   final ButtonStyle? buttonStyle;
@@ -52,6 +54,8 @@ class CustomLoveTheme extends ThemeExtension<CustomLoveTheme> {
     Color? neutralBackgroundColor,
     Color? formFieldBorder,
     Color? androidGreen,
+    Color? redColor,
+    Color? linkColor,
     double? inputWidth,
     double? inputHeight,
     InputDecoration? textFieldDecoration,
@@ -70,6 +74,8 @@ class CustomLoveTheme extends ThemeExtension<CustomLoveTheme> {
         neutralBackgroundColor: neutralBackgroundColor ?? this.neutralBackgroundColor,
         formFieldBorder: formFieldBorder ?? this.formFieldBorder,
         androidGreen: androidGreen ?? this.androidGreen,
+        redColor: redColor ?? this.redColor,
+        linkColor: linkColor ?? this.linkColor,
         inputWidth: inputWidth ?? this.inputWidth,
         inputHeight: inputHeight ?? this.inputHeight,
         textFieldDecoration: textFieldDecoration ?? this.textFieldDecoration,
@@ -94,6 +100,8 @@ class CustomLoveTheme extends ThemeExtension<CustomLoveTheme> {
       neutralBackgroundColor: Color.lerp(neutralBackgroundColor, other.neutralBackgroundColor, t)!,
       formFieldBorder: Color.lerp(formFieldBorder, other.formFieldBorder, t)!,
       androidGreen: Color.lerp(androidGreen, other.androidGreen, t)!,
+      redColor: Color.lerp(redColor, other.redColor, t)!,
+      linkColor: Color.lerp(linkColor, other.linkColor, t)!,
       inputWidth: lerpDouble(inputWidth, other.inputWidth, t)!,
       inputHeight: lerpDouble(inputHeight, other.inputHeight, t)!,
       textFieldDecoration: other.textFieldDecoration ?? textFieldDecoration,
