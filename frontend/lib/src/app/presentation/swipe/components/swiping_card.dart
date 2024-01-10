@@ -178,7 +178,7 @@ class _SwipingCardState extends State<SwipingCard> {
                                                 ? width * 0.20
                                                 : width * 0.15),
                                         locationWidget(
-                                            widget._swipeItem.content.city),
+                                            widget._swipeItem.content.city, widget._swipeItem.content.distance),
                                       ],
                                     ),
                                   ),
