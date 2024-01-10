@@ -217,8 +217,8 @@ class _SwipeState extends State<Swipe>{
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await _getUserId();
       await _getMatchingAlgorithm();
-      int tmpSwipesLeft = await _checkSwipesLeft();
-      if (tmpSwipesLeft > 0) {
+      int currentSwipesLeft = await _checkSwipesLeft();
+      if (currentSwipesLeft > 0) {
         swipeStateNotifier!.setSwipeState(SwipeState.OKAY);
       } else {
         swipeStateNotifier!.setSwipeState(SwipeState.NO_SWIPES_LEFT);
@@ -227,14 +227,14 @@ class _SwipeState extends State<Swipe>{
   }
 
   Future<int> _checkSwipesLeft() async {
-    int tmpSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(
+    int currentSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(
         userId, widget.userService);
-    if (tmpSwipesLeft > 0) {
+    if (currentSwipesLeft > 0) {
       SharedSwipeableEvent.swipeable.changeSwipeable(true);
     } else {
       SharedSwipeableEvent.swipeable.changeSwipeable(false);
     }
-    return tmpSwipesLeft;
+    return currentSwipesLeft;
   }
 
   Future<void> _getUserId() async {
@@ -341,8 +341,8 @@ class _SwipeState extends State<Swipe>{
     }
     _didChangeDependenciesCalled = false;
 
-    int tmpSwipesLeft = await _checkSwipesLeft();
-    if(tmpSwipesLeft != 0){
+    int currentSwipesLeft = await _checkSwipesLeft();
+    if(currentSwipesLeft != 0){
       _loadNextUser();
     } else {
       if (mounted) {
@@ -553,7 +553,7 @@ class _SwipeState extends State<Swipe>{
         },
         onStackFinished: () async {
           print("onStackFinished called");
-          _updateSwipesLeft(false, false);
+          _updateSwipesLeft();
         },
         itemChanged: (SwipeItem item, int index) {},
         leftSwipeAllowed: swipeableTimer,
@@ -598,9 +598,10 @@ class _SwipeState extends State<Swipe>{
         ElevatedButton(
             onPressed: () async {
               if(swipeableTimer) {
-                int tmpSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(userId, widget.userService);
-                if(tmpSwipesLeft > 0) {
-                  _updateSwipesLeft(true, false);
+                int currentSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(userId, widget.userService);
+                if(currentSwipesLeft > 0) {
+                  await _updateSwipesLeft();
+                  _matchEngine!.currentItem?.nope();
                 } else {
                   swipeStateNotifier!.setSwipeState(SwipeState.NO_SWIPES_LEFT);
                 }
@@ -615,9 +616,10 @@ class _SwipeState extends State<Swipe>{
         ElevatedButton(
             onPressed: () async {
               if(swipeableTimer) {
-                int tmpSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(userId, widget.userService);
-                if(tmpSwipesLeft > 0) {
-                  _updateSwipesLeft(true, true);
+                int currentSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(userId, widget.userService);
+                if(currentSwipesLeft > 0) {
+                  await _updateSwipesLeft();
+                  _matchEngine!.currentItem?.like();
                 } else {
                   swipeStateNotifier!.setSwipeState(SwipeState.NO_SWIPES_LEFT);
                 }
@@ -632,24 +634,15 @@ class _SwipeState extends State<Swipe>{
     );
   }
 
-  Future<void> _updateSwipesLeft(bool swipedViaButton, bool hasLiked) async {
+  Future<void> _updateSwipesLeft() async {
     String accessToken = await _controller.retrieveAccessToken() as String;
-    int tmpSwipesLeft = await SwipesLeft.updateSwipeLeft(accessToken, widget.userService);
+    int currentSwipesLeft = await SwipesLeft.updateSwipeLeft(accessToken, widget.userService);
 
-    if (tmpSwipesLeft > 0) {
+    if (currentSwipesLeft > 0) {
       SharedSwipeableEvent.swipeable.changeSwipeable(true);
-      swipeStateNotifier!.setSwipeState(SwipeState.OKAY);
     } else {
       SharedSwipeableEvent.swipeable.changeSwipeable(false);
       swipeStateNotifier!.setSwipeState(SwipeState.NO_SWIPES_LEFT);
-    }
-
-    if (swipedViaButton) {
-      if (hasLiked) {
-        _matchEngine!.currentItem?.like();
-      } else {
-        _matchEngine!.currentItem?.nope();
-      }
     }
   }
 
