@@ -35,6 +35,7 @@ from backend.utils.connection_manager import connection_manager
 from backend.utils.logger import Logger
 from backend.utils.pagination import PaginationParams
 from backend.utils.passwords import hash_pwd
+from backend.services.expert_system import update_expert_system
 from backend.utils.token import create_access_token, get_current_user
 load_dotenv()
 
@@ -129,6 +130,8 @@ def patch_user(updated_user: UserUpdate, user: Annotated[User, Depends(get_curre
                 if user.swipes_left != 0:
                     user.swipes_left = user.swipes_left - 1
             else:
+                response = update_expert_system(user, db)
+                print(response)
                 user.swipe_limit_reset_date = datetime.datetime.now() + datetime.timedelta(hours=24)
                 user.swipes_left = os.getenv('SWIPE_LIMIT')
         elif "algo_id" in key and updated_user.algo_id is not None:
