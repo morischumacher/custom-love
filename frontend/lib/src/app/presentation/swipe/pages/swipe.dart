@@ -345,7 +345,9 @@ class _SwipeState extends State<Swipe>{
     if(tmpSwipesLeft != 0){
       _loadNextUser();
     } else {
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
     }
 
   }
@@ -554,8 +556,8 @@ class _SwipeState extends State<Swipe>{
           _updateSwipesLeft(false, false);
         },
         itemChanged: (SwipeItem item, int index) {},
-        leftSwipeAllowed: swipeableTimer ? swipeable : false,
-        rightSwipeAllowed: swipeableTimer ? swipeable : false,
+        leftSwipeAllowed: swipeableTimer,
+        rightSwipeAllowed: swipeableTimer,
         fillSpace: true,
         likeTag: getTag("Like"),
         nopeTag: getTag("Dislike"),
