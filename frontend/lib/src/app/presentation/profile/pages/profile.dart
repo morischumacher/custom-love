@@ -85,17 +85,17 @@ class _ProfileState extends State<Profile> {
                           // registration_job_bio
                           SummaryTextfield(label: "Job", input: user!.job),
                           SummaryTextfield(label: "Bio", input: user!.bio),
-                          
-                          LoginButton(
-                            onTap: () {
-                              Future<void>.value(_logoutController.handleLogout(context));
-                              },
-                            color: _customLoveTheme.redColor,
-                            text: "Logout"
-                          )
                         ]),
                       const SizedBox(height: 25.0),
                       Expanded(child: Container()),
+                      LoginButton(
+                          onTap: () {
+                            Future<void>.value(_logoutController.handleLogout(context));
+                          },
+                          color: _customLoveTheme.primaryColor,
+                          text: "Logout"
+                      ),
+                      const SizedBox(height: 30.0)
                     ],
                   ),
                 ),
