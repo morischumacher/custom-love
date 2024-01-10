@@ -130,8 +130,7 @@ def patch_user(updated_user: UserUpdate, user: Annotated[User, Depends(get_curre
                 if user.swipes_left != 0:
                     user.swipes_left = user.swipes_left - 1
             else:
-                response = update_expert_system(user, db)
-                print(response)
+                update_expert_system(user, db)
                 user.swipe_limit_reset_date = datetime.datetime.now() + datetime.timedelta(hours=24)
                 user.swipes_left = os.getenv('SWIPE_LIMIT')
         elif "algo_id" in key and updated_user.algo_id is not None:
