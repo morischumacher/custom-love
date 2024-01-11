@@ -95,12 +95,6 @@ class _HomeScreenState extends State<HomeScreen> {
     String subRoute = '/home/$subRouteName';
 
     if (!context.mounted) return;
-    if (subRouteName == "swipe") {
-      var prevRoute = ModalRoute.of(context);
-      if (prevRoute != null) {
-        Navigator.of(context).removeRouteBelow(prevRoute);
-      }
-    }
     Navigator.pushNamed(context, subRoute);
   }
 
