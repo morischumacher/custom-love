@@ -140,7 +140,6 @@ class UserApi extends PaginatedApi<User> {
 
     if (response.statusCode == 200) {
       final dynamic jsonItem = json.decode(response.body);
-      print("jsonItem: $jsonItem");
       if (jsonItem == null) return null;
       final User user = User.fromJson(jsonItem);
       return user;

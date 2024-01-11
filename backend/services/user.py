@@ -204,8 +204,6 @@ def get_algo_user(algoId: int, user: Annotated[User, Depends(get_current_user)],
                   request: Request) -> UserResponseWithInterestsAndDistance | None:
     swipeable_user = get_swipeable_user(user, db)
 
-    print("swipeable user: ", swipeable_user)
-
     if len(swipeable_user) == 0:
         return None
 

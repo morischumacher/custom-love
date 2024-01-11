@@ -47,8 +47,6 @@ class _SwipeState extends State<Swipe>{
   AlgoIdNotifier? algoIdNotifier;
   MatchEngine? _matchEngine;
 
-  Timer? timer;
-
   late double height;
   late double width;
   late SwipeItem _swipeItem;
@@ -113,7 +111,7 @@ class _SwipeState extends State<Swipe>{
       setState(() {
         if(swipeStateNotifier!.swipeState == SwipeState.OKAY) {
           _loadNextUser();
-        } else {
+        } else if (swipeStateNotifier!.swipeState != SwipeState.NO_SURROUNDING_USERS) {
           _swipeItemLoaded = true;
         }
       });
@@ -132,31 +130,6 @@ class _SwipeState extends State<Swipe>{
 
       });
     }
-  }
-
-  void _setTimer() {
-    if (mounted) {
-      setState(() {
-        swipeableTimer = false;
-      });
-    }
-
-    swiped = false;
-
-    timer = Timer(const Duration(seconds: 10), () {
-      if (mounted) {
-        setState(() {
-          swipeableTimer = true;
-        });
-      }
-    });
-  }
-
-  void resetTimer() {
-    if (timer != null && timer!.isActive) {
-      timer?.cancel();
-    }
-    _setTimer();
   }
 
   Widget getSwipeCard() {
@@ -259,25 +232,29 @@ class _SwipeState extends State<Swipe>{
 
     String accessToken = await _controller.retrieveAccessToken() as String;
 
-    print("hallo");
+    String city = "";
     await widget.userService
         .getAlgoUser(accessToken, swipingAlgoId)
         .then((User? user) async {
+
           if (user != null) {
-            print("user loadnextuser ");
-            var city = await _locationService.getCurrentLocation(
-                user!.latitude, user.longitude);
-            _setUserSwipingCard(user, city);
+            city = await _locationService.getCurrentLocation(
+                user.latitude, user.longitude);
           } else {
-            print("user loadnextuser empty ");
-            swipeStateNotifier!.setSwipeState(SwipeState.NO_SURROUNDING_USERS);
+            city = "noCity";
           }
+
+          _setUserSwipingCard(user, city);
+
     }).whenComplete(() {
       if (mounted) {
         setState(() {
           isLoading = false;
           _swipeItemLoaded = true;
-          //build(context);
+
+          if (city == "noCity") {
+            swipeStateNotifier!.setSwipeState(SwipeState.NO_SURROUNDING_USERS);
+          }
         });
       }
     });
@@ -285,14 +262,7 @@ class _SwipeState extends State<Swipe>{
 
   void _setUserSwipingCard(User? user, String? city) {
     if (user == null) {
-      if (mounted) {
-        setState(() {
-          _swipeItem = SwipeItem(
-            content: const Text("There's no user to show"),
-          );
-          //build(context);
-        });
-      }
+
     } else {
       if (mounted) {
         setState(() {
@@ -309,7 +279,6 @@ class _SwipeState extends State<Swipe>{
             },
           );
           _matchEngine = MatchEngine(swipeItems: [_swipeItem]);
-          //build(context);
         }
         );
       }
@@ -397,31 +366,45 @@ class _SwipeState extends State<Swipe>{
                   child: Stack(
                       children: [
                         SizedBox(height: height * 0.08),
-                        const FittedBox(
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 190, vertical: 190),
-                            child: ArcText(
-                              radius: 100,
-                              text: "No users in the area  :(",
-                              textStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                              startAngle: 0,
-                              stretchAngle: 3,
-                              startAngleAlignment: StartAngleAlignment.center,
-                              placement: Placement.middle,
-                              direction: Direction.clockwise,
+                        const Center(
+                          child: FittedBox(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 190, vertical: 190),
+                              child: ArcText(
+                                radius: 100,
+                                text: "No users in the area  :(",
+                                textStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                                startAngle: 0,
+                                stretchAngle: 3,
+                                startAngleAlignment: StartAngleAlignment.center,
+                                placement: Placement.middle,
+                                direction: Direction.clockwise,
+                              ),
                             ),
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: kIsWeb ? 115 : 105, vertical: kIsWeb ? 120 : 105),
-                          child: Column(
-                            children: [
-                              Icon(Icons.travel_explore_rounded, size: 150, color: _customLoveTheme.textColor),
-                              SizedBox(height: height * 0.08),
-                              Text("Try again later", style: TextStyle(fontSize: kIsWeb ? 16 : 14, fontWeight: FontWeight.bold, color: _customLoveTheme.textColor)),
-                            ],
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: kIsWeb ? 120 : 105, vertical: kIsWeb ? 120 : 105),
+                            child: Column(
+                              children: [
+                                Icon(Icons.travel_explore_rounded, size: 150, color: _customLoveTheme.textColor),
+                                SizedBox(height: height * 0.08),
+                              ],
+                            ),
                           ),
                         ),
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: Padding(
+                            padding: EdgeInsets.only(top: height * 0.4, left: kIsWeb ? 50 : 25, right: kIsWeb ? 50 : 25),
+                            child: Text(
+                              "Increase your search radius in your profile settings to find your perfect match!",
+                              style: TextStyle(fontSize: kIsWeb ? 16 : 14, fontWeight: FontWeight.bold, color: _customLoveTheme.textColor),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        )
                       ]
                   ),
                 ),
@@ -522,8 +505,6 @@ class _SwipeState extends State<Swipe>{
   void dispose() {
     swipeStateNotifier?.removeListener(_swipeStateListener);
     algoIdNotifier?.removeListener(_algoIdListener);
-
-    timer?.cancel();
 
     _swipeableSubscription?.cancel();
 
