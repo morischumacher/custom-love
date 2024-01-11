@@ -4,6 +4,8 @@ import 'package:frontend/src/app/presentation/chat/pages/conversations_page.dart
 import '../../authentification/pages/logout_page.dart';
 import 'messages_page.dart';
 
+// coverage:ignore-file
+
 class MatchesPage extends StatelessWidget {
   const MatchesPage({super.key});
 

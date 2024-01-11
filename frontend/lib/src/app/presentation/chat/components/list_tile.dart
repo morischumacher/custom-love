@@ -24,63 +24,65 @@ class CustomListTile extends StatelessWidget {
       return const ListTile();
     }
 
-    return ListTile(
-      onTap: () {
-        final userStorage = Provider.of<UserStorage>(context, listen: false);
-        User? recipient = userStorage.users.items[conversation?.getOtherUserId(userId)];
-
-        if (recipient == null || conversation == null) {
-          // do nothing
-          return;
-        }
-
-        Navigator.pushNamed(
-          context,
-          "/home/matches/messages",
-          arguments: MessagesPageRouteArguments(recipient, conversation!)
-        );
-      },
-      title: Consumer<UserStorage>(
-        builder: (BuildContext context, UserStorage userStorage, Widget? child) {
-          if (userStorage.loading) {
-            return const CircularProgressIndicator();
-          }
-
+    return Material(
+      child: ListTile(
+        onTap: () {
+          final userStorage = Provider.of<UserStorage>(context, listen: false);
           User? recipient = userStorage.users.items[conversation?.getOtherUserId(userId)];
-          if (recipient == null) {
-            return const Text("");
+
+          if (recipient == null || conversation == null) {
+            // do nothing
+            return;
           }
 
-          return Text("${recipient.firstName} ${recipient.lastName}");
+          Navigator.pushNamed(
+            context,
+            "/home/matches/messages",
+            arguments: MessagesPageRouteArguments(recipient, conversation!)
+          );
         },
-      ),
-      subtitle: Consumer<MessageStorage>(
-        builder: (BuildContext context, MessageStorage messageStorage, Widget? child) {
-          if (messageStorage.loading) {
-            return const CircularProgressIndicator();
-          }
+        title: Consumer<UserStorage>(
+          builder: (BuildContext context, UserStorage userStorage, Widget? child) {
+            if (userStorage.loading) {
+              return const CircularProgressIndicator();
+            }
 
-          Message? message = messageStorage.messages[conversation?.id]?.items.values.lastOrNull;
-          if (message == null) {
-            return const Text("no messages");
-          }
+            User? recipient = userStorage.users.items[conversation?.getOtherUserId(userId)];
+            if (recipient == null) {
+              return const Text("");
+            }
 
-          return Text(message.getPreview());
-        },
-      ),
-      leading: Consumer<UserStorage>(
-        builder: (BuildContext context, UserStorage userStorage, Widget? child) {
-          if (userStorage.loading) {
-            return const CircularProgressIndicator();
-          }
+            return Text("${recipient.firstName} ${recipient.lastName}");
+          },
+        ),
+        subtitle: Consumer<MessageStorage>(
+          builder: (BuildContext context, MessageStorage messageStorage, Widget? child) {
+            if (messageStorage.loading) {
+              return const CircularProgressIndicator();
+            }
 
-          User? recipient = userStorage.users.items[conversation?.getOtherUserId(userId)];
-          if (recipient == null) {
-            return const Avatar.withInitials("");
-          }
+            Message? message = messageStorage.messages[conversation?.id]?.items.values.lastOrNull;
+            if (message == null) {
+              return const Text("no messages");
+            }
 
-          return Avatar(recipient);
-        },
+            return Text(message.getPreview());
+          },
+        ),
+        leading: Consumer<UserStorage>(
+          builder: (BuildContext context, UserStorage userStorage, Widget? child) {
+            if (userStorage.loading) {
+              return const CircularProgressIndicator();
+            }
+
+            User? recipient = userStorage.users.items[conversation?.getOtherUserId(userId)];
+            if (recipient == null) {
+              return const Avatar.withInitials("");
+            }
+
+            return Avatar(recipient);
+          },
+        ),
       ),
     );
   }
