@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import List, Any
+
 from sqlmodel import Session
 from starlette.testclient import TestClient
 
@@ -9,7 +10,6 @@ from backend.models.language import Language
 from backend.models.preference import Preference
 from backend.models.user import User
 from backend.utils.passwords import hash_pwd
-
 
 RAW_PASSWORD = "pass1"
 
@@ -33,6 +33,7 @@ def random_preferences(num):
                                       date=datetime.now()))
 
     return preferences
+
 
 def user_alfa():
     return User(
@@ -60,6 +61,7 @@ def user_alfa():
 
 def user_beta():
     return User(
+        id=2,
         first_name='Bravo',
         last_name='Bravonson',
         email='bravo.bravonson@email.com',
@@ -84,6 +86,7 @@ def user_beta():
 
 def user_gamma():
     return User(
+        id=3,
         first_name='Gamma',
         last_name='Gammonson',
         email='gamma.gammonson@email.com',
@@ -100,6 +103,31 @@ def user_gamma():
         preferences=random_preferences(2),
         gender_identity=gender_identity("woman"),
         interests=[interest("travel"), interest("books"), interest("science")],
+        password=hash_pwd(RAW_PASSWORD),
+        latitude=48.227982,
+        longitude=16.372316
+    )
+
+
+def user_theater():
+    return User(
+        id=4,
+        first_name='Theater',
+        last_name='Theaterson',
+        email='theater.theaterson@email.com',
+        tel='+92 231 023 953',
+        bio="Words are my playground. Writer weaving stories in the tapestry of life.",
+        date_of_birth=datetime.today(),
+        job='Theater Director',
+        search_radius=20,
+        matching_algorithm=2,
+        swipe_limit_reset_date=datetime.today(),
+        swipes_left=5,
+        languages=[language("english"), language("german")],
+        gender_preferences=[gender_identity("woman")],
+        preferences=random_preferences(2),
+        gender_identity=gender_identity("woman"),
+        interests=[interest("movies"), interest("crafts"), interest("philosophy")],
         password=hash_pwd(RAW_PASSWORD),
         latitude=48.227982,
         longitude=16.372316
