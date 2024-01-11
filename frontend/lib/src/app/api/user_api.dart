@@ -127,7 +127,7 @@ class UserApi extends PaginatedApi<User> {
     }
   }
 
-  Future<User> getAlgoUser(var accessToken, int algoId) async {
+  Future<User?> getAlgoUser(var accessToken, int algoId) async {
     final response = await http.get(
       Uri.parse(
           '${ApiConfig.baseUrl}/users/algo/{algoId}?algoId=$algoId&page=1&size=50'),
@@ -140,6 +140,8 @@ class UserApi extends PaginatedApi<User> {
 
     if (response.statusCode == 200) {
       final dynamic jsonItem = json.decode(response.body);
+      print("jsonItem: $jsonItem");
+      if (jsonItem == null) return null;
       final User user = User.fromJson(jsonItem);
       return user;
     } else if (response.statusCode == 404) {

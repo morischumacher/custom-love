@@ -185,8 +185,9 @@ class _SwipeState extends State<Swipe>{
           userId: userId,
         );
       case SwipeState.NO_SWIPES_LEFT:
-      case SwipeState.NO_SURROUNDING_USER:
         return noSwipesLeftCard();
+      case SwipeState.NO_SURROUNDING_USERS:
+        return noSurroundingUsersCard();
       default:
         return Center(child: Container());
     }
@@ -258,20 +259,25 @@ class _SwipeState extends State<Swipe>{
 
     String accessToken = await _controller.retrieveAccessToken() as String;
 
+    print("hallo");
     await widget.userService
         .getAlgoUser(accessToken, swipingAlgoId)
         .then((User? user) async {
-      var city = await _locationService.getCurrentLocation(
-          user!.latitude, user.longitude);
-
-      _setUserSwipingCard(user, city);
-
+          if (user != null) {
+            print("user loadnextuser ");
+            var city = await _locationService.getCurrentLocation(
+                user!.latitude, user.longitude);
+            _setUserSwipingCard(user, city);
+          } else {
+            print("user loadnextuser empty ");
+            swipeStateNotifier!.setSwipeState(SwipeState.NO_SURROUNDING_USERS);
+          }
     }).whenComplete(() {
       if (mounted) {
         setState(() {
           isLoading = false;
           _swipeItemLoaded = true;
-          build(context);
+          //build(context);
         });
       }
     });
@@ -284,7 +290,7 @@ class _SwipeState extends State<Swipe>{
           _swipeItem = SwipeItem(
             content: const Text("There's no user to show"),
           );
-          build(context);
+          //build(context);
         });
       }
     } else {
@@ -303,7 +309,7 @@ class _SwipeState extends State<Swipe>{
             },
           );
           _matchEngine = MatchEngine(swipeItems: [_swipeItem]);
-          build(context);
+          //build(context);
         }
         );
       }
@@ -366,6 +372,69 @@ class _SwipeState extends State<Swipe>{
         bio: user.bio,
         interests: interests,
         distance: distance);
+  }
+
+  Widget noSurroundingUsersCard() {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      clipBehavior: Clip.hardEdge,
+      color: _customLoveTheme.neutralBackgroundColor,
+      surfaceTintColor: _customLoveTheme.neutralBackgroundColor,
+      child: SwipeCards(
+        matchEngine: _matchEngine = MatchEngine(swipeItems: [
+          SwipeItem(
+              content: "No users in the area  :(",
+          ),
+        ]),
+        itemBuilder: (BuildContext context, int index) {
+          return Container(
+              height: double.infinity,
+              width: double.infinity,
+              alignment: Alignment.center,
+              color: _customLoveTheme.neutralBackgroundColor,
+              child: ClipRect(
+                child: SingleChildScrollView(
+                  child: Stack(
+                      children: [
+                        SizedBox(height: height * 0.08),
+                        const FittedBox(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 190, vertical: 190),
+                            child: ArcText(
+                              radius: 100,
+                              text: "No users in the area  :(",
+                              textStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                              startAngle: 0,
+                              stretchAngle: 3,
+                              startAngleAlignment: StartAngleAlignment.center,
+                              placement: Placement.middle,
+                              direction: Direction.clockwise,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: kIsWeb ? 115 : 105, vertical: kIsWeb ? 120 : 105),
+                          child: Column(
+                            children: [
+                              Icon(Icons.travel_explore_rounded, size: 150, color: _customLoveTheme.textColor),
+                              SizedBox(height: height * 0.08),
+                              Text("Try again later", style: TextStyle(fontSize: kIsWeb ? 16 : 14, fontWeight: FontWeight.bold, color: _customLoveTheme.textColor)),
+                            ],
+                          ),
+                        ),
+                      ]
+                  ),
+                ),
+              )
+          );
+        },
+        onStackFinished: () async {},
+        leftSwipeAllowed: false,
+        rightSwipeAllowed: false,
+        fillSpace: true,
+      ),
+    );
+
   }
 
   Widget noSwipesLeftCard() {
