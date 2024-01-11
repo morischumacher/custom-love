@@ -32,5 +32,4 @@ def test_get_interest_based_user(postgis_client, postgis_session):
 
 
 def test_get_preference_based_user(postgis_client, postgis_session):
-    # TODO: Write preferenced based test cases
     pass
