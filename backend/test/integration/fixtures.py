@@ -40,7 +40,12 @@ def client_fixture(session: Session):
 
 @pytest.fixture(name="postgis_session")
 def postgis_session_fixture():
-    with open('backend/database.json') as file:
+    file_path = 'backend/database.json'
+
+    if platform == 'win32':
+        file_path = 'C:\\Users\\cwittauer\\university\\23ws-ase-pr-inso-06\\backend\\database.json'
+
+    with open(file_path) as file:
         connection_string = json.load(file)
 
     prefix = connection_string['prefix']
