@@ -2,9 +2,10 @@ import re
 from datetime import date
 
 from backend.models.user import User
+from backend.requests.user_request import UserRegistration
 
 
-def validate_new_user(user: User) -> [str]:
+def validate_new_user(user: UserRegistration) -> [str]:
     """
     Validates whether a user has valid entries and can be saved within the database.
     :param user: user whose attributes are validated
@@ -22,8 +23,8 @@ def validate_new_user(user: User) -> [str]:
     # TODO: Check bio length
     if __is_under_18(user.date_of_birth):
         validation_exceptions.append("Users under 18 are not allowed on the app")
-    if user.swipes_left < 0:
-        validation_exceptions.append("Users cannot have a negative amount of swipes")
+    if len(user.interest_ids) < 3 or len(user.interest_ids) > 5:
+        validation_exceptions.append("User requires 3 - 5 interests")
     return validation_exceptions
 
 

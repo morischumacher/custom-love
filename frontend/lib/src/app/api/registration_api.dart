@@ -26,13 +26,8 @@ class RegistrationApi {
       List<int> interests,
       List<int> languages
       ) async {
-    // Following attributes are not forwarded by the frontend, but handled by
-    // the backend: swipesLeft, swipeLimitResetDate
-
     // TODO: Change body according to userDto
     // Missing:
-    //   * genderPreferenceId
-    //   * interests
     //   * profilePicture (separate issue)
     final response = await httpClient.post(
         Uri.parse('${ApiConfig.baseUrl}/users/'),
@@ -49,12 +44,10 @@ class RegistrationApi {
           "job": job,
           "search_radius": searchRadius.toString(),
           "gender_identity_id": genderIdentityId.toString(),
-          "gender_preference_ids": genderPreferenceIds.toString(),
-          "swipes_left": 10.toString(),
-          "swipe_limit_reset_date": DateTime.now().toString(),
+          "gender_preference_ids": genderPreferenceIds,
           "longitude": location.longitude.toString(),
           "latitude": location.latitude.toString(),
-          "interest_ids": interests.toString(),
+          "interest_ids": interests,
           "matching_algorithm": 1.toString(),
           "language_ids": languages
         })

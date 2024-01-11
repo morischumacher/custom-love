@@ -35,7 +35,7 @@ def get_user(commons: Annotated[dict, Depends(get_user)]):
     return commons
 
 
-@router.post('/', response_model=Token, responses={
+@router.post('/', responses={
     status.HTTP_422_UNPROCESSABLE_ENTITY: {"description": "Validation Error", "model": ErrorResponse}
 })
 def registration(commons: Annotated[dict, Depends(registration)]):

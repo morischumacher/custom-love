@@ -20,10 +20,14 @@ from backend.exceptions.credentials_exception import CredentialsException
 from backend.exceptions.not_found_exception import NotFoundException
 from backend.exceptions.validation_exception import ValidationException
 from backend.mapper.user_mapper import map_user_to_user_response_with_interests, map_user_to_user_response
+from backend.models.gender_identity import GenderIdentity
+from backend.models.interest import Interest
+from backend.models.language import Language
 from backend.models.message import Message, message_factory
 from backend.models.swipe_status import SwipeStatus, SwipeStatusType
 from backend.models.user import User
 from backend.repository.repository import create_session
+from backend.requests.user_request import UserRegistration
 from backend.responses.notification import Notification, NotificationType
 from backend.responses.user_response import UserResponse, UserResponseWithInterests
 from backend.services.expert_system import get_expert_system_by_user_id
@@ -88,7 +92,7 @@ def get_users(user: Annotated[User, Depends(get_current_user)], db: Annotated[Se
                                      page=request.query_params.get("page")))
 
 
-def registration(user: User, db: Annotated[Session, Depends(create_session)]) -> {}:
+def registration(user: UserRegistration, db: Annotated[Session, Depends(create_session)]) -> {}:
     """
     Create a user
     :param db: injected database
@@ -101,14 +105,47 @@ def registration(user: User, db: Annotated[Session, Depends(create_session)]) ->
     if len(validate_new_user(user)) > 0:
         raise ValidationException(user_validation)
 
-    user.password = hash_pwd(user.password)
-    db.add(user)
-    db.commit()
-    db.refresh(user)
+    user_interests = []
+    user_languages = []
+    user_gender_preferences = []
+    for interest_id in user.interest_ids:
+        user_interests.append(db.exec(select(Interest).where(Interest.id == interest_id)).first())
 
-    access_token = create_access_token(data={"sub": user.email})
-    # TODO: Remove sensitive material from the user key-value pair
-    return {"access_token": access_token, "token_type": "bearer", "user": user}
+    for language_id in user.language_ids:
+        user_languages.append(db.exec(select(Language).where(Language.id == language_id)).first())
+
+    for gender_id in user.gender_preference_ids:
+        user_gender_preferences.append(db.exec(select(GenderIdentity).where(GenderIdentity.id == gender_id)).first())
+
+    gender_identity = db.exec(select(GenderIdentity).where(GenderIdentity.id == 1)).first()
+
+    register_user: User = User(
+                first_name=user.first_name,
+                last_name=user.last_name,
+                email=user.email,
+                bio=user.bio,
+                date_of_birth=user.date_of_birth,
+                job=user.job,
+                search_radius=user.search_radius,
+                swipes_left=50,
+                swipe_limit_reset_date=datetime.datetime.now(),
+                languages=user_languages,
+                preferences=[],
+                gender_preferences=user_gender_preferences,
+                gender_identity=gender_identity,
+                interests=user_interests,
+                password=hash_pwd(user.password),
+                latitude=user.latitude,
+                longitude=user.longitude,
+                matching_algorithm=user.matching_algorithm
+            )
+
+    db.add(register_user)
+    db.commit()
+    db.refresh(register_user)
+
+    access_token = create_access_token(data={"sub": register_user.email})
+    return {"access_token": access_token, "token_type": "bearer", "user": register_user}
 
 
 def patch_user(updated_user: UserUpdate, user: Annotated[User, Depends(get_current_user)],
