@@ -29,7 +29,7 @@ from backend.models.user import User
 from backend.repository.repository import create_session
 from backend.requests.user_request import UserRegistration
 from backend.responses.notification import Notification, NotificationType
-from backend.responses.user_response import UserResponse, UserResponseWithInterests
+from backend.responses.user_response import UserResponse, UserResponseWithInterests, UserDetailedResponse
 from backend.services.expert_system import get_expert_system_by_user_id
 from backend.services.message import _save_message
 from backend.services.validation.user_validation import validate_new_user
@@ -63,6 +63,7 @@ def get_user(user_id: int, db: Annotated[Session, Depends(create_session)]) -> U
         raise BadRequestException(f"More than one user for id = {user_id} was found")
 
     return user[0]
+    # return __user_to_user_profile(user[0])
 
 
 def get_user_by_email(user_email: str, db: Annotated[Session, Depends(create_session)]):
@@ -296,3 +297,30 @@ async def websocket_connect(websocket: WebSocket, user_token: str, db: Annotated
 
     except WebSocketDisconnect:
         connection_manager.disconnect(websocket, user.id)
+
+
+def get_profile(user_id: int, db: Annotated[Session, Depends(create_session)]) -> UserDetailedResponse:
+    return __user_to_user_profile(get_user(user_id, db))
+
+
+def __user_to_user_profile(user: User) -> UserDetailedResponse:
+    return UserDetailedResponse(
+        id=user.id,
+        first_name=user.first_name,
+        last_name=user.last_name,
+        email=user.email,
+        password=user.password,
+        bio=user.bio,
+        date_of_birth=user.date_of_birth,
+        job=user.job,
+        search_radius=user.search_radius,
+        gender_identity=user.gender_identity,
+        gender_preferences=user.gender_preferences,
+        swipes_left=user.swipes_left,
+        swipe_limit_reset_date=user.swipe_limit_reset_date,
+        latitude=user.latitude,
+        longitude=user.longitude,
+        interests=user.interests,
+        languages=user.languages,
+        matching_algorithm=user.matching_algorithm
+    )

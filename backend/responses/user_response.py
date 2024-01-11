@@ -44,6 +44,7 @@ class UserResponse(BaseModel):
 
 
 class UserDetailedResponse(BaseModel):
+    id: int
     first_name: str
     last_name: str
     email: str
@@ -60,6 +61,7 @@ class UserDetailedResponse(BaseModel):
     longitude: float
     interests: list[Interest]
     languages: list[Language]
+    matching_algorithm: int
 
 
 class ProfileResponse(BaseModel):
