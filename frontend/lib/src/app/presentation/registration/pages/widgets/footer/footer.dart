@@ -11,7 +11,7 @@ import '../../../../../model/language_model.dart';
 import 'navigation_button.dart';
 
 class Footer extends StatefulWidget {
-  const Footer({
+  Footer({
     super.key,
     required this.pageSection,
     required this.firstName,
@@ -45,6 +45,8 @@ class Footer extends StatefulWidget {
   final String? job;
   final String? bio;
   final List<Language> languages;
+  late bool nextButtonAllowed = true;
+  late String warningMsg;
 
   @override
   State<Footer> createState() => _FooterState();
@@ -57,6 +59,18 @@ class _FooterState extends State<Footer> {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        if (!widget.nextButtonAllowed)
+          Text(
+            widget.warningMsg,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                color: _customLoveTheme.redColor,
+                fontSize: 16,
+                fontWeight: FontWeight.bold
+            ),
+          ),
+          const SizedBox(height: 30.0),
+
         Center(
           child: Row(
             children: [
@@ -76,7 +90,11 @@ class _FooterState extends State<Footer> {
                   searchRadius: widget.searchRadius,
                   job: widget.job,
                   bio: widget.bio,
-                  languages: widget.languages
+                  languages: widget.languages,
+                  callback: (val, msg) => setState(() {
+                    widget.nextButtonAllowed = val;
+                    widget.warningMsg = msg;
+                  })
               ),
               const Spacer(),
               if (evaluateBtnAccessibility())
@@ -96,7 +114,11 @@ class _FooterState extends State<Footer> {
                     searchRadius: widget.searchRadius,
                     job: widget.job,
                     bio: widget.bio,
-                    languages: widget.languages
+                    languages: widget.languages,
+                    callback: (val, msg) => setState(() {
+                      widget.nextButtonAllowed = val;
+                      widget.warningMsg = msg;
+                    })
                 ),
               if (!evaluateBtnAccessibility())
                 TextButton(
@@ -133,7 +155,6 @@ class _FooterState extends State<Footer> {
         )
       ],
     );
-
   }
   
   bool evaluateBtnAccessibility() {
@@ -151,7 +172,8 @@ class _FooterState extends State<Footer> {
             widget.email != null &&
             widget.email!.trim().isNotEmpty &&
             widget.password != null &&
-            widget.password!.trim().isNotEmpty;
+            widget.password!.trim().isNotEmpty &&
+            widget.nextButtonAllowed;
       case RegistrationPageSection.genderPreference:
         return widget.gender != null && 
             widget.genderPreference.isNotEmpty &&

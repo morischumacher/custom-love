@@ -22,6 +22,8 @@ import '../../../controller/registration_controller.dart';
 import '../../../enums/registration_page_enum.dart';
 import '../../registration_name_email.dart';
 
+typedef void BoolCallBack(bool val, String message);
+
 class NavigationButton extends StatefulWidget {
   const NavigationButton({
     super.key,
@@ -41,7 +43,8 @@ class NavigationButton extends StatefulWidget {
     required this.searchRadius,
     required this.job,
     required this.bio,
-    required this.languages
+    required this.languages,
+    required this.callback
   });
 
   final RegistrationPageSection nextPage;
@@ -61,6 +64,7 @@ class NavigationButton extends StatefulWidget {
   final String? job;
   final String? bio;
   final List<Language> languages;
+  final BoolCallBack callback;
 
   @override
   State<NavigationButton> createState() => _NavigationButtonState();
@@ -100,15 +104,53 @@ class _NavigationButtonState extends State<NavigationButton> {
             )
           );
         } else {
-          Navigator.push(context, MaterialPageRoute(builder: (context) {
-            switch(widget.nextPage) {
-              case RegistrationPageSection.login:
-                return LoginPage(
-                    loginService: Provider.of<LoginService>(context),
-                    userService: Provider.of<UserService>(context)
-                );
-              case RegistrationPageSection.location:
-                return RegistrationLocation(
+          if (widget.nextPage == RegistrationPageSection.genderPreference) {
+            // Send HTTP-request to the backend
+              if (widget.email != null) {
+                if (!isEmailValid(widget.email!)) {
+                  widget.callback(false, "Invalid email format, make sure that you entered the right email");
+                  return;
+                }
+                _controller.emailExists(context, widget.email!.trim()).then((value) {
+                  if (value) {
+                    setState(() {
+                      widget.callback(false, "Email already exists, please choose another one");
+                    });
+                  } else {
+                    setState(() {
+                      widget.callback(true, "");
+                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                        return RegistrationGenderPreference(
+                          firstName: widget.firstName,
+                          lastName: widget.lastName,
+                          email: widget.email,
+                          password: widget.password,
+                          gender: widget.gender,
+                          preference: widget.genderPreference,
+                          birthdate: widget.birthdate,
+                          profilePicture: widget.profilePicture,
+                          userInterestIdList: widget.userInterestIdList,
+                          location: widget.location,
+                          searchRadius: widget.searchRadius,
+                          job: widget.job,
+                          bio: widget.bio,
+                          languages: widget.languages,
+                        );
+                      }));
+                    });
+                  }
+                });
+              }
+            } else {
+            Navigator.push(context, MaterialPageRoute(builder: (context) {
+              switch(widget.nextPage) {
+                case RegistrationPageSection.login:
+                  return LoginPage(
+                      loginService: Provider.of<LoginService>(context),
+                      userService: Provider.of<UserService>(context)
+                  );
+                case RegistrationPageSection.location:
+                  return RegistrationLocation(
                     firstName: widget.firstName,
                     lastName: widget.lastName,
                     email: widget.email,
@@ -123,9 +165,9 @@ class _NavigationButtonState extends State<NavigationButton> {
                     job: widget.job,
                     bio: widget.bio,
                     languages: widget.languages,
-                );
-              case RegistrationPageSection.radius:
-                return RegistrationRadius(
+                  );
+                case RegistrationPageSection.radius:
+                  return RegistrationRadius(
                     firstName: widget.firstName,
                     lastName: widget.lastName,
                     email: widget.email,
@@ -140,9 +182,9 @@ class _NavigationButtonState extends State<NavigationButton> {
                     job: widget.job,
                     bio: widget.bio,
                     languages: widget.languages,
-                );
-              case RegistrationPageSection.nameEmail:
-                return RegistrationNameEmail(
+                  );
+                case RegistrationPageSection.nameEmail:
+                  return RegistrationNameEmail(
                     firstName: widget.firstName != null ? widget.firstName!.trim() : widget.firstName,
                     lastName: widget.lastName != null ? widget.lastName!.trim() : widget.lastName,
                     email: widget.email != null ? widget.email!.trim() : widget.email,
@@ -157,9 +199,9 @@ class _NavigationButtonState extends State<NavigationButton> {
                     job: widget.job,
                     bio: widget.bio,
                     languages: widget.languages,
-                );
-              case RegistrationPageSection.genderPreference:
-                return RegistrationGenderPreference(
+                  );
+                case RegistrationPageSection.genderPreference:
+                  return RegistrationGenderPreference(
                     firstName: widget.firstName,
                     lastName: widget.lastName,
                     email: widget.email,
@@ -174,9 +216,9 @@ class _NavigationButtonState extends State<NavigationButton> {
                     job: widget.job,
                     bio: widget.bio,
                     languages: widget.languages,
-                );
-              case RegistrationPageSection.pictures:
-                return RegistrationPictures(
+                  );
+                case RegistrationPageSection.pictures:
+                  return RegistrationPictures(
                     firstName: widget.firstName,
                     lastName: widget.lastName,
                     email: widget.email,
@@ -191,9 +233,9 @@ class _NavigationButtonState extends State<NavigationButton> {
                     job: widget.job,
                     bio: widget.bio,
                     languages: widget.languages,
-                );
-              case RegistrationPageSection.interests:
-                return RegistrationInterests(
+                  );
+                case RegistrationPageSection.interests:
+                  return RegistrationInterests(
                     firstName: widget.firstName,
                     lastName: widget.lastName,
                     email: widget.email,
@@ -208,9 +250,9 @@ class _NavigationButtonState extends State<NavigationButton> {
                     job: widget.job,
                     bio: widget.bio,
                     languages: widget.languages,
-                );
-              case RegistrationPageSection.jobBio:
-                return RegistrationJobBio(
+                  );
+                case RegistrationPageSection.jobBio:
+                  return RegistrationJobBio(
                     firstName: widget.firstName,
                     lastName: widget.lastName,
                     email: widget.email,
@@ -225,9 +267,9 @@ class _NavigationButtonState extends State<NavigationButton> {
                     job: widget.job,
                     bio: widget.bio,
                     languages: widget.languages,
-                );
-              case RegistrationPageSection.summary:
-                return RegistrationSummary(
+                  );
+                case RegistrationPageSection.summary:
+                  return RegistrationSummary(
                     firstName: widget.firstName,
                     lastName: widget.lastName,
                     email: widget.email,
@@ -242,9 +284,9 @@ class _NavigationButtonState extends State<NavigationButton> {
                     job: widget.job,
                     bio: widget.bio,
                     languages: widget.languages,
-                );
-              default:
-                return RegistrationLocation(
+                  );
+                default:
+                  return RegistrationLocation(
                     firstName: widget.firstName,
                     lastName: widget.lastName,
                     email: widget.email,
@@ -259,9 +301,10 @@ class _NavigationButtonState extends State<NavigationButton> {
                     job: widget.job,
                     bio: widget.bio,
                     languages: widget.languages,
-                );
-            }
-          }));
+                  );
+              }
+            }));
+          }
         }
       },
       child: Text(
@@ -272,5 +315,11 @@ class _NavigationButtonState extends State<NavigationButton> {
         ),
       ),
     );
+  }
+
+  bool isEmailValid(String email) {
+    return
+      RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+        .hasMatch(email);
   }
 }
