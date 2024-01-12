@@ -145,8 +145,10 @@ class _FooterState extends State<Footer> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  onTap: () {
-                    Navigator.pushNamed(context, "/");
+                  onTap: () async {
+                    if (await _onLoginButtonPressed(context)) {
+                      Navigator.pushNamed(context, "/");
+                    }
                   },
                 ),
                 const SizedBox(height: 30)
@@ -194,5 +196,42 @@ class _FooterState extends State<Footer> {
       default:
         return false;
     }
+  }
+  
+  Future<bool> _onLoginButtonPressed(BuildContext context) async {
+    bool returnToLogin = await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("Return to login"),
+            content: const Text("Are you sure you want to return to login? All your progress will be lost"),
+            actions: <Widget>[
+              TextButton(
+                  onPressed: () => Navigator.of(context).pop(false), 
+                  child: Text(
+                    "No",
+                    style: TextStyle(
+                        color: _customLoveTheme.primaryColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16.0
+                    )
+                  )
+              ),
+              TextButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: Text(
+                      "Yes",
+                      style: TextStyle(
+                          color: _customLoveTheme.primaryColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16.0
+                      )
+                  )
+              )
+            ],
+          );
+        }
+    );
+    return returnToLogin;
   }
 }
