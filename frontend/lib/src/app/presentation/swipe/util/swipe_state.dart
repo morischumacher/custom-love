@@ -1,7 +1,7 @@
 enum SwipeState {
-  OKAY, // 0
-  NO_SWIPES_LEFT, // 2
-  NO_SURROUNDING_USERS, // 3
+  OKAY,
+  NO_SWIPES_LEFT,
+  NO_SURROUNDING_USERS,
 }
 
 class SwipeStateHelper {
