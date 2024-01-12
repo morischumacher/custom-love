@@ -303,7 +303,22 @@ def get_profile(user_id: int, db: Annotated[Session, Depends(create_session)]) -
     return __user_to_user_profile(get_user(user_id, db))
 
 
+def get_user_profile(user_id: int, db: Annotated[Session, Depends(create_session)]) -> UserDetailedResponse:
+    """
+    Return a specific user
+    :param db: injected database
+    :param user_id: user's id
+    :return: a user object
+    """
+    return __user_to_user_profile(get_user(user_id, db))
+
+
 def __user_to_user_profile(user: User) -> UserDetailedResponse:
+    """
+    Maps the object of class User to an object which also displays 1:n relationships.
+    :param user: user of type User
+    :return: a newly mapped users which also contains 1:n relationships
+    """
     return UserDetailedResponse(
         id=user.id,
         first_name=user.first_name,

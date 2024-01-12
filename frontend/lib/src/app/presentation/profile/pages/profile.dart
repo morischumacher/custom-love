@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/src/app/model/user_model.dart';
+import 'package:frontend/src/app/model/user_detailed.dart';
 import 'package:frontend/src/app/service/user_service.dart';
 
 import '../../../../config/theme.dart';
@@ -24,7 +24,7 @@ class _ProfileState extends State<Profile> {
 
   void getUsers() async {
     await _loginController.retrieveUserId().then((id) {
-      widget.userService.getUser(id).then((value) {
+      widget.userService.getUserProfile(int.parse(id!)).then((value) {
         setState(() {
           user = value;
         });
@@ -34,7 +34,7 @@ class _ProfileState extends State<Profile> {
 
   final LoginController _loginController = LoginController();
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
-  User? user;
+  UserDetailed? user;
 
   @override
   Widget build(BuildContext context) {
@@ -71,18 +71,21 @@ class _ProfileState extends State<Profile> {
                           SummaryTextfield(label: "Email", input: user!.email),
 
                           // registration_gender_preference
-                          SummaryTextfield(label: "Gender Identity", input: user!.gender_identity_id.toString()),
-                          SummaryTextfield(label: "Gender Preference", input: "TODO"),
-                          SummaryTextfield(label: "Birthdate", input: user!.date_of_birth.substring(0, 10)),
+                          SummaryTextfield(label: "Gender Identity", input: user!.genderIdentity.toString()),
+                          SummaryTextfield(label: "Gender Preference", input: user!.genderPreferences.toString()),
+                          SummaryTextfield(label: "Birthdate", input: user!.dateOfBirth.substring(0, 10)),
 
                           // registration_radius
-                          SummaryTextfield(label: "Search Radius", input: "${user!.search_radius} km / ${(user!.search_radius * 0.621371).roundToDouble()} mi"),
+                          SummaryTextfield(label: "Search Radius", input: "${user!.searchRadius} km / ${(user!.searchRadius * 0.621371).roundToDouble()} mi"),
 
-                          SummaryTextfield(label: "Interests", input: "TODO"),
+                          SummaryTextfield(label: "Interests", input: user!.interests.toString()),
+                          SummaryTextfield(label: "Languages", input: user!.languages.toString()),
 
                           // registration_job_bio
                           SummaryTextfield(label: "Job", input: user!.job),
                           SummaryTextfield(label: "Bio", input: user!.bio),
+                          SummaryTextfield(label: "Search Radius", input: user!.searchRadius.toString()),
+                          SummaryTextfield(label: "Swipes left", input: user!.swipesLeft.toString())
                         ]),
                       const SizedBox(height: 25.0),
                       Expanded(child: Container()),

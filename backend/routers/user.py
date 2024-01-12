@@ -7,7 +7,7 @@ from backend.models.user import User
 from backend.responses.error_response import ErrorResponse
 from backend.responses.user_response import UserResponse, UserResponseWithInterests
 from backend.services.user import patch_user, get_algo_user, UserUpdate, get_user, registration, get_users, login, \
-    websocket_connect
+    websocket_connect, get_user_profile
 from backend.utils.pagination import Page
 from backend.utils.token import Token
 
@@ -23,7 +23,7 @@ async def get_users(commons: Annotated[Page[User], Depends(get_users)]):
     return commons
 
 
-@router.get('/{user_id}', response_model=UserResponse, responses={
+@router.get('/{user_id}', responses={
     status.HTTP_404_NOT_FOUND: {"description": "Not Found", "model": ErrorResponse},
     status.HTTP_400_BAD_REQUEST: {"description": "Bad Request", "model": ErrorResponse},
 })
@@ -80,4 +80,16 @@ def get_algo_user(commons: Annotated[User, Depends(get_algo_user)]):
 
 @router.websocket("/socket/{user_token}")
 async def socket(commons: Annotated[dict, Depends(websocket_connect)]):
+    return commons
+
+
+@router.get('/profile/{user_id}', responses={
+    status.HTTP_404_NOT_FOUND: {"description": "Not Found", "model": ErrorResponse},
+    status.HTTP_400_BAD_REQUEST: {"description": "Bad Request", "model": ErrorResponse},
+})
+def get_user_profile(commons: Annotated[dict, Depends(get_user_profile)]):
+    """
+    Retrieves a user.
+    :return: a user with a corresponding id
+    """
     return commons

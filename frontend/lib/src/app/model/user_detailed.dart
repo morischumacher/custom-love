@@ -1,9 +1,7 @@
-import 'dart:collection';
 import 'dart:convert';
 
 import 'package:frontend/src/app/model/interest_model.dart';
 import 'package:frontend/src/app/model/language_model.dart';
-import 'package:frontend/src/app/presentation/chat/components/avatar.dart';
 
 import 'gender_model.dart';
 
@@ -49,7 +47,27 @@ class UserDetailed {
   });
 
   factory UserDetailed.fromJson(Map<String, dynamic> json) {
-    print(json);
+    print(json['first_name']);
+    print(json['gender_preferences']);
+    print(json['gender_preferences'][0]);
+
+
+    List<dynamic> genderJsonList = json['gender_preferences'];
+    List<dynamic> interestJsonList = json['interests'];
+    List<dynamic> languageJsonList = json['languages'];
+    List<Gender> genders = [];
+    List<Interest> interests = [];
+    List<Language> languages = [];
+    for (var gender in genderJsonList) {
+      genders.add(Gender(gender['id'] as int, gender['name'] as String));
+    }
+    for (var gender in interestJsonList) {
+      interests.add(Interest(gender['id'] as int, gender['name'] as String));
+    }
+    for (var gender in languageJsonList) {
+      languages.add(Language(gender['id'] as int, gender['name'] as String));
+    }
+
     return UserDetailed(
         id: json['id'] as int,
         firstName: json['first_name'] as String,
@@ -60,14 +78,14 @@ class UserDetailed {
         dateOfBirth: json['date_of_birth'] as String,
         job: json['job'] as String,
         searchRadius: json['search_radius'] as int,
-        genderIdentity: json['gender_identity'] as Gender,
-        genderPreferences: json['gender_preferences'] as List<Gender>,
+        genderIdentity: Gender.fromJson(json['gender_identity']),
+        genderPreferences: genders,
         swipesLeft: json['swipes_left'] as int,
         swipeLimitResetDate: json['swipe_limit_reset_date'] as String,
         latitude: json['latitude'] as double,
         longitude: json['longitude'] as double,
-        interests: json['interests'] as List<Interest>,
-        languages: json['languages'] as List<Language>,
+        interests: interests,
+        languages: languages,
         matchingAlgorithm: json['matching_algorithm'] as int,
     );
   }
@@ -93,5 +111,15 @@ class UserDetailed {
       'languages': languages,
       'matching_algorithm': matchingAlgorithm,
     };
+  }
+
+  List<Gender> fromJsonList(dynamic json) {
+    var jsonList = jsonDecode(json[0]);
+    List<Gender> genders = [];
+    for (var gender in jsonList) {
+      genders.add(Gender(gender['id'] as int, gender['name'] as String));
+    }
+
+    return genders;
   }
 }

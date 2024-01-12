@@ -1,4 +1,5 @@
 import 'package:frontend/src/app/api/user_api.dart';
+import 'package:frontend/src/app/model/user_detailed.dart';
 import 'package:frontend/src/app/model/user_model.dart';
 import 'package:frontend/src/app/service/interfaces/paginated_service.dart';
 import 'package:geolocator/geolocator.dart';
@@ -27,6 +28,15 @@ class UserService extends PaginatedService<User, UserApi> {
   Future<User> getUser(var id) async {
     try {
       final user = super.api.getUser(id);
+      return user;
+    } on Exception {
+      rethrow;
+    }
+  }
+
+  Future<UserDetailed> getUserProfile(int id) async {
+    try {
+      final user = super.api.getUserProfile(id);
       return user;
     } on Exception {
       rethrow;
