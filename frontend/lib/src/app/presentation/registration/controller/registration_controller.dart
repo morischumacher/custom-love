@@ -111,6 +111,39 @@ class RegistrationController {
     return languageIds;
   }
 
+  String genderListToString(List<Gender> genders) {
+    if (genders.isEmpty) {
+      return "";
+    }
+    String genderStr = "";
+    for (Gender gender in genders) {
+      genderStr +=  "${gender.name}, ";
+    }
+    return genderStr.substring(0, genderStr.length - 2);
+  }
+
+  String interestsListToString(List<Interest> interests) {
+    if (interests.isEmpty) {
+      return "";
+    }
+    String interestStr = "";
+    for (Interest interest in interests) {
+      interestStr +=  "${interest.name}, ";
+    }
+    return interestStr.substring(0, interestStr.length - 2);
+  }
+
+  String languageListToString(List<Language> languages) {
+    if (languages.isEmpty) {
+      return "";
+    }
+    String languageStr = "";
+    for (Language language in languages) {
+      languageStr +=  "${language.name}, ";
+    }
+    return languageStr.substring(0, languageStr.length - 2);
+  }
+
   // TODO: Duplicated code (included in login_controller)
   Future<void> storeAccessToken(String accessToken) async {
     const FlutterSecureStorage storage = FlutterSecureStorage();

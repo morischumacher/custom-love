@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:frontend/src/app/model/interest_model.dart';
 import 'package:frontend/src/app/model/language_model.dart';
 
@@ -47,11 +45,6 @@ class UserDetailed {
   });
 
   factory UserDetailed.fromJson(Map<String, dynamic> json) {
-    print(json['first_name']);
-    print(json['gender_preferences']);
-    print(json['gender_preferences'][0]);
-
-
     List<dynamic> genderJsonList = json['gender_preferences'];
     List<dynamic> interestJsonList = json['interests'];
     List<dynamic> languageJsonList = json['languages'];
@@ -61,11 +54,11 @@ class UserDetailed {
     for (var gender in genderJsonList) {
       genders.add(Gender(gender['id'] as int, gender['name'] as String));
     }
-    for (var gender in interestJsonList) {
-      interests.add(Interest(gender['id'] as int, gender['name'] as String));
+    for (var interest in interestJsonList) {
+      interests.add(Interest(interest['id'] as int, interest['name'] as String));
     }
-    for (var gender in languageJsonList) {
-      languages.add(Language(gender['id'] as int, gender['name'] as String));
+    for (var language in languageJsonList) {
+      languages.add(Language(language['id'] as int, language['name'] as String));
     }
 
     return UserDetailed(
@@ -111,15 +104,5 @@ class UserDetailed {
       'languages': languages,
       'matching_algorithm': matchingAlgorithm,
     };
-  }
-
-  List<Gender> fromJsonList(dynamic json) {
-    var jsonList = jsonDecode(json[0]);
-    List<Gender> genders = [];
-    for (var gender in jsonList) {
-      genders.add(Gender(gender['id'] as int, gender['name'] as String));
-    }
-
-    return genders;
   }
 }

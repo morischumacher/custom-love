@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/model/gender_model.dart';
 import 'package:frontend/src/app/model/interest_model.dart';
+import 'package:frontend/src/app/presentation/registration/controller/registration_controller.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/footer/footer.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/page_title.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/summary_textfield.dart';
@@ -68,6 +69,7 @@ class _RegistrationSummaryState extends State<RegistrationSummary> {
   }
 
   final logger = Logger();
+  final RegistrationController _controller = RegistrationController();
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
 
   late String? firstName;
@@ -81,6 +83,17 @@ class _RegistrationSummaryState extends State<RegistrationSummary> {
   late List<Interest> userInterestIdList;
   Position? userLocation;
   late double? searchRadius;
+
+  String genderListToString(List<Gender> genders) {
+    if (genders.isEmpty) {
+      return "";
+    }
+    String genderStr = "";
+    for (Gender gender in genders) {
+      genderStr +=  "${gender.name}, ";
+    }
+    return genderStr.substring(0, genderStr.length - 2);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -119,12 +132,12 @@ class _RegistrationSummaryState extends State<RegistrationSummary> {
                         // registration_radius
                         SummaryTextfield(label: "Search Radius", input: "$searchRadius km / ${(searchRadius! * 0.621371).roundToDouble()} mi"),
 
-                        SummaryTextfield(label: "Interests", input: interestsListToString(userInterestIdList)),
+                        SummaryTextfield(label: "Interests", input: _controller.interestsListToString(userInterestIdList)),
 
                         // registration_job_bio + languages
                         SummaryTextfield(label: "Job", input: widget.job == null ? "" : widget.job!),
                         SummaryTextfield(label: "Bio", input: widget.bio == null ? "" : widget.bio!),
-                        SummaryTextfield(label: "Languages", input: languageListToString(widget.languages)),
+                        SummaryTextfield(label: "Languages", input: _controller.languageListToString(widget.languages)),
                         const SizedBox(height: 25.0),
                         Expanded(child: Container()),
                         Footer(
@@ -152,38 +165,5 @@ class _RegistrationSummaryState extends State<RegistrationSummary> {
             ),
           ),
         ));
-  }
-
-  String interestsListToString(List<Interest> interests) {
-    if (interests.isEmpty) {
-      return "";
-    }
-    String interestStr = "";
-    for (Interest interest in interests) {
-      interestStr +=  "${interest.name}, ";
-    }
-    return interestStr.substring(0, interestStr.length - 2);
-  }
-
-  String genderListToString(List<Gender> genders) {
-    if (genders.isEmpty) {
-      return "";
-    }
-    String genderStr = "";
-    for (Gender gender in genders) {
-      genderStr +=  "${gender.name}, ";
-    }
-    return genderStr.substring(0, genderStr.length - 2);
-  }
-
-  String languageListToString(List<Language> languages) {
-    if (languages.isEmpty) {
-      return "";
-    }
-    String languageStr = "";
-    for (Language language in languages) {
-      languageStr +=  "${language.name}, ";
-    }
-    return languageStr.substring(0, languageStr.length - 2);
   }
 }

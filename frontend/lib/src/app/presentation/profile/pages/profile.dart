@@ -4,6 +4,7 @@ import 'package:frontend/src/app/service/user_service.dart';
 
 import '../../../../config/theme.dart';
 import '../../authentification/controller/login_controller.dart';
+import '../../registration/controller/registration_controller.dart';
 import '../../registration/pages/widgets/summary_textfield.dart';
 
 class Profile extends StatefulWidget {
@@ -22,6 +23,8 @@ class _ProfileState extends State<Profile> {
     getUsers();
   }
 
+
+
   void getUsers() async {
     await _loginController.retrieveUserId().then((id) {
       widget.userService.getUserProfile(int.parse(id!)).then((value) {
@@ -33,6 +36,7 @@ class _ProfileState extends State<Profile> {
   }
 
   final LoginController _loginController = LoginController();
+  final RegistrationController _controller = RegistrationController();
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
   UserDetailed? user;
 
@@ -71,15 +75,15 @@ class _ProfileState extends State<Profile> {
                           SummaryTextfield(label: "Email", input: user!.email),
 
                           // registration_gender_preference
-                          SummaryTextfield(label: "Gender Identity", input: user!.genderIdentity.toString()),
-                          SummaryTextfield(label: "Gender Preference", input: user!.genderPreferences.toString()),
+                          SummaryTextfield(label: "Gender Identity", input: user!.genderIdentity.name),
+                          SummaryTextfield(label: "Gender Preference", input: _controller.genderListToString(user!.genderPreferences)),
                           SummaryTextfield(label: "Birthdate", input: user!.dateOfBirth.substring(0, 10)),
 
                           // registration_radius
                           SummaryTextfield(label: "Search Radius", input: "${user!.searchRadius} km / ${(user!.searchRadius * 0.621371).roundToDouble()} mi"),
 
-                          SummaryTextfield(label: "Interests", input: user!.interests.toString()),
-                          SummaryTextfield(label: "Languages", input: user!.languages.toString()),
+                          SummaryTextfield(label: "Interests", input: _controller.interestsListToString(user!.interests)),
+                          SummaryTextfield(label: "Languages", input: _controller.languageListToString(user!.languages)),
 
                           // registration_job_bio
                           SummaryTextfield(label: "Job", input: user!.job),
