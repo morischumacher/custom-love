@@ -57,7 +57,6 @@ void main() {
     ));
 
     final mockMessageService = MockMessageService();
-    //when(mockMessageService.initializeFirstPage(any, any)).thenReturn(() {});
 
     await tester.pumpWidget(
       MultiProvider(

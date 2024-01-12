@@ -11,7 +11,7 @@ class MockObjects {
   static User getUser(
   {
     required int id,
-    String firstName = "mock_fist_name",
+    String firstName = "mock_first_name",
     String lastName = "mock_last_name",
     String email = "mock.user@email.com",
     String job = "mock_job",

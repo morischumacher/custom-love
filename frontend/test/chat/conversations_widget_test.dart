@@ -76,6 +76,6 @@ void main() {
     expect(find.byType(TitledList<MatchStorage>), findsOneWidget);
 
     expect(find.textContaining("no messages: "), findsNothing);
-    expect(find.textContaining("mock_fist_name"), findsWidgets);
+    expect(find.textContaining("mock_first_name"), findsWidgets);
   });
 }
