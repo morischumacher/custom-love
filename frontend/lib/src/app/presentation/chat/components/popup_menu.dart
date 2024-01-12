@@ -66,24 +66,26 @@ class PopupMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     ImagePicker picker = ImagePicker();
 
-    return PopupMenuButton(
-      icon: const Icon(
-        Icons.add_circle,
-        size: 40,
+    return Material(
+      child: PopupMenuButton(
+        icon: const Icon(
+          Icons.add_circle,
+          size: 40,
+        ),
+        itemBuilder: (BuildContext context) {
+          return [
+            const PopupMenuItem<int>(
+              value: 0,
+              child: MenuItem(label: "Send pictures", icon: Icons.photo),
+            )
+          ];
+        },
+        onSelected: (int value) {
+          if (value == 0) {
+            myAlert(context, picker);
+          }
+        },
       ),
-      itemBuilder: (BuildContext context) {
-        return [
-          const PopupMenuItem<int>(
-            value: 0,
-            child: MenuItem(label: "Send pictures", icon: Icons.photo),
-          )
-        ];
-      },
-      onSelected: (int value) {
-        if (value == 0) {
-          myAlert(context, picker);
-        }
-      },
     );
   }
 }

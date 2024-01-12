@@ -3,13 +3,17 @@ class Match {
   int user1Id;
   int user2Id;
 
-  Match(this.id, this.user1Id, this.user2Id);
+  Match({
+    required this.id,
+    required this.user1Id,
+    required this.user2Id
+  });
 
   factory Match.fromJson(Map<String, dynamic> json) {
     return Match (
-      json['id'],
-      json['user1_id'],
-      json['user2_id']
+      id: json['id'],
+      user1Id: json['user1_id'],
+      user2Id: json['user2_id']
     );
   }
 
