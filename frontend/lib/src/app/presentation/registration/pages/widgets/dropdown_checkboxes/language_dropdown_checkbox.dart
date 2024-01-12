@@ -37,7 +37,7 @@ class _LanguageDropdownCheckboxState extends State<LanguageDropdownCheckbox> {
           children: [
             MultiSelectDropDown<Language>(
               padding: EdgeInsets.fromLTRB(widget.pickedLanguages.selectedOptions.isEmpty ? 0 : 12, 0, 12, 0),
-              hint: "Preference",
+              hint: "Spoken languages",
               hintStyle: TextStyle(
                 color: _customLoveTheme.grayscale1,
                 fontSize: 16,
