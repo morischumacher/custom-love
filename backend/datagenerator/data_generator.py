@@ -116,7 +116,7 @@ class DataGenerator:
                 ])
                 y_train.append(actual_user["liked"])
 
-            expert_system.train_model_for_test(X_train, y_train)
+            expert_system.train_model_with_fixed_training_data(X_train, y_train)
 
             serialized_model = expert_system.serialize_model()
 
