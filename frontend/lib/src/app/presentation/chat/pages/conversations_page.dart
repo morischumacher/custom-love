@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 import '../../../../config/theme.dart';
 
 class ConversationsPage extends StatefulWidget {
-  const ConversationsPage({Key? key}) : super(key: key);
+  const  ConversationsPage({Key? key}) : super(key: key);
 
   @override
   _ConversationsPageState createState() => _ConversationsPageState();

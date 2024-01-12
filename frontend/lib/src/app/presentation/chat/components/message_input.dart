@@ -35,26 +35,28 @@ class MessageInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        PopupMenu(receiverId),
-        Expanded(
-            child: TextField(
-          decoration: const InputDecoration(
-            hintText: "Enter your message ...",
-          ),
-          controller: textInputController,
-          obscureText: false,
-          autofocus: true,
-          maxLines: null,
-        )),
-        IconButton(
-            onPressed: () => sendMessage(context),
-            icon: const Icon(
-              Icons.send,
-              size: 40,
-            )),
-      ],
+    return Material(
+      child: Row(
+        children: [
+          PopupMenu(receiverId),
+          Expanded(
+              child: TextField(
+            decoration: const InputDecoration(
+              hintText: "Enter your message ...",
+            ),
+            controller: textInputController,
+            obscureText: false,
+            autofocus: true,
+            maxLines: null,
+          )),
+          IconButton(
+              onPressed: () => sendMessage(context),
+              icon: const Icon(
+                Icons.send,
+                size: 40,
+              )),
+        ],
+      ),
     );
   }
 }
