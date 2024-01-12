@@ -7,7 +7,7 @@ from backend.models.user import User
 from backend.responses.error_response import ErrorResponse
 from backend.responses.user_response import UserResponse, UserResponseWithInterests
 from backend.services.user import patch_user, get_algo_user, UserUpdate, get_user, registration, get_users, login, \
-    websocket_connect, get_user_profile
+    websocket_connect, get_user_profile, get_user_by_email
 from backend.utils.pagination import Page
 from backend.utils.token import Token
 
@@ -28,6 +28,18 @@ async def get_users(commons: Annotated[Page[User], Depends(get_users)]):
     status.HTTP_400_BAD_REQUEST: {"description": "Bad Request", "model": ErrorResponse},
 })
 def get_user(commons: Annotated[dict, Depends(get_user)]):
+    """
+    Retrieves a user.
+    :return: a user with a corresponding id
+    """
+    return commons
+
+
+@router.get('/email/{user_email}', responses={
+    status.HTTP_404_NOT_FOUND: {"description": "Not Found", "model": ErrorResponse},
+    status.HTTP_400_BAD_REQUEST: {"description": "Bad Request", "model": ErrorResponse},
+})
+def get_user_by_email(commons: Annotated[dict, Depends(get_user_by_email)]):
     """
     Retrieves a user.
     :return: a user with a corresponding id

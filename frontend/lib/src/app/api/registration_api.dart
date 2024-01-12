@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:frontend/src/app/exceptions/not_found_exception.dart';
 import 'package:frontend/src/config/exceptions.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
@@ -9,6 +10,22 @@ class RegistrationApi {
   final http.Client httpClient;
 
   RegistrationApi({required this.httpClient});
+
+  Future<Map<String, dynamic>> getUserByEmail(String email) async {
+    final response = await httpClient.get(
+        Uri.parse('${ApiConfig.baseUrl}/users/email/$email'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8'
+        }
+    );
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else if (response.statusCode == 422) {
+      throw NotFoundException("User with email $email does not exist");
+    } else {
+      throw Exception('Error during user-retrieval based on their email');
+    }
+  }
 
   Future<Map<String, dynamic>> registerUser(
       String firstName,

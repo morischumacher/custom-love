@@ -8,6 +8,16 @@ class RegistrationService {
 
   RegistrationService(this._registrationApi);
 
+  Future<Map<String, dynamic>> getUserByEmail(String email) async {
+    try {
+      final body = _registrationApi.getUserByEmail(email);
+      return body;
+    } catch (e) {
+      print(e.toString());
+      rethrow;
+    }
+  }
+
   Future<Map<String, dynamic>> registerTo(
       String firstName,
       String lastName,

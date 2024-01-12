@@ -17,6 +17,23 @@ import '../../../service/user_service.dart';
 
 class RegistrationController {
   var logger = Logger();
+
+
+  Future<bool> emailExists(BuildContext context, String email) async {
+    RegistrationService registrationService = context.read<RegistrationService>();
+
+    try {
+      await registrationService.getUserByEmail(email);
+      // Retrieving the user based on his/her email did not throw an exception,
+      // meaning a user with a corresponding email exists in the database
+      return true;
+    } catch (e) {
+      // User was not found, therefore there is no user with entered email in
+      // the database
+      return false;
+    }
+  }
+
   Future<void> handleRegistration(
       BuildContext context,
       final String? firstName,

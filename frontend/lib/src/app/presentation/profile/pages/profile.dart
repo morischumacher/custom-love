@@ -23,8 +23,6 @@ class _ProfileState extends State<Profile> {
     getUsers();
   }
 
-
-
   void getUsers() async {
     await _loginController.retrieveUserId().then((id) {
       widget.userService.getUserProfile(int.parse(id!)).then((value) {
