@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:frontend/src/app/presentation/chat/pages/conversations_page.dart';
-import "package:universal_html/html.dart" as universal_html;
 
 import '../../authentification/pages/logout_page.dart';
 import 'messages_page.dart';
 
-class MatchesPage extends StatelessWidget {
+// coverage:ignore-file
 
+class MatchesPage extends StatelessWidget {
   const MatchesPage({super.key});
 
   @override
@@ -15,7 +15,8 @@ class MatchesPage extends StatelessWidget {
     if (ModalRoute.of(context) == null) {
       Navigator.of(context).pushNamed(
         "/logout",
-        arguments: const LogoutRouteArguments("Internal App Error: Navigator corrupt"),
+        arguments:
+            const LogoutRouteArguments("Internal App Error: Navigator corrupt"),
       );
     }
 

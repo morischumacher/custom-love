@@ -5,9 +5,9 @@ import 'package:frontend/src/app/exceptions/bad_request_exception.dart';
 import 'package:frontend/src/app/exceptions/not_found_exception.dart';
 import 'package:frontend/src/app/model/factories/user_factory.dart';
 import 'package:frontend/src/app/model/user_model.dart';
+import 'package:frontend/src/config/api_config.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
-import 'package:frontend/src/config/api_config.dart';
 import 'package:logger/logger.dart';
 
 import '../model/user_detailed.dart';
@@ -117,7 +117,8 @@ class UserApi extends PaginatedApi<User> {
     }
   }
 
-  Future<User> updateCurrentUserMatchingAlgorithm(var accessToken, int algoId) async {
+  Future<User> updateCurrentUserMatchingAlgorithm(
+      var accessToken, int algoId) async {
     final Map<String, dynamic> body = {
       "algo_id": algoId,
     };
@@ -145,7 +146,7 @@ class UserApi extends PaginatedApi<User> {
     }
   }
 
-  Future<User> getAlgoUser(var accessToken, int algoId) async {
+  Future<User?> getAlgoUser(var accessToken, int algoId) async {
     final response = await http.get(
       Uri.parse(
           '${ApiConfig.baseUrl}/users/algo/{algoId}?algoId=$algoId&page=1&size=50'),
@@ -158,6 +159,7 @@ class UserApi extends PaginatedApi<User> {
 
     if (response.statusCode == 200) {
       final dynamic jsonItem = json.decode(response.body);
+      if (jsonItem == null) return null;
       final User user = User.fromJson(jsonItem);
       return user;
     } else if (response.statusCode == 404) {

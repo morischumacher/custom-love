@@ -1,21 +1,18 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:frontend/src/app/service/conversation_service.dart';
-import 'package:frontend/src/app/service/match_service.dart';
-import 'package:frontend/src/app/service/message_service.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:frontend/src/app/service/login_service.dart';
 import 'package:frontend/src/app/service/user_service.dart';
 import 'package:frontend/src/config/app_state.dart';
 import 'package:frontend/src/config/exceptions.dart';
 import 'package:frontend/src/config/theme.dart';
-import 'package:frontend/src/app/service/login_service.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../../../model/user_model.dart';
+import '../../swipe/util/algo_id_notifier.dart';
 
 class LoginController {
   var logger = Logger();
@@ -49,10 +46,7 @@ class LoginController {
     String password = passwordController.text;
     LoginService loginService = context.read<LoginService>();
     UserService userService = context.read<UserService>();
-    ConversationService conversationService =
-        context.read<ConversationService>();
-    MessageService messageService = context.read<MessageService>();
-    MatchService matchService = context.read<MatchService>();
+    AlgoIdNotifier algoIdNotifier = context.read<AlgoIdNotifier>();
 
     if (email.isNotEmpty && password.isNotEmpty) {
       try {
@@ -68,13 +62,20 @@ class LoginController {
 
         await storeUserId(userId.toString());
 
+        var userMatchingAlgorithm = loginResult["user"]["matching_algorithm"];
+        if(userMatchingAlgorithm != null || userMatchingAlgorithm != 0) {
+          algoIdNotifier.setAlgoId(userMatchingAlgorithm);
+        } else {
+          //TODO Launch onboarding process
+        }
+
         // If login is successful, navigate to '/home'
         if (context.mounted) {
           userService.updateCurrentUserLocation(userLocation!, accessToken);
 
           // load users, conversations, matches and first messages
           unawaited(Provider.of<StateManager>(context, listen: false)
-              .initialize(context));
+              .initialize(context, force: true));
 
           // save the user object and connect to a websocket
           Provider.of<StateManager>(context, listen: false)

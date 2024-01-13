@@ -3,11 +3,16 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 from starlette import status
 
+from backend.models.expert_system import ExpertSystem
 from backend.models.user import User
 from backend.responses.error_response import ErrorResponse
 from backend.responses.user_response import UserResponse, UserResponseWithInterests
 from backend.services.user import patch_user, get_algo_user, UserUpdate, get_user, registration, get_users, login, \
     websocket_connect, get_user_profile, get_user_by_email
+from backend.responses.user_response import UserResponse, UserResponseWithInterestsAndDistance
+from backend.services.expert_system import update_expert_system
+from backend.services.user import patch_user, get_algo_user, UserUpdate, get_user, get_users, login, registration, \
+    websocket_connect
 from backend.utils.pagination import Page
 from backend.utils.token import Token
 
@@ -60,6 +65,7 @@ def registration(commons: Annotated[dict, Depends(registration)]):
 
 @router.patch('', response_model=UserResponse, responses={
     status.HTTP_404_NOT_FOUND: {"description": "User not found", "model": ErrorResponse},
+    status.HTTP_400_BAD_REQUEST: {"description": "Validation Error", "model": ErrorResponse},
     status.HTTP_422_UNPROCESSABLE_ENTITY: {"description": "Validation Error", "model": ErrorResponse}
 })
 def patch_user(commons: Annotated[UserUpdate, Depends(patch_user)]):
@@ -76,7 +82,7 @@ def login(commons: Annotated[Token, Depends(login)]):
     return commons
 
 
-@router.get('/algo/{algo_id}', response_model=UserResponseWithInterests, responses={
+@router.get('/algo/{algo_id}', response_model=UserResponseWithInterestsAndDistance | None, responses={
     status.HTTP_404_NOT_FOUND: {"description": "Not Found", "model": ErrorResponse},
     status.HTTP_400_BAD_REQUEST: {"description": "Bad Request", "model": ErrorResponse},
 })

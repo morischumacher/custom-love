@@ -1,7 +1,7 @@
 from typing import Annotated
 from fastapi import Depends
 from fastapi_pagination.ext.sqlmodel import paginate
-from sqlalchemy import and_
+from sqlalchemy import and_, update
 from sqlmodel import Session, select, or_
 from starlette.requests import Request
 from backend.exceptions.fatal_exception import FatalException
@@ -119,3 +119,28 @@ def post_like(
         db.commit()
         db.refresh(new_swipe_status)
         return new_swipe_status
+
+def set_swipe_status_trained_for_model_true(db, user):
+    """
+      Sets all used_for_training flags of view or like instances , outgoing of user.id to true
+      :param db: db instance
+      :param user: current user
+      :return: a list of users
+      """
+    update_statement = (
+        update(SwipeStatus).
+        where(
+            and_(SwipeStatus.used_for_model == False,
+            and_(or_(SwipeStatus.status == SwipeStatusType.view,
+                    SwipeStatus.status == SwipeStatusType.like),
+                SwipeStatus.user1_id == user.id
+            ))
+        ).
+        values(used_for_model = True)
+
+    )
+
+
+    # Execute the update statement and fetch the updated rows
+    db.execute(update_statement)
+

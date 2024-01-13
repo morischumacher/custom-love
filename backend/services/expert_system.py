@@ -1,11 +1,16 @@
-from typing import Annotated
+from operator import and_, or_
+from typing import Annotated, List
 from fastapi import Depends
 from sqlmodel import Session, select, update
-
+from backend.algo.exsys import ExSys
 from backend.exceptions.bad_request_exception import BadRequestException
 from backend.exceptions.not_found_exception import NotFoundException
 from backend.models.expert_system import ExpertSystem
+from backend.models.swipe_status import SwipeStatus, SwipeStatusType
+from backend.models.user import User
 from backend.repository.repository import create_session
+from backend.utils.token import get_current_user
+from backend.services.swipe_status import set_swipe_status_trained_for_model_true
 
 
 def get_expert_system_by_user_id(user_id, db: Annotated[Session, Depends(create_session)]):
@@ -38,35 +43,92 @@ def post_expert_system(expert_system: ExpertSystem, db: Annotated[Session, Depen
     return expert_system
 
 
-# TODO Test in upcoming workflows
-def update_expert_system(user_id: int, new_model: bytes, db: Annotated[Session, Depends(create_session)]):
+def update_expert_system(user: Annotated[User, Depends(get_current_user)],
+                         db: Annotated[Session, Depends(create_session)]):
     """
-    Update the given expert system, thw user is the same as in the old one
+    Update the given expert system, the user is the same as in the old one
     :param user_id: the user which updating expert system refers to
-    :param new_model: the new model for the expert system
+    :param user: current user
     :param db: injected database
     :return: the new ExpertSystem object (with the id)
     """
     expert_system = None
     try:
-        expert_system = get_expert_system_by_user_id(user_id, db)
+        # Get expertsytem of current user
+        expert_system = get_expert_system_by_user_id(user.id, db)
     except Exception as e:
         if e is NotFoundException:
-            raise NotFoundException(f"Could not find expert system of user with id = {user_id} "
+            raise NotFoundException(f"Could not find expert system of user with id = {user.id} "
                                     f"when trying to update the expert system")
         elif e is BadRequestException:
-            raise BadRequestException(f"More than one expert systems of user with id = {user_id} "
+            raise BadRequestException(f"More than one expert systems of user with id = {user.id} "
                                       f"where found when trying to update the expert system")
 
     if expert_system is not None:
-        expert_system.model = new_model
+        # Get the model of the current user
+        current_model = expert_system.model
+
+        # Initialize a Exsys for the current user and set the serialized model, retrieved from the database
+        exsys = ExSys(None)
+        exsys.deserialize_and_set_model(current_model)
+
+        # Get the recent swipes to update the model
+        liked_users = get_liked_users_not_trained_on(db, user.id)
+        viewed_users = get_viewed_users_not_trained_on(db, user.id)
+
+
+        # Logic regression Model only works with more than one class, so liked and viewed user have to exist
+        if len(liked_users) != 0 and len(viewed_users) != 0:
+            # Update Model of expert system with these users
+            exsys.update_model(liked_users, viewed_users)
+
+            # Set trained for model flags true
+            set_swipe_status_trained_for_model_true(db, user)
+        else:
+            return "Expert System hat not been updated due missing at least one class (View/Like)"
+
+        # Serialize the updated model and use for the expert system update
+        expert_system.model = exsys.serialize_model()
         db.add(expert_system)
         db.commit()
         db.refresh(expert_system)
-        return expert_system
+        return "Updated Expert System"
     else:
         raise BadRequestException(f"A error occurred when updating the model of the expert system of the user with id ="
-                                  f"{user_id}")
+                                  f"{user.id}")
 
 
 
+def get_liked_users_not_trained_on(db, userid) -> List[User]:
+    """
+    Retrieves all users, whom the querying user has liked and the expert system isn't trained on yet
+    :param db: db instance
+    :param userid: id of current user
+    :return: a list of users
+    """
+    statement = (select(User).join(SwipeStatus, onclause=and_(or_(SwipeStatus.user1_id == User.id,
+                SwipeStatus.user2_id == User.id), SwipeStatus.status == SwipeStatusType.like))
+                 .where(and_(SwipeStatus.used_for_model == False,
+                             and_(User.id != userid, SwipeStatus.user1_id == userid))))
+
+    user_list = db.exec(statement).all()
+
+    return user_list
+
+
+
+def get_viewed_users_not_trained_on(db, userid) -> List[User]:
+    """
+    Retrieves all users, whom the querying user hasn't liked and the expert system isn't trained on yet
+    :param db: db instance
+    :param userid: id of current user
+    :return: a list of users
+    """
+    statement = (select(User).join(SwipeStatus, onclause=and_(or_(SwipeStatus.user1_id == User.id,
+                SwipeStatus.user2_id == User.id), SwipeStatus.status == SwipeStatusType.view))
+                 .where(and_(SwipeStatus.used_for_model == False,
+                             and_(User.id != userid, SwipeStatus.user1_id == userid))))
+
+    user_list = db.exec(statement).all()
+
+    return user_list

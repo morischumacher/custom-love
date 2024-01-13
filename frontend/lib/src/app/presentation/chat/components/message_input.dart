@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/src/app/presentation/chat/components/menu_item.dart';
 import 'package:frontend/src/app/presentation/chat/components/popup_menu.dart';
 import 'package:frontend/src/config/app_state.dart';
 import 'package:provider/provider.dart';
@@ -36,26 +35,28 @@ class MessageInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        const PopupMenu(),
-        Expanded(
-            child: TextField(
-          decoration: const InputDecoration(
-            hintText: "Enter your message ...",
-          ),
-          controller: textInputController,
-          obscureText: false,
-          autofocus: true,
-          maxLines: null,
-        )),
-        IconButton(
-            onPressed: () => sendMessage(context),
-            icon: const Icon(
-              Icons.send,
-              size: 40,
-            )),
-      ],
+    return Material(
+      child: Row(
+        children: [
+          PopupMenu(receiverId),
+          Expanded(
+              child: TextField(
+            decoration: const InputDecoration(
+              hintText: "Enter your message ...",
+            ),
+            controller: textInputController,
+            obscureText: false,
+            autofocus: true,
+            maxLines: null,
+          )),
+          IconButton(
+              onPressed: () => sendMessage(context),
+              icon: const Icon(
+                Icons.send,
+                size: 40,
+              )),
+        ],
+      ),
     );
   }
 }

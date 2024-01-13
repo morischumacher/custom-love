@@ -1,10 +1,10 @@
 from backend.models.interest import Interest
-from backend.responses.user_response import UserResponse, UserResponseWithInterests
+from backend.responses.user_response import UserResponse, UserResponseWithInterestsAndDistance
 
 
-def map_user_to_user_response_with_interests(user) -> UserResponseWithInterests:
+def map_user_to_user_response_with_interests(user, distance) -> UserResponseWithInterestsAndDistance:
     user_interests = [Interest(id=interest.id, name=interest.name, icon=interest.icon) for interest in user.interests]
-    return UserResponseWithInterests(
+    return UserResponseWithInterestsAndDistance(
         id=user.id,
         first_name=user.first_name,
         last_name=user.last_name,
@@ -19,7 +19,8 @@ def map_user_to_user_response_with_interests(user) -> UserResponseWithInterests:
         latitude=user.latitude,
         longitude=user.longitude,
         gender_identity_id=user.gender_identity_id,
-        interests=user_interests
+        interests=user_interests,
+        distance=distance
     )
 
 
