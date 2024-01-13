@@ -3,14 +3,10 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 from starlette import status
 
-from backend.models.expert_system import ExpertSystem
 from backend.models.user import User
 from backend.responses.error_response import ErrorResponse
-from backend.responses.user_response import UserResponse, UserResponseWithInterests
-from backend.services.user import patch_user, get_algo_user, UserUpdate, get_user, registration, get_users, login, \
-    websocket_connect, get_user_profile, get_user_by_email
+from backend.services.user import get_user_profile, get_user_by_email
 from backend.responses.user_response import UserResponse, UserResponseWithInterestsAndDistance
-from backend.services.expert_system import update_expert_system
 from backend.services.user import patch_user, get_algo_user, UserUpdate, get_user, get_users, login, registration, \
     websocket_connect
 from backend.utils.pagination import Page

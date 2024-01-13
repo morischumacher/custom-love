@@ -31,7 +31,7 @@ from backend.repository.repository import create_session
 from backend.requests.user_request import UserRegistration
 from backend.responses.notification import Notification, NotificationType
 from backend.responses.user_response import UserResponse, UserResponseWithInterestsAndDistance
-from backend.responses.user_response import UserResponse, UserResponseWithInterests, UserDetailedResponse
+from backend.responses.user_response import UserResponse, UserDetailedResponse
 from backend.services.expert_system import get_expert_system_by_user_id
 from backend.services.message import _save_message
 from backend.services.validation.user_validation import validate_new_user

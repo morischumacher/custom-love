@@ -7,15 +7,13 @@ from backend.models.interest import Interest
 from backend.models.language import Language
 import os
 from dotenv import load_dotenv
-from backend.models.message import Message
-from backend.models.image import Image, ProfilePicture
 from backend.models.preference import Preference
 from backend.models.expert_system import ExpertSystem
 from backend.models.rating import Rating
 from backend.models.swipe_status import SwipeStatus, SwipeStatusType
 from backend.models.user import User
 from backend.utils.passwords import hash_pwd
-from backend.datagenerator.data.features import interests_dict, language_dict
+from backend.datagenerator.data.features import language_dict
 from backend.datagenerator.data.exsys_training_data import exsys_trainings_data
 from backend.algo.exsys import ExSys
 load_dotenv()
