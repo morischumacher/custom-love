@@ -56,7 +56,8 @@ class _RegistrationLocationState extends State<RegistrationLocation> {
     super.initState();
     getAccessToken().then((token){
       if (token != null) {
-        Navigator.pushNamed(context, '/home/swipe');
+        Navigator.of(context).popUntil((route) => route.isFirst);
+        Navigator.of(context).pushReplacementNamed('/home/swipe');
       }
     });
 
