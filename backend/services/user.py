@@ -203,6 +203,10 @@ def get_algo_user(algoId: int, user: Annotated[User, Depends(get_current_user)],
                   db: Annotated[Session, Depends(create_session)],
                   request: Request) -> UserResponseWithInterestsAndDistance | None:
     swipeable_user = get_swipeable_user(user, db)
+
+    if len(swipeable_user) == 0:
+        return None
+
     match algoId:
         case 1:
             swipeable_user_choice = random.choice(swipeable_user)

@@ -12,6 +12,7 @@ import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 
 import '../../../model/user_model.dart';
+import '../../swipe/util/algo_id_notifier.dart';
 
 class LoginController {
   var logger = Logger();
@@ -45,6 +46,7 @@ class LoginController {
     String password = passwordController.text;
     LoginService loginService = context.read<LoginService>();
     UserService userService = context.read<UserService>();
+    AlgoIdNotifier algoIdNotifier = context.read<AlgoIdNotifier>();
 
     if (email.isNotEmpty && password.isNotEmpty) {
       try {
@@ -59,6 +61,13 @@ class LoginController {
         var userId = loginResult["user"]["id"];
 
         await storeUserId(userId.toString());
+
+        var userMatchingAlgorithm = loginResult["user"]["matching_algorithm"];
+        if(userMatchingAlgorithm != null || userMatchingAlgorithm != 0) {
+          algoIdNotifier.setAlgoId(userMatchingAlgorithm);
+        } else {
+          //TODO Launch onboarding process
+        }
 
         // If login is successful, navigate to '/home'
         if (context.mounted) {

@@ -62,7 +62,7 @@ class UserService extends PaginatedService<User, UserApi> {
     }
   }
 
-  Future<User> getAlgoUser(var accessToken, int algoId) async {
+  Future<User?> getAlgoUser(var accessToken, int algoId) async {
     try {
       final algoUser = super.api.getAlgoUser(accessToken, algoId);
       return algoUser;
