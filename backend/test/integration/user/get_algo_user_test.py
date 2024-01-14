@@ -17,7 +17,7 @@ def test_get_random_algo_user(postgis_client, postgis_session):
 
 
 def test_get_interest_based_user(postgis_client, postgis_session):
-    users = [user_alfa(), user_theater(), user_beta()]
+    users = [user_alfa(), user_beta(), user_theater()]
     load_entities(users, postgis_session)
 
     token = login(users[0].email, RAW_PASSWORD, postgis_client)
