@@ -1,4 +1,6 @@
 import json
+import os
+import os.path
 from sys import platform
 
 import psycopg2
@@ -42,8 +44,9 @@ def client_fixture(session: Session):
 def postgis_session_fixture():
     file_path = 'backend/database.json'
 
-    if platform == 'win32':
-        file_path = 'C:\\Users\\cwittauer\\university\\23ws-ase-pr-inso-06\\backend\\database.json'
+    if 'win32' in platform:
+        current_path = os.getcwd()
+        file_path = os.path.abspath(os.path.join(get_dir(current_path), 'database.json'))
 
     with open(file_path) as file:
         connection_string = json.load(file)
@@ -86,3 +89,10 @@ def execute_db_operation(url: str, cmd: str):
     cursor = conn.cursor()
     cursor.execute(cmd)
     conn.close()
+
+
+def get_dir(path):
+    index_of_third_last_backslash = path.rfind('\\', 0, path.rfind('\\', 0, path.rfind('\\')))
+    if index_of_third_last_backslash != -1:
+        truncated_path = path[:index_of_third_last_backslash]
+        return truncated_path

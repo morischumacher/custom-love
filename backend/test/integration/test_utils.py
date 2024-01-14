@@ -158,3 +158,52 @@ def authorized_request(token, client: TestClient, method, url, **kwargs):
         headers = {"Authorization": f"Bearer {token}"}
 
     return method(client)(url, headers=headers, **kwargs)
+
+
+def create_expert_system(userId: int, session: Session):
+    from backend.algo.exsys import ExSys
+    expert_system = ExSys(None)
+
+    # Create training data
+    X_train = []
+
+    # Target Data
+    y_train = []
+
+    # Add training user data
+    from backend.datagenerator.data.exsys_training_data import exsys_trainings_data
+    for user in exsys_trainings_data:
+        actual_user = exsys_trainings_data.get(user)
+        X_train.append([
+            actual_user["age"],
+            actual_user["biolenght"],
+            actual_user["genderid"],
+            actual_user["sports"],
+            actual_user["movies"],
+            actual_user["travel"],
+            actual_user["books"],
+            actual_user["science"],
+            actual_user["music"],
+            actual_user["art"],
+            actual_user["food"],
+            actual_user["technology"],
+            actual_user["fashion"],
+            actual_user["photography"],
+            actual_user["gaming"],
+            actual_user["nature"],
+            actual_user["history"],
+            actual_user["fitness"],
+            actual_user["crafts"],
+            actual_user["writing"],
+            actual_user["gardening"],
+            actual_user["philosophy"],
+            actual_user["coding"]
+        ])
+        y_train.append(actual_user["liked"])
+
+    expert_system.train_model_for_test(X_train, y_train)
+
+    serialized_model = expert_system.serialize_model()
+
+    from backend.models.expert_system import ExpertSystem
+    session.add(ExpertSystem(model=serialized_model, user_id=userId))
