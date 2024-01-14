@@ -1,19 +1,20 @@
-import 'dart:collection';
-
-import 'package:flutter/material.dart';
-import 'package:frontend/src/app/model/user_model.dart';
-
-import 'message_model.dart';
-
 class Conversation {
   int id;
   int user1Id;
   int user2Id;
 
-  Conversation(this.id, this.user1Id, this.user2Id);
+  Conversation({
+    required this.id,
+    required this.user1Id,
+    required this.user2Id
+  });
 
   factory Conversation.fromJson(Map<String, dynamic> json) {
-    return Conversation(json['id'], json['user1_id'], json['user2_id']);
+    return Conversation(
+        id: json['id'],
+        user1Id: json['user1_id'],
+        user2Id: json['user2_id']
+    );
   }
 
   int? getOtherUserId(int? id) {
@@ -28,4 +29,3 @@ class Conversation {
     return user1Id;
   }
 }
-

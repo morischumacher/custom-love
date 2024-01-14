@@ -7,8 +7,8 @@ class UserService extends PaginatedService<User, UserApi> {
   UserService(super._api);
 
   @override
-  PaginatedService<User, UserApi> copyWith(String urlParams)
-  => UserService(super.api.copyWith(urlParams));
+  PaginatedService<User, UserApi> copyWith(String urlParams) =>
+      UserService(super.api.copyWith(urlParams));
 
   Future<List<User>> getAllUsers() async {
     try {
@@ -36,7 +36,8 @@ class UserService extends PaginatedService<User, UserApi> {
   Future<User> updateCurrentUserLocation(
       Position userPosition, var accessToken) async {
     try {
-      final updateUser = super.api.updateUserLocation(userPosition, accessToken);
+      final updateUser =
+          super.api.updateUserLocation(userPosition, accessToken);
       return updateUser;
     } on Exception {
       rethrow;
@@ -61,7 +62,7 @@ class UserService extends PaginatedService<User, UserApi> {
     }
   }
 
-  Future<User> getAlgoUser(var accessToken, int algoId) async {
+  Future<User?> getAlgoUser(var accessToken, int algoId) async {
     try {
       final algoUser = super.api.getAlgoUser(accessToken, algoId);
       return algoUser;

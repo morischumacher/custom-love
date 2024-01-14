@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/src/app/presentation/chat/components/menu_item.dart';
 import 'package:frontend/src/app/presentation/chat/components/message_input.dart';
 import 'package:frontend/src/app/presentation/chat/components/message_list.dart';
 import 'package:provider/provider.dart';
@@ -37,21 +36,18 @@ class _MessagesPageState extends State<MessagesPage> {
         Provider.of<MessageService>(context, listen: false));
 
     return Padding(
-        padding: EdgeInsets.symmetric(
-            horizontal: _theme.universalPadding,
-            vertical: _theme.universalPadding),
-        child: Column(
-          children: [
-            Expanded(
-              child: MessageList(args.conversation, args.user.id),
-            ),
-            MessageInput(
-                _textInputController,
-                args.conversation.id,
-                args.conversation.getOtherUserId(args.user.id)!,
-                args.user.id),
-          ],
-        ),
-      );
+      padding: EdgeInsets.symmetric(
+          horizontal: _theme.universalPadding,
+          vertical: _theme.universalPadding),
+      child: Column(
+        children: [
+          Expanded(
+            child: MessageList(args.conversation, args.user.id),
+          ),
+          MessageInput(_textInputController, args.conversation.id,
+              args.conversation.getOtherUserId(args.user.id)!, args.user.id),
+        ],
+      ),
+    );
   }
 }

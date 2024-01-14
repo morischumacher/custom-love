@@ -1,8 +1,13 @@
 import 'dart:async';
+import 'dart:math';
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter_arc_text/flutter_arc_text.dart';
 import 'package:frontend/src/app/model/user_model.dart';
+import 'package:frontend/src/app/presentation/swipe/components/swiping_card.dart';
+import 'package:frontend/src/app/presentation/swipe/util/swipe_state_notifier.dart';
+import 'package:frontend/src/app/presentation/swipe/util/swipe_state.dart';
 import 'package:frontend/src/app/presentation/swipe/util/matching_algorithm.dart';
-import 'package:frontend/src/app/presentation/swipe/util/swipe_status.dart';
 import 'package:frontend/src/app/presentation/swipe/util/content.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/presentation/swipe/util/shared_swipeable_event.dart';
@@ -15,8 +20,8 @@ import 'package:frontend/src/app/presentation/authentification/controller/login_
 
 import '../../../service/location_service.dart';
 import '../../../service/user_service.dart';
-import '../components/swiping_card.dart';
 import '../util/algo_id_notifier.dart';
+import '../util/interests.dart';
 import '../util/swipes_left.dart';
 
 class Swipe extends StatefulWidget {
@@ -31,24 +36,30 @@ class Swipe extends StatefulWidget {
 }
 
 class _SwipeState extends State<Swipe>{
-  late SwipeItem _swipeItem;
-  MatchEngine? _matchEngine;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
-  bool isLoading = false;
-  bool swipeable = true;
-  late bool swiped;
+
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
   final LoginController _controller = LoginController();
   final LocationService _locationService = LocationService();
-  Timer? timer;
-  bool swipeableTimer = true;
-  late int tmpSwipesLeft;
-  late int userId;
-  bool swipesEvent = false;
-  int swipingAlgoId = 0;
+
+  SwipeStateNotifier? swipeStateNotifier;
   StreamSubscription<bool>? _swipeableSubscription;
   AlgoIdNotifier? algoIdNotifier;
-  bool loginAlgoIsSet = false;
+  MatchEngine? _matchEngine;
+
+  late double height;
+  late double width;
+  late SwipeItem _swipeItem;
+  late bool swiped;
+  late int userId;
+
+  bool isLoading = false;
+  bool swipeable = true;
+  bool swipeableTimer = true;
+  bool _didChangeDependenciesCalled = false;
+  bool _swipeItemLoaded = false;
+  bool _listenerAdded = false;
+  int swipingAlgoId = 0;
 
   @override
   void initState() {
@@ -57,35 +68,142 @@ class _SwipeState extends State<Swipe>{
     _fetchInitData();
   }
 
+
+
   @override
   Future<void> didChangeDependencies() async {
     super.didChangeDependencies();
 
     _swipeableSubscription ??= SharedSwipeableEvent.swipeable.swipeableChanged
-        .listen((bool swipeable) async {
+        .listen((bool swipeableChanged) async {
       if (mounted) {
         setState(() {
-          swipesEvent = swipeable;
+          swipeable = swipeableChanged;
         });
       }
     });
 
-    algoIdNotifier ??= Provider.of<AlgoIdNotifier>(context);
+    if(!_didChangeDependenciesCalled) {
+      _didChangeDependenciesCalled = true;
 
-    if (swipingAlgoId != algoIdNotifier?.algoId || loginAlgoIsSet) {
+      swipeStateNotifier ??= Provider.of<SwipeStateNotifier>(context);
+
+      algoIdNotifier ??= Provider.of<AlgoIdNotifier>(context);
+
+      if (!_listenerAdded) {
+        swipeStateNotifier?.addListener(_swipeStateListener);
+        algoIdNotifier?.addListener(_algoIdListener);
+        _listenerAdded = true;
+      }
+    }
+
+  }
+
+  Future<void> _algoIdListener() async {
+    if(swipingAlgoId != algoIdNotifier!.algoId) {
       swipingAlgoId = algoIdNotifier!.algoId;
-      _loadNextUser();
       String accessToken = await _controller.retrieveAccessToken() as String;
       if (!context.mounted) return;
       await MatchingAlgorithm.updateMatchingAlgorithm(accessToken, context.read<UserService>(), swipingAlgoId);
     }
+
+    if (mounted) {
+      setState(() {
+        if(swipeStateNotifier!.swipeState == SwipeState.OKAY) {
+          _loadNextUser();
+        } else if (swipeStateNotifier!.swipeState != SwipeState.NO_SURROUNDING_USERS) {
+          _swipeItemLoaded = true;
+        }
+      });
+    }
   }
 
-  void _fetchInitData() async {
+  void _swipeStateListener() {
+    if (mounted) {
+      setState(() {
+
+        if(swipeStateNotifier!.swipeState == SwipeState.OKAY) {
+          _loadNextUser();
+        } else {
+          _swipeItemLoaded = true;
+        }
+
+      });
+    }
+  }
+
+  Widget getSwipeCard() {
+    SwipeState state = swipeStateNotifier!.swipeState;
+    return SafeArea(
+      child: Container(
+          alignment: Alignment.center,
+          height: height - kToolbarHeight > 0 ? height - kToolbarHeight : height,
+          width: !kIsWeb ? width * 0.90 : width * 0.65,
+          child: Stack(
+              children: [getSwipeCardSwitch(state)])),
+    );
+  }
+
+  Widget getSwipeCardSwitch(state) {
+    switch (state) {
+      case SwipeState.OKAY:
+        return SwipingCard(
+          matchEngine: _matchEngine,
+          customLoveTheme: _customLoveTheme,
+          swipeItem: _swipeItem,
+          swipeable: swipeable,
+          controller: _controller,
+          userService: widget.userService,
+          swipeStatusService: widget.swipeStatusService,
+          userId: userId,
+        );
+      case SwipeState.NO_SWIPES_LEFT:
+        return noSwipesLeftCard();
+      case SwipeState.NO_SURROUNDING_USERS:
+        return noSurroundingUsersCard();
+      default:
+        return Center(child: Container());
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    height = MediaQuery.of(context).size.height;
+    width = min(MediaQuery.of(context).size.width, 750);
+    return Scaffold(
+      key: _scaffoldKey,
+      backgroundColor: _customLoveTheme.neutralColor,
+      body: Center(
+          child: _swipeItemLoaded
+              ? getSwipeCard()
+              : Center(
+                  child: CircularProgressIndicator(
+                      color: _customLoveTheme.primaryColor))),
+    );
+  }
+
+  Future<void> _fetchInitData() async {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await _getUserId();
       await _getMatchingAlgorithm();
+      int currentSwipesLeft = await _checkSwipesLeft();
+      if (currentSwipesLeft > 0) {
+        swipeStateNotifier!.setSwipeState(SwipeState.OKAY);
+      } else {
+        swipeStateNotifier!.setSwipeState(SwipeState.NO_SWIPES_LEFT);
+      }
     });
+  }
+
+  Future<int> _checkSwipesLeft() async {
+    int currentSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(
+        userId, widget.userService);
+    if (currentSwipesLeft > 0) {
+      SharedSwipeableEvent.swipeable.changeSwipeable(true);
+    } else {
+      SharedSwipeableEvent.swipeable.changeSwipeable(false);
+    }
+    return currentSwipesLeft;
   }
 
   Future<void> _getUserId() async {
@@ -94,105 +212,62 @@ class _SwipeState extends State<Swipe>{
   }
 
   Future<void> _getMatchingAlgorithm() async {
-    var matchingAlgorithm = await MatchingAlgorithm.getCurrentMatchingAlgorithm(userId, widget.userService);
-    if (matchingAlgorithm != swipingAlgoId) {
-      swipingAlgoId = matchingAlgorithm;
-      algoIdNotifier?.setAlgoId(swipingAlgoId);
-      loginAlgoIsSet = true;
-    }
+    await MatchingAlgorithm.getCurrentMatchingAlgorithm(userId, widget.userService).then((matchingAlgorithm){
+      if (matchingAlgorithm != swipingAlgoId) {
+        swipingAlgoId = matchingAlgorithm;
+        algoIdNotifier?.setAlgoId(swipingAlgoId);
+      }
+    });
   }
 
   void _loadNextUser() async {
+    if (isLoading || swipeStateNotifier!.swipeState != SwipeState.OKAY) return;
+
     if (mounted) {
       setState(() {
+        _swipeItemLoaded = false;
         isLoading = true;
       });
     }
 
     String accessToken = await _controller.retrieveAccessToken() as String;
+
+    String city = "";
     await widget.userService
         .getAlgoUser(accessToken, swipingAlgoId)
         .then((User? user) async {
-      var city = await _locationService.getCurrentLocation(
-          user!.latitude, user.longitude);
-      _setSwipingCard(user, city);
+
+          if (user != null) {
+            city = await _locationService.getCurrentLocation(
+                user.latitude, user.longitude);
+          } else {
+            city = "noCity";
+          }
+
+          _setUserSwipingCard(user, city);
+
     }).whenComplete(() {
-      isLoading = false;
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+          _swipeItemLoaded = true;
+
+          if (city == "noCity") {
+            swipeStateNotifier!.setSwipeState(SwipeState.NO_SURROUNDING_USERS);
+          }
+        });
+      }
     });
   }
 
-  Future<void> _swipeActionTaken(bool hasLiked) async {
-    String accessToken = await _controller.retrieveAccessToken() as String;
-    int swipingsLeftInt = await SwipesLeft.updateSwipeLeft(accessToken, widget.userService);
-    if (swipingsLeftInt > 0) {
-      SharedSwipeableEvent.swipeable.changeSwipeable(true);
-    } else {
-      SharedSwipeableEvent.swipeable.changeSwipeable(false);
-    }
-
-    if (hasLiked) {
-      await widget.swipeStatusService.postLike(accessToken, int.parse(_swipeItem.content.id));
-    } else {
-      await widget.swipeStatusService.postView(accessToken, int.parse(_swipeItem.content.id));
-    }
-
-    _loadNextUser();
-  }
-
-  void _setSwipingCard(User? user, String? city) {
+  void _setUserSwipingCard(User? user, String? city) {
     if (user == null) {
-      if (mounted) {
-        setState(() {
-          _swipeItem = SwipeItem(
-            content: const Text("There's no user to show"),
-          );
-        });
-      }
+
     } else {
       if (mounted) {
         setState(() {
-          var id = user.id;
-          var firstName = user.firstName;
-          List<dynamic>? interests = [];
-          if (user.interests != null) {
-            interests = user.interests;
-          }
-          var birthDate = DateTime.parse(user.date_of_birth);
-          var birthYear = birthDate.year;
-          var todayDate = DateTime.now();
-
-          int age = todayDate.year - birthYear;
-
-          if (birthDate.month > todayDate.month ||
-              (birthDate.month == todayDate.month &&
-                  birthDate.day > todayDate.day)) {
-            age--;
-          }
-
-          if (mounted) {
-            setState(() {
-              swipeableTimer = false;
-            });
-          }
-
-          swiped = false;
-
-          timer = Timer(const Duration(seconds: 10), () {
-            if (mounted) {
-              setState(() {
-                swipeableTimer = true;
-              });
-            }
-          });
-
           _swipeItem = SwipeItem(
-            content: Content(
-                id: id.toString(),
-                firstName: firstName,
-                age: age,
-                city: city,
-                bio: user.bio,
-                interests: interests),
+            content: _getSuggestedUserInfo(user, city!),
             likeAction: () async {
               _swipeActionTaken(true);
             },
@@ -200,68 +275,236 @@ class _SwipeState extends State<Swipe>{
               _swipeActionTaken(false);
             },
             onSlideUpdate: (SlideRegion? region) async {
-              //check if it's possible to swipe (10 sec timer)
-              if (swipeableTimer) {
-                //ignore the swipe left check if the card is just be tapped
-                if (region != null) {
-                  //ensure that after a swipe attempt the api call happens only once
-                  if (!swiped) {
-                    swiped = true;
-                    tmpSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(
-                        userId, widget.userService);
-                    if (tmpSwipesLeft > 0) {
-                      //after reset_date is updated, it's possible to swipe again
-                      if (mounted) {
-                        setState(() {
-                          swipeableTimer = true;
-                        });
-                      }
-                      SharedSwipeableEvent.swipeable.changeSwipeable(true);
-                    } else {
-                      SharedSwipeableEvent.swipeable.changeSwipeable(false);
-                    }
-                  }
-                }
-
-                //when swipe card is in the initial state (null position), it should be possible to make the api call
-                if (region == null) {
-                  swiped = false;
-                }
-              }
+              _onSlideUpdate(region);
             },
           );
           _matchEngine = MatchEngine(swipeItems: [_swipeItem]);
-        });
+        }
+        );
+      }
+    }
+  }
+
+  _onSlideUpdate(SlideRegion? region) async {
+      //ignore the swipe left check if the card is just be tapped
+      if (region != null) {
+        //ensure that after a swipe attempt the api call happens only once
+        if (!swiped) {
+          swiped = true;
+          await _checkSwipesLeft();
+        }
+      }
+
+      //when swipe card is in the initial state (null position), it should be possible to make the api call
+      if (region == null) {
+        swiped = false;
+      }
+  }
+
+  void _swipeActionTaken(bool hasLiked) async {
+    String accessToken = await _controller.retrieveAccessToken() as String;
+    if (hasLiked) {
+      await widget.swipeStatusService.postLike(accessToken, int.parse(_swipeItem.content.id));
+    } else {
+      await widget.swipeStatusService.postView(accessToken, int.parse(_swipeItem.content.id));
+    }
+    _didChangeDependenciesCalled = false;
+
+    _updateSwipesLeft();
+  }
+
+  Content _getSuggestedUserInfo(User user, String city) {
+    var id = user.id;
+    var firstName = user.firstName;
+    var distance = user.distance;
+    List<dynamic>? interests = [];
+    if (user.interests != null) {
+      interests = user.interests;
+    }
+    var birthDate = DateTime.parse(user.date_of_birth);
+    var birthYear = birthDate.year;
+    var todayDate = DateTime.now();
+
+    int age = todayDate.year - birthYear;
+
+    if (birthDate.month > todayDate.month ||
+        (birthDate.month == todayDate.month &&
+            birthDate.day > todayDate.day)) {
+      age--;
+    }
+
+    return Content(
+        id: id.toString(),
+        firstName: firstName,
+        age: age,
+        city: city,
+        bio: user.bio,
+        interests: interests,
+        distance: distance);
+  }
+
+  Widget noSurroundingUsersCard() {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      clipBehavior: Clip.hardEdge,
+      color: _customLoveTheme.neutralBackgroundColor,
+      surfaceTintColor: _customLoveTheme.neutralBackgroundColor,
+      child: SwipeCards(
+        matchEngine: _matchEngine = MatchEngine(swipeItems: [
+          SwipeItem(
+              content: "No users in the area  :(",
+          ),
+        ]),
+        itemBuilder: (BuildContext context, int index) {
+          return Container(
+              height: double.infinity,
+              width: double.infinity,
+              alignment: Alignment.center,
+              color: _customLoveTheme.neutralBackgroundColor,
+              child: ClipRect(
+                child: SingleChildScrollView(
+                  child: Stack(
+                      children: [
+                        SizedBox(height: height * 0.08),
+                        const Center(
+                          child: FittedBox(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 190, vertical: 190),
+                              child: ArcText(
+                                radius: 100,
+                                text: "No users in the area  :(",
+                                textStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                                startAngle: 0,
+                                stretchAngle: 3,
+                                startAngleAlignment: StartAngleAlignment.center,
+                                placement: Placement.middle,
+                                direction: Direction.clockwise,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: kIsWeb ? 120 : 105, vertical: kIsWeb ? 120 : 105),
+                            child: Column(
+                              children: [
+                                Icon(Icons.travel_explore_rounded, size: 150, color: _customLoveTheme.textColor),
+                                SizedBox(height: height * 0.08),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: Padding(
+                            padding: EdgeInsets.only(top: height * 0.4, left: kIsWeb ? 50 : 25, right: kIsWeb ? 50 : 25),
+                            child: Text(
+                              "Increase your search radius in your profile settings to find your perfect match!",
+                              style: TextStyle(fontSize: kIsWeb ? 16 : 14, fontWeight: FontWeight.bold, color: _customLoveTheme.textColor),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        )
+                      ]
+                  ),
+                ),
+              )
+          );
+        },
+        onStackFinished: () async {},
+        leftSwipeAllowed: false,
+        rightSwipeAllowed: false,
+        fillSpace: true,
+      ),
+    );
+
+  }
+
+  Widget noSwipesLeftCard() {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      clipBehavior: Clip.hardEdge,
+      color: _customLoveTheme.neutralBackgroundColor,
+      surfaceTintColor: _customLoveTheme.neutralBackgroundColor,
+      child: SwipeCards(
+        matchEngine: _matchEngine = MatchEngine(swipeItems: [
+          SwipeItem(
+              content: "Sorry - No Swipes Left  :(",
+              onSlideUpdate: (SlideRegion? region) async {
+                _onSlideUpdate(region);
+              }),
+        ]),
+        itemBuilder: (BuildContext context, int index) {
+          return Container(
+              height: double.infinity,
+              width: double.infinity,
+              alignment: Alignment.center,
+              color: _customLoveTheme.neutralBackgroundColor,
+              child: ClipRect(
+                child: SingleChildScrollView(
+                  child: Stack(
+                      children: [
+                        SizedBox(height: height * 0.08),
+                        const FittedBox(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 190, vertical: 190),
+                            child: ArcText(
+                              radius: 100,
+                              text: "Sorry - No Swipes Left  :(",
+                              textStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                              startAngle: 0,
+                              stretchAngle: 3,
+                              startAngleAlignment: StartAngleAlignment.center,
+                              placement: Placement.middle,
+                              direction: Direction.clockwise,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: kIsWeb ? 120 : 105, vertical: kIsWeb ? 120 : 105),
+                          child: Stack(
+                            children: [
+                              Icon(Icons.amp_stories_rounded, size: 150, color: _customLoveTheme.textColor),
+                              Container(padding: const EdgeInsets.only(left: 52, top: 50), child: Icon(Icons.lock_clock_rounded, size: 45, color: _customLoveTheme.primaryColor)),
+                            ],
+                          ),
+                        )
+                      ]
+                  ),
+                ),
+              )
+          );
+        },
+        onStackFinished: () async {
+          swipeStateNotifier!.setSwipeState(SwipeState.OKAY);
+        },
+        leftSwipeAllowed: swipeable,
+        rightSwipeAllowed: swipeable,
+        fillSpace: true,
+      ),
+    );
+  }
+
+  Future<void> _updateSwipesLeft() async {
+    String accessToken = await _controller.retrieveAccessToken() as String;
+    int currentSwipesLeft = await SwipesLeft.updateSwipeLeft(accessToken, widget.userService);
+
+    if (currentSwipesLeft > 0) {
+      SharedSwipeableEvent.swipeable.changeSwipeable(true);
+      _loadNextUser();
+    } else {
+      SharedSwipeableEvent.swipeable.changeSwipeable(false);
+      swipeStateNotifier!.setSwipeState(SwipeState.NO_SWIPES_LEFT);
+      if (mounted) {
+        setState(() {});
       }
     }
   }
 
   @override
-  Widget build(BuildContext context) {
-      return swipingAlgoId !=0 ? Scaffold(
-        key: _scaffoldKey,
-        backgroundColor: _customLoveTheme.neutralColor,
-        body: isLoading
-            ? const Center(
-          child: CircularProgressIndicator(),
-        ):
-        Center(
-          child: SwipingCard(
-              matchEngine: _matchEngine,
-              customLoveTheme: _customLoveTheme,
-              swipeItem: _swipeItem,
-              swipeable: swipesEvent,
-              swipeableTimer: swipeableTimer,
-              userId: userId,
-              controller: _controller,
-              userService: widget.userService,
-              swipeStatusService: widget.swipeStatusService),
-        )) : const SizedBox();
-  }
-
-  @override
   void dispose() {
-    timer?.cancel();
+    swipeStateNotifier?.removeListener(_swipeStateListener);
+    algoIdNotifier?.removeListener(_algoIdListener);
 
     _swipeableSubscription?.cancel();
 

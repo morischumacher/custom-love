@@ -92,6 +92,7 @@ def user_gamma():
         date_of_birth=datetime.today(),
         job='Data Scientist',
         search_radius=50,
+        matching_algorithm=1,
         swipe_limit_reset_date=datetime.today(),
         swipes_left=5,
         languages=[language("english"), language("french"), language("german")],

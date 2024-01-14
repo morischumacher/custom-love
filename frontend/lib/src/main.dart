@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/src/app/api/picture_api.dart';
 import 'package:frontend/src/app/presentation/authentification/pages/logout_page.dart';
 import 'package:frontend/src/app/presentation/registration/pages/registration_location.dart';
+import 'package:frontend/src/app/presentation/swipe/util/swipe_state_notifier.dart';
 import 'package:frontend/src/app/presentation/swipe/util/algo_id_notifier.dart';
 import 'package:frontend/src/app/presentation/utils/CustomScrollBehaviour.dart';
 import 'package:frontend/src/app/service/conversation_service.dart';
+import 'package:frontend/src/app/service/image_service.dart';
 import 'package:frontend/src/app/service/match_service.dart';
 import 'package:frontend/src/app/service/message_service.dart';
 import 'package:frontend/src/app/api/registration_api.dart';
@@ -43,10 +46,13 @@ class CustomLove extends StatelessWidget {
         //ChangeNotifierProvider<CustomLoveState>(create: (context) => CustomLoveState()),
         ChangeNotifierProvider<StateManager>(create: (_) => StateManager()),
         ChangeNotifierProvider<UserStorage>(create: (_) => UserStorage()),
-        ChangeNotifierProvider<ConversationStorage>(create: (_) => ConversationStorage()),
+        ChangeNotifierProvider<ConversationStorage>(
+            create: (_) => ConversationStorage()),
         ChangeNotifierProvider<MessageStorage>(create: (_) => MessageStorage()),
         ChangeNotifierProvider<MatchStorage>(create: (_) => MatchStorage()),
+        ChangeNotifierProvider<ImageStorage>(create: (_) => ImageStorage()),
         ChangeNotifierProvider(create: (context) => AlgoIdNotifier()),
+        ChangeNotifierProvider(create: (context) => SwipeStateNotifier()),
         Provider<http.Client>.value(value: httpClient),
         ProxyProvider<http.Client, UserApi>(
           update: (_, httpClient, __) => UserApi(httpClient),
@@ -61,16 +67,19 @@ class CustomLove extends StatelessWidget {
           update: (_, loginApi, __) => LoginService(loginApi),
         ),
         ProxyProvider<http.Client, RegistrationApi>(
-          update: (_, httpClient, __) => RegistrationApi(httpClient: httpClient),
+          update: (_, httpClient, __) =>
+              RegistrationApi(httpClient: httpClient),
         ),
         ProxyProvider<RegistrationApi, RegistrationService>(
-          update: (_, registrationApi, __) => RegistrationService(registrationApi),
+          update: (_, registrationApi, __) =>
+              RegistrationService(registrationApi),
         ),
         ProxyProvider<http.Client, ConversationApi>(
           update: (_, httpClient, __) => ConversationApi(httpClient),
         ),
         ProxyProvider<ConversationApi, ConversationService>(
-          update: (_, conversationApi, __) => ConversationService(conversationApi),
+          update: (_, conversationApi, __) =>
+              ConversationService(conversationApi),
         ),
         ProxyProvider<http.Client, MatchApi>(
           update: (_, httpClient, __) => MatchApi(httpClient),
@@ -90,6 +99,12 @@ class CustomLove extends StatelessWidget {
         ProxyProvider<SwipeStatusApi, SwipeStatusService>(
           update: (_, swipeStatusApi, __) => SwipeStatusService(swipeStatusApi),
         ),
+        ProxyProvider<http.Client, PictureApi>(
+            update: (_, httpClient, __) => PictureApi(httpClient)
+        ),
+        ProxyProvider<PictureApi, ImageService>(
+          update: (_, pictureApi, __) => ImageService(pictureApi)
+        )
       ],
       child: MaterialApp(
         scrollBehavior: CustomScrollBehaviour(),
@@ -99,7 +114,8 @@ class CustomLove extends StatelessWidget {
           '/': (context) {
             final loginService = Provider.of<LoginService>(context);
             final userService = Provider.of<UserService>(context);
-            final conversationService = Provider.of<ConversationService>(context);
+            final conversationService =
+                Provider.of<ConversationService>(context);
             final matchService = Provider.of<MatchService>(context);
             final messageService = Provider.of<MessageService>(context);
             final swipeStatusService = Provider.of<SwipeStatusService>(context);
@@ -114,12 +130,15 @@ class CustomLove extends StatelessWidget {
             final loginService = Provider.of<LoginService>(context);
             final userService = Provider.of<UserService>(context);
             final swipeStatusService = Provider.of<SwipeStatusService>(context);
-            return HomeScreen(userService: userService, swipeStatusService: swipeStatusService);
+            return HomeScreen(
+                userService: userService,
+                swipeStatusService: swipeStatusService);
           },
           '/home/matches': (context) {
             final loginService = Provider.of<LoginService>(context);
             final userService = Provider.of<UserService>(context);
-            final conversationService = Provider.of<ConversationService>(context);
+            final conversationService =
+                Provider.of<ConversationService>(context);
             final matchService = Provider.of<MatchService>(context);
             final messageService = Provider.of<MessageService>(context);
             return HomeScreen(userService: userService);
@@ -138,7 +157,7 @@ class CustomLove extends StatelessWidget {
                 lastName: null,
                 email: null,
                 password: null,
-                birthdate: null,
+                birthdate:null,
                 gender: null,
                 preference: null,
                 profilePicture: null,
@@ -146,8 +165,7 @@ class CustomLove extends StatelessWidget {
                 location: null,
                 searchRadius: null,
                 job: null,
-                bio: null
-            );
+                bio: null);
           }
         },
       ),
