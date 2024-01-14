@@ -105,6 +105,7 @@ unittest-backend:
   stage: test-backend
   image: ghcr.io/brotholomew/python-non-root:3.12.0-bookworm-fast-circle
   script:
+  - echo '{"prefix":"postgresql","address":"s-23ws-ase-pr-inso-06-db-service:5432","user":"postgres","password":"example","database":"develop"}' > backend/database.json
   - pip install --user -r ./requirements.txt
   - pytest backend/test/integration/
 
