@@ -30,6 +30,15 @@ class UserStorage extends CollectionStorage {
 
 class ConversationStorage extends CollectionStorage {
   Collection<Conversation> conversations = Collection<Conversation>();
+
+  Future<Conversation> addConversation(int userId, ConversationService conversationService) async {
+    Conversation conversation = await conversationService.createConversation(userId);
+    conversations.items.putIfAbsent(conversation.id, () => conversation);
+
+    notifyListeners();
+
+    return conversation;
+  }
 }
 
 class MessageStorage extends CollectionStorage {
@@ -67,6 +76,12 @@ class MessageStorage extends CollectionStorage {
 
 class MatchStorage extends CollectionStorage {
   Collection<Match> matches = Collection<Match>();
+
+  void removeMatch(int index) {
+    Match match = matches.items.values.elementAt(index);
+    matches.items.remove(match.id);
+    notifyListeners();
+  }
 }
 
 class StateManager extends ChangeNotifier {

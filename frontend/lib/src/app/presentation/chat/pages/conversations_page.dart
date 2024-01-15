@@ -3,10 +3,14 @@ import 'package:frontend/src/app/model/user_model.dart';
 import 'package:frontend/src/app/presentation/chat/components/avatar.dart';
 import 'package:frontend/src/app/presentation/chat/components/list_tile.dart';
 import 'package:frontend/src/app/presentation/chat/components/titled_list.dart';
+import 'package:frontend/src/app/service/conversation_service.dart';
 import 'package:frontend/src/config/app_state.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../config/theme.dart';
+import '../../../model/conversation_model.dart';
+import '../../../model/match_model.dart';
+import 'messages_page.dart';
 
 class ConversationsPage extends StatefulWidget {
   const  ConversationsPage({Key? key}) : super(key: key);
@@ -27,6 +31,8 @@ class _ConversationsPageState extends State<ConversationsPage> {
     ScrollController matchesScrollController = ScrollController();
     ScrollController conversationsController = ScrollController();
 
+    User? loggedInUser = Provider.of<StateManager>(context, listen: false).user;
+
     return Container(
       padding: EdgeInsets.symmetric(vertical: 2 * _customLoveTheme.universalPadding, horizontal: 0),
       child: Column(
@@ -45,8 +51,32 @@ class _ConversationsPageState extends State<ConversationsPage> {
                         return const CircularProgressIndicator();
                       }
 
-                      User? user = userStorage.users.items.values.elementAtOrNull(index);
-                      return Avatar(user);
+                      Match? match = matchStorage.matches.items.values.elementAtOrNull(index);
+
+                      if (match == null || loggedInUser == null) {
+                        return const CircularProgressIndicator();
+                      }
+
+                      User? user = userStorage.users.items[match.getOtherUserId(loggedInUser.id)];
+                      return GestureDetector(
+                        child: Avatar(user),
+                        onTap: () async {
+                          if (user == null) {
+                            return;
+                          }
+
+                          ConversationService conversationService = Provider.of<ConversationService>(context, listen: false);
+                          Conversation conversation = await Provider.of<ConversationStorage>(context, listen: false).addConversation(user.id, conversationService);
+                          matchStorage.removeMatch(index);
+
+                          // navigate to the new conversation
+                          Navigator.pushNamed(
+                              context,
+                              "/home/matches/messages",
+                              arguments: MessagesPageRouteArguments(user, conversation)
+                          );
+                        }
+                      );
                     },
                   );
                 },

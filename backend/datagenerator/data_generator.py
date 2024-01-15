@@ -593,10 +593,13 @@ class DataGenerator:
             session.refresh(user_bravo)
 
             # Conversations
-            for user in [user_bravo, user_charlie, user_delta, user_foxtrot, user_echo, user_golf, user_hotel, user_kitchen]:
+            for user in [user_bravo, user_charlie, user_delta, user_foxtrot, user_echo]:
                 session.add(SwipeStatus(user1_id=user_alfa.id, user2_id=user.id, status=SwipeStatusType.match))
                 session.add(Conversation(user1_id=user_alfa.id, user2_id=user.id))
 
+            session.add(SwipeStatus(user1_id=user_alfa.id, user2_id=user_golf.id, status=SwipeStatusType.match))
+            session.add(SwipeStatus(user1_id=user_alfa.id, user2_id=user_hotel.id, status=SwipeStatusType.match))
+            session.add(SwipeStatus(user1_id=user_alfa.id, user2_id=user_kitchen.id, status=SwipeStatusType.match))
             session.add(SwipeStatus(user1_id=user_bravo.id, user2_id=user_charlie.id, status=SwipeStatusType.match))
             session.commit()
 
