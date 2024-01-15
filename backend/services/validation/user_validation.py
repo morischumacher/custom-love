@@ -1,30 +1,53 @@
 import re
-from datetime import date
+from datetime import date, datetime
 
+from backend.models.gender_identity import GenderIdentity
+from backend.models.interest import Interest
 from backend.models.user import User
 from backend.requests.user_request import UserRegistration
 
 
-def validate_new_user(user: UserRegistration) -> [str]:
+def validate_new_user(
+        first_name: str,
+        last_name: str,
+        email: str,
+        bio: str,
+        job: str,
+        date_of_birth: datetime,
+        interests: [Interest],
+        gender_preferences: [GenderIdentity]
+) -> [str]:
     """
     Validates whether a user has valid entries and can be saved within the database.
-    :param user: user whose attributes are validated
+    :param first_name: first name of the user
+    :param last_name: last name of the user
+    :param email: email of the user
+    :param bio: optional bio of the user
+    :param job: optional job of the user
+    :param date_of_birth: birthdate of a user
+    :param interests: interests of the user
+    :param gender_preferences: gender preferences of the user
     :return: list of validation exceptions
     """
     validation_exceptions: [str] = []
-    if len(user.first_name) > 255 and len(user.last_name) > 255:
-        validation_exceptions.append("First name cannot be longer than 255 characters")
-    if len(user.last_name) > 255:
-        validation_exceptions.append("Last name cannot be longer than 255 characters")
-    if len(user.email) > 255:
-        validation_exceptions.append("User email cannot be longer than 255 characters")
-    if not __is_email_valid(user.email):
+    if len(first_name) > 255:
+        validation_exceptions.append("First name cannot be longer than 256 characters")
+    if len(last_name) > 255:
+        validation_exceptions.append("Last name cannot be longer than 256 characters")
+    if len(email) > 255:
+        validation_exceptions.append("User email cannot be longer than 256 characters")
+    if not __is_email_valid(email):
         validation_exceptions.append("Provided an email in an invalid format")
-    # TODO: Check bio length
-    if __is_under_18(user.date_of_birth):
+    if bio is not None and len(bio) > 256:
+        validation_exceptions.append("Bio cannot be longer than 256 characters")
+    if job is not None and len(job) > 256:
+        validation_exceptions.append("Job cannot be longer than 256 characters")
+    if __is_under_18(date_of_birth):
         validation_exceptions.append("Users under 18 are not allowed on the app")
-    if len(user.interest_ids) < 3 or len(user.interest_ids) > 5:
+    if len(interests) < 3 or len(interests) > 5:
         validation_exceptions.append("User requires 3 - 5 interests")
+    if len(gender_preferences) < 1:
+        validation_exceptions.append("User requires at least 1 gender preference")
     return validation_exceptions
 
 
