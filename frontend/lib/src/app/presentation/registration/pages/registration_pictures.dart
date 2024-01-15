@@ -97,6 +97,20 @@ class _RegistrationPicturesState extends State<RegistrationPictures> {
     }
   }
 
+  void _updateColor(PointerEvent details) {
+    setState(() {
+      tmpColor = _customLoveTheme.grayscale1;
+    });
+  }
+
+  void _exitColor(PointerEvent details) {
+    setState(() {
+      tmpColor = _customLoveTheme.grayscale0;
+    });
+  }
+
+  var tmpColor = const CustomLoveTheme().grayscale0;
+
   @override
     Widget build(BuildContext context) {
       return Scaffold(
@@ -117,47 +131,76 @@ class _RegistrationPicturesState extends State<RegistrationPictures> {
                           const PageTitle(
                             title: "Profile Pictures",
                             description: "Provide a profile picture of yourself",
-                            bottomPadding: 70.0,
+                            bottomPadding: 45.0,
                           ),
-                          const SizedBox(height: 19.0),
-                          if (registrationImage != null)
-                            Container(
-                              height: 250,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                      width: 5,
-                                      color: _customLoveTheme.primaryColor
-                                  )
-                              ),
-                              child: Image.memory (
-                                registrationImage!,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-
-                          const SizedBox(height: 19.0),
-                          SizedBox(
-                              height: MediaQuery.of(context).size.height * 0.075,
-                              child: ElevatedButton.icon(
-                                  onPressed: () async {
-                                    final Uint8List? image = await galleryImagePicker();
-
-                                    if (image != null) {
-                                      setState(() {
-                                        registrationImage = image;
-                                      });
-                                    }
-                                  },
-                                  icon: Icon(Icons.camera, color: _customLoveTheme.primaryColor,),
-                                  label: Text(
-                                    'Choose Image',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: _customLoveTheme.primaryColor
+                          if (registrationImage == null)
+                                MouseRegion(
+                                  cursor: SystemMouseCursors.click,
+                                  onHover: _updateColor,
+                                  onExit: _exitColor,
+                                  child: TextButton(
+                                    style: ButtonStyle(
+                                        overlayColor: MaterialStateProperty.all(
+                                            Colors.transparent
+                                        ),
                                     ),
-                                  ))
-                          ),
+                                    onPressed: () async {
+                                      final Uint8List? image = await galleryImagePicker();
+
+                                      if (image != null) {
+                                        setState(() {
+                                          registrationImage = image;
+                                        });
+                                      }
+                                    },
+                                    child: AnimatedContainer(
+                                      width: 300,
+                                      height: 300,
+                                        decoration: BoxDecoration(
+                                          color: tmpColor,
+                                            borderRadius: const BorderRadius.all(Radius.circular(20))
+                                        ),
+                                      duration: const Duration(milliseconds: 200),
+                                      child: Icon(Icons.add_a_photo, size: 40, color: _customLoveTheme.textColor,),
+                                    ),
+                                  ),
+                                ),
+
+                          if (registrationImage != null)
+                            Stack(
+                              clipBehavior: Clip.none,
+                              children: [
+                                AnimatedContainer(
+                                  height: 300,
+                                  width: 300,
+                                  duration: const Duration(milliseconds: 200),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(20.0),
+                                    child: Image.memory (
+                                      registrationImage!,
+                                      fit: BoxFit.cover
+                                    ),
+                                  ),
+                                ),
+                                Positioned(
+                                    bottom: -10,
+                                    left: 265,
+                                    child: CircleAvatar(
+                                      radius: 20,
+                                      backgroundColor: Colors.red,
+                                      child: IconButton(
+                                        onPressed: (){
+                                          setState(() {
+                                            registrationImageXFile = null;
+                                            registrationImage = null;
+                                          });
+                                        },
+                                        icon: Icon(Icons.delete, size: 20, color: _customLoveTheme.whiteColor),
+                                      ),
+                                    )
+                                ),
+                              ],
+                            ),
                           const SizedBox(height: 25.0),
                           Expanded(child: Container()),
                           Footer(
