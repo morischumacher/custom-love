@@ -63,23 +63,11 @@ class _RegistrationPicturesState extends State<RegistrationPictures> {
   XFile? registrationImageXFile;
   Uint8List? registrationImage;
 
-  Future<Uint8List?> galleryImagePicker() async {
+  Future<Uint8List?> galleryImagePicker(ImageSource imageSource) async {
     ImagePicker picker = ImagePicker();
 
     XFile? file = await picker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 90,
-    );
-    registrationImageXFile = file;
-
-    if (file != null) return await file.readAsBytes(); // convert into Uint8List.
-    return null;
-  }
-
-  Future<Uint8List?> cameraImagePicker() async {
-    ImagePicker picker = ImagePicker();
-    XFile? file = await picker.pickImage(
-      source: ImageSource.camera,
+      source: imageSource,
       imageQuality: 90,
     );
     registrationImageXFile = file;
@@ -145,7 +133,7 @@ class _RegistrationPicturesState extends State<RegistrationPictures> {
                                         ),
                                     ),
                                     onPressed: () async {
-                                      final Uint8List? image = await galleryImagePicker();
+                                      final Uint8List? image = await galleryImagePicker(ImageSource.gallery);
 
                                       if (image != null) {
                                         setState(() {
