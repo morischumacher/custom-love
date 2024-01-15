@@ -180,10 +180,7 @@ class _FooterState extends State<Footer> {
             widget.genderPreference.isNotEmpty &&
             widget.birthdate != null;
       case RegistrationPageSection.pictures:
-        // TODO: Make profilePicture mandatory once implemented in backend
-        // return widget.profilePicture != null;
-        return true;
-        // TODO: Are interests required?
+        return widget.profilePicture != null;
       case RegistrationPageSection.interests:
         return widget.userInterestIdList.length >= 3 &&
             widget.userInterestIdList.length <= 5;

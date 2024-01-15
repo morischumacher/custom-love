@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
@@ -56,33 +55,13 @@ class _RegistrationPicturesState extends State<RegistrationPictures> {
   @override
   void initState() {
     super.initState();
-    profilePicture = widget.profilePicture;
+    registrationImageXFile = widget.profilePicture;
+    setProfileImage(registrationImageXFile);
   }
 
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
-  XFile? profilePicture;
-
-  File? tmpFile;
-
-  // Web
-  String defaultImageUrl = 'https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fblogs.timesofindia.indiatimes.com%2Fwp-content%2Fuploads%2F2016%2F11%2FNarendra-Modi-10-1.jpg&f=1&nofb=1&ipt=2934f6195ba86ab161d54c942491f87a1c68cc89b426d0601667d9052cf98010&ipo=images';
-
-
-  Future<File> getImage() async {
-    final ImagePicker _picker = ImagePicker();
-    // Pick an image
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-    //TO convert Xfile into file
-    File file = File(image!.path);
-    //print(‘Image picked’);
-    setState(() {
-      tmpFile = file;
-    });
-    return file;
-  }
-
-  XFile? galleryImage;
-  Uint8List? galleryImageConverted = null;
+  XFile? registrationImageXFile;
+  Uint8List? registrationImage;
 
   Future<Uint8List?> galleryImagePicker() async {
     ImagePicker picker = ImagePicker();
@@ -98,7 +77,6 @@ class _RegistrationPicturesState extends State<RegistrationPictures> {
   }
 
   Future<Uint8List?> cameraImagePicker() async {
-
     ImagePicker picker = ImagePicker();
     XFile? file = await picker.pickImage(
       source: ImageSource.camera,
@@ -110,10 +88,16 @@ class _RegistrationPicturesState extends State<RegistrationPictures> {
     return null;
   }
 
-  XFile? registrationImageXFile;
-  Uint8List? registrationImage;
+  void setProfileImage(XFile? file) async {
+    if (file != null) {
+      Uint8List img = await file.readAsBytes();
+      setState(() {
+        registrationImage = img;
+      });
+    }
+  }
 
-    @override
+  @override
     Widget build(BuildContext context) {
       return Scaffold(
           backgroundColor: _customLoveTheme.neutralColor,
@@ -160,8 +144,6 @@ class _RegistrationPicturesState extends State<RegistrationPictures> {
                                     final Uint8List? image = await galleryImagePicker();
 
                                     if (image != null) {
-                                      print("RegistrationImage set");
-                                      // registrationImage = image;
                                       setState(() {
                                         registrationImage = image;
                                       });
