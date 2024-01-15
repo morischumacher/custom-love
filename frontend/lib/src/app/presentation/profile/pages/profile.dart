@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/model/user_detailed.dart';
 import 'package:frontend/src/app/service/user_service.dart';
+import 'package:provider/provider.dart';
 
+import '../../../../config/app_state.dart';
 import '../../../../config/theme.dart';
+import '../../../service/image_service.dart';
 import '../../authentification/controller/login_controller.dart';
 import '../../registration/controller/registration_controller.dart';
 import '../../registration/pages/widgets/summary_textfield.dart';
@@ -23,6 +26,24 @@ class _ProfileState extends State<Profile> {
     getUsers();
   }
 
+  ImageService? _service;
+  ImageStorage? _storage;
+
+  Future<void> getProfilePicture() async {
+    if (user != null) {
+      if (_service == null ||
+          _storage == null ||
+          _storage!.loaded(user!.profilePictureId)) {
+        return;
+      }
+
+      // var tmp = await _service!.getImage("profile-picture/${widget.imageId}");
+      var tmp = await _service!
+          .getImage("profile-picture?picture_id=${user!.profilePictureId}");
+      _storage!.load(user!.profilePictureId, tmp);
+    }
+  }
+
   void getUsers() async {
     await _loginController.retrieveUserId().then((id) {
       widget.userService.getUserProfile(int.parse(id!)).then((value) {
@@ -40,6 +61,25 @@ class _ProfileState extends State<Profile> {
 
   @override
   Widget build(BuildContext context) {
+    _service = Provider.of<ImageService>(context);
+    _storage = Provider.of<ImageStorage>(context);
+    getProfilePicture();
+
+    Consumer<ImageStorage> img = Consumer<ImageStorage>(
+      builder: (BuildContext context, ImageStorage storage, Widget? child) {
+        int id = user!.profilePictureId;
+
+        if (!storage.loaded(id)) {
+          return const Icon(Icons.downloading);
+        }
+
+        return ClipRRect(
+            borderRadius:
+                BorderRadius.circular(_customLoveTheme.universalPadding),
+            child: Image.memory(storage.getBytes(id)!));
+      },
+    );
+
     return Scaffold(
       body: Center(
         child: Padding(
@@ -64,6 +104,8 @@ class _ProfileState extends State<Profile> {
                                 strokeWidth: 18
                             )
                         ),
+                      if (user != null)
+                        img,
 
                       if (user != null)
                       // registration_name_email

@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/model/gender_model.dart';
 import 'package:frontend/src/app/model/interest_model.dart';
@@ -12,6 +10,7 @@ import 'package:frontend/src/app/presentation/registration/pages/registration_pi
 import 'package:frontend/src/app/presentation/registration/pages/registration_radius.dart';
 import 'package:frontend/src/app/presentation/registration/pages/registration_summary.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../../config/theme.dart';
@@ -57,7 +56,7 @@ class NavigationButton extends StatefulWidget {
   final Gender? gender;
   final List<Gender> genderPreference;
   final String? birthdate;
-  final Uint8List? profilePicture;
+  final XFile? profilePicture;
   final List<Interest> userInterestIdList;
   final Position? location;
   final double? searchRadius;

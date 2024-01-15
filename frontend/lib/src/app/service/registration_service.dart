@@ -1,7 +1,6 @@
-import 'dart:typed_data';
-
 import 'package:frontend/src/app/api/registration_api.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:image_picker/image_picker.dart';
 
 class RegistrationService {
   final RegistrationApi _registrationApi;
@@ -30,7 +29,7 @@ class RegistrationService {
       int searchRadius,
       int genderIdentityId,
       List<int> genderPreferenceIds,
-      Uint8List? profilePicture,
+      XFile? profilePicture,
       List<int> userInterestIdSet,
       List<int> languageIdSet
     ) async {
@@ -47,7 +46,7 @@ class RegistrationService {
           searchRadius,
           genderIdentityId,
           genderPreferenceIds,
-          null,
+          profilePicture,
           userInterestIdSet,
           languageIdSet
       );

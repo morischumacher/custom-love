@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -7,6 +6,7 @@ import 'package:frontend/src/app/model/gender_model.dart';
 import 'package:frontend/src/app/model/interest_model.dart';
 import 'package:frontend/src/app/service/registration_service.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 
@@ -47,7 +47,7 @@ class RegistrationController {
       final double? searchRadius,
       final Gender? gender,
       final List<Gender> genderPreferences,
-      final Uint8List? profilePicture,
+      final XFile? profilePicture,
       final List<Interest> userInterestIdList,
       final List<Language> languages
     ) async {
@@ -70,7 +70,7 @@ class RegistrationController {
           searchRadius!.toInt(),
           gender!.id,
           convertGenderListToGenderIdList(genderPreferences),
-          null,
+          profilePicture,
           convertInterestListToInterestIdList(userInterestIdList),
           convertLanguageListToLanguageIdList(languages)
       );

@@ -1,16 +1,16 @@
 import datetime
 import random
-from typing import List, Annotated
-import json
+from typing import List, Annotated, Optional
+import re
 from dotenv import load_dotenv
 import os
-from fastapi import Depends
+from fastapi import Depends, UploadFile, Form
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_pagination.ext.sqlmodel import paginate
 from geoalchemy2 import functions, Geography
 from pydantic import BaseModel, Field
 from shapely import geometry, wkt
-from sqlalchemy import func, or_, and_, exists, cast, text
+from sqlalchemy import or_, and_, exists, text
 from sqlmodel import Session, select
 from starlette.requests import Request
 from starlette.websockets import WebSocket, WebSocketDisconnect
@@ -22,16 +22,15 @@ from backend.exceptions.not_found_exception import NotFoundException
 from backend.exceptions.validation_exception import ValidationException
 from backend.mapper.user_mapper import map_user_to_user_response_with_interests, map_user_to_user_response
 from backend.models.gender_identity import GenderIdentity
+from backend.models.image import ProfilePicture
 from backend.models.interest import Interest
 from backend.models.language import Language
 from backend.models.message import Message, message_factory
 from backend.models.swipe_status import SwipeStatus, SwipeStatusType
 from backend.models.user import User
 from backend.repository.repository import create_session
-from backend.requests.user_request import UserRegistration
 from backend.responses.notification import Notification, NotificationType
-from backend.responses.user_response import UserResponse, UserResponseWithInterestsAndDistance
-from backend.responses.user_response import UserResponse, UserDetailedResponse
+from backend.responses.user_response import UserResponseWithInterestsAndDistance, UserResponse, UserDetailedResponse
 from backend.services.expert_system import get_expert_system_by_user_id
 from backend.services.message import _save_message
 from backend.services.validation.user_validation import validate_new_user
@@ -68,14 +67,14 @@ def get_user(user_id: int, db: Annotated[Session, Depends(create_session)]) -> U
     return user[0]
 
 
-def get_user_by_email(user_email: str, db: Annotated[Session, Depends(create_session)]):
+def get_user_by_email(user_email: str, db: Annotated[Session, Depends(create_session)]) -> User:
     """
     Return a specific user based on their username (email)
     :param user_email: user email
     :param db: injected database
     :return: a user object
     """
-    user = db.exec(select(User).where(User.email == user_email)).first()
+    user: User = db.exec(select(User).where(User.email == user_email)).first()
     if user is None:
         raise NotFoundException("Username does not exist")
 
@@ -97,41 +96,89 @@ def get_users(user: Annotated[User, Depends(get_current_user)], db: Annotated[Se
                     page=request.query_params.get("page")))
 
 
-def registration(user: UserRegistration, db: Annotated[Session, Depends(create_session)]) -> {}:
+def registration(
+        db: Annotated[Session, Depends(create_session)],
+        first_name: Annotated[str, Form()],
+        last_name: Annotated[str, Form()],
+        email: Annotated[str, Form()],
+        password: Annotated[str, Form()],
+        date_of_birth: Annotated[str, Form()],
+        search_radius: Annotated[str, Form()],
+        gender_identity_id: Annotated[str, Form()],
+        gender_preference_ids: Annotated[str, Form()],
+        longitude: Annotated[str, Form()],
+        latitude: Annotated[str, Form()],
+        interest_ids: Annotated[str, Form()],
+        matching_algorithm: Annotated[str, Form()],
+        profile_picture: UploadFile,
+        bio: Optional[Annotated[str, Form()]] = None,
+        job: Optional[Annotated[str, Form()]] = None,
+        language_ids: Optional[Annotated[str, Form()]] = None,
+) -> {}:
     """
     Create a user
     :param db: injected database
-    :param user: a user object
+    :param first_name: first name of the user
+    :param last_name: last name of the user
+    :param email: email of the user
+    :param password: password of a user
+    :param date_of_birth: birthdate of a user
+    :param search_radius: search radius of potential matched
+    :param gender_identity_id: gender identity id of the user
+    :param gender_preference_ids: list of gender preference id's of the user
+    :param longitude: longitude of the user
+    :param latitude: latitude of the user
+    :param interest_ids: list of interest id's of the user
+    :param matching_algorithm: matching algorithm of the user
+    :param profile_picture: profile picture of the user
+    :param bio: optional bio of the user
+    :param job: optional job of the user
+    :param language_ids: optional list of language id's of the user
     :return: a user object
     """
-    # TODO: Verify if password is long enough
-    # TODO: Move verification to the database
-    user_validation: [str] = validate_new_user(user)
-    if len(validate_new_user(user)) > 0:
-        raise ValidationException(user_validation)
 
-    user_interests = []
-    user_languages = []
-    user_gender_preferences = []
-    for interest_id in user.interest_ids:
+    # Retrieving properties from the db based on the id's
+    user_gender_preferences: [GenderIdentity] = []
+    user_interests: [Interest] = []
+    user_languages: [Language] = []
+    for interest_id in __array_string_to_array(interest_ids):
         user_interests.append(db.exec(select(Interest).where(Interest.id == interest_id)).first())
 
-    for language_id in user.language_ids:
-        user_languages.append(db.exec(select(Language).where(Language.id == language_id)).first())
+    if language_ids is not None:
+        for language_id in __array_string_to_array(language_ids):
+            user_languages.append(db.exec(select(Language).where(Language.id == language_id)).first())
 
-    for gender_id in user.gender_preference_ids:
+    for gender_id in __array_string_to_array(gender_preference_ids):
         user_gender_preferences.append(db.exec(select(GenderIdentity).where(GenderIdentity.id == gender_id)).first())
 
-    gender_identity = db.exec(select(GenderIdentity).where(GenderIdentity.id == 1)).first()
+    # Validating if provided values are valid
+    date_of_birth_datetime: datetime = __datetime_string_to_datetime(date_of_birth)
 
+    # Does a user with provided email already exist? If so, throw an exception
+    try:
+        get_user_by_email(email, db)
+        raise ValidationException()
+    except NotFoundException:
+        pass
+
+    # Do other properties violate against certain constraints? If so, throw an exception
+    user_validation: [str] = validate_new_user(
+        first_name, last_name, email, bio, job, date_of_birth_datetime, user_interests, user_gender_preferences
+    )
+    if len(user_validation) > 0:
+        raise ValidationException()
+
+    gender_identity = db.exec(select(GenderIdentity).where(GenderIdentity.id == int(gender_identity_id))).first()
+
+    # Map user
     register_user: User = User(
-                first_name=user.first_name,
-                last_name=user.last_name,
-                email=user.email,
-                bio=user.bio,
-                date_of_birth=user.date_of_birth,
-                job=user.job,
-                search_radius=user.search_radius,
+                first_name=first_name,
+                last_name=last_name,
+                email=email,
+                bio=bio if bio is not None else "",
+                date_of_birth=__datetime_string_to_datetime(date_of_birth),
+                job=job if job is not None else "",
+                search_radius=search_radius,
                 swipes_left=50,
                 swipe_limit_reset_date=datetime.datetime.now(),
                 languages=user_languages,
@@ -139,18 +186,34 @@ def registration(user: UserRegistration, db: Annotated[Session, Depends(create_s
                 gender_preferences=user_gender_preferences,
                 gender_identity=gender_identity,
                 interests=user_interests,
-                password=hash_pwd(user.password),
-                latitude=user.latitude,
-                longitude=user.longitude,
-                matching_algorithm=user.matching_algorithm
+                password=hash_pwd(password),
+                latitude=latitude,
+                longitude=longitude,
+                matching_algorithm=matching_algorithm
             )
 
+    # Store user in the db
     db.add(register_user)
     db.commit()
     db.refresh(register_user)
 
+    user_id: int = db.exec(select(User).where(User.email == email)).first().id
+
+    # Map image
+    image = ProfilePicture(
+        user_id=user_id,
+        content=profile_picture.file.read(),
+        filename=profile_picture.filename,
+        content_type=profile_picture.content_type
+    )
+
+    # Store image in the db
+    db.add(image)
+    db.commit()
+    db.refresh(image)
+
     access_token = create_access_token(data={"sub": register_user.email})
-    return {"access_token": access_token, "token_type": "bearer", "user": register_user}
+    return {"access_token": access_token,"token_type": "bearer", "user": register_user}
 
 
 def patch_user(updated_user: UserUpdate, user: Annotated[User, Depends(get_current_user)],
@@ -311,10 +374,6 @@ async def websocket_connect(websocket: WebSocket, user_token: str, db: Annotated
         connection_manager.disconnect(websocket, user.id)
 
 
-def get_profile(user_id: int, db: Annotated[Session, Depends(create_session)]) -> UserDetailedResponse:
-    return __user_to_user_profile(get_user(user_id, db))
-
-
 def get_user_profile(user_id: int, db: Annotated[Session, Depends(create_session)]) -> UserDetailedResponse:
     """
     Return a specific user
@@ -322,10 +381,11 @@ def get_user_profile(user_id: int, db: Annotated[Session, Depends(create_session
     :param user_id: user's id
     :return: a user object
     """
-    return __user_to_user_profile(get_user(user_id, db))
+    fetched_image = db.exec(select(ProfilePicture).where(ProfilePicture.user_id == user_id)).first()
+    return __user_to_user_profile(get_user(user_id, db), fetched_image.id)
 
 
-def __user_to_user_profile(user: User) -> UserDetailedResponse:
+def __user_to_user_profile(user: User, profile_picture_id: int) -> UserDetailedResponse:
     """
     Maps the object of class User to an object which also displays 1:n relationships.
     :param user: user of type User
@@ -349,7 +409,8 @@ def __user_to_user_profile(user: User) -> UserDetailedResponse:
         longitude=user.longitude,
         interests=user.interests,
         languages=user.languages,
-        matching_algorithm=user.matching_algorithm
+        matching_algorithm=user.matching_algorithm,
+        profile_picture_id=profile_picture_id
     )
 
 
@@ -375,3 +436,29 @@ def get_distance(current_user, swipeable_user, db):
 
     # For safety reasons the lowest km which is shown is 5
     return distance if distance > 5 else 5
+
+
+def __datetime_string_to_datetime(input_string: str) -> datetime:
+    """
+    Converts a string datetime value to datetime.
+    :param input_string: datetime of type string
+    :return: datetime of type datetime
+    """
+    format_string = '%Y-%m-%dT%H:%M:%S'
+    input_re = re.match(r'^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})', input_string)
+    input_string = input_re.group(1)
+
+    # Step 1: Parse the string without milliseconds
+    parsed_datetime: datetime = datetime.datetime.strptime(input_string, format_string)
+
+    return parsed_datetime
+
+
+def __array_string_to_array(input_string: str) -> [int]:
+    """
+    Converts a string array value to an integer-array.
+    :param input_string: array of type string
+    :return: integer-array of type array
+    """
+    res = input_string.strip('][').split(', ')
+    return [int(x) for x in res]

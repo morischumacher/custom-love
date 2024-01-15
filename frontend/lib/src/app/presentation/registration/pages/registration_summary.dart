@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/model/gender_model.dart';
 import 'package:frontend/src/app/model/interest_model.dart';
@@ -8,6 +6,7 @@ import 'package:frontend/src/app/presentation/registration/pages/widgets/footer/
 import 'package:frontend/src/app/presentation/registration/pages/widgets/page_title.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/summary_textfield.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:logger/logger.dart';
 
 import '../../../../config/theme.dart';
@@ -39,7 +38,7 @@ class RegistrationSummary extends StatefulWidget {
   final Gender? gender;
   final List<Gender> preference;
   final String? birthdate;
-  final Uint8List? profilePicture;
+  final XFile? profilePicture;
   final List<Interest> userInterestIdList;
   final Position? location;
   final double? searchRadius;
@@ -79,7 +78,7 @@ class _RegistrationSummaryState extends State<RegistrationSummary> {
   late Gender? gender;
   late List<Gender> preference;
   late String? birthdate;
-  Uint8List? profilePicture;
+  XFile? profilePicture;
   late List<Interest> userInterestIdList;
   Position? userLocation;
   late double? searchRadius;

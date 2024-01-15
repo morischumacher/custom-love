@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/birthdate_field.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/dropdown_checkboxes/dropdown_checkbox.dart';
@@ -9,6 +7,7 @@ import 'package:frontend/src/app/presentation/registration/pages/widgets/page_ti
 import 'package:frontend/src/app/service/gender_service.dart';
 import 'package:frontend/src/config/widgets/exception_widget.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:multi_dropdown/multiselect_dropdown.dart';
 
 import '../../../../config/theme.dart';
@@ -43,7 +42,7 @@ class RegistrationGenderPreference extends StatefulWidget {
   final Gender? gender;
   final List<Gender> preference;
   final String? birthdate;
-  final Uint8List? profilePicture;
+  final XFile? profilePicture;
   final List<Interest> userInterestIdList;
   final Position? location;
   final double? searchRadius;

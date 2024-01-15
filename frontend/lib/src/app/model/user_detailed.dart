@@ -22,6 +22,7 @@ class UserDetailed {
   final List<Interest> interests;
   final List<Language> languages;
   final int matchingAlgorithm;
+  final int profilePictureId;
 
   UserDetailed({
     required this.id,
@@ -42,6 +43,7 @@ class UserDetailed {
     required this.interests,
     required this.languages,
     required this.matchingAlgorithm,
+    required this.profilePictureId,
   });
 
   factory UserDetailed.fromJson(Map<String, dynamic> json) {
@@ -80,6 +82,7 @@ class UserDetailed {
         interests: interests,
         languages: languages,
         matchingAlgorithm: json['matching_algorithm'] as int,
+        profilePictureId: json['profile_picture_id'] as int,
     );
   }
 
@@ -103,6 +106,7 @@ class UserDetailed {
       'interests': interests,
       'languages': languages,
       'matching_algorithm': matchingAlgorithm,
+      'profile_picture_id': profilePictureId,
     };
   }
 }
