@@ -63,7 +63,7 @@ class UserDetailedResponse(BaseModel):
     interests: list[Interest]
     languages: list[Language]
     matching_algorithm: int
-    profile_picture_id: int
+    profile_picture_id: Optional[int]
 
 
 class ProfileResponse(BaseModel):

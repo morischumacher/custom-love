@@ -382,10 +382,13 @@ def get_user_profile(user_id: int, db: Annotated[Session, Depends(create_session
     :return: a user object
     """
     fetched_image = db.exec(select(ProfilePicture).where(ProfilePicture.user_id == user_id)).first()
-    return __user_to_user_profile(get_user(user_id, db), fetched_image.id)
+    if fetched_image is not None:
+        return __user_to_user_profile(get_user(user_id, db), fetched_image.id)
+    else:
+        return __user_to_user_profile(get_user(user_id, db), None)
 
 
-def __user_to_user_profile(user: User, profile_picture_id: int) -> UserDetailedResponse:
+def __user_to_user_profile(user: User, profile_picture_id: int | None) -> UserDetailedResponse:
     """
     Maps the object of class User to an object which also displays 1:n relationships.
     :param user: user of type User
