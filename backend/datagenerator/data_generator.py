@@ -597,6 +597,7 @@ class DataGenerator:
                 session.add(SwipeStatus(user1_id=user_alfa.id, user2_id=user.id, status=SwipeStatusType.match))
                 session.add(Conversation(user1_id=user_alfa.id, user2_id=user.id))
 
+            session.add(SwipeStatus(user1_id=user_bravo.id, user2_id=user_charlie.id, status=SwipeStatusType.match))
             session.commit()
 
             # Rating

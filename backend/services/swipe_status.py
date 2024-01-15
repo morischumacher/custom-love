@@ -1,11 +1,11 @@
 from typing import Annotated
 from fastapi import Depends
 from fastapi_pagination.ext.sqlmodel import paginate
-from sqlalchemy import and_, update
-from sqlmodel import Session, select, or_
+from sqlmodel import Session, select, or_, exists, and_, update
 from starlette.requests import Request
 from backend.exceptions.fatal_exception import FatalException
 from backend.exceptions.validation_exception import ValidationException
+from backend.models.conversation import Conversation
 from backend.models.swipe_status import SwipeStatus, SwipeStatusType
 from backend.models.user import User
 from backend.repository.repository import create_session
@@ -18,10 +18,29 @@ def get_matches(
         user: Annotated[User, Depends(get_current_user)],
         request: Request
 ):
-    return paginate(db, select(SwipeStatus).where(
+    query = select(
+        SwipeStatus
+    ).where(
         SwipeStatus.status == SwipeStatusType.match,
         or_(SwipeStatus.user1_id == user.id, SwipeStatus.user2_id == user.id)
-    ), PaginationParams(size=request.query_params.get("size"), page=request.query_params.get("page")))
+    ).where(
+        ~exists(
+            select(Conversation).where(
+                or_(
+                    and_(
+                        Conversation.user1_id ==  SwipeStatus.user1_id,
+                        Conversation.user2_id == SwipeStatus.user2_id
+                    ),
+                    and_(
+                        Conversation.user1_id == SwipeStatus.user2_id,
+                        Conversation.user2_id == SwipeStatus.user1_id
+                    )
+                )
+            )
+        )
+    )
+
+    return paginate(db, query, PaginationParams(size=request.query_params.get("size"), page=request.query_params.get("page")))
 
 
 def post_view(
