@@ -112,7 +112,7 @@ class _RegistrationJobBioState extends State<RegistrationJobBio> {
                       children: <Widget>[
                         const PageTitle(
                           title: "Profile Bio",
-                          description: "Please specify your job, bio, and which languages you speak",
+                          description: "Optionally specify your job, bio, and which languages you speak",
                           bottomPadding: 70.0,
                         ),
                         if (httpError)

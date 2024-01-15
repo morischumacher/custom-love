@@ -78,7 +78,7 @@ class _NavigationButtonState extends State<NavigationButton> {
     return OutlinedButton(
       style: OutlinedButton.styleFrom(
           minimumSize: const Size(156, 56),
-          backgroundColor: _customLoveTheme.primaryColor,
+          backgroundColor: widget.nextPage != RegistrationPageSection.summary ? _customLoveTheme.primaryColor : (areSkippablePropertiesEmpty() ? _customLoveTheme.linkColor : _customLoveTheme.primaryColor),
           side: BorderSide.none
       ),
       onPressed: () {
@@ -307,7 +307,7 @@ class _NavigationButtonState extends State<NavigationButton> {
         }
       },
       child: Text(
-        widget.btnText,
+        widget.nextPage != RegistrationPageSection.summary ? widget.btnText : (areSkippablePropertiesEmpty() ? "Skip" : widget.btnText),
         style: const TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.white
@@ -320,5 +320,11 @@ class _NavigationButtonState extends State<NavigationButton> {
     return
       RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
         .hasMatch(email);
+  }
+
+  bool areSkippablePropertiesEmpty() {
+    return (widget.bio == null || (widget.bio != null && widget.bio!.isEmpty)) &&
+        (widget.job == null || (widget.job != null && widget.job!.isEmpty)) &&
+        widget.languages.isEmpty;
   }
 }
