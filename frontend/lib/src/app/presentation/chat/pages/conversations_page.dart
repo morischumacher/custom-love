@@ -25,7 +25,7 @@ class _ConversationsPageState extends State<ConversationsPage> {
   @override
   Widget build(BuildContext context) {
     if (!Provider.of<StateManager>(context).initialized) {
-      Provider.of<StateManager>(context).initialize(context);
+      Provider.of<StateManager>(context).initialize(context, force: true);
     }
 
     ScrollController matchesScrollController = ScrollController();
@@ -41,6 +41,7 @@ class _ConversationsPageState extends State<ConversationsPage> {
               flex: 1,
               child: TitledList<MatchStorage>(
                 title: 'Matches: ',
+                emptyMessage: 'No new matches',
                 controller: matchesScrollController,
                 scrollDirection: Axis.horizontal,
                 itemCount: (storage) => storage.matches.items.length,
@@ -86,13 +87,14 @@ class _ConversationsPageState extends State<ConversationsPage> {
             flex: 5,
             child: TitledList<ConversationStorage>(
               title: 'Conversations: ',
+              emptyMessage: 'No new messages',
               controller: conversationsController,
               itemCount: (storage) => storage.conversations.items.length,
               scrollDirection: Axis.vertical,
               builder: (ConversationStorage conversationStorage, BuildContext context, int index) {
                 return Consumer<StateManager>(
                   builder: (BuildContext context, StateManager stateManager, Widget? child) {
-                    return CustomListTile(
+                    return CustomListTile (
                         userId: stateManager.user?.id,
                         conversation: conversationStorage.conversations.items.values.elementAtOrNull(index)
                     );
