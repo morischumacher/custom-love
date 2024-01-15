@@ -71,7 +71,8 @@ class RegistrationController {
         // save the user object and connect to a websocket
         Provider.of<StateManager>(context, listen: false).registerUser(User.fromJson(registrationResult['user']), context);
 
-        Navigator.of(context).pushNamed('/home/swipe');
+        Navigator.of(context).popUntil((route) => route.isFirst);
+        Navigator.of(context).pushReplacementNamed('/home/swipe');
       }
     } catch (e) {
       logger.e('Entered exception: $e');

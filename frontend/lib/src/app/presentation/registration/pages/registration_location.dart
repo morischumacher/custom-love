@@ -9,7 +9,9 @@ import 'package:geolocator/geolocator.dart';
 import 'package:logger/logger.dart';
 
 import '../../../../config/theme.dart';
+import '../../../api/helpers/jwt_api.dart';
 import '../../../service/location_service.dart';
+import '../../loading_screen/loading_screen.dart';
 import '../enums/registration_page_enum.dart';
 
 class RegistrationLocation extends StatefulWidget {
@@ -52,8 +54,26 @@ class _RegistrationLocationState extends State<RegistrationLocation> {
   @override
   void initState() {
     super.initState();
+    getAccessToken().then((token){
+      if (token != null) {
+        Navigator.of(context).popUntil((route) => route.isFirst);
+        Navigator.of(context).pushReplacementNamed('/home/swipe');
+      }
+    });
+
     checkLocationPermission();
     userLocation = widget.location;
+  }
+
+  Future<String?> getAccessToken() async {
+    try {
+      return await JWTApi.retrieveAccessToken();
+    } catch (e) {
+      setState(() {
+        _userLoggedIn = false;
+      });
+      return null;
+    }
   }
 
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
@@ -61,6 +81,7 @@ class _RegistrationLocationState extends State<RegistrationLocation> {
   final logger = Logger();
 
   Position? userLocation; bool userLocationDefined = false;
+  bool? _userLoggedIn;
 
   Future<void> checkLocationPermission() async {
     LocationPermission permission = await Geolocator.checkPermission();
@@ -107,7 +128,7 @@ class _RegistrationLocationState extends State<RegistrationLocation> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return _userLoggedIn == null ? const LoadingScreen() : Scaffold(
         backgroundColor: _customLoveTheme.neutralColor,
         body: Center(
           child: Padding(

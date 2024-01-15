@@ -41,6 +41,13 @@ class LoginController {
     return await storage.read(key: "user_id");
   }
 
+  Future<void> handleLogout(BuildContext context) async {
+    const FlutterSecureStorage storage = FlutterSecureStorage();
+    storage.delete(key: 'access_token');
+    Navigator.of(context).popUntil((route) => route.isFirst);
+    Navigator.of(context).pushReplacementNamed('/');
+  }
+
   Future<void> handleLogin(BuildContext context) async {
     String email = emailController.text;
     String password = passwordController.text;
@@ -81,7 +88,8 @@ class LoginController {
           Provider.of<StateManager>(context, listen: false)
               .registerUser(User.fromJson(loginResult['user']), context);
 
-          Navigator.of(context).pushNamed('/home/swipe');
+          Navigator.of(context).popUntil((route) => route.isFirst);
+          Navigator.of(context).pushReplacementNamed('/home/swipe');
         }
       } catch (e) {
         // Handle different exceptions

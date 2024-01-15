@@ -27,12 +27,15 @@ import 'app/service/user_service.dart';
 import 'app/service/swipe_status_service.dart';
 import 'config/app_state.dart';
 
+enum CustomLoveRoute { login, profile, swipe, matches, messages }
+
 void main() {
   runApp(const CustomLove());
 }
 
 class CustomLove extends StatelessWidget {
   const CustomLove({Key? key}) : super(key: key);
+
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
 
   @override
@@ -116,14 +119,15 @@ class CustomLove extends StatelessWidget {
             final matchService = Provider.of<MatchService>(context);
             final messageService = Provider.of<MessageService>(context);
             final swipeStatusService = Provider.of<SwipeStatusService>(context);
-            return LoginPage(
-                loginService: loginService, userService: userService);
+            return LoginPage(loginService: loginService, userService: userService);
           },
           '/home/profile': (context) {
+            final loginService = Provider.of<LoginService>(context);
             final userService = Provider.of<UserService>(context);
             return HomeScreen(userService: userService);
           },
           '/home/swipe': (context) {
+            final loginService = Provider.of<LoginService>(context);
             final userService = Provider.of<UserService>(context);
             final swipeStatusService = Provider.of<SwipeStatusService>(context);
             return HomeScreen(
@@ -131,6 +135,7 @@ class CustomLove extends StatelessWidget {
                 swipeStatusService: swipeStatusService);
           },
           '/home/matches': (context) {
+            final loginService = Provider.of<LoginService>(context);
             final userService = Provider.of<UserService>(context);
             final conversationService =
                 Provider.of<ConversationService>(context);

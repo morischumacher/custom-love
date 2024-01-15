@@ -1,7 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:frontend/src/app/presentation/authentification/pages/login_page.dart';
 import 'package:frontend/src/app/presentation/authentification/pages/logout_page.dart';
 import 'package:frontend/src/app/presentation/chat/pages/matches_page.dart';
 import 'package:frontend/src/app/presentation/chat/pages/messages_page.dart';
+import 'package:frontend/src/app/presentation/loading_screen/loading_screen.dart';
+import 'package:frontend/src/app/service/login_service.dart';
+import 'package:go_router/go_router.dart';
+import 'package:frontend/src/app/service/swipe_status_service.dart';
+import 'package:frontend/src/app/presentation/swipe/util/algo_id_notifier.dart';
+import "package:universal_html/html.dart" as universal_html;
+import 'package:flutter/foundation.dart' show kIsWeb;
+
+import 'package:flutter/material.dart';
+import 'package:frontend/src/app/presentation/chat/pages/conversations_page.dart';
+import 'package:frontend/src/config/theme.dart';
 import 'package:frontend/src/app/presentation/profile/pages/profile.dart';
 import 'package:frontend/src/app/presentation/swipe/pages/swipe.dart';
 import 'package:frontend/src/app/presentation/swipe/util/algo_id_notifier.dart';
@@ -9,6 +22,11 @@ import 'package:frontend/src/app/service/swipe_status_service.dart';
 import 'package:frontend/src/app/service/user_service.dart';
 import 'package:frontend/src/config/theme.dart';
 import 'package:provider/provider.dart';
+
+import '../../swipe/util/matching_algorithm.dart';
+import '../../../../config/app_state.dart';
+import '../../../api/helpers/jwt_api.dart';
+import '../../authentification/controller/login_controller.dart';
 
 enum AppPage { profile, swipe, matches }
 
@@ -28,8 +46,31 @@ class _HomeScreenState extends State<HomeScreen> {
   late AppPage _currentPage;
   int swipingAlgoId = 0;
   AlgoIdNotifier? algoIdNotifier;
+  bool? _userLoggedIn;
 
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
+
+  @override
+  void initState() {
+    super.initState();
+    getAccessToken().then((token){
+      if (token != null) {
+        setState(() {
+          _userLoggedIn = true;
+        });
+      }
+    });
+  }
+
+  Future<String?> getAccessToken() async {
+    try {
+      return await JWTApi.retrieveAccessToken();
+    } catch (e) {
+      Navigator.of(context).popUntil((route) => route.isFirst);
+      Navigator.pushReplacementNamed(context, '/');
+      return null;
+    }
+  }
 
   void setCurrentPage(AppPage page) {
     setState(() {
@@ -65,12 +106,6 @@ class _HomeScreenState extends State<HomeScreen> {
     String subRoute = '/home/$subRouteName';
 
     if (!context.mounted) return;
-    if (subRouteName == "swipe") {
-      var prevRoute = ModalRoute.of(context);
-      if (prevRoute != null) {
-        Navigator.of(context).removeRouteBelow(prevRoute);
-      }
-    }
     Navigator.pushNamed(context, subRoute);
   }
 
@@ -108,7 +143,7 @@ class _HomeScreenState extends State<HomeScreen> {
     String url = getUrl(context);
     Widget Function(BuildContext context) route = routePage(url);
 
-    return Scaffold(
+    return _userLoggedIn == null ? const LoadingScreen() : Scaffold(
       appBar: AppBar(
         title: getTitle(),
         backgroundColor: _customLoveTheme.primaryColor,
