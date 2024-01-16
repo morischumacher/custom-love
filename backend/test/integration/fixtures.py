@@ -1,6 +1,7 @@
 import json
-from datetime import datetime
-from urllib.parse import urlencode
+import os
+import os.path
+from sys import platform
 
 import psycopg2
 import pytest
@@ -8,16 +9,9 @@ from fastapi.testclient import TestClient
 from fastapi_pagination import add_pagination
 from sqlmodel import Session, SQLModel, create_engine
 from sqlmodel.pool import StaticPool
-import sqlite3
 
 from backend.main import app
-from backend.models.gender_identity import GenderIdentity
-from backend.models.interest import Interest
-from backend.models.language import Language
-from backend.models.preference import Preference
-from backend.models.user import User
 from backend.repository.repository import create_session
-from backend.utils.passwords import hash_pwd
 
 
 @pytest.fixture(name="session")
@@ -48,12 +42,18 @@ def client_fixture(session: Session):
 
 @pytest.fixture(name="postgis_session")
 def postgis_session_fixture():
-    with open('backend/database.json') as file:
+    file_path = 'backend/database.json'
+
+    if 'win32' in platform:
+        current_path = os.getcwd()
+        file_path = os.path.abspath(os.path.join(get_dir(current_path), 'database.json'))
+
+    with open(file_path) as file:
         connection_string = json.load(file)
 
     prefix = connection_string['prefix']
     url = (f"{prefix}://{connection_string['user']}:{connection_string['password']}@"
-            f"{connection_string['address']}")
+           f"{connection_string['address']}")
 
     # create the test database
     execute_db_operation(f"{url}/postgres", "DROP DATABASE IF EXISTS test;")
@@ -89,3 +89,10 @@ def execute_db_operation(url: str, cmd: str):
     cursor = conn.cursor()
     cursor.execute(cmd)
     conn.close()
+
+
+def get_dir(path):
+    index_of_third_last_backslash = path.rfind('\\', 0, path.rfind('\\', 0, path.rfind('\\')))
+    if index_of_third_last_backslash != -1:
+        truncated_path = path[:index_of_third_last_backslash]
+        return truncated_path

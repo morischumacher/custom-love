@@ -86,7 +86,8 @@ def get_algo_user(commons: Annotated[User, Depends(get_algo_user)]):
     """
     Retrieves a user based on a given algorithm
         1: random
-        3: decision-based
+        2: interest-based
+        3: preference-based
     :return: a user with a corresponding id which is in the search radius
     """
     return commons
