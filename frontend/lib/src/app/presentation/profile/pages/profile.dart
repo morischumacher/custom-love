@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/model/user_detailed.dart';
-import 'package:frontend/src/app/model/user_model.dart';
 import 'package:frontend/src/app/presentation/authentification/components/sign_in_button.dart';
 import 'package:frontend/src/app/service/user_service.dart';
 import 'package:provider/provider.dart';
@@ -30,6 +29,7 @@ class _ProfileState extends State<Profile> {
 
   ImageService? _service;
   ImageStorage? _storage;
+  final LoginController _logoutController = LoginController();
 
   Future<void> getProfilePicture() async {
     if (user != null) {
