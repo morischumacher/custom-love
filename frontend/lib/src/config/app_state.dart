@@ -9,6 +9,7 @@ import 'package:frontend/src/app/service/match_service.dart';
 import 'package:frontend/src/app/service/message_service.dart';
 import 'package:frontend/src/app/service/user_service.dart';
 import 'package:frontend/src/config/api_config.dart';
+import 'package:frontend/src/config/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -18,7 +19,9 @@ import '../app/model/match_model.dart';
 import '../app/model/message_model.dart';
 import '../app/model/notification_model.dart';
 import '../app/model/user_model.dart';
+import '../app/presentation/chat/pages/messages_page.dart';
 import '../app/service/conversation_service.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 abstract class CollectionStorage extends ChangeNotifier {
   bool loading = false;
@@ -250,6 +253,8 @@ class StateManager extends ChangeNotifier {
   }
 
   Future<void> connect(BuildContext buildContext) async {
+    const CustomLoveTheme theme = CustomLoveTheme();
+
     // get the token
     String? token = await JWTApi.retrieveAccessToken();
 
@@ -257,12 +262,94 @@ class StateManager extends ChangeNotifier {
     socket = WebSocketChannel.connect(
         Uri.parse("${ApiConfig.socketsUrl}/users/socket/$token"));
 
-    socket?.stream.listen((event) {
+    UserStorage userStorage = Provider.of<UserStorage>(buildContext, listen: false);
+
+    socket?.stream.listen((event) async {
       NotificationModel notification =
           NotificationModel.fromJson(jsonDecode(jsonDecode(event)));
       switch (notification.type) {
         case "message":
           receiveMessage(Message.fromJson(notification.content), buildContext);
+          break;
+        case "refresh":
+          await Provider.of<StateManager>(buildContext, listen: false).initialize(buildContext, force: true);
+          break;
+        case "match":
+          // pull new matches, conversations and messages
+          await Provider.of<StateManager>(buildContext, listen: false).initialize(buildContext, force: true);
+
+          int userId = notification.content["user_id"];
+          int matchId = notification.content["match_id"];
+          User? user = userStorage.users.items[userId];
+
+          if (user == null) {
+            print("user $userId was null");
+            return;
+          }
+
+          // ignore: use_build_context_synchronously
+          showDialog(context: buildContext, builder: (context) {
+            return AlertDialog(
+              title: const Text('You have a new match!'),
+              content: SingleChildScrollView(
+                child: ListBody(
+                  children: <Widget>[
+                    Text("You and ${user.firstName} just matched"),
+                  ],
+                ),
+              ),
+              actions: <Widget>[
+                TextButton(
+                    onPressed: () {
+                      // hide the popup message
+                      Navigator.pop(context);
+                    },
+                    child: const Text('Dismiss')),
+                TextButton(
+                  child: const Text('Say hi'),
+                  onPressed: () async {
+                    // create a conversation
+                    ConversationService conversationService = Provider.of<ConversationService>(context, listen: false);
+
+                    // when the users create the conversation in the same time
+                    // one of them will just land in the conversations page
+                    try {
+                      Conversation conversation = await Provider.of<ConversationStorage>(context, listen: false).addConversation(user.id, conversationService);
+                      Provider.of<MatchStorage>(context, listen: false).removeMatch(matchId);
+
+                      // hide the popup message
+                      Navigator.pop(context);
+
+                      // navigate to the new conversation
+                      Navigator.pushNamed(
+                          context,
+                          "/home/matches/messages",
+                          arguments: MessagesPageRouteArguments(user, conversation)
+                      );
+                    } catch(e) {
+                      await Provider.of<StateManager>(buildContext, listen: false).initialize(buildContext, force: true);
+                      Navigator.pop(context);
+                      Navigator.pushNamed(
+                          context,
+                          "/home/matches/messages"
+                      );
+                    }
+                  },
+                ),
+              ],
+            );
+          });
+
+          /*
+          Fluttertoast.showToast(
+            msg: "got a match with user ${notification.content}",
+            webShowClose: true,
+            toastLength: Toast.LENGTH_LONG,
+            timeInSecForIosWeb: 20,
+            webBgColor: theme.primaryColor,
+            textColor: theme.whiteColor,
+            backgroundColor: theme.primaryColor,
+          ); */
       }
     }, onDone: () {
       // ignore the callback when the closeCode is null
