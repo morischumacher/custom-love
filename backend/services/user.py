@@ -110,7 +110,7 @@ def registration(
         latitude: Annotated[str, Form()],
         interest_ids: Annotated[str, Form()],
         matching_algorithm: Annotated[str, Form()],
-        profile_picture: UploadFile,
+        profile_picture: Optional[UploadFile] = None,
         bio: Optional[Annotated[str, Form()]] = None,
         job: Optional[Annotated[str, Form()]] = None,
         language_ids: Optional[Annotated[str, Form()]] = None,
@@ -155,11 +155,10 @@ def registration(
     date_of_birth_datetime: datetime = __datetime_string_to_datetime(date_of_birth)
 
     # Does a user with provided email already exist? If so, throw an exception
-    try:
-        get_user_by_email(email, db)
+    users = db.exec(select(User).where(User.email == email)).all()
+    if len(users) > 0:
         raise ValidationException()
-    except NotFoundException:
-        pass
+
 
     # Do other properties violate against certain constraints? If so, throw an exception
     user_validation: [str] = validate_new_user(
@@ -197,23 +196,24 @@ def registration(
     db.commit()
     db.refresh(register_user)
 
-    user_id: int = db.exec(select(User).where(User.email == email)).first().id
+    if (profile_picture != None):
+        user_id: int = db.exec(select(User).where(User.email == email)).first().id
 
-    # Map image
-    image = ProfilePicture(
-        user_id=user_id,
-        content=profile_picture.file.read(),
-        filename=profile_picture.filename,
-        content_type=profile_picture.content_type
-    )
+        # Map image
+        image = ProfilePicture(
+            user_id=user_id,
+            content=profile_picture.file.read(),
+            filename=profile_picture.filename,
+            content_type=profile_picture.content_type
+        )
 
-    # Store image in the db
-    db.add(image)
-    db.commit()
-    db.refresh(image)
+        # Store image in the db
+        db.add(image)
+        db.commit()
+        db.refresh(image)
 
     access_token = create_access_token(data={"sub": register_user.email})
-    return {"access_token": access_token,"token_type": "bearer", "user": register_user}
+    return {"access_token": access_token, "token_type": "bearer", "user": register_user}
 
 
 def patch_user(updated_user: UserUpdate, user: Annotated[User, Depends(get_current_user)],

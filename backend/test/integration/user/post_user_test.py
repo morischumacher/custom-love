@@ -1,3 +1,8 @@
+import json
+import io
+
+from fastapi import UploadFile
+
 from backend.models.gender_identity import GenderIdentity
 from backend.models.interest import Interest
 from backend.models.language import Language
@@ -33,25 +38,33 @@ def test_post_create_user(client, session):
 
     session.commit()
 
-    response = client.post("/users/", json={
-        "gender_identity_id": 1,
-        "first_name": "Stefan",
-        "last_name": "Müller",
-        "email": "stefan.mueller@email.com",
-        "password": "$2b$12$DbeUp0dne14ZWdIHhgGdN.ekwUY/eXfHxWiFnKum53mAtf8eNPTjW",
-        "bio": "Test subject",
-        "date_of_birth": "1990-11-17T20:06:55.441841",
-        "job": "Software Engineer",
-        "search_radius": 200,
-        "matching_algorithm": 1,
-        "swipes_left": 10,
-        "swipe_limit_reset_date": "2023-11-17T20:06:55.441841",
-        "gender_preference_ids": [1],
-        "interest_ids": [1, 2, 3],
-        "language_ids": [1],
-        "latitude": 20,
-        "longitude": 20
-    })
+    headers = {
+        "Content-Type": "application/x-www-form-urlencoded",
+        'accept': 'application/json'
+    }
 
+    response = client.post(
+        "/users/",
+        headers=headers,
+        data={
+            "gender_identity_id": 1,
+            "first_name": "Stefan",
+            "last_name": "Müller",
+            "email": "stefan1.mueller@email.com",
+            "password": "pass1",
+            "bio": "Test subject",
+            "date_of_birth": "1990-11-17T20:06:55.441841",
+            "job": "Software Engineer",
+            "search_radius": 200,
+            "matching_algorithm": 1,
+            "swipes_left": 10,
+            "swipe_limit_reset_date": "2023-11-17T20:06:55.441841",
+            "gender_preference_ids": "[1, 2]",
+            "interest_ids": "[1, 2, 3]",
+            "language_ids": "[1]",
+            "latitude": 20,
+            "longitude": 20,
+        }
+    )
     print(f"created user: {response.json()}")
     assert response.status_code == 200
