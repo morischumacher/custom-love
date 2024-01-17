@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:frontend/src/app/model/collection_model.dart';
 import 'package:frontend/src/app/presentation/authentification/pages/logout_page.dart';
 import 'package:frontend/src/app/service/match_service.dart';
@@ -30,6 +31,15 @@ class UserStorage extends CollectionStorage {
 
 class ConversationStorage extends CollectionStorage {
   Collection<Conversation> conversations = Collection<Conversation>();
+
+  Future<Conversation> addConversation(int userId, ConversationService conversationService) async {
+    Conversation conversation = await conversationService.createConversation(userId);
+    conversations.items.putIfAbsent(conversation.id, () => conversation);
+
+    notifyListeners();
+
+    return conversation;
+  }
 }
 
 class MessageStorage extends CollectionStorage {
@@ -67,14 +77,53 @@ class MessageStorage extends CollectionStorage {
 
 class MatchStorage extends CollectionStorage {
   Collection<Match> matches = Collection<Match>();
+
+  void removeMatch(int index) {
+    Match match = matches.items.values.elementAt(index);
+    matches.items.remove(match.id);
+    notifyListeners();
+  }
 }
 
 class StateManager extends ChangeNotifier {
-  User? user;
+  User? _user;
   WebSocketChannel? socket;
   bool connected = false;
   int loginRetries = 10;
   bool initialized = false;
+
+  User? get user {
+    unawaited(getUser());
+    return _user;
+  }
+
+  Future<void> getUser() async {
+    if (_user != null) {
+      return;
+    }
+
+    const FlutterSecureStorage storage = FlutterSecureStorage();
+    String? u = await storage.read(key: "user");
+    if (u == null) {
+      return;
+    }
+
+    _user = User.fromJson(json.decode(u));
+    notifyListeners();
+  }
+
+  set user(User? value) {
+    if (value == null) {
+      _user = value;
+      return;
+    }
+
+    const FlutterSecureStorage storage = FlutterSecureStorage();
+    unawaited(storage.write(key: "user", value: jsonEncode(value)));
+
+    _user = value;
+  }
+
 
   Future<void> registerUser(User user, BuildContext buildContext) async {
     // save the current user
@@ -228,7 +277,7 @@ class StateManager extends ChangeNotifier {
       notifyListeners();
 
       if (socket?.closeReason == "logout") {
-        user = null;
+        _user = null;
         Navigator.of(buildContext).pushNamed(
           "/logout",
           arguments: const LogoutRouteArguments(
@@ -248,7 +297,7 @@ class StateManager extends ChangeNotifier {
       // if the retry threshold has been exceeded, logout
       if (loginRetries <= 0) {
         loginRetries = 10;
-        user = null;
+        _user = null;
         Navigator.of(buildContext).pushNamed(
           "/logout",
           arguments: const LogoutRouteArguments(

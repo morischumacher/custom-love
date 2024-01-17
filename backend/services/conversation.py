@@ -1,7 +1,7 @@
 from typing import Annotated
 from fastapi import Depends
 from fastapi_pagination.ext.sqlmodel import paginate
-from sqlmodel import select, or_
+from sqlmodel import select, or_, and_
 from sqlmodel import Session
 from starlette.requests import Request
 
@@ -30,6 +30,15 @@ def post_conversation(user_id: int, user: Annotated[User, Depends(get_current_us
     recipient = db.exec(select(User).where(User.id == user_id)).first()
     if recipient is None:
         raise NotFoundException(f"User with the provided id: {user_id} does not exist")
+
+    c = db.exec(select(Conversation).where(
+        or_(
+            and_(Conversation.user1_id==user.id, Conversation.user2_id == recipient.id),
+            and_(Conversation.user1_id == recipient.id, Conversation.user2_id == user.id),
+        )
+    )).first()
+    if c is not None:
+        raise BadRequestException("This conversation already exists!")
 
     conversation: Conversation = Conversation(user1_id=user.id, user2_id=user_id)
 

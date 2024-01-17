@@ -36,6 +36,27 @@ class JWTApi {
     return response;
   }
 
+  Future<http.Response> post(http.Client client, String url) async {
+    String? token = await JWTApi.retrieveAccessToken();
+    if (token == null) {
+      throw Exception('Not logged in');
+    }
+
+    http.Response response =
+    await client.post(Uri.parse('${ApiConfig.baseUrl}/$url'), headers: {
+      'Content-Type': 'application/json',
+      'accept': 'application/json',
+      'Authorization': 'Bearer $token',
+    });
+
+    if (response.statusCode == 422) {
+      // TODO: handle token refresh
+      throw Exception('JWT is corrupt');
+    }
+
+    return response;
+  }
+
   Future<http.StreamedResponse> handleRequest(http.Client client, http.BaseRequest req) async {
     String? token = await JWTApi.retrieveAccessToken();
     if (token == null) {

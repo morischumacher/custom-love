@@ -10,4 +10,8 @@ class ConversationService
   @override
   PaginatedService<Conversation, ConversationApi> copyWith(String urlParams) =>
       ConversationService(super.api.copyWith(urlParams));
+
+  Future<Conversation> createConversation(int userId) async {
+    return Conversation.fromJson(await super.api.addConversation(userId));
+  }
 }
