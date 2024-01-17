@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:frontend/src/app/model/gender_model.dart';
 import 'package:frontend/src/app/model/interest_model.dart';
@@ -9,10 +11,14 @@ import 'package:frontend/src/app/service/registration_service.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
+import 'package:swipe_cards/draggable_card.dart';
+import 'package:swipe_cards/swipe_cards.dart';
 
 import '../../../../config/app_state.dart';
 import '../../../model/user_model.dart';
 import '../../../service/user_service.dart';
+import '../../onboarding/pages/onboarding.dart';
+import '../../swipe/util/content.dart';
 
 class RegistrationController {
   var logger = Logger();
@@ -61,6 +67,38 @@ class RegistrationController {
       var userId = registrationResult["user"]["id"];
       await storeUserId(userId.toString());
 
+      // for onboarding
+      String genderPreferenceString = "";
+
+      print("genderPreference: " + genderPreference.toString());
+
+      switch (genderPreference.id) {
+        case 1:
+          genderPreferenceString = "male";
+          break;
+        case 2:
+          genderPreferenceString = "female";
+          break;
+        case 3:
+          genderPreferenceString = "divers";
+          break;
+        default:
+          genderPreferenceString = "male";
+          break;
+      }
+
+      String jsonString = await rootBundle.loadString("assets/exsys_trainings_users_$genderPreferenceString.json");
+      final userData = await json.decode(jsonString);
+      List<dynamic> users = userData["exsys_trainings_users_$genderPreferenceString"];
+
+      List<Content> usersContent = users.map((item) {
+        return Content(
+            firstName: item["name"],
+            age: item["age"],
+            bio: item["bio"],
+            interests: List<String>.from(item["interests"]));
+      }).toList();
+
       // If registration is successful, navigate to '/home/swipe'
       if (context.mounted) {
         userService.updateCurrentUserLocation(location, accessToken);
@@ -72,7 +110,11 @@ class RegistrationController {
         Provider.of<StateManager>(context, listen: false).registerUser(User.fromJson(registrationResult['user']), context);
 
         Navigator.of(context).popUntil((route) => route.isFirst);
-        Navigator.of(context).pushReplacementNamed('/home/swipe');
+        //Navigator.of(context).pushReplacementNamed('/home/swipe');
+        Navigator.of(context).push(
+          MaterialPageRoute(
+              builder: (context) => OnboardingPage(userService: context.read<UserService>(), usersContent: usersContent)),
+        );
       }
     } catch (e) {
       logger.e('Entered exception: $e');
