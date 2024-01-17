@@ -9,8 +9,10 @@ from backend.models.conversation import Conversation
 from backend.models.swipe_status import SwipeStatus, SwipeStatusType
 from backend.models.user import User
 from backend.repository.repository import create_session
+from backend.responses.notification import Notification
 from backend.utils.pagination import PaginationParams
 from backend.utils.token import get_current_user
+from backend.utils.connection_manager import connection_manager
 
 
 def get_matches(
@@ -78,7 +80,7 @@ def post_view(
     return new_swipe_status
 
 
-def post_like(
+async def post_like (
         db: Annotated[Session, Depends(create_session)],
         user: Annotated[User, Depends(get_current_user)],
         user_id: int
@@ -126,6 +128,31 @@ def post_like(
         db.add(user_2_swipe_obj)
         db.commit()
         db.refresh(user_2_swipe_obj)
+
+        await connection_manager.send_notification(
+            user_id,
+            Notification(
+                {
+                    "type": "match",
+                    "content": {
+                        "user_id": user.id,
+                        "match_id": user_2_swipe_obj.id
+                    }
+                }
+            )
+        )
+        await connection_manager.send_notification(
+            user.id,
+            Notification(
+                {
+                    "type": "match",
+                    "content": {
+                        "user_id": user_id,
+                        "match_id": user_2_swipe_obj.id
+                    }
+                }
+            )
+        )
 
         return user_2_swipe_obj
     else:

@@ -11,6 +11,8 @@ from backend.models.message import message_factory
 
 class NotificationType(str, Enum):
     message: str = "message"
+    match: str = "match"
+    refresh: str = "refresh"
 
 
 class Notification(BaseModel):

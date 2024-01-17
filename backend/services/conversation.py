@@ -10,6 +10,8 @@ from backend.exceptions.not_found_exception import NotFoundException
 from backend.models.conversation import Conversation
 from backend.repository.repository import create_session
 from backend.models.user import User
+from backend.responses.notification import Notification
+from backend.utils.connection_manager import connection_manager
 from backend.utils.pagination import PaginationParams
 from backend.utils.token import get_current_user
 
@@ -21,7 +23,7 @@ def get_conversations(user: Annotated[User, Depends(get_current_user)],
                     PaginationParams(size=request.query_params.get("size"), page=request.query_params.get("page")))
 
 
-def post_conversation(user_id: int, user: Annotated[User, Depends(get_current_user)],
+async def post_conversation(user_id: int, user: Annotated[User, Depends(get_current_user)],
                       db: Annotated[Session, Depends(create_session)]):
 
     if user_id == user.id:
@@ -45,5 +47,15 @@ def post_conversation(user_id: int, user: Annotated[User, Depends(get_current_us
     db.add(conversation)
     db.commit()
     db.refresh(conversation)
+
+    await connection_manager.send_notification(
+        recipient.id,
+        Notification(
+            {
+                "type": "refresh",
+                "content": {}
+            }
+        )
+    )
 
     return conversation
