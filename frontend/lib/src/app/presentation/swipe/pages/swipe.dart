@@ -154,7 +154,6 @@ class _SwipeState extends State<Swipe>{
           matchEngine: _matchEngine,
           customLoveTheme: _customLoveTheme,
           swipeItem: _swipeItem,
-          swipeable: swipeable,
           userService: widget.userService,
           swipeStatusService: widget.swipeStatusService,
           userId: userId,

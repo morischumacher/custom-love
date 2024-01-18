@@ -22,7 +22,6 @@ class SwipingCard extends StatefulWidget {
         required MatchEngine? matchEngine,
         required CustomLoveTheme customLoveTheme,
         required SwipeItem swipeItem,
-        required this.swipeable,
         userId,
         required this.userService,
         required this.swipeStatusService})
@@ -34,7 +33,6 @@ class SwipingCard extends StatefulWidget {
   final MatchEngine? _matchEngine;
   final CustomLoveTheme _customLoveTheme;
   final SwipeItem _swipeItem;
-  bool swipeable = false;
   final int _userId;
 
   @override
