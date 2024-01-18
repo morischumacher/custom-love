@@ -4,15 +4,13 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:frontend/src/app/model/gender_model.dart';
 import 'package:frontend/src/app/model/interest_model.dart';
+import 'package:frontend/src/app/presentation/utils/secure_storage_service.dart';
 import 'package:frontend/src/app/service/registration_service.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
-import 'package:swipe_cards/draggable_card.dart';
-import 'package:swipe_cards/swipe_cards.dart';
 
 import '../../../../config/app_state.dart';
 import '../../../model/user_model.dart';
@@ -22,6 +20,9 @@ import '../../swipe/util/content.dart';
 
 class RegistrationController {
   var logger = Logger();
+
+  final SecureStorageService _secureStorageService = SecureStorageService();
+
   Future<void> handleRegistration(
       BuildContext context,
       final String? firstName,
@@ -62,15 +63,13 @@ class RegistrationController {
       );
 
       var accessToken = registrationResult["access_token"];
-      await storeAccessToken(accessToken);
+      await _secureStorageService.storeAccessToken(accessToken);
 
       var userId = registrationResult["user"]["id"];
-      await storeUserId(userId.toString());
+      await _secureStorageService.storeUserId(userId.toString());
 
       // for onboarding
       String genderPreferenceString = "";
-
-      print("genderPreference: " + genderPreference.toString());
 
       switch (genderPreference.id) {
         case 1:
@@ -135,21 +134,4 @@ class RegistrationController {
     return interestIds;
   }
 
-  // TODO: Duplicated code (included in login_controller)
-  Future<void> storeAccessToken(String accessToken) async {
-    const FlutterSecureStorage storage = FlutterSecureStorage();
-    await storage.write(key: "access_token", value: accessToken);
-  }
-
-  // TODO: Duplicated code (included in login_controller)
-  Future<String?> retrieveAccessToken() async {
-    const FlutterSecureStorage storage = FlutterSecureStorage();
-    return await storage.read(key: "access_token");
-  }
-
-  // TODO: Duplicated code (included in login_controller)
-  Future<void> storeUserId(String id) async {
-    const FlutterSecureStorage storage = FlutterSecureStorage();
-    await storage.write(key: "user_id", value: id);
-  }
 }

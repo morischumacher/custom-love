@@ -7,14 +7,13 @@ import 'package:swipe_cards/swipe_cards.dart';
 import 'package:frontend/src/config/theme.dart';
 
 import '../../../service/swipe_status_service.dart';
+import '../../utils/secure_storage_service.dart';
 import '../util/interests.dart';
 
 import '../../../service/user_service.dart';
-import '../../authentification/controller/login_controller.dart';
 import '../util/swipes_left.dart';
 
 class SwipingCard extends StatefulWidget {
-  final LoginController controller;
   final UserService userService;
   final SwipeStatusService swipeStatusService;
 
@@ -25,7 +24,6 @@ class SwipingCard extends StatefulWidget {
         required SwipeItem swipeItem,
         required this.swipeable,
         userId,
-        required this.controller,
         required this.userService,
         required this.swipeStatusService})
       : _matchEngine = matchEngine,

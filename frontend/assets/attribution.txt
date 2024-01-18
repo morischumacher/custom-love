@@ -4,3 +4,4 @@
 <a href="https://www.flaticon.com/free-icons/stop-sign" title="stop sign icons">Stop sign icons created by Freepik - Flaticon</a>
 <a href="https://www.flaticon.com/free-icons/kick-off" title="kick-off icons">Kick-off icons created by Freepik - Flaticon</a>
 <a href="https://www.flaticon.com/free-icons/yes" title="yes icons">Yes icons created by juicy_fish - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/no-photos" title="no-photos icons">No-photos icons created by Freepik - Flaticon</a>

@@ -45,17 +45,6 @@ class OnboardingPageState extends State<OnboardingPage> {
     Navigator.of(context).pushNamed('/home/swipe');
   }
 
- /* Widget _buildFullscreenImage() {
-    return Image.asset(
-      'assets/fullscreen.jpg',
-      fit: BoxFit.cover,
-      height: double.infinity,
-      width: double.infinity,
-      alignment: Alignment.center,
-    );
-  }
-*/
-
   @override
   void initState() {
     print("init");
@@ -109,7 +98,17 @@ class OnboardingPageState extends State<OnboardingPage> {
         PageViewModel(
           title: "What is CustomLove?",
           image: _buildImage('lib/src/icons/balloons.png'),
-          body: "CustomLove is more than just a dating app. It's designed to help you discover your ideal match.\n\n\nIn the following steps we are going to customize your experience.\nLet's start by swiping a stack full of cards to help us understand your preferences - so press the buttons!",
+          body: "CustomLove is more than just a dating app. It's designed to help you discover your ideal match.\n\n\nIn the following steps we are going to customize your experience.",
+          decoration: const PageDecoration(
+            titlePadding: EdgeInsets.only(top: 0, bottom: 10),
+            bodyPadding: EdgeInsets.only(top: 10),
+            contentMargin: EdgeInsets.fromLTRB(50, 20, 50, 50),
+          ),
+        ),
+        PageViewModel(
+          title: "It's not About Looks!",
+          image: _buildImage('lib/src/icons/no-photos.png'),
+          body: "We facilitate an environment where people want to meet others based on their personalities. That´s why you see a person's picture only if you have both decided to connect.\n\n Let's start by swiping a stack full of cards to help us understand your preferences - so press the buttons!",
           decoration: const PageDecoration(
             titlePadding: EdgeInsets.only(top: 0, bottom: 10),
             bodyPadding: EdgeInsets.only(top: 10),
@@ -345,7 +344,11 @@ class OnboardingPageState extends State<OnboardingPage> {
                         }
                       },
                       onStackFinished: () async {
-                        _allTrainingCardsSwiped = true;
+                        if (mounted) {
+                          setState(() {
+                            _allTrainingCardsSwiped = true;
+                          });
+                        }
                         print("swipeDecisions: " + swipeDecisions.toString());
                       },
                       itemChanged: (SwipeItem item, int index) {},
