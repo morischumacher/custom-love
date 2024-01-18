@@ -34,7 +34,6 @@ class Avatar extends StatelessWidget {
     _service = Provider.of<ImageService>(context);
     _storage = Provider.of<ProfileImageStorage>(context);
     getProfileImage(_user);
-    print("User:" + _user.toString());
 
     return Consumer<ProfileImageStorage>(
       builder:
