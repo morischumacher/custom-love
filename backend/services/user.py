@@ -46,7 +46,7 @@ class UserUpdate(BaseModel):
     algo_id: int = Field(None, title="AlgoId")
 
 
-def get_user(user_id: int, user: Annotated[User, Depends(get_current_user)],db: Annotated[Session, Depends(create_session)]) -> User:
+def get_user(user_id: int, db: Annotated[Session, Depends(create_session)]) -> User:
     """
     Return a specific user
     :param db: injected database

@@ -66,8 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       return await JWTApi.retrieveAccessToken();
     } catch (e) {
-      Navigator.of(context).popUntil((route) => route.isFirst);
-      Navigator.pushReplacementNamed(context, '/');
+      Navigator.pushNamed(context, "/");
       return null;
     }
   }
@@ -145,6 +144,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return _userLoggedIn == null ? const LoadingScreen() : Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: getUrl(context).contains('messages') ? true : false,
         title: getTitle(),
         backgroundColor: _customLoveTheme.primaryColor,
         actions: [
