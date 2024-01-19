@@ -134,9 +134,9 @@ class OnboardingPageState extends State<OnboardingPage> {
         PageViewModel(
           title: "Discover Your Match, Your Way!",
           image: _buildImage("lib/src/icons/heart.png"),
-          body: "Choose your matchmaking style: \n\n Randomized \n Interest-based \n Preference-based",
+          body: "Choose your matchmaking style: \n\n Randomized --> Embrace unexpected matches. \n\n Interest-based --> Connect based on shared interests and hobbies. \n\n Preference-based --> Fine-tune matches according to your specific preferences.",
           decoration: const PageDecoration(
-            titlePadding: EdgeInsets.only(top: 0, bottom: 20),
+            titlePadding: EdgeInsets.only(top: 0, bottom: 5),
             imagePadding: EdgeInsets.only(bottom: 10),
             bodyPadding: EdgeInsets.only(top: 10),
             contentMargin: EdgeInsets.fromLTRB(50, 20, 50, 50),
@@ -224,12 +224,12 @@ class OnboardingPageState extends State<OnboardingPage> {
     final height = MediaQuery.of(context).size.height;
     final width = min(MediaQuery.of(context).size.width, 750);
 
-   // print("swipeItems: " + swipeItems[1].content.firstName);
+    print("gender: " + swipeItems[1].content.gender.toString());
+
     return SafeArea(
       child: Container(
           alignment: Alignment.center,
           height: 650,
-          //height - kToolbarHeight > 0 ? height - kToolbarHeight : height,
           width: !kIsWeb ? width * 0.90 : width * 0.65,
           child: Stack(children: [
             Card(
@@ -257,9 +257,21 @@ class OnboardingPageState extends State<OnboardingPage> {
                                         FittedBox(
                                           child: Padding(
                                             padding: const EdgeInsets.symmetric(horizontal: kIsWeb ? 50 : 40),
-                                            child: Text(
-                                              swipeItems[index].content.firstName,
-                                              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                                            child: Row(
+                                              children: [
+                                                Text(
+                                                  swipeItems[index].content.name,
+                                                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                                                ),
+                                                swipeItems[index].content.gender == "Female" ? const Icon(Icons.female_sharp) : swipeItems[index].content.gender == "Male" ? const Icon(Icons.male_sharp) :
+                                                const Stack(
+                                                  alignment: Alignment.center,
+                                                  children: [
+                                                    Icon(Icons.female_sharp, size: 25),
+                                                    Positioned(top: -5.1, left: 1.89, child: Icon(Icons.male_sharp, size: 25)),
+                                                  ],
+                                                ),
+                                              ],
                                             ),
                                           ),
                                         ),
@@ -279,26 +291,26 @@ class OnboardingPageState extends State<OnboardingPage> {
                                           ),
                                         ),
                                         SizedBox(height: height * 0.02),
-                                        /*Padding(
+                                        Padding(
                                         padding: const EdgeInsets.symmetric(horizontal: kIsWeb ? 50 : 40),
                                         child: FittedBox(
                                           child: Wrap(
                                             spacing: 25,
                                             runSpacing: 4,
-                                            children: _swipeItems[index].content.interests.length > 0 ? List<Widget>.generate(_swipeItems[index].content.interests.length,
+                                            children: swipeItems[index].content.interests.length > 0 ? List<Widget>.generate(swipeItems[index].content.interests.length,
                                                   (int i) {
-                                                Icon avatar = Interests.getIcon(_swipeItems[index].content.interests[i]["name"]);
+                                                Icon avatar = Interests.getIcon(swipeItems[index].content.interests[i]);
                                                 return ActionChip(
                                                   side: BorderSide(width: 1.5, color: _customLoveTheme.primaryColor),
                                                   avatar: avatar,
-                                                  label: Text(_swipeItems[index].content.interests[i]["name"]),
+                                                  label: Text(swipeItems[index].content.interests[i]),
                                                   onPressed: () {},
                                                 );
                                               },
                                             ) : [Container()],
                                           ),
+                                        )
                                         ),
-                                      ),*/
                                         Center(
                                           child: Container(
                                             //for small bio card

@@ -141,7 +141,7 @@ class _SwipingCardState extends State<SwipingCard> {
                             child: Padding(
                               padding: const EdgeInsets.symmetric(horizontal: kIsWeb ? 50 : 40),
                               child: Text(
-                                widget._swipeItem.content.firstName,
+                                widget._swipeItem.content.name,
                                 style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                               ),
                             ),

@@ -337,7 +337,7 @@ class _SwipeState extends State<Swipe>{
 
     return Content(
         id: id.toString(),
-        firstName: firstName,
+        name: firstName,
         age: age,
         city: city,
         bio: user.bio,

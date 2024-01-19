@@ -92,7 +92,8 @@ class RegistrationController {
 
       List<Content> usersContent = users.map((item) {
         return Content(
-            firstName: item["name"],
+            name: item["name"],
+            gender: item["gender"],
             age: item["age"],
             bio: item["bio"],
             interests: List<String>.from(item["interests"]));
