@@ -199,7 +199,7 @@ class _HomeScreenState extends State<HomeScreen> {
           as MessagesPageRouteArguments;
       titleContent = Text("${args.user.firstName} ${args.user.lastName}");
     } else {
-      titleContent = Text(
+      titleContent = const Text(
         'CUSTOMLOVE',
         style: TextStyle(
           color: Color(0xFFE91E63),
