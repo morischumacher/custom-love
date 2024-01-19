@@ -8,7 +8,7 @@ import 'package:frontend/src/config/theme.dart';
 
 import '../../../service/swipe_status_service.dart';
 import '../../utils/secure_storage_service.dart';
-import '../util/interests.dart';
+import '../../utils/interests.dart';
 
 import '../../../service/user_service.dart';
 import '../util/swipes_left.dart';

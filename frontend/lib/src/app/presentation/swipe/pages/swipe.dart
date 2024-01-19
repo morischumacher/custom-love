@@ -22,7 +22,7 @@ import '../../../service/location_service.dart';
 import '../../../service/user_service.dart';
 import '../../utils/secure_storage_service.dart';
 import '../util/algo_id_notifier.dart';
-import '../util/interests.dart';
+import '../../utils/interests.dart';
 import '../util/swipes_left.dart';
 
 class Swipe extends StatefulWidget {

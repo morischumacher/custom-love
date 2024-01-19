@@ -17,18 +17,14 @@ import '../../../service/swipe_status_service.dart';
 import '../../../service/user_service.dart';
 import '../../swipe/pages/swipe.dart';
 import '../../swipe/util/content.dart';
-import '../../swipe/util/interests.dart';
+import '../../utils/interests.dart';
 
 
 class OnboardingPage extends StatefulWidget {
   final UserService userService;
   final List<Content> usersContent;
   const OnboardingPage({Key? key, required this.userService, required this.usersContent}) : super(key: key);
-
-
-
-
-
+  
   @override
   OnboardingPageState createState() => OnboardingPageState();
 }
@@ -66,8 +62,20 @@ class OnboardingPageState extends State<OnboardingPage> {
   }
 
   Widget _buildImage(String assetName, [double width = 300, double height = 200]) {
-  //return const Placeholder(fallbackHeight: 350, fallbackWidth: 350,);
     return Image.asset(assetName, width: width, height: height);
+  }
+
+  Widget rowWidget(String text, IconData icon) {
+    return Row(
+      children: [
+        textWidget(text),
+        Icon(icon),
+      ],
+    );
+  }
+
+  Widget textWidget(String text) {
+    return Text(style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.normal), text);
   }
 
   @override
@@ -75,11 +83,9 @@ class OnboardingPageState extends State<OnboardingPage> {
     const bodyStyle = TextStyle(fontSize: 19.0);
 
     const pageDecoration = PageDecoration(
-      titleTextStyle: TextStyle(fontSize: 28.0, fontWeight: FontWeight.w700),
-      bodyTextStyle: bodyStyle,
-      bodyPadding: EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
-      pageColor: Colors.white,
-      imagePadding: EdgeInsets.zero,
+      titlePadding: EdgeInsets.only(top: 0, bottom: 10),
+      bodyPadding: EdgeInsets.only(top: 10),
+      contentMargin: EdgeInsets.fromLTRB(50, 20, 50, 50),
     );
 
     return IntroductionScreen(
@@ -93,37 +99,41 @@ class OnboardingPageState extends State<OnboardingPage> {
           body:
           "\n We love having you. \n Prepare to embark on a journey of love.",
           image: _buildImage('lib/src/icons/handshake.png'),
-          decoration: pageDecoration,
+          decoration: pageDecoration.copyWith(
+            titleTextStyle: const TextStyle(fontSize: 28.0, fontWeight: FontWeight.w700),
+            bodyTextStyle: bodyStyle,
+            titlePadding: const EdgeInsets.only(top: 16, bottom: 24),
+            contentMargin: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
+            pageColor: Colors.white,
+            imagePadding: EdgeInsets.zero,
+          ),
         ),
         PageViewModel(
           title: "What is CustomLove?",
           image: _buildImage('lib/src/icons/balloons.png'),
           body: "CustomLove is more than just a dating app. It's designed to help you discover your ideal match.\n\n\nIn the following steps we are going to customize your experience.",
-          decoration: const PageDecoration(
-            titlePadding: EdgeInsets.only(top: 0, bottom: 10),
-            bodyPadding: EdgeInsets.only(top: 10),
-            contentMargin: EdgeInsets.fromLTRB(50, 20, 50, 50),
-          ),
+          decoration: pageDecoration,
         ),
         PageViewModel(
           title: "It's not About Looks!",
           image: _buildImage('lib/src/icons/no-photos.png'),
-          body: "We facilitate an environment where people want to meet others based on their personalities. That´s why you see a person's picture only if you have both decided to connect.\n\n Let's start by swiping a stack full of cards to help us understand your preferences - so press the buttons!",
-          decoration: const PageDecoration(
-            titlePadding: EdgeInsets.only(top: 0, bottom: 10),
-            bodyPadding: EdgeInsets.only(top: 10),
-            contentMargin: EdgeInsets.fromLTRB(50, 20, 50, 50),
+          body: "We facilitate an environment where people want to meet others based on their personalities. \n\n That´s why you see a person's picture only if you have both decided to connect.",
+          decoration: pageDecoration,
+        ),
+        PageViewModel(
+          title: "Personalized Matches Await!",
+          image: _buildImage('lib/src/icons/deck.png'),
+          body: "Let's start by swiping a stack full of cards to help us understand your preferences. \n\n So press the buttons on the next slide!",
+          decoration: pageDecoration.copyWith(
+            titlePadding: const EdgeInsets.only(top: 0, bottom: 20),
           ),
         ),
         _allTrainingCardsSwiped ? PageViewModel(
           title: "All Set!",
           image: _buildImage("lib/src/icons/yes.png"),
           body: "Our algorithms have been fine-tuned to your liking.",
-          decoration: const PageDecoration(
-          titlePadding: EdgeInsets.only(top: 0, bottom: 10),
-          bodyPadding: EdgeInsets.only(top: 10),
-          contentMargin: EdgeInsets.fromLTRB(50, 20, 50, 50),
-          )) :
+          decoration: pageDecoration,
+        ) :
         PageViewModel(
             title: "",
             decoration: const PageDecoration(
@@ -134,46 +144,57 @@ class OnboardingPageState extends State<OnboardingPage> {
         PageViewModel(
           title: "Discover Your Match, Your Way!",
           image: _buildImage("lib/src/icons/heart.png"),
-          body: "Choose your matchmaking style: \n\n Randomized --> Embrace unexpected matches. \n\n Interest-based --> Connect based on shared interests and hobbies. \n\n Preference-based --> Fine-tune matches according to your specific preferences.",
-          decoration: const PageDecoration(
-            titlePadding: EdgeInsets.only(top: 0, bottom: 5),
-            imagePadding: EdgeInsets.only(bottom: 10),
-            bodyPadding: EdgeInsets.only(top: 10),
-            contentMargin: EdgeInsets.fromLTRB(50, 20, 50, 50),
+          bodyWidget: FittedBox(
+            child: Column(
+              children: [
+                rowWidget("Randomized ", Icons.casino),
+                textWidget("Embrace unexpected matches"),
+                const SizedBox(height: 30),
+                rowWidget("Interest-based ", Icons.favorite),
+                Column(
+                  children: [
+                    textWidget("Connect based on shared interests"),
+                    const SizedBox(height: 5),
+                    textWidget("and hobbies"),
+                  ],
+                ),
+                const SizedBox(height: 30),
+                rowWidget("Preference-based ", Icons.settings),
+                Column(
+                  children: [
+                    textWidget("Fine-tune matches according to"),
+                    const SizedBox(height: 5),
+                    textWidget("your specific preferences")
+                  ],
+                ),
+              ],
+            ),
+          ),
+          decoration: pageDecoration.copyWith(
+            titlePadding: const EdgeInsets.only(top: 0, bottom: 5),
+            contentMargin: const EdgeInsets.fromLTRB(35, 20, 35, 50),
           ),
         ),
         PageViewModel(
           title: "Take Your Time to Connect!",
           image: _buildImage("lib/src/icons/hourglass.png"),
           body:
-          "At CustomLove we believe in making meaningful connections.\n\n Each suggestion comes with a 10s countdown, giving you the opportunity to explore the profile of the suggested user more thoughtfully. Once the timer has expired, the swipe card's background color turns white, allowing you to proceed with the swipe.",
-          decoration: const PageDecoration(
-            titlePadding: EdgeInsets.only(top: 0, bottom: 10),
-            imagePadding: EdgeInsets.only(bottom: 10),
-            bodyPadding: EdgeInsets.only(top: 10),
-            contentMargin: EdgeInsets.fromLTRB(50, 20, 50, 50),
-          ),
+          "At CustomLove we believe in making meaningful connections.\n\n Each suggestion comes with a 10s countdown, giving you the opportunity to explore the profile of the user more thoughtfully.\n Once the timer has expired, the swipe card's background color turns white, allowing you to proceed with the swipe.",
+          decoration: pageDecoration,
         ),
         PageViewModel(
           title: "Limited Swipes, Unlimited Connections!",
           body: "You have a limited set of swipes available within a 24-hour period. \n\n This is to promote a more enjoyable and intentional swiping experience.",
           image: _buildImage("lib/src/icons/banned.png"),
-          decoration: const PageDecoration(
-            titlePadding: EdgeInsets.only(top: 0, bottom: 10),
-            imagePadding: EdgeInsets.only(bottom: 30),
-            bodyPadding: EdgeInsets.only(top: 10),
-            contentMargin: EdgeInsets.fromLTRB(50, 20, 50, 50),
-          ),
+          decoration: pageDecoration,
         ),
         PageViewModel(
           title: "Congratulations!",
           body: "You are ready to connect!",
           image: _buildImage("lib/src/icons/rocket.png"),
-          decoration: const PageDecoration(
-            titlePadding: EdgeInsets.only(top: 40, bottom: 20),
-            imagePadding: EdgeInsets.only(bottom: 30),
-            bodyPadding: EdgeInsets.only(top: 10),
-            contentMargin: EdgeInsets.fromLTRB(50, 20, 50, 50),
+          decoration: pageDecoration.copyWith(
+            titlePadding: const EdgeInsets.only(top: 20, bottom: 20),
+            imagePadding: const EdgeInsets.only(bottom: 30),
           ),
         ),
       ],
@@ -192,7 +213,6 @@ class OnboardingPageState extends State<OnboardingPage> {
       skipOrBackFlex: 0,
       nextFlex: 0,
       showBackButton: false,
-      //rtl: true, // Display as right-to-left
       back: const Icon(Icons.arrow_back),
       skip: const Text('Skip', style: TextStyle(fontWeight: FontWeight.w600)),
       next: Icon(Icons.arrow_forward, color: _customLoveTheme.primaryColor),
@@ -299,7 +319,8 @@ class OnboardingPageState extends State<OnboardingPage> {
                                             runSpacing: 4,
                                             children: swipeItems[index].content.interests.length > 0 ? List<Widget>.generate(swipeItems[index].content.interests.length,
                                                   (int i) {
-                                                Icon avatar = Interests.getIcon(swipeItems[index].content.interests[i]);
+                                                print("interests: " + swipeItems[index].content.interests[i].toLowerCase());
+                                                Icon avatar = Interests.getIcon(swipeItems[index].content.interests[i].toLowerCase());
                                                 return ActionChip(
                                                   side: BorderSide(width: 1.5, color: _customLoveTheme.primaryColor),
                                                   avatar: avatar,
