@@ -28,7 +28,7 @@ class ExSys:
         """
 
         # Creates a logic regression model
-        model = LogisticRegression()
+        model = LogisticRegression(max_iter=1000)
 
         # Build input for model
         X_train, y_train = users_and_likes_to_x_train_y_train(user_list, like_decisions)
@@ -52,7 +52,7 @@ class ExSys:
         """
 
         # Creates a logic regression model
-        model = LogisticRegression()
+        model = LogisticRegression(max_iter=1000)
 
         # Train model
         model.fit(X_train, y_train)

@@ -1,48 +1,62 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/src/app/service/image_service.dart';
+import 'package:frontend/src/config/app_state.dart';
 import '../../../../config/theme.dart';
 import '../../../model/user_model.dart';
+import 'package:provider/provider.dart';
 
 class Avatar extends StatelessWidget {
-  final String _initials;
-  final ImageProvider? image;
+  final User _user;
+  ImageService? _service;
+  ProfileImageStorage? _storage;
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
 
-  const Avatar.withInitials(this._initials, {super.key, this.image});
+  Avatar.withImage(this._user, {Key? key}) : super(key: key);
 
   factory Avatar(User? user) {
-    if (user == null) {
-      return const Avatar.withInitials("");
-    }
-
-    return Avatar.withInitials("${user.firstName[0]}${user.lastName[0]}");
+    return Avatar.withImage(user!);
   }
 
-  // TODO: implement avatars with images
-  // Avatar.withImage(this._initials, this._image, {super.key});
+  Future<void> getProfileImage(User? user) async {
+    if (_service == null ||
+        _storage == null ||
+        user == null ||
+        _storage!.loaded(user.id)) {
+      return;
+    }
+
+    var tmp = await _service!.getImage("profile-picture/${user.id}");
+    _storage!.load(user.id, tmp);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return FittedBox(
-      fit: BoxFit.fill,
-      child: Stack(
-        alignment: AlignmentDirectional.center,
-        children: [
-           CircleAvatar(
-             backgroundColor: _customLoveTheme.grayscale1,
-             backgroundImage: image,
-           ),
-           Text(
-             _initials,
-             textAlign: TextAlign.center,
-             style: TextStyle(
-               fontSize: 20,
-               fontWeight: FontWeight.bold,
-               color: _customLoveTheme.grayscale2,
-             ),
-           ),
-         ],
-      ),
+    _service = Provider.of<ImageService>(context);
+    _storage = Provider.of<ProfileImageStorage>(context);
+    getProfileImage(_user);
+
+    return Consumer<ProfileImageStorage>(
+      builder:
+          (BuildContext context, ProfileImageStorage storage, Widget? child) {
+        int id = _user.id;
+
+        if (!storage.loaded(id)) {
+          return const Icon(Icons.downloading);
+        } else {
+          return FittedBox(
+            fit: BoxFit.fill,
+            child: Stack(
+              alignment: AlignmentDirectional.center,
+              children: [
+                CircleAvatar(
+                  backgroundColor: _customLoveTheme.grayscale1,
+                  backgroundImage: MemoryImage(_storage!.getBytes(id)!),
+                ),
+              ],
+            ),
+          );
+        }
+      },
     );
   }
-  
 }
