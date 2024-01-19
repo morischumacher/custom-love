@@ -53,7 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    getAccessToken().then((token){
+    getAccessToken().then((token) {
       if (token != null) {
         setState(() {
           _userLoggedIn = true;
@@ -148,48 +148,71 @@ class _HomeScreenState extends State<HomeScreen> {
     String url = getUrl(context);
     Widget Function(BuildContext context) route = routePage(url);
 
-    return _userLoggedIn == null ? const LoadingScreen() : Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: getUrl(context).contains('messages') ? true : false,
-        title: getTitle(),
-        backgroundColor: _customLoveTheme.primaryColor,
-        actions: [
-          _currentPage.index == 1 ? algoSwitcherMenu() : Container(),
-        ],
-      ),
-      body: route(context),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentPage.index,
-        onTap: (int index) => changeRoute(index, context),
-        unselectedItemColor: Colors.grey,
-        selectedItemColor: _customLoveTheme.primaryColor,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.filter_none),
-            label: 'Swipe',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat_rounded),
-            label: 'Matches',
-          ),
-        ],
-      ),
-    );
+    return _userLoggedIn == null
+        ? const LoadingScreen()
+        : Scaffold(
+            appBar: AppBar(
+              automaticallyImplyLeading: getUrl(context).contains('messages') ? true : false,
+        title: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  getTitle(),
+                ],
+              ),
+              backgroundColor: _customLoveTheme.neutralColor,
+              actions: [
+                _currentPage.index == 1
+                    ? algoSwitcherMenu()
+                    : Container(width: 48),
+              ],
+            ),
+            body: route(context),
+            bottomNavigationBar: BottomNavigationBar(
+              currentIndex: _currentPage.index,
+              onTap: (int index) => changeRoute(index, context),
+              unselectedItemColor: Colors.grey,
+              selectedItemColor: _customLoveTheme.primaryColor,
+              items: const [
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.person),
+                  label: 'Profile',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.filter_none),
+                  label: 'Swipe',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.chat_rounded),
+                  label: 'Matches',
+                ),
+              ],
+            ),
+          );
   }
 
   Widget getTitle() {
+    Widget titleContent;
     if (ModalRoute.of(context)!.settings.arguments
         is MessagesPageRouteArguments) {
       final args = ModalRoute.of(context)!.settings.arguments
           as MessagesPageRouteArguments;
-      return Text("${args.user.firstName} ${args.user.lastName}");
+      titleContent = Text("${args.user.firstName} ${args.user.lastName}");
+    } else {
+      titleContent = Text(
+        'CUSTOMLOVE',
+        style: TextStyle(
+          color: Color(0xFFE91E63),
+          fontWeight: FontWeight.bold,
+        ),
+      );
     }
 
-    return const Text("Custom Love App");
+    return Expanded(
+      child: Center(
+        child: titleContent,
+      ),
+    );
   }
 
   Widget algoSwitcherMenu() {
