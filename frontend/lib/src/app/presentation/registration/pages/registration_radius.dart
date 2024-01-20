@@ -53,7 +53,7 @@ class _RegistrationRadiusState extends State<RegistrationRadius> {
   @override
   void initState() {
     super.initState();
-    searchRadius = widget.searchRadius ?? 1;
+    searchRadius = widget.searchRadius ?? 5;
     searchRadiusMiles = searchRadius != null ? (searchRadius! * 0.621371).roundToDouble() : 1;
   }
 
@@ -102,7 +102,7 @@ class _RegistrationRadiusState extends State<RegistrationRadius> {
                                 children: <TextSpan>[
                                   TextSpan(text: searchRadius!.toString()),
                                   TextSpan(
-                                      text: searchRadius != 1 ? '  kilometers' : '  kilometer',
+                                      text: '  kilometers',
                                       style: TextStyle(
                                           color: _customLoveTheme.textColor)
                                   )
@@ -131,7 +131,7 @@ class _RegistrationRadiusState extends State<RegistrationRadius> {
                             ),
                             const SizedBox(height: 50.0),
                             Slider(
-                                min: 1,
+                                min: 5,
                                 max: 100,
                                 divisions: 99,
                                 label: searchRadius!.toString(),

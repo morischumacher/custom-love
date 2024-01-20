@@ -15,7 +15,8 @@ def validate_new_user(
         job: str,
         date_of_birth: datetime,
         interests: [Interest],
-        gender_preferences: [GenderIdentity]
+        gender_preferences: [GenderIdentity],
+        search_radius: int
 ) -> [str]:
     """
     Validates whether a user has valid entries and can be saved within the database.
@@ -27,6 +28,7 @@ def validate_new_user(
     :param date_of_birth: birthdate of a user
     :param interests: interests of the user
     :param gender_preferences: gender preferences of the user
+    :param search_radius: search radius of the user
     :return: list of validation exceptions
     """
     validation_exceptions: [str] = []
@@ -52,6 +54,8 @@ def validate_new_user(
         validation_exceptions.append("User requires 3 - 5 interests")
     if len(gender_preferences) < 1:
         validation_exceptions.append("User requires at least 1 gender preference")
+    if search_radius < 5 or search_radius > 100:
+        validation_exceptions.append("Search radius must be between 5 km and 100 km")
     return validation_exceptions
 
 

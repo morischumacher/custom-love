@@ -131,8 +131,37 @@ def test_post_create_user_negative_names(client, session):
     assert len(user) == 0
 
 
+def test_post_create_user_negative_radius(client, session):
+    __create_initial_data(client, session)
+
+    email: str = "kilo@email.com"
+    response = __post_request(
+        client,
+        '/users/',
+        __define_header(),
+        __new_user_data(search_radius=3)
+    )
+
+    assert response.status_code == 422
+    assert __extract_response_content(response.content.decode('utf-8')) == 'Search radius must be between 5 km and 100 km'
+    user = session.exec(select(User).where(User.email == "kilo@email.com")).all()
+    assert len(user) == 0
+
+
 def test_post_create_user_negative_interests(client, session):
-    pass
+    __create_initial_data(client, session)
+
+    response = __post_request(
+        client,
+        '/users/',
+        __define_header(),
+        __new_user_data(interest_ids='[1, 2]')
+    )
+
+    assert response.status_code == 422
+    assert __extract_response_content(response.content.decode('utf-8')) == 'User requires 3 - 5 interests'
+    user = session.exec(select(User).where(User.email == "kilo@email.com")).all()
+    assert len(user) == 0
 
 
 def test_post_create_user_negative_gender_preference(client, session):

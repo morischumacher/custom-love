@@ -139,6 +139,7 @@ def registration(
     first_name = first_name.strip()
     last_name = last_name.strip()
     email = email.strip()
+    search_radius = int(search_radius)
 
     # Retrieving properties from the db based on the id's
     user_gender_preferences: [GenderIdentity] = []
@@ -165,7 +166,7 @@ def registration(
 
     # Do other properties violate against certain constraints? If so, throw an exception
     user_validation: [str] = validate_new_user(
-        first_name, last_name, email, bio, job, date_of_birth_datetime, user_interests, user_gender_preferences
+        first_name, last_name, email, bio, job, date_of_birth_datetime, user_interests, user_gender_preferences, search_radius
     )
     if len(user_validation) > 0:
         raise ValidationException(message=', '.join(user_validation))
