@@ -5,6 +5,7 @@ from starlette import status
 
 from backend.models.user import User
 from backend.responses.error_response import ErrorResponse
+from backend.services.user import get_user_profile, get_user_by_email
 from backend.responses.user_response import UserResponse, UserResponseWithInterestsAndDistance
 from backend.requests.train_data_decisions import DecisionsRequest
 from backend.services.expert_system import post_expert_system
@@ -25,7 +26,7 @@ async def get_users(commons: Annotated[Page[User], Depends(get_users)]):
     return commons
 
 
-@router.get('/{user_id}', response_model=UserResponse, responses={
+@router.get('/{user_id}', responses={
     status.HTTP_404_NOT_FOUND: {"description": "Not Found", "model": ErrorResponse},
     status.HTTP_400_BAD_REQUEST: {"description": "Bad Request", "model": ErrorResponse},
 })
@@ -37,7 +38,19 @@ def get_user(commons: Annotated[dict, Depends(get_user)]):
     return commons
 
 
-@router.post('/', response_model=Token, responses={
+@router.get('/email/{user_email}', responses={
+    status.HTTP_404_NOT_FOUND: {"description": "Not Found", "model": ErrorResponse},
+    status.HTTP_400_BAD_REQUEST: {"description": "Bad Request", "model": ErrorResponse},
+})
+def get_user_by_email(commons: Annotated[dict, Depends(get_user_by_email)]):
+    """
+    Retrieves a user.
+    :return: a user with a corresponding id
+    """
+    return commons
+
+
+@router.post('/', responses={
     status.HTTP_422_UNPROCESSABLE_ENTITY: {"description": "Validation Error", "model": ErrorResponse}
 })
 def registration(commons: Annotated[dict, Depends(registration)]):
@@ -96,4 +109,16 @@ def train_model(commons: Annotated[DecisionsRequest, Depends(post_expert_system)
 
 @router.websocket("/socket/{user_token}")
 async def socket(commons: Annotated[dict, Depends(websocket_connect)]):
+    return commons
+
+
+@router.get('/profile/{user_id}', responses={
+    status.HTTP_404_NOT_FOUND: {"description": "Not Found", "model": ErrorResponse},
+    status.HTTP_400_BAD_REQUEST: {"description": "Bad Request", "model": ErrorResponse},
+})
+def get_user_profile(commons: Annotated[dict, Depends(get_user_profile)]):
+    """
+    Retrieves a user.
+    :return: a user with a corresponding id
+    """
     return commons

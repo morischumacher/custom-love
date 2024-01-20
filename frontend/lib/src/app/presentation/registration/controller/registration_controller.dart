@@ -9,10 +9,12 @@ import 'package:frontend/src/app/model/interest_model.dart';
 import 'package:frontend/src/app/presentation/utils/secure_storage_service.dart';
 import 'package:frontend/src/app/service/registration_service.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../config/app_state.dart';
+import '../../../model/language_model.dart';
 import '../../../model/user_model.dart';
 import '../../../service/user_service.dart';
 import '../../onboarding/pages/onboarding.dart';
@@ -22,6 +24,23 @@ class RegistrationController {
   var logger = Logger();
 
   final SecureStorageService _secureStorageService = SecureStorageService();
+
+
+
+  Future<bool> emailExists(BuildContext context, String email) async {
+    RegistrationService registrationService = context.read<RegistrationService>();
+
+    try {
+      await registrationService.getUserByEmail(email);
+      // Retrieving the user based on his/her email did not throw an exception,
+      // meaning a user with a corresponding email exists in the database
+      return true;
+    } catch (e) {
+      // User was not found, therefore there is no user with entered email in
+      // the database
+      return false;
+    }
+  }
 
   Future<void> handleRegistration(
       BuildContext context,
@@ -35,9 +54,10 @@ class RegistrationController {
       final Position? location,
       final double? searchRadius,
       final Gender? gender,
-      final Gender? genderPreference,
-      final Uint8List? profilePicture,
-      final List<Interest> userInterestIdList
+      final List<Gender> genderPreferences,
+      final XFile? profilePicture,
+      final List<Interest> userInterestIdList,
+      final List<Language> languages
     ) async {
 
     RegistrationService registrationService = context.read<RegistrationService>();
@@ -57,9 +77,10 @@ class RegistrationController {
           location!,
           searchRadius!.toInt(),
           gender!.id,
-          genderPreference!.id,
-          null,
-          convertInterestListToInterestIdList(userInterestIdList)
+          convertGenderListToGenderIdList(genderPreferences),
+          profilePicture,
+          convertInterestListToInterestIdList(userInterestIdList),
+          convertLanguageListToLanguageIdList(languages)
       );
 
       var accessToken = registrationResult["access_token"];
@@ -135,4 +156,70 @@ class RegistrationController {
     return interestIds;
   }
 
+  List<int> convertGenderListToGenderIdList(List<Gender> genders) {
+    List<int> genderIds = [];
+    for (Gender gender in genders) {
+      genderIds.add(gender.id);
+    }
+    return genderIds;
+  }
+
+  List<int> convertLanguageListToLanguageIdList(List<Language> languages) {
+    List<int> languageIds = [];
+    for (Language language in languages) {
+      languageIds.add(language.id);
+    }
+    return languageIds;
+  }
+
+  String genderListToString(List<Gender> genders) {
+    if (genders.isEmpty) {
+      return "";
+    }
+    String genderStr = "";
+    for (Gender gender in genders) {
+      genderStr +=  "${gender.name}, ";
+    }
+    return genderStr.substring(0, genderStr.length - 2);
+  }
+
+  String interestsListToString(List<Interest> interests) {
+    if (interests.isEmpty) {
+      return "";
+    }
+    String interestStr = "";
+    for (Interest interest in interests) {
+      interestStr +=  "${interest.name}, ";
+    }
+    return interestStr.substring(0, interestStr.length - 2);
+  }
+
+  String languageListToString(List<Language> languages) {
+    if (languages.isEmpty) {
+      return "";
+    }
+    String languageStr = "";
+    for (Language language in languages) {
+      languageStr +=  "${language.name}, ";
+    }
+    return languageStr.substring(0, languageStr.length - 2);
+  }
+
+  // TODO: Duplicated code (included in login_controller)
+  Future<void> storeAccessToken(String accessToken) async {
+    const FlutterSecureStorage storage = FlutterSecureStorage();
+    await storage.write(key: "access_token", value: accessToken);
+  }
+
+  // TODO: Duplicated code (included in login_controller)
+  Future<String?> retrieveAccessToken() async {
+    const FlutterSecureStorage storage = FlutterSecureStorage();
+    return await storage.read(key: "access_token");
+  }
+
+  // TODO: Duplicated code (included in login_controller)
+  Future<void> storeUserId(String id) async {
+    const FlutterSecureStorage storage = FlutterSecureStorage();
+    await storage.write(key: "user_id", value: id);
+  }
 }

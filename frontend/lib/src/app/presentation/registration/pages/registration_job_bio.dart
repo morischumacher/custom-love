@@ -1,16 +1,20 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/model/gender_model.dart';
 import 'package:frontend/src/app/model/interest_model.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/bio_textfield.dart';
+import 'package:frontend/src/app/presentation/registration/pages/widgets/dropdown_checkboxes/language_dropdown_checkbox.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/footer/footer.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/page_title.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/textfield.dart';
+import 'package:frontend/src/app/service/language_service.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:logger/logger.dart';
+import 'package:multi_dropdown/multiselect_dropdown.dart';
 
 import '../../../../config/theme.dart';
+import '../../../../config/widgets/exception_widget.dart';
+import '../../../model/language_model.dart';
 import '../enums/registration_page_enum.dart';
 
 class RegistrationJobBio extends StatefulWidget {
@@ -28,7 +32,8 @@ class RegistrationJobBio extends StatefulWidget {
     required this.location,
     required this.searchRadius,
     required this.job,
-    required this.bio
+    required this.bio,
+    required this.languages
   }) : super(key: key);
 
   final String? firstName;
@@ -36,22 +41,58 @@ class RegistrationJobBio extends StatefulWidget {
   final String? email;
   final String? password;
   final Gender? gender;
-  final Gender? preference;
+  final List<Gender> preference;
   final String? birthdate;
-  final Uint8List? profilePicture;
+  final XFile? profilePicture;
   final List<Interest> userInterestIdList;
   final Position? location;
   final double? searchRadius;
   late String? job;
   late String? bio;
+  final List<Language> languages;
 
   @override
   State<RegistrationJobBio> createState() => _RegistrationJobBioState();
 }
 
 class _RegistrationJobBioState extends State<RegistrationJobBio> {
+  @override
+  void initState() {
+    super.initState();
+    getLanguages();
+  }
+
+  void getLanguages() async {
+    try {
+      await _languageService.getLanguages().then((value) {
+        setState(() {
+          languageDto = value;
+          for (Language language in languageDto) {
+            pickedLanguages.options.add(
+                ValueItem(label: language.name, value: language)
+            );
+          }
+          for (Language language in widget.languages) {
+            pickedLanguages.addSelectedOption(
+                ValueItem<Language>(label: language.name, value: language)
+            );
+          }
+        });
+      });
+    } catch (e) {
+      setState(() {
+        httpError = true;
+      });
+    }
+  }
+
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
   final logger = Logger();
+
+  final LanguageService _languageService = LanguageService();
+  late List<Language> languageDto = [];
+  MultiSelectController<Language> pickedLanguages = MultiSelectController<Language>();
+  late bool httpError = false;
 
   @override
   Widget build(BuildContext context) {
@@ -71,23 +112,44 @@ class _RegistrationJobBioState extends State<RegistrationJobBio> {
                       children: <Widget>[
                         const PageTitle(
                           title: "Profile Bio",
-                          description: "Please specify your job and bio",
+                          description: "Optionally specify your job, bio, and which languages you speak",
                           bottomPadding: 70.0,
                         ),
-                        RegistrationTextfield(
-                            controller: widget.job,
-                            hintText: "Job",
-                            obscureText: false,
-                            callback: (val) => setState(() => widget.job = val)
-                        ),
-                        const SizedBox(height: 19.0),
-                        RegistrationBioTextfield(
-                            controller: widget.bio,
-                            hintText: "Bio",
-                            characterLimit: 256,
-                            callback: (val) => setState(() => widget.bio = val)
-                        ),
-
+                        if (httpError)
+                          const ExceptionWidget(
+                              httpStatus: "503",
+                              httpMessage: "Make sure that the backend is running"
+                          ),
+                        if (languageDto.isEmpty && !httpError)
+                          SizedBox(
+                              height: 100,
+                              width: 100,
+                              child: CircularProgressIndicator(
+                                  color: _customLoveTheme.primaryColor,
+                                  strokeWidth: 18
+                              )
+                          ),
+                        if (languageDto.isNotEmpty)
+                          Column(children: [
+                            RegistrationBioTextfield(
+                                controller: widget.bio,
+                                hintText: "Bio",
+                                characterLimit: 256,
+                                callback: (val) => setState(() => widget.bio = val)
+                            ),
+                            const SizedBox(height: 25.0),
+                            RegistrationTextfield(
+                                controller: widget.job,
+                                hintText: "Job",
+                                obscureText: false,
+                                callback: (val) => setState(() => widget.job = val)
+                            ),
+                            const SizedBox(height: 19.0),
+                            LanguageDropdownCheckbox(
+                                pickedLanguages: pickedLanguages,
+                                callback: (val) => setState(() {})
+                            ),
+                          ]),
                         const SizedBox(height: 25.0),
                         Expanded(child: Container()),
                         Footer(
@@ -104,7 +166,8 @@ class _RegistrationJobBioState extends State<RegistrationJobBio> {
                             location: widget.location,
                             searchRadius: widget.searchRadius,
                             job: widget.job,
-                            bio: widget.bio
+                            bio: widget.bio,
+                            languages: listValuesToLanguageList(pickedLanguages.selectedOptions),
                         )
                       ],
                     ),
@@ -114,8 +177,16 @@ class _RegistrationJobBioState extends State<RegistrationJobBio> {
             ),
           ),
         )
-
     );
+  }
 
+  List<Language> listValuesToLanguageList(List<ValueItem<Language>> valueItems) {
+    List<Language> extractedLanguages = [];
+    for (ValueItem<Language> item in valueItems) {
+      if (item.value != null) {
+        extractedLanguages.add(item.value!);
+      }
+    }
+    return extractedLanguages;
   }
 }
