@@ -322,6 +322,25 @@ class _SwipeState extends State<Swipe>{
     var id = user.id;
     var firstName = user.firstName;
     var distance = user.distance;
+    var genderIdentityId = user.gender_identity_id;
+
+    String gender = "";
+
+    switch (genderIdentityId) {
+      case 1:
+        gender = "Male";
+        break;
+      case 2:
+        gender = "Female";
+        break;
+      case 3:
+        gender = "Divers";
+        break;
+      default:
+        gender = "Male";
+        break;
+    }
+
     List<dynamic>? interests = [];
     if (user.interests != null) {
       interests = user.interests;
@@ -341,6 +360,7 @@ class _SwipeState extends State<Swipe>{
     return Content(
         id: id.toString(),
         name: firstName,
+        gender: gender,
         age: age,
         city: city,
         bio: user.bio,

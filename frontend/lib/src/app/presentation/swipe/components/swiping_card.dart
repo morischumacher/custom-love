@@ -2,12 +2,12 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/material.dart';
 import 'package:swipe_cards/swipe_cards.dart';
 import 'package:frontend/src/config/theme.dart';
 
 import '../../../service/swipe_status_service.dart';
-import '../../utils/secure_storage_service.dart';
 import '../../utils/interests.dart';
 
 import '../../../service/user_service.dart';
@@ -17,7 +17,7 @@ class SwipingCard extends StatefulWidget {
   final UserService userService;
   final SwipeStatusService swipeStatusService;
 
-  SwipingCard(
+  const SwipingCard(
       {super.key,
         required MatchEngine? matchEngine,
         required CustomLoveTheme customLoveTheme,
@@ -140,9 +140,15 @@ class _SwipingCardState extends State<SwipingCard> {
                           FittedBox(
                             child: Padding(
                               padding: const EdgeInsets.symmetric(horizontal: kIsWeb ? 50 : 40),
-                              child: Text(
-                                widget._swipeItem.content.name,
-                                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    widget._swipeItem.content.name,
+                                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                                  ),
+                                  widget._swipeItem.content.gender == "Divers" ? SizedBox(width: width * 0.01) : const SizedBox(),
+                                  widget._swipeItem.content.gender == "Female" ? SvgPicture.asset("lib/src/icons/svg/female.svg") : widget._swipeItem.content.gender == "Male" ? SvgPicture.asset("lib/src/icons/svg/male.svg") : SvgPicture.asset("lib/src/icons/svg/diverse.svg"),
+                                ],
                               ),
                             ),
                           ),
