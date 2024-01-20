@@ -99,11 +99,14 @@ def test_post_create_user_negative_duplicate_email(client, session):
 
     assert response.status_code == 422
     assert __extract_response_content(response.content.decode('utf-8')) == "User with provided email already exists"
+    user = session.exec(select(User).where(User.email == "kilo@email.com")).all()
+    assert len(user) == 1
 
 
-def test_post_create_user_negative_empty_names(client, session):
+def test_post_create_user_negative_names(client, session):
     __create_initial_data(client, session)
 
+    email: str = "kilo@email.com"
     response = __post_request(
         client,
         '/users/',
@@ -113,7 +116,31 @@ def test_post_create_user_negative_empty_names(client, session):
 
     assert response.status_code == 422
     assert __extract_response_content(response.content.decode('utf-8')) == 'First name cannot be empty, Last name cannot be empty'
+    user = session.exec(select(User).where(User.email == "kilo@email.com")).all()
+    assert len(user) == 0
 
+    response = __post_request(
+        client,
+        '/users/',
+        __define_header(),
+        __new_user_data(first_name="a" * 300, last_name="      ")
+    )
+    assert response.status_code == 422
+    assert __extract_response_content(response.content.decode('utf-8')) == 'Last name cannot be empty, First name cannot be longer than 256 characters'
+    user = session.exec(select(User).where(User.email == "kilo@email.com")).all()
+    assert len(user) == 0
+
+
+def test_post_create_user_negative_interests(client, session):
+    pass
+
+
+def test_post_create_user_negative_gender_preference(client, session):
+    pass
+
+
+def test_post_create_user_negative_dob(client, session):
+    pass
 
 
 def __create_initial_data(client, session) -> None:
