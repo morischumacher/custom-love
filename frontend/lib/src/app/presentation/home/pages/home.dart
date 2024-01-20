@@ -153,13 +153,8 @@ class _HomeScreenState extends State<HomeScreen> {
         : Scaffold(
             appBar: AppBar(
               automaticallyImplyLeading: getUrl(context).contains('messages') ? true : false,
-        title: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  getTitle(),
-                ],
-              ),
+        title: getTitle(),
+              centerTitle: true,
               backgroundColor: _customLoveTheme.neutralColor,
               actions: [
                 _currentPage.index == 1
@@ -192,25 +187,23 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget getTitle() {
-    Widget titleContent;
-    if (ModalRoute.of(context)!.settings.arguments
-        is MessagesPageRouteArguments) {
-      final args = ModalRoute.of(context)!.settings.arguments
-          as MessagesPageRouteArguments;
-      titleContent = Text("${args.user.firstName} ${args.user.lastName}");
-    } else {
-      titleContent = const Text(
-        'CUSTOMLOVE',
+    // Check if arguments are provided and set the title accordingly
+    final args = ModalRoute.of(context)?.settings.arguments;
+    bool isMessagePage = args is MessagesPageRouteArguments;
+
+    String titleText = isMessagePage
+        ? "${(args as MessagesPageRouteArguments).user.firstName} ${(args as MessagesPageRouteArguments).user.lastName}"
+        : 'CUSTOMLOVE';
+
+    // Use a FittedBox to ensure the title always fits within the available space
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      child: Text(
+        titleText,
         style: TextStyle(
-          color: Color(0xFFE91E63),
+          color: isMessagePage ? Colors.white : Color(0xFFE91E63),
           fontWeight: FontWeight.bold,
         ),
-      );
-    }
-
-    return Expanded(
-      child: Center(
-        child: titleContent,
       ),
     );
   }
