@@ -181,7 +181,7 @@ class OnboardingPageState extends State<OnboardingPage> {
           title: "Take Your Time to Connect!",
           image: _buildImage("lib/src/icons/hourglass.png"),
           body:
-          "At CustomLove we believe in making meaningful connections.\n\n Each suggestion comes with a 10s countdown, giving you the opportunity to explore the profile of the user more thoughtfully.\n Once the timer has expired, the swipe card's background color turns white, allowing you to proceed with the swipe.",
+          "At CustomLove we believe in making meaningful connections.\n\n Each suggestion comes with a 10s countdown, giving you the opportunity to explore the profile of the user more thoughtfully.",
           decoration: pageDecoration,
         ),
         PageViewModel(
