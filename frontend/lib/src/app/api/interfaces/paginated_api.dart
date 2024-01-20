@@ -11,6 +11,8 @@ abstract class PaginatedApi<T> extends BaseApi {
 
   PaginatedApi(super.client, this._url, this._factory);
 
+  String get url => _url;
+
   Future<Map<int, T>> getAll() async {
     // token is hardcoded, waiting for a ticket about saving jwt tokens to app state
     PaginationApi paginationApi = PaginationApi(_url);

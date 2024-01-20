@@ -9,8 +9,11 @@ from backend.models.expert_system import ExpertSystem
 from backend.models.swipe_status import SwipeStatus, SwipeStatusType
 from backend.models.user import User
 from backend.repository.repository import create_session
+from backend.requests.train_data_decisions import DecisionsRequest
 from backend.utils.token import get_current_user
 from backend.services.swipe_status import set_swipe_status_trained_for_model_true
+from backend.datagenerator.data.exsys_training_data import exsys_trainings_data
+
 
 
 def get_expert_system_by_user_id(user_id, db: Annotated[Session, Depends(create_session)]):
@@ -28,19 +31,80 @@ def get_expert_system_by_user_id(user_id, db: Annotated[Session, Depends(create_
         raise BadRequestException(f"More than one expert systems of user with id = {user_id}")
     return expert_system[0]
 
-# TODO Test in upcoming workflows
-def post_expert_system(expert_system: ExpertSystem, db: Annotated[Session, Depends(create_session)]):
+
+
+def train_model(decisions_request: DecisionsRequest):
     """
-    Create an expert system, this function should be only used in sign up process
-    :param expert_system: the expert_system to be added
+    Train the model using ExSys class
+    :param decisions_request: decisions from the user on training data
+    :return: trained ExSys object
+    """
+    expert_system = ExSys(None)
+
+    # Create training data
+    X_train = []
+
+    # Add training user data
+    for dummyuser in exsys_trainings_data:
+        actual_user = exsys_trainings_data.get(dummyuser)
+        X_train.append([
+            actual_user["age"],
+            actual_user["biolenght"],
+            actual_user["genderid"],
+            actual_user["sports"],
+            actual_user["movies"],
+            actual_user["travel"],
+            actual_user["books"],
+            actual_user["science"],
+            actual_user["music"],
+            actual_user["art"],
+            actual_user["food"],
+            actual_user["technology"],
+            actual_user["fashion"],
+            actual_user["photography"],
+            actual_user["gaming"],
+            actual_user["nature"],
+            actual_user["history"],
+            actual_user["fitness"],
+            actual_user["crafts"],
+            actual_user["writing"],
+            actual_user["gardening"],
+            actual_user["philosophy"],
+            actual_user["coding"]
+        ])
+
+    y_train = decisions_request.decisions
+
+    expert_system.train_model_with_fixed_training_data(X_train, y_train)
+
+    return expert_system
+
+def post_expert_system(user: Annotated[User, Depends(get_current_user)], db: Annotated[Session, Depends(create_session)],
+                       decisions_request: DecisionsRequest):
+    """
+    Create an expert system, this function should be only used in the sign-up process
+    :param decisions_request: decisions from the user on training data
+    :param user: current user
     :param db: injected database
     :return: an ExpertSystem object (with the id)
     """
 
+    if not set(decisions_request.decisions) == {0, 1}:
+        return BadRequestException("Decisions have to contain likes and dislikes!")
+
+    if not len(decisions_request.decisions) == 14:
+        return BadRequestException("It has to be exactly 14 decisions!")
+
+    trained_exsys = train_model(decisions_request)
+
+    serialized_model = trained_exsys.serialize_model()
+
+    expert_system = ExpertSystem(model=serialized_model, user_id=user.id)
+
     db.add(expert_system)
     db.commit()
     db.refresh(expert_system)
-    return expert_system
+    return f"Added Expert System for User with Id {user.id}"
 
 
 def update_expert_system(user: Annotated[User, Depends(get_current_user)],

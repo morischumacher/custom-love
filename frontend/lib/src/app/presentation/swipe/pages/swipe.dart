@@ -170,15 +170,18 @@ class _SwipeState extends State<Swipe>{
   Widget build(BuildContext context) {
     height = MediaQuery.of(context).size.height;
     width = min(MediaQuery.of(context).size.width, 750);
-    return Scaffold(
-      key: _scaffoldKey,
-      backgroundColor: _customLoveTheme.neutralColor,
-      body: Center(
-          child: _swipeItemLoaded
-              ? getSwipeCard()
-              : Center(
-                  child: CircularProgressIndicator(
-                      color: _customLoveTheme.primaryColor))),
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        key: _scaffoldKey,
+        backgroundColor: _customLoveTheme.neutralColor,
+        body: Center(
+            child: _swipeItemLoaded
+                ? getSwipeCard()
+                : Center(
+                    child: CircularProgressIndicator(
+                        color: _customLoveTheme.primaryColor))),
+      ),
     );
   }
 

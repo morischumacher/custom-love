@@ -16,17 +16,15 @@ from backend.utils.token import get_current_user
 from fastapi import Response
 
 
-def get_profile_picture(user: Annotated[User, Depends(get_current_user)], db: Annotated[Session, Depends(create_session)], picture_id: int | None = None):
-    if picture_id is None:
-        return [element.id for element in db.exec(select(ProfilePicture).where(ProfilePicture.user_id == user.id)).all()]
+def get_profile_picture(user: Annotated[User, Depends(get_current_user)], db: Annotated[Session, Depends(create_session)], user_id: int | None = None):
+    if user_id is None:
+        return [element.id for element in db.exec(select(ProfilePicture).where(ProfilePicture.user_id == user_id)).all()]
 
-    image = db.exec(select(ProfilePicture).where(ProfilePicture.id == picture_id)).first()
+    image = db.exec(select(ProfilePicture).where(ProfilePicture.user_id == user_id)).first()
 
     if image is None:
-        raise NotFoundException(f"Image with the id: #{picture_id} was not found")
+        raise NotFoundException(f"Image of user with Id: #{user_id} was not found")
 
-    if image.user_id != user.id:
-        raise CredentialsException("Unauthorized call")
 
     return Response(content=image.content, media_type=image.content_type)
 

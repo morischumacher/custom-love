@@ -28,7 +28,7 @@ class ExSys:
         """
 
         # Creates a logic regression model
-        model = LogisticRegression()
+        model = LogisticRegression(max_iter=1000)
 
         # Build input for model
         X_train, y_train = users_and_likes_to_x_train_y_train(user_list, like_decisions)
@@ -41,7 +41,7 @@ class ExSys:
 
         return model
 
-    def train_model_for_test(self, X_train, y_train):
+    def train_model_with_fixed_training_data(self, X_train, y_train):
         """
         Retrieves trainingsdata to train a model based on this. length(user_list)==length(like_decisions)
         (Only relevant for our trainingsdata form data_generator.py
@@ -52,7 +52,7 @@ class ExSys:
         """
 
         # Creates a logic regression model
-        model = LogisticRegression()
+        model = LogisticRegression(max_iter=1000)
 
         # Train model
         model.fit(X_train, y_train)

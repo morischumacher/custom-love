@@ -1,16 +1,18 @@
 from typing import Annotated
 from fastapi import Depends
 from fastapi_pagination.ext.sqlmodel import paginate
-from sqlalchemy import and_, update
-from sqlmodel import Session, select, or_
+from sqlmodel import Session, select, or_, exists, and_, update
 from starlette.requests import Request
 from backend.exceptions.fatal_exception import FatalException
 from backend.exceptions.validation_exception import ValidationException
+from backend.models.conversation import Conversation
 from backend.models.swipe_status import SwipeStatus, SwipeStatusType
 from backend.models.user import User
 from backend.repository.repository import create_session
+from backend.responses.notification import Notification
 from backend.utils.pagination import PaginationParams
 from backend.utils.token import get_current_user
+from backend.utils.connection_manager import connection_manager
 
 
 def get_matches(
@@ -18,10 +20,29 @@ def get_matches(
         user: Annotated[User, Depends(get_current_user)],
         request: Request
 ):
-    return paginate(db, select(SwipeStatus).where(
+    query = select(
+        SwipeStatus
+    ).where(
         SwipeStatus.status == SwipeStatusType.match,
         or_(SwipeStatus.user1_id == user.id, SwipeStatus.user2_id == user.id)
-    ), PaginationParams(size=request.query_params.get("size"), page=request.query_params.get("page")))
+    ).where(
+        ~exists(
+            select(Conversation).where(
+                or_(
+                    and_(
+                        Conversation.user1_id ==  SwipeStatus.user1_id,
+                        Conversation.user2_id == SwipeStatus.user2_id
+                    ),
+                    and_(
+                        Conversation.user1_id == SwipeStatus.user2_id,
+                        Conversation.user2_id == SwipeStatus.user1_id
+                    )
+                )
+            )
+        )
+    )
+
+    return paginate(db, query, PaginationParams(size=request.query_params.get("size"), page=request.query_params.get("page")))
 
 
 def post_view(
@@ -59,7 +80,7 @@ def post_view(
     return new_swipe_status
 
 
-def post_like(
+async def post_like (
         db: Annotated[Session, Depends(create_session)],
         user: Annotated[User, Depends(get_current_user)],
         user_id: int
@@ -107,6 +128,31 @@ def post_like(
         db.add(user_2_swipe_obj)
         db.commit()
         db.refresh(user_2_swipe_obj)
+
+        await connection_manager.send_notification(
+            user_id,
+            Notification(
+                {
+                    "type": "match",
+                    "content": {
+                        "user_id": user.id,
+                        "match_id": user_2_swipe_obj.id
+                    }
+                }
+            )
+        )
+        await connection_manager.send_notification(
+            user.id,
+            Notification(
+                {
+                    "type": "match",
+                    "content": {
+                        "user_id": user_id,
+                        "match_id": user_2_swipe_obj.id
+                    }
+                }
+            )
+        )
 
         return user_2_swipe_obj
     else:

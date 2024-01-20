@@ -45,3 +45,15 @@ def test_post_conversations_with_oneself(client: TestClient, session: Session):
     response = authorized_request(token, client, lambda c: c.post, f"/conversations/{users[0].id}")
 
     assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+def test_post_existing_conversation(client: TestClient, session: Session):
+    users = [user_alfa(), user_beta()]
+    load_entities(users, session)
+
+    conversation = Conversation(user1_id=users[0].id, user2_id=users[1].id)
+    load_entities([conversation], session)
+
+    token = login(users[0].email, RAW_PASSWORD, client)
+    response = authorized_request(token, client, lambda c: c.post, f"/conversations/{users[1].id}")
+
+    assert response.status_code == status.HTTP_400_BAD_REQUEST

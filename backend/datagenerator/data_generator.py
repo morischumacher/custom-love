@@ -3,17 +3,19 @@ from sqlalchemy.engine import Engine
 from sqlmodel import Session, select
 from backend.models.conversation import Conversation
 from backend.models.gender_identity import GenderIdentity
+from backend.models.image import ProfilePicture
 from backend.models.interest import Interest
 from backend.models.language import Language
 import os
 from dotenv import load_dotenv
+from backend.services.profile_picture import post_profile_picture
 from backend.models.preference import Preference
 from backend.models.expert_system import ExpertSystem
 from backend.models.rating import Rating
 from backend.models.swipe_status import SwipeStatus, SwipeStatusType
 from backend.models.user import User
 from backend.utils.passwords import hash_pwd
-from backend.datagenerator.data.features import language_dict
+from backend.datagenerator.data.features import interests_dict, language_dict
 from backend.datagenerator.data.exsys_training_data import exsys_trainings_data
 from backend.algo.exsys import ExSys
 load_dotenv()
@@ -114,7 +116,7 @@ class DataGenerator:
                 ])
                 y_train.append(actual_user["liked"])
 
-            expert_system.train_model_for_test(X_train, y_train)
+            expert_system.train_model_with_fixed_training_data(X_train, y_train)
 
             serialized_model = expert_system.serialize_model()
 
@@ -139,6 +141,16 @@ class DataGenerator:
                 latitude=48.227982,
                 longitude=16.372316
             )
+            session.add(user_alfa)
+            with open("backend/datagenerator/data/male_image.jpeg", "rb") as image_file:
+                image = ProfilePicture(
+                    user_id=1,
+                    content=image_file.read(),
+                    filename="test_image",
+                    content_type="image/jpeg",
+                )
+                session.add(image)
+
             user_bravo = User(
                 first_name='Bravo',
                 last_name='Bravonson',
@@ -159,6 +171,16 @@ class DataGenerator:
                 latitude=48.215178,
                 longitude=16.354447
             )
+            session.add(user_bravo)
+            with open("backend/datagenerator/data/female_image.jpeg", "rb") as image_file:
+                image = ProfilePicture(
+                    user_id=2,
+                    content=image_file.read(),
+                    filename="test_image",
+                    content_type="image/jpeg",
+                )
+                session.add(image)
+
             user_charlie = User(
                 first_name='Charlie',
                 last_name='Charlieson',
@@ -179,6 +201,15 @@ class DataGenerator:
                 latitude=48.172097,
                 longitude=16.294326
             )
+            session.add(user_charlie)
+            with open("backend/datagenerator/data/female_image.jpeg", "rb") as image_file:
+                image = ProfilePicture(
+                    user_id=3,
+                    content=image_file.read(),
+                    filename="test_image",
+                    content_type="image/jpeg",
+                )
+                session.add(image)
 
             user_delta = User(
                 first_name='Delta',
@@ -200,6 +231,15 @@ class DataGenerator:
                 latitude=48.208174,
                 longitude=16.373819
             )
+            session.add(user_delta)
+            with open("backend/datagenerator/data/male_image.jpeg", "rb") as image_file:
+                image = ProfilePicture(
+                    user_id=4,
+                    content=image_file.read(),
+                    filename="test_image",
+                    content_type="image/jpeg",
+                )
+                session.add(image)
 
             user_echo = User(
                 first_name='Echo',
@@ -221,6 +261,15 @@ class DataGenerator:
                 latitude=48.200519,
                 longitude=16.369796
             )
+            session.add(user_echo)
+            with open("backend/datagenerator/data/female_image.jpeg", "rb") as image_file:
+                image = ProfilePicture(
+                    user_id=5,
+                    content=image_file.read(),
+                    filename="test_image",
+                    content_type="image/jpeg",
+                )
+                session.add(image)
 
             user_foxtrot = User(
                 first_name='Foxtrot',
@@ -242,6 +291,15 @@ class DataGenerator:
                 latitude=48.213185,
                 longitude=16.377086
             )
+            session.add(user_foxtrot)
+            with open("backend/datagenerator/data/male_image.jpeg", "rb") as image_file:
+                image = ProfilePicture(
+                    user_id=6,
+                    content=image_file.read(),
+                    filename="test_image",
+                    content_type="image/jpeg",
+                )
+                session.add(image)
 
             user_golf = User(
                 first_name='Golf',
@@ -263,6 +321,15 @@ class DataGenerator:
                 latitude=48.225241,
                 longitude=16.366003
             )
+            session.add(user_golf)
+            with open("backend/datagenerator/data/male_image.jpeg", "rb") as image_file:
+                image = ProfilePicture(
+                    user_id=7,
+                    content=image_file.read(),
+                    filename="test_image",
+                    content_type="image/jpeg",
+                )
+                session.add(image)
 
             user_hotel = User(
                 first_name='Hotel',
@@ -284,6 +351,15 @@ class DataGenerator:
                 latitude=48.214828,
                 longitude=16.371755
             )
+            session.add(user_hotel)
+            with open("backend/datagenerator/data/female_image.jpeg", "rb") as image_file:
+                image = ProfilePicture(
+                    user_id=8,
+                    content=image_file.read(),
+                    filename="test_image",
+                    content_type="image/jpeg",
+                )
+                session.add(image)
 
             user_journal = User(
                 first_name='Journal',
@@ -305,6 +381,15 @@ class DataGenerator:
                 latitude=48.220692,
                 longitude=16.376215
             )
+            session.add(user_journal)
+            with open("backend/datagenerator/data/female_image.jpeg", "rb") as image_file:
+                image = ProfilePicture(
+                    user_id=9,
+                    content=image_file.read(),
+                    filename="test_image",
+                    content_type="image/jpeg",
+                )
+                session.add(image)
 
             user_kitchen = User(
                 first_name='Kitchen',
@@ -326,6 +411,15 @@ class DataGenerator:
                 latitude=48.204692,
                 longitude=16.361950
             )
+            session.add(user_kitchen)
+            with open("backend/datagenerator/data/male_image.jpeg", "rb") as image_file:
+                image = ProfilePicture(
+                    user_id=10,
+                    content=image_file.read(),
+                    filename="test_image",
+                    content_type="image/jpeg",
+                )
+                session.add(image)
 
             user_lima = User(
                 first_name='Lima',
@@ -347,6 +441,15 @@ class DataGenerator:
                 latitude=48.231217,
                 longitude=16.355386
             )
+            session.add(user_lima)
+            with open("backend/datagenerator/data/female_image.jpeg", "rb") as image_file:
+                image = ProfilePicture(
+                    user_id=11,
+                    content=image_file.read(),
+                    filename="test_image",
+                    content_type="image/jpeg",
+                )
+                session.add(image)
 
             user_mountain = User(
                 first_name='Mountain',
@@ -368,6 +471,15 @@ class DataGenerator:
                 latitude=48.205377,
                 longitude=16.338982
             )
+            session.add(user_mountain)
+            with open("backend/datagenerator/data/male_image.jpeg", "rb") as image_file:
+                image = ProfilePicture(
+                    user_id=12,
+                    content=image_file.read(),
+                    filename="test_image",
+                    content_type="image/jpeg",
+                )
+                session.add(image)
 
             user_novelist = User(
                 first_name='Novelist',
@@ -389,6 +501,15 @@ class DataGenerator:
                 latitude=48.229243,
                 longitude=16.328042
             )
+            session.add(user_novelist)
+            with open("backend/datagenerator/data/male_image.jpeg", "rb") as image_file:
+                image = ProfilePicture(
+                    user_id=13,
+                    content=image_file.read(),
+                    filename="test_image",
+                    content_type="image/jpeg",
+                )
+                session.add(image)
 
             user_observatory = User(
                 first_name='Observatory',
@@ -410,6 +531,15 @@ class DataGenerator:
                 latitude=48.215407,
                 longitude=16.383019
             )
+            session.add(user_observatory)
+            with open("backend/datagenerator/data/male_image.jpeg", "rb") as image_file:
+                image = ProfilePicture(
+                    user_id=14,
+                    content=image_file.read(),
+                    filename="test_image",
+                    content_type="image/jpeg",
+                )
+                session.add(image)
 
             user_painting = User(
                 first_name='Painting',
@@ -431,6 +561,15 @@ class DataGenerator:
                 latitude=48.198285,
                 longitude=16.351907
             )
+            session.add(user_painting)
+            with open("backend/datagenerator/data/female_image.jpeg", "rb") as image_file:
+                image = ProfilePicture(
+                    user_id=15,
+                    content=image_file.read(),
+                    filename="test_image",
+                    content_type="image/jpeg",
+                )
+                session.add(image)
 
             user_quiet = User(
                 first_name='Quiet',
@@ -452,6 +591,15 @@ class DataGenerator:
                 latitude=48.221002,
                 longitude=16.364694
             )
+            session.add(user_quiet)
+            with open("backend/datagenerator/data/female_image.jpeg", "rb") as image_file:
+                image = ProfilePicture(
+                    user_id=16,
+                    content=image_file.read(),
+                    filename="test_image",
+                    content_type="image/jpeg",
+                )
+                session.add(image)
 
             user_robotics = User(
                 first_name='Robotics',
@@ -473,6 +621,15 @@ class DataGenerator:
                 latitude=48.212813,
                 longitude=16.339321
             )
+            session.add(user_robotics)
+            with open("backend/datagenerator/data/male_image.jpeg", "rb") as image_file:
+                image = ProfilePicture(
+                    user_id=17,
+                    content=image_file.read(),
+                    filename="test_image",
+                    content_type="image/jpeg",
+                )
+                session.add(image)
 
             user_sailing = User(
                 first_name='Sailing',
@@ -494,6 +651,15 @@ class DataGenerator:
                 latitude=48.225899,
                 longitude=16.356740
             )
+            session.add(user_sailing)
+            with open("backend/datagenerator/data/male_image.jpeg", "rb") as image_file:
+                image = ProfilePicture(
+                    user_id=18,
+                    content=image_file.read(),
+                    filename="test_image",
+                    content_type="image/jpeg",
+                )
+                session.add(image)
 
             user_theater = User(
                 first_name='Theater',
@@ -515,6 +681,15 @@ class DataGenerator:
                 latitude=48.207308,
                 longitude=16.377155
             )
+            session.add(user_theater)
+            with open("backend/datagenerator/data/female_image.jpeg", "rb") as image_file:
+                image = ProfilePicture(
+                    user_id=19,
+                    content=image_file.read(),
+                    filename="test_image",
+                    content_type="image/jpeg",
+                )
+                session.add(image)
 
             user_urban = User(
                 first_name='Urban',
@@ -536,6 +711,15 @@ class DataGenerator:
                 latitude=48.219170,
                 longitude=16.354686
             )
+            session.add(user_urban)
+            with open("backend/datagenerator/data/male_image.jpeg", "rb") as image_file:
+                image = ProfilePicture(
+                    user_id=20,
+                    content=image_file.read(),
+                    filename="test_image",
+                    content_type="image/jpeg",
+                )
+                session.add(image)
 
             user_volunteer = User(
                 first_name='Volunteer',
@@ -557,6 +741,15 @@ class DataGenerator:
                 latitude=48.223641,
                 longitude=16.341989
             )
+            session.add(user_volunteer)
+            with open("backend/datagenerator/data/female_image.jpeg", "rb") as image_file:
+                image = ProfilePicture(
+                    user_id=21,
+                    content=image_file.read(),
+                    filename="test_image",
+                    content_type="image/jpeg",
+                )
+                session.add(image)
 
             user_wildlife = User(
                 first_name='Wildlife',
@@ -578,7 +771,16 @@ class DataGenerator:
                 latitude=48.231890,
                 longitude=16.363775
             )
-
+            session.add(user_wildlife)
+            with open("backend/datagenerator/data/male_image.jpeg", "rb") as image_file:
+                image = ProfilePicture(
+                    user_id=22,
+                    content=image_file.read(),
+                    filename="test_image",
+                    content_type="image/jpeg",
+                )
+                session.add(image)
+            session.commit()
 
             # Rating
             alfa_bravo_rating = Rating(id=1, rating_user_id=user_alfa.id, rated_user_id=user_bravo.id, is_safe=True)
@@ -591,10 +793,14 @@ class DataGenerator:
             session.refresh(user_bravo)
 
             # Conversations
-            for user in [user_bravo, user_charlie, user_delta, user_foxtrot, user_echo, user_golf, user_hotel, user_kitchen]:
+            for user in [user_bravo, user_charlie, user_delta, user_foxtrot, user_echo]:
                 session.add(SwipeStatus(user1_id=user_alfa.id, user2_id=user.id, status=SwipeStatusType.match))
                 session.add(Conversation(user1_id=user_alfa.id, user2_id=user.id))
 
+            session.add(SwipeStatus(user1_id=user_alfa.id, user2_id=user_golf.id, status=SwipeStatusType.match))
+            session.add(SwipeStatus(user1_id=user_alfa.id, user2_id=user_hotel.id, status=SwipeStatusType.match))
+            session.add(SwipeStatus(user1_id=user_alfa.id, user2_id=user_kitchen.id, status=SwipeStatusType.match))
+            session.add(SwipeStatus(user1_id=user_bravo.id, user2_id=user_charlie.id, status=SwipeStatusType.match))
             session.commit()
 
             # Rating
@@ -628,3 +834,4 @@ class DataGenerator:
             session.add(ExpertSystem(model=serialized_model, user_id=21))
             session.add(ExpertSystem(model=serialized_model, user_id=22))
             session.commit()
+

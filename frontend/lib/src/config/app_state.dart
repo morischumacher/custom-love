@@ -2,12 +2,14 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:frontend/src/app/model/collection_model.dart';
 import 'package:frontend/src/app/presentation/authentification/pages/logout_page.dart';
 import 'package:frontend/src/app/service/match_service.dart';
 import 'package:frontend/src/app/service/message_service.dart';
 import 'package:frontend/src/app/service/user_service.dart';
 import 'package:frontend/src/config/api_config.dart';
+import 'package:frontend/src/config/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -17,7 +19,9 @@ import '../app/model/match_model.dart';
 import '../app/model/message_model.dart';
 import '../app/model/notification_model.dart';
 import '../app/model/user_model.dart';
+import '../app/presentation/chat/pages/messages_page.dart';
 import '../app/service/conversation_service.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 abstract class CollectionStorage extends ChangeNotifier {
   bool loading = false;
@@ -30,6 +34,17 @@ class UserStorage extends CollectionStorage {
 
 class ConversationStorage extends CollectionStorage {
   Collection<Conversation> conversations = Collection<Conversation>();
+
+  Future<Conversation> addConversation(
+      int userId, ConversationService conversationService) async {
+    Conversation conversation =
+        await conversationService.createConversation(userId);
+    conversations.items.putIfAbsent(conversation.id, () => conversation);
+
+    notifyListeners();
+
+    return conversation;
+  }
 }
 
 class MessageStorage extends CollectionStorage {
@@ -67,14 +82,52 @@ class MessageStorage extends CollectionStorage {
 
 class MatchStorage extends CollectionStorage {
   Collection<Match> matches = Collection<Match>();
+
+  void removeMatch(int index) {
+    Match match = matches.items.values.elementAt(index);
+    matches.items.remove(match.id);
+    notifyListeners();
+  }
 }
 
 class StateManager extends ChangeNotifier {
-  User? user;
+  User? _user;
   WebSocketChannel? socket;
   bool connected = false;
   int loginRetries = 10;
   bool initialized = false;
+
+  User? get user {
+    unawaited(getUser());
+    return _user;
+  }
+
+  Future<void> getUser() async {
+    if (_user != null) {
+      return;
+    }
+
+    const FlutterSecureStorage storage = FlutterSecureStorage();
+    String? u = await storage.read(key: "user");
+    if (u == null) {
+      return;
+    }
+
+    _user = User.fromJson(json.decode(u));
+    notifyListeners();
+  }
+
+  set user(User? value) {
+    if (value == null) {
+      _user = value;
+      return;
+    }
+
+    const FlutterSecureStorage storage = FlutterSecureStorage();
+    unawaited(storage.write(key: "user", value: jsonEncode(value)));
+
+    _user = value;
+  }
 
   Future<void> registerUser(User user, BuildContext buildContext) async {
     // save the current user
@@ -84,7 +137,8 @@ class StateManager extends ChangeNotifier {
     await connect(buildContext);
   }
 
-  Future<void> initialize(BuildContext buildContext, {bool force = false}) async {
+  Future<void> initialize(BuildContext buildContext,
+      {bool force = false}) async {
     List<Future<void>> tasks = List<Future<void>>.from({
       initializeUsers(buildContext, force: force),
       initializeConversations(buildContext, force: force),
@@ -98,7 +152,8 @@ class StateManager extends ChangeNotifier {
     initialized = true;
   }
 
-  Future<void> initializeUsers(BuildContext buildContext, {bool force = false}) async {
+  Future<void> initializeUsers(BuildContext buildContext,
+      {bool force = false}) async {
     UserService userService = buildContext.read<UserService>();
     UserStorage userStorage =
         Provider.of<UserStorage>(buildContext, listen: false);
@@ -125,13 +180,17 @@ class StateManager extends ChangeNotifier {
 
     userStorage.notifyListeners();
   }
-  
-  Future<void> initializeConversations(BuildContext buildContext, {bool force = false}) async {
-    ConversationService conversationService = buildContext.read<ConversationService>();
+
+  Future<void> initializeConversations(BuildContext buildContext,
+      {bool force = false}) async {
+    ConversationService conversationService =
+        buildContext.read<ConversationService>();
     MessageService messageService = buildContext.read<MessageService>();
 
-    ConversationStorage conversationStorage = Provider.of<ConversationStorage>(buildContext, listen: false);
-    MessageStorage messageStorage = Provider.of<MessageStorage>(buildContext, listen: false);
+    ConversationStorage conversationStorage =
+        Provider.of<ConversationStorage>(buildContext, listen: false);
+    MessageStorage messageStorage =
+        Provider.of<MessageStorage>(buildContext, listen: false);
 
     if (force) {
       conversationStorage.initiated = false;
@@ -177,7 +236,8 @@ class StateManager extends ChangeNotifier {
     messageStorage.notifyListeners();
   }
 
-  Future<void> initializeMatches(BuildContext buildContext, {bool force = false}) async {
+  Future<void> initializeMatches(BuildContext buildContext,
+      {bool force = false}) async {
     MatchService matchService = buildContext.read<MatchService>();
     MatchStorage matchStorage =
         Provider.of<MatchStorage>(buildContext, listen: false);
@@ -201,6 +261,8 @@ class StateManager extends ChangeNotifier {
   }
 
   Future<void> connect(BuildContext buildContext) async {
+    const CustomLoveTheme theme = CustomLoveTheme();
+
     // get the token
     String? token = await JWTApi.retrieveAccessToken();
 
@@ -208,12 +270,102 @@ class StateManager extends ChangeNotifier {
     socket = WebSocketChannel.connect(
         Uri.parse("${ApiConfig.socketsUrl}/users/socket/$token"));
 
-    socket?.stream.listen((event) {
+    UserStorage userStorage =
+        Provider.of<UserStorage>(buildContext, listen: false);
+
+    socket?.stream.listen((event) async {
       NotificationModel notification =
           NotificationModel.fromJson(jsonDecode(jsonDecode(event)));
       switch (notification.type) {
         case "message":
           receiveMessage(Message.fromJson(notification.content), buildContext);
+          break;
+        case "refresh":
+          await Provider.of<StateManager>(buildContext, listen: false)
+              .initialize(buildContext, force: true);
+          break;
+        case "match":
+          // pull new matches, conversations and messages
+          await Provider.of<StateManager>(buildContext, listen: false)
+              .initialize(buildContext, force: true);
+
+          int userId = notification.content["user_id"];
+          int matchId = notification.content["match_id"];
+          User? user = userStorage.users.items[userId];
+
+          if (user == null) {
+            print("user $userId was null");
+            return;
+          }
+
+          // ignore: use_build_context_synchronously
+          showDialog(
+              context: buildContext,
+              builder: (context) {
+                return AlertDialog(
+                  title: const Text('You have a new match!'),
+                  content: SingleChildScrollView(
+                    child: ListBody(
+                      children: <Widget>[
+                        Text("You and ${user.firstName} just matched"),
+                      ],
+                    ),
+                  ),
+                  actions: <Widget>[
+                    TextButton(
+                        onPressed: () {
+                          // hide the popup message
+                          Navigator.pop(context);
+                        },
+                        child: const Text('Dismiss')),
+                    TextButton(
+                      child: const Text('Say hi'),
+                      onPressed: () async {
+                        // create a conversation
+                        ConversationService conversationService =
+                            Provider.of<ConversationService>(context,
+                                listen: false);
+
+                        // when the users create the conversation in the same time
+                        // one of them will just land in the conversations page
+                        try {
+                          Conversation conversation = await Provider.of<
+                                  ConversationStorage>(context, listen: false)
+                              .addConversation(user.id, conversationService);
+                          Provider.of<MatchStorage>(context, listen: false)
+                              .removeMatch(matchId);
+
+                          // hide the popup message
+                          Navigator.pop(context);
+
+                          // navigate to the new conversation
+                          Navigator.pushNamed(context, "/home/matches/messages",
+                              arguments: MessagesPageRouteArguments(
+                                  user, conversation));
+                        } catch (e) {
+                          await Provider.of<StateManager>(buildContext,
+                                  listen: false)
+                              .initialize(buildContext, force: true);
+                          Navigator.pop(context);
+                          Navigator.pushNamed(
+                              context, "/home/matches/messages");
+                        }
+                      },
+                    ),
+                  ],
+                );
+              });
+
+        /*
+          Fluttertoast.showToast(
+            msg: "got a match with user ${notification.content}",
+            webShowClose: true,
+            toastLength: Toast.LENGTH_LONG,
+            timeInSecForIosWeb: 20,
+            webBgColor: theme.primaryColor,
+            textColor: theme.whiteColor,
+            backgroundColor: theme.primaryColor,
+          ); */
       }
     }, onDone: () {
       // ignore the callback when the closeCode is null
@@ -228,7 +380,7 @@ class StateManager extends ChangeNotifier {
       notifyListeners();
 
       if (socket?.closeReason == "logout") {
-        user = null;
+        _user = null;
         Navigator.of(buildContext).pushNamed(
           "/logout",
           arguments: const LogoutRouteArguments(
@@ -248,7 +400,7 @@ class StateManager extends ChangeNotifier {
       // if the retry threshold has been exceeded, logout
       if (loginRetries <= 0) {
         loginRetries = 10;
-        user = null;
+        _user = null;
         Navigator.of(buildContext).pushNamed(
           "/logout",
           arguments: const LogoutRouteArguments(
@@ -310,6 +462,38 @@ class ImageStorage extends ChangeNotifier {
     return bytes[id];
   }
 
+  void load(int id, Uint8List b) {
+    bytes[id] = b;
+    flags[id] = true;
+    notifyListeners();
+  }
+}
+
+class ProfileImageStorage extends ChangeNotifier {
+  // Shows if image with Id int loaded bool
+  Map<int, bool> flags = {};
+  // Actual image with id int
+  Map<int, Uint8List> bytes = {};
+
+  // Is Image with id loaded -> bool
+  bool loaded(int id) {
+    if (!flags.containsKey(id)) {
+      flags.putIfAbsent(id, () => false);
+    }
+
+    return flags[id]!;
+  }
+
+  // Get Image with id
+  Uint8List? getBytes(int id) {
+    if (!loaded(id)) {
+      return null;
+    }
+
+    return bytes[id];
+  }
+
+  // put image b with id in storage
   void load(int id, Uint8List b) {
     bytes[id] = b;
     flags[id] = true;
