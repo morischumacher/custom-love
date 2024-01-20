@@ -466,5 +466,7 @@ def __array_string_to_array(input_string: str) -> [int]:
     :param input_string: array of type string
     :return: integer-array of type array
     """
+    if input_string.strip() == '[]':
+        return []
     res = input_string.strip('][').split(', ')
     return [int(x) for x in res]
