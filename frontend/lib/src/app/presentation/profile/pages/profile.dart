@@ -28,7 +28,7 @@ class _ProfileState extends State<Profile> {
   }
 
   ImageService? _service;
-  ImageStorage? _storage;
+  ProfileImageStorage? _storage;
   final LoginController _logoutController = LoginController();
 
   Future<void> getProfilePicture() async {
@@ -39,8 +39,8 @@ class _ProfileState extends State<Profile> {
         return;
       }
 
-      String route = "profile-picture/${user!.profilePictureId}";
-      var tmp = await _service!.getImage(route);
+      // var tmp = await _service!.getImage("profile-picture/${widget.imageId}");
+      var tmp = await _service!.getImage("profile-picture/${user!.id}");
       _storage!.load(user!.profilePictureId, tmp);
     }
   }
@@ -63,11 +63,12 @@ class _ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
     _service = Provider.of<ImageService>(context);
-    _storage = Provider.of<ImageStorage>(context);
+    _storage = Provider.of<ProfileImageStorage>(context);
     getProfilePicture();
 
-    Consumer<ImageStorage> img = Consumer<ImageStorage>(
-      builder: (BuildContext context, ImageStorage storage, Widget? child) {
+    Consumer<ProfileImageStorage> img = Consumer<ProfileImageStorage>(
+      builder:
+          (BuildContext context, ProfileImageStorage storage, Widget? child) {
         int id = user!.profilePictureId;
 
         if (!storage.loaded(id)) {

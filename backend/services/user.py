@@ -182,7 +182,7 @@ def registration(
                 date_of_birth=__datetime_string_to_datetime(date_of_birth),
                 job=job if job is not None else "",
                 search_radius=search_radius,
-                swipes_left=50,
+                swipes_left=os.getenv('SWIPE_LIMIT'),
                 swipe_limit_reset_date=datetime.datetime.now() + datetime.timedelta(days=1),
                 languages=user_languages,
                 preferences=[],
