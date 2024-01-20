@@ -4,7 +4,9 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:frontend/src/app/api/expert_sys_api.dart';
 import 'package:frontend/src/app/presentation/home/pages/home.dart';
+import 'package:frontend/src/app/service/expert_sys_service.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:provider/provider.dart';
@@ -18,6 +20,7 @@ import '../../../service/user_service.dart';
 import '../../swipe/pages/swipe.dart';
 import '../../swipe/util/content.dart';
 import '../../utils/interests.dart';
+import '../../utils/secure_storage_service.dart';
 
 
 class OnboardingPage extends StatefulWidget {
@@ -32,6 +35,8 @@ class OnboardingPage extends StatefulWidget {
 class OnboardingPageState extends State<OnboardingPage> {
   final introKey = GlobalKey<IntroductionScreenState>();
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
+  final SecureStorageService secureStorageService = SecureStorageService();
+  late ExpertSysService expertSysService;
   late List<SwipeItem> swipeItems;
   late MatchEngine _matchEngine;
   late List<int> swipeDecisions;
@@ -44,6 +49,8 @@ class OnboardingPageState extends State<OnboardingPage> {
   @override
   void initState() {
     print("init");
+
+    expertSysService = Provider.of<ExpertSysService>(context, listen: false);
 
     swipeDecisions = List.filled(widget.usersContent.length, 0);
 
@@ -319,7 +326,6 @@ class OnboardingPageState extends State<OnboardingPage> {
                                             runSpacing: 4,
                                             children: swipeItems[index].content.interests.length > 0 ? List<Widget>.generate(swipeItems[index].content.interests.length,
                                                   (int i) {
-                                                print("interests: " + swipeItems[index].content.interests[i].toLowerCase());
                                                 Icon avatar = Interests.getIcon(swipeItems[index].content.interests[i].toLowerCase());
                                                 return ActionChip(
                                                   side: BorderSide(width: 1.5, color: _customLoveTheme.primaryColor),
@@ -382,7 +388,10 @@ class OnboardingPageState extends State<OnboardingPage> {
                             _allTrainingCardsSwiped = true;
                           });
                         }
-                        print("swipeDecisions: " + swipeDecisions.toString());
+
+                        print("swipe decisions: " + swipeDecisions.toString());
+                        String accessToken = await secureStorageService.retrieveAccessToken() as String;
+                        await expertSysService.postExpertSys(accessToken, swipeDecisions);
                       },
                       itemChanged: (SwipeItem item, int index) {},
                       leftSwipeAllowed: false,

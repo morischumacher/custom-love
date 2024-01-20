@@ -10,14 +10,18 @@ class ExpertSysApi {
   Future<String> postExpertSys(String accessToken,
       List<int> swipeDecisions) async {
 
+    final Map<String, dynamic> body = {
+      "decisions": swipeDecisions,
+    };
+
     final response = await httpClient.post(
-        Uri.parse('${ApiConfig.baseUrl}/train/model'),
+        Uri.parse('${ApiConfig.baseUrl}/users/train/model'),
         headers: {
           'Content-Type': 'application/json',
           'accept': 'application/json',
           'Authorization': 'Bearer $accessToken',
         },
-        body: jsonEncode(swipeDecisions),
+        body: jsonEncode(body),
     );
 
     if (response.statusCode == 200) {
