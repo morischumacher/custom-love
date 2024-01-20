@@ -47,7 +47,7 @@ class _ProfileState extends State<Profile> {
   }
 
   void getUsers() async {
-    await _loginController.retrieveUserId().then((id) {
+    await _secureStorageService.retrieveUserId().then((id) {
       widget.userService.getUserProfile(int.parse(id!)).then((value) {
         setState(() {
           user = value;
@@ -56,7 +56,7 @@ class _ProfileState extends State<Profile> {
     });
   }
 
-  final LoginController _loginController = LoginController();
+  final SecureStorageService _secureStorageService = SecureStorageService();
   final RegistrationController _controller = RegistrationController();
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
   UserDetailed? user;

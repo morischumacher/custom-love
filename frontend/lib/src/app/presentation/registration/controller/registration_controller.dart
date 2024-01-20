@@ -205,21 +205,4 @@ class RegistrationController {
     return languageStr.substring(0, languageStr.length - 2);
   }
 
-  // TODO: Duplicated code (included in login_controller)
-  Future<void> storeAccessToken(String accessToken) async {
-    const FlutterSecureStorage storage = FlutterSecureStorage();
-    await storage.write(key: "access_token", value: accessToken);
-  }
-
-  // TODO: Duplicated code (included in login_controller)
-  Future<String?> retrieveAccessToken() async {
-    const FlutterSecureStorage storage = FlutterSecureStorage();
-    return await storage.read(key: "access_token");
-  }
-
-  // TODO: Duplicated code (included in login_controller)
-  Future<void> storeUserId(String id) async {
-    const FlutterSecureStorage storage = FlutterSecureStorage();
-    await storage.write(key: "user_id", value: id);
-  }
 }
