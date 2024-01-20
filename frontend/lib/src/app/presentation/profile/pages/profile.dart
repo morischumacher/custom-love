@@ -39,9 +39,8 @@ class _ProfileState extends State<Profile> {
         return;
       }
 
-      // var tmp = await _service!.getImage("profile-picture/${widget.imageId}");
-      var tmp = await _service!
-          .getImage("profile-picture?picture_id=${user!.profilePictureId}");
+      String route = "profile-picture/${user!.profilePictureId}";
+      var tmp = await _service!.getImage(route);
       _storage!.load(user!.profilePictureId, tmp);
     }
   }
