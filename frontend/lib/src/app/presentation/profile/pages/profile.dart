@@ -24,8 +24,9 @@ class _ProfileState extends State<Profile> {
   }
 
   void getUsers() async {
+    String accessToken = await _loginController.retrieveAccessToken() as String;
     await _loginController.retrieveUserId().then((id) {
-      widget.userService.getUser(id).then((value) {
+      widget.userService.getUser(accessToken, id).then((value) {
         if (this.mounted) {
           setState(() {
             user = value;

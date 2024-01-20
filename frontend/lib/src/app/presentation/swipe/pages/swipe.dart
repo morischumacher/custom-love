@@ -199,8 +199,9 @@ class _SwipeState extends State<Swipe>{
   }
 
   Future<int> _checkSwipesLeft() async {
+    String accessToken = await _controller.retrieveAccessToken() as String;
     int currentSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(
-        userId, widget.userService);
+        accessToken, userId, widget.userService);
     if (currentSwipesLeft > 0) {
       SharedSwipeableEvent.swipeable.changeSwipeable(true);
     } else {
@@ -215,7 +216,8 @@ class _SwipeState extends State<Swipe>{
   }
 
   Future<void> _getMatchingAlgorithm() async {
-    await MatchingAlgorithm.getCurrentMatchingAlgorithm(userId, widget.userService).then((matchingAlgorithm){
+    String accessToken = await _controller.retrieveAccessToken() as String;
+    await MatchingAlgorithm.getCurrentMatchingAlgorithm(accessToken, userId, widget.userService).then((matchingAlgorithm){
       if (matchingAlgorithm != swipingAlgoId) {
         swipingAlgoId = matchingAlgorithm;
         algoIdNotifier?.setAlgoId(swipingAlgoId);

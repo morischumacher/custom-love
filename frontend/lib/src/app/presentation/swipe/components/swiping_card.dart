@@ -288,8 +288,9 @@ class _SwipingCardState extends State<SwipingCard> {
           child: ElevatedButton(
               onPressed: () async {
                 if (swipeableTimer) {
+                  String accessToken = await widget.controller.retrieveAccessToken() as String;
                   int tmpSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(
-                      widget._userId, widget.userService);
+                      accessToken, widget._userId, widget.userService);
                   if (tmpSwipesLeft > 0) {
                     widget._matchEngine!.currentItem?.nope();
                   }
@@ -310,8 +311,9 @@ class _SwipingCardState extends State<SwipingCard> {
           child: ElevatedButton(
               onPressed: () async {
                 if (swipeableTimer) {
+                  String accessToken = await widget.controller.retrieveAccessToken() as String;
                   int tmpSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(
-                      widget._userId, widget.userService);
+                      accessToken, widget._userId, widget.userService);
                   if (tmpSwipesLeft > 0) {
                     widget._matchEngine!.currentItem?.like();
                   }

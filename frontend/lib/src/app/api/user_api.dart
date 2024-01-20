@@ -23,9 +23,15 @@ class UserApi extends PaginatedApi<User> {
   @override
   UserApi copyWith(String urlParams) => UserApi.url(client, urlParams);
 
-  Future<User> getUser(var id) async {
+  Future<User> getUser(var accessToken, var id) async {
     final response =
-        await super.client.get(Uri.parse('${ApiConfig.baseUrl}/users/$id'));
+        await super.client.get(Uri.parse('${ApiConfig.baseUrl}/users/$id'),
+          headers: {
+            'Content-Type': 'application/json',
+            'accept': 'application/json',
+            'Authorization': 'Bearer $accessToken',
+          },
+        );
 
     if (response.statusCode == 200) {
       var tmp = json.decode(response.body);

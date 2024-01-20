@@ -10,9 +10,9 @@ class MatchingAlgorithm {
     return tmpMatchingAlgorithm;
   }
 
-  static Future<int> getCurrentMatchingAlgorithm(int userId, UserService userService) async {
+  static Future<int> getCurrentMatchingAlgorithm(String accessToken, int userId, UserService userService) async {
     int tmpMatchingAlgorithm = 0;
-    await userService.getUser(userId).then((User? user) {
+    await userService.getUser(accessToken, userId).then((User? user) {
       tmpMatchingAlgorithm = user!.matching_algorithm;
     });
     return tmpMatchingAlgorithm;
