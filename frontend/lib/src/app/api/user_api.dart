@@ -10,6 +10,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
 
+import '../model/user_detailed.dart';
 import 'interfaces/paginated_api.dart';
 
 class UserApi extends PaginatedApi<User> {
@@ -40,6 +41,23 @@ class UserApi extends PaginatedApi<User> {
     }
   }
 
+  Future<UserDetailed> getUserProfile(int id) async {
+    final response =
+    await super.client.get(Uri.parse('${ApiConfig.baseUrl}/users/profile/$id'));
+
+    if (response.statusCode == 200) {
+      var body = json.decode(response.body);
+      final UserDetailed user = UserDetailed.fromJson(body);
+      return user;
+    } else if (response.statusCode == 404) {
+      throw NotFoundException("User not found");
+    } else if (response.statusCode == 400) {
+      throw BadRequestException("Bad request");
+    } else {
+      throw Exception("Failed to load user");
+    }
+  }
+
   Future<User> updateUserLocation(
       Position userPosition, var accessToken) async {
     final Map<String, dynamic> body = {
@@ -59,6 +77,7 @@ class UserApi extends PaginatedApi<User> {
 
     if (response.statusCode == 200) {
       final dynamic jsonItem = json.decode(response.body);
+      print(jsonItem);
       final User user = User.fromJson(jsonItem);
       return user;
     } else if (response.statusCode == 404) {

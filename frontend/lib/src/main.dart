@@ -160,13 +160,15 @@ class CustomLove extends StatelessWidget {
                 password: null,
                 birthdate: null,
                 gender: null,
-                preference: null,
+                preference: [],
                 profilePicture: null,
                 userInterestIdList: [],
                 location: null,
                 searchRadius: null,
                 job: null,
-                bio: null);
+                bio: null,
+                languages: [],
+            );
           }
         },
       ),
