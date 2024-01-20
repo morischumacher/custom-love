@@ -170,8 +170,8 @@ class _SwipeState extends State<Swipe>{
   Widget build(BuildContext context) {
     height = MediaQuery.of(context).size.height;
     width = min(MediaQuery.of(context).size.width, 750);
-    return PopScope(
-      canPop: false,
+    return WillPopScope(
+      onWillPop: () async => false,
       child: Scaffold(
         key: _scaffoldKey,
         backgroundColor: _customLoveTheme.neutralColor,
