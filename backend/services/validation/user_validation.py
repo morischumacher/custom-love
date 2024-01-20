@@ -30,6 +30,10 @@ def validate_new_user(
     :return: list of validation exceptions
     """
     validation_exceptions: [str] = []
+    if len(first_name) == 0:
+        validation_exceptions.append("First name cannot be empty")
+    if len(last_name) == 0:
+        validation_exceptions.append("Last name cannot be empty")
     if len(first_name) > 255:
         validation_exceptions.append("First name cannot be longer than 256 characters")
     if len(last_name) > 255:

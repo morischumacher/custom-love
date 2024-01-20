@@ -136,6 +136,9 @@ def registration(
     :param language_ids: optional list of language id's of the user
     :return: a user object
     """
+    first_name = first_name.strip()
+    last_name = last_name.strip()
+    email = email.strip()
 
     # Retrieving properties from the db based on the id's
     user_gender_preferences: [GenderIdentity] = []
@@ -157,7 +160,7 @@ def registration(
     # Does a user with provided email already exist? If so, throw an exception
     users = db.exec(select(User).where(User.email == email)).all()
     if len(users) > 0:
-        raise ValidationException()
+        raise ValidationException(message="User with provided email already exists")
 
 
     # Do other properties violate against certain constraints? If so, throw an exception
@@ -165,7 +168,7 @@ def registration(
         first_name, last_name, email, bio, job, date_of_birth_datetime, user_interests, user_gender_preferences
     )
     if len(user_validation) > 0:
-        raise ValidationException()
+        raise ValidationException(message=', '.join(user_validation))
 
     gender_identity = db.exec(select(GenderIdentity).where(GenderIdentity.id == int(gender_identity_id))).first()
 

@@ -2,6 +2,7 @@ import json
 import io
 from datetime import datetime
 from operator import and_, or_
+import re
 
 from fastapi import UploadFile
 from sqlmodel import select
@@ -86,6 +87,35 @@ def test_post_create_user_positive_filled_options(client, session):
     )
 
 
+def test_post_create_user_negative_duplicate_email(client, session):
+    __create_initial_data(client, session)
+
+    email: str = "kilo@email.com"
+    response = __post_request(client, '/users/', __define_header(), __new_user_data(email=email))
+
+    assert response.status_code == 200
+
+    response = __post_request(client, '/users/', __define_header(), __new_user_data(email=email))
+
+    assert response.status_code == 422
+    assert __extract_response_content(response.content.decode('utf-8')) == "User with provided email already exists"
+
+
+def test_post_create_user_negative_empty_names(client, session):
+    __create_initial_data(client, session)
+
+    response = __post_request(
+        client,
+        '/users/',
+        __define_header(),
+        __new_user_data(first_name="        ", last_name="      ")
+    )
+
+    assert response.status_code == 422
+    assert __extract_response_content(response.content.decode('utf-8')) == 'First name cannot be empty, Last name cannot be empty'
+
+
+
 def __create_initial_data(client, session) -> None:
     man = GenderIdentity(name="man")
     woman = GenderIdentity(name="woman")
@@ -165,3 +195,8 @@ def __define_header(content_type: str = 'application/x-www-form-urlencoded', acc
         "Content-Type": content_type,
         'accept': accept
     }
+
+
+def __extract_response_content(response: str) -> str:
+    input_re = re.match(r'{"detail":"(.*?)"}', response)
+    return input_re.group(1)
