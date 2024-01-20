@@ -3,6 +3,8 @@ import io
 from datetime import datetime
 from operator import and_, or_
 import re
+import os
+from dotenv import load_dotenv
 
 from fastapi import UploadFile
 from sqlmodel import select
@@ -24,7 +26,6 @@ def test_post_create_user_positive_empty_options(client, session):
     assert response.status_code == 200
 
     user: User = (session.exec(select(User).where(User.email == email))).first()
-    swipes_left_default: int = 50
     gender_preferences = (session.exec(select(GenderIdentity).where(or_(GenderIdentity.id == 1, GenderIdentity.id == 2)))).all()
     interests = (session.exec(select(Interest).where(or_(Interest.id == 1, Interest.id == 2)))).all() + (session.exec(select(Interest).where(Interest.id == 3))).all()
 
@@ -37,7 +38,7 @@ def test_post_create_user_positive_empty_options(client, session):
             user.date_of_birth == datetime(1990, 11, 17, 20, 6, 55) and
             user.search_radius == 50 and
             user.matching_algorithm == 1 and
-            user.swipes_left == swipes_left_default and
+            user.swipes_left == int(os.getenv('SWIPE_LIMIT')) and
             user.gender_preferences == gender_preferences and
             user.interests == interests and
             user.latitude == 20 and
@@ -62,7 +63,6 @@ def test_post_create_user_positive_filled_options(client, session):
     assert response.status_code == 200
 
     user: User = (session.exec(select(User).where(User.email == email))).first()
-    swipes_left_default: int = 50
     gender_preferences = (session.exec(select(GenderIdentity).where(or_(GenderIdentity.id == 1, GenderIdentity.id == 2)))).all()
     interests = (session.exec(select(Interest).where(or_(Interest.id == 1, Interest.id == 2)))).all() + (session.exec(select(Interest).where(Interest.id == 3))).all()
     languages = (session.exec(select(Language).where(or_(Language.id == 1, Language.id == 2)))).all()
@@ -76,7 +76,7 @@ def test_post_create_user_positive_filled_options(client, session):
             user.date_of_birth == datetime(1990, 11, 17, 20, 6, 55) and
             user.search_radius == 50 and
             user.matching_algorithm == 1 and
-            user.swipes_left == swipes_left_default and
+            user.swipes_left == int(os.getenv('SWIPE_LIMIT')) and
             user.gender_preferences == gender_preferences and
             user.interests == interests and
             user.latitude == 20 and
