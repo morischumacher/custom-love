@@ -251,7 +251,7 @@ class OnboardingPageState extends State<OnboardingPage> {
     return SafeArea(
       child: Container(
           alignment: Alignment.center,
-          height: !kIsWeb ? 650 : 800,
+          height: height > 0 ? kIsWeb ? height * 0.81 : height * 0.75 : height,
           width: !kIsWeb ? width * 0.90 : width * 0.65,
           child: Stack(children: [
             Card(
