@@ -12,11 +12,8 @@ class CustomListTile extends StatelessWidget {
   final int? userId;
   final Conversation? conversation;
 
-  const CustomListTile({
-    required this.userId,
-    required this.conversation,
-    super.key
-  });
+  const CustomListTile(
+      {required this.userId, required this.conversation, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -28,26 +25,26 @@ class CustomListTile extends StatelessWidget {
       child: ListTile(
         onTap: () {
           final userStorage = Provider.of<UserStorage>(context, listen: false);
-          User? recipient = userStorage.users.items[conversation?.getOtherUserId(userId)];
+          User? recipient =
+              userStorage.users.items[conversation?.getOtherUserId(userId)];
 
           if (recipient == null || conversation == null) {
             // do nothing
             return;
           }
 
-          Navigator.pushNamed(
-            context,
-            "/home/matches/messages",
-            arguments: MessagesPageRouteArguments(recipient, conversation!)
-          );
+          Navigator.pushNamed(context, "/home/matches/messages",
+              arguments: MessagesPageRouteArguments(recipient, conversation!));
         },
         title: Consumer<UserStorage>(
-          builder: (BuildContext context, UserStorage userStorage, Widget? child) {
+          builder:
+              (BuildContext context, UserStorage userStorage, Widget? child) {
             if (userStorage.loading) {
               return const CircularProgressIndicator();
             }
 
-            User? recipient = userStorage.users.items[conversation?.getOtherUserId(userId)];
+            User? recipient =
+                userStorage.users.items[conversation?.getOtherUserId(userId)];
             if (recipient == null) {
               return const Text("");
             }
@@ -56,12 +53,14 @@ class CustomListTile extends StatelessWidget {
           },
         ),
         subtitle: Consumer<MessageStorage>(
-          builder: (BuildContext context, MessageStorage messageStorage, Widget? child) {
+          builder: (BuildContext context, MessageStorage messageStorage,
+              Widget? child) {
             if (messageStorage.loading) {
               return const CircularProgressIndicator();
             }
 
-            Message? message = messageStorage.messages[conversation?.id]?.items.values.lastOrNull;
+            Message? message = messageStorage
+                .messages[conversation?.id]?.items.values.lastOrNull;
             if (message == null) {
               return const Text("no messages");
             }
@@ -70,21 +69,22 @@ class CustomListTile extends StatelessWidget {
           },
         ),
         leading: Consumer<UserStorage>(
-          builder: (BuildContext context, UserStorage userStorage, Widget? child) {
+          builder:
+              (BuildContext context, UserStorage userStorage, Widget? child) {
             if (userStorage.loading) {
               return const CircularProgressIndicator();
             }
 
-            User? recipient = userStorage.users.items[conversation?.getOtherUserId(userId)];
-            if (recipient == null) {
-              return const Avatar.withInitials("");
+            User? user =
+                userStorage.users.items[conversation?.getOtherUserId(userId)];
+            if (user == null) {
+              return Avatar.withImage(user!);
             }
 
-            return Avatar(recipient);
+            return Avatar(user);
           },
         ),
       ),
     );
   }
-
 }

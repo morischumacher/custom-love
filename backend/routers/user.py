@@ -6,6 +6,8 @@ from starlette import status
 from backend.models.user import User
 from backend.responses.error_response import ErrorResponse
 from backend.responses.user_response import UserResponse, UserResponseWithInterestsAndDistance
+from backend.requests.train_data_decisions import DecisionsRequest
+from backend.services.expert_system import post_expert_system
 from backend.services.user import patch_user, get_algo_user, UserUpdate, get_user, get_users, login, registration, \
     websocket_connect
 from backend.utils.pagination import Page
@@ -78,6 +80,18 @@ def get_algo_user(commons: Annotated[User, Depends(get_algo_user)]):
     :return: a user with a corresponding id which is in the search radius
     """
     return commons
+
+
+@router.post("/train/model", responses={
+    status.HTTP_400_BAD_REQUEST: {"description": "Bad Request", "model": ErrorResponse},
+})
+def train_model(commons: Annotated[DecisionsRequest, Depends(post_expert_system)]):
+    """
+       Retrieves decisions from the freshly registered user on the trainingsdata
+       :return: message if expert system is added
+       """
+    return commons
+
 
 
 @router.websocket("/socket/{user_token}")

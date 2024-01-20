@@ -51,6 +51,8 @@ class CustomLove extends StatelessWidget {
         ChangeNotifierProvider<MessageStorage>(create: (_) => MessageStorage()),
         ChangeNotifierProvider<MatchStorage>(create: (_) => MatchStorage()),
         ChangeNotifierProvider<ImageStorage>(create: (_) => ImageStorage()),
+        ChangeNotifierProvider<ProfileImageStorage>(
+            create: (_) => ProfileImageStorage()),
         ChangeNotifierProvider(create: (context) => AlgoIdNotifier()),
         ChangeNotifierProvider(create: (context) => SwipeStateNotifier()),
         Provider<http.Client>.value(value: httpClient),
@@ -100,11 +102,9 @@ class CustomLove extends StatelessWidget {
           update: (_, swipeStatusApi, __) => SwipeStatusService(swipeStatusApi),
         ),
         ProxyProvider<http.Client, PictureApi>(
-            update: (_, httpClient, __) => PictureApi(httpClient)
-        ),
+            update: (_, httpClient, __) => PictureApi(httpClient)),
         ProxyProvider<PictureApi, ImageService>(
-          update: (_, pictureApi, __) => ImageService(pictureApi)
-        )
+            update: (_, pictureApi, __) => ImageService(pictureApi))
       ],
       child: MaterialApp(
         scrollBehavior: CustomScrollBehaviour(),
@@ -119,7 +119,8 @@ class CustomLove extends StatelessWidget {
             final matchService = Provider.of<MatchService>(context);
             final messageService = Provider.of<MessageService>(context);
             final swipeStatusService = Provider.of<SwipeStatusService>(context);
-            return LoginPage(loginService: loginService, userService: userService);
+            return LoginPage(
+                loginService: loginService, userService: userService);
           },
           '/home/profile': (context) {
             final loginService = Provider.of<LoginService>(context);
@@ -157,7 +158,7 @@ class CustomLove extends StatelessWidget {
                 lastName: null,
                 email: null,
                 password: null,
-                birthdate:null,
+                birthdate: null,
                 gender: null,
                 preference: null,
                 profilePicture: null,

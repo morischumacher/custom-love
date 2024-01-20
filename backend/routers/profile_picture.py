@@ -13,7 +13,7 @@ router = APIRouter(prefix='/profile-picture', tags=['images'], responses={
 })
 
 
-@router.get(path="")
+@router.get(path="/{user_id}")
 def get_profile_picture(commons: Annotated[Any, Depends(get_profile_picture)]):
     return commons
 

@@ -53,6 +53,7 @@ dependencies:
   flutter_arc_text: 0.6.0
   build_runner: ^2.4.7
   introduction_screen: 3.1.12
+  fluttertoast: ^8.2.4
 
 dev_dependencies:
   flutter_test:

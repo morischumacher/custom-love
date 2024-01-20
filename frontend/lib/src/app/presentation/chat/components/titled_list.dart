@@ -6,6 +6,7 @@ import '../../../../config/theme.dart';
 
 class TitledList<T> extends StatelessWidget {
    final String title;
+   final String emptyMessage;
    final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
    final ScrollController controller;
    final Axis scrollDirection;
@@ -14,6 +15,7 @@ class TitledList<T> extends StatelessWidget {
 
    const TitledList({
        required this.title,
+       required this.emptyMessage,
        required this.controller,
        required this.scrollDirection,
        required this.itemCount,
@@ -45,6 +47,10 @@ class TitledList<T> extends StatelessWidget {
           controller: controller,
           child:  Consumer<T>(
             builder: (BuildContext context, T value, Widget? child) {
+              if (itemCount(value) == 0) {
+                return Text(emptyMessage);
+              }
+
               return ListView.separated(
                   controller: controller,
                   padding: EdgeInsets.symmetric(

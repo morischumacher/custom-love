@@ -56,8 +56,7 @@ class _RegistrationLocationState extends State<RegistrationLocation> {
     super.initState();
     getAccessToken().then((token){
       if (token != null) {
-        Navigator.of(context).popUntil((route) => route.isFirst);
-        Navigator.of(context).pushReplacementNamed('/home/swipe');
+        Navigator.pushNamed(context, '/home/swipe');
       }
     });
 
@@ -128,7 +127,7 @@ class _RegistrationLocationState extends State<RegistrationLocation> {
 
   @override
   Widget build(BuildContext context) {
-    return _userLoggedIn == null ? const LoadingScreen() : Scaffold(
+    return Scaffold(
         backgroundColor: _customLoveTheme.neutralColor,
         body: Center(
           child: Padding(
