@@ -92,7 +92,7 @@ class RegistrationController {
       // for onboarding
       String genderPreferenceString = "";
 
-      switch (genderPreference.id) {
+      switch (genderPreferences[0].id) {
         case 1:
           genderPreferenceString = "male";
           break;
