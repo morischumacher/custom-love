@@ -1,15 +1,92 @@
 import json
 import io
+from datetime import datetime
+from operator import and_, or_
 
 from fastapi import UploadFile
+from sqlmodel import select
 
 from backend.models.gender_identity import GenderIdentity
 from backend.models.interest import Interest
 from backend.models.language import Language
+from backend.models.user import User
 from backend.test.integration.fixtures import client_fixture as client, session_fixture as session
+from backend.utils.passwords import verify_pwd
 
 
-def test_post_create_user(client, session):
+def test_post_create_user_positive_empty_options(client, session):
+    __create_initial_data(client, session)
+
+    email: str = "kilo@email.com"
+    response = __post_request(client, '/users/', __define_header(), __new_user_data(email=email))
+
+    assert response.status_code == 200
+
+    user: User = (session.exec(select(User).where(User.email == email))).first()
+    swipes_left_default: int = 50
+    gender_preferences = (session.exec(select(GenderIdentity).where(or_(GenderIdentity.id == 1, GenderIdentity.id == 2)))).all()
+    interests = (session.exec(select(Interest).where(or_(Interest.id == 1, Interest.id == 2)))).all() + (session.exec(select(Interest).where(Interest.id == 3))).all()
+
+    assert (
+            user.first_name == 'Kilo' and
+            user.last_name == 'Kiloson' and
+            user.email == email and
+            verify_pwd("pass1", user.password) and
+            user.gender_identity.id == 1 and
+            user.date_of_birth == datetime(1990, 11, 17, 20, 6, 55) and
+            user.search_radius == 50 and
+            user.matching_algorithm == 1 and
+            user.swipes_left == swipes_left_default and
+            user.gender_preferences == gender_preferences and
+            user.interests == interests and
+            user.latitude == 20 and
+            user.longitude == 20 and
+            user.bio is '' and
+            user.job is '' and
+            user.languages == []
+    )
+
+
+def test_post_create_user_positive_filled_options(client, session):
+    __create_initial_data(client, session)
+
+    email: str = "kilo@email.com"
+    response = __post_request(
+        client,
+        '/users/',
+        __define_header(),
+        __new_user_data(bio="Test person", job="Validates", language_ids="[1, 2]")
+    )
+
+    assert response.status_code == 200
+
+    user: User = (session.exec(select(User).where(User.email == email))).first()
+    swipes_left_default: int = 50
+    gender_preferences = (session.exec(select(GenderIdentity).where(or_(GenderIdentity.id == 1, GenderIdentity.id == 2)))).all()
+    interests = (session.exec(select(Interest).where(or_(Interest.id == 1, Interest.id == 2)))).all() + (session.exec(select(Interest).where(Interest.id == 3))).all()
+    languages = (session.exec(select(Language).where(or_(Language.id == 1, Language.id == 2)))).all()
+
+    assert (
+            user.first_name == 'Kilo' and
+            user.last_name == 'Kiloson' and
+            user.email == email and
+            verify_pwd("pass1", user.password) and
+            user.gender_identity.id == 1 and
+            user.date_of_birth == datetime(1990, 11, 17, 20, 6, 55) and
+            user.search_radius == 50 and
+            user.matching_algorithm == 1 and
+            user.swipes_left == swipes_left_default and
+            user.gender_preferences == gender_preferences and
+            user.interests == interests and
+            user.latitude == 20 and
+            user.longitude == 20 and
+            user.bio == 'Test person' and
+            user.job == 'Validates' and
+            user.languages == languages
+    )
+
+
+def __create_initial_data(client, session) -> None:
     man = GenderIdentity(name="man")
     woman = GenderIdentity(name="woman")
     divers = GenderIdentity(name="divers")
@@ -38,33 +115,53 @@ def test_post_create_user(client, session):
 
     session.commit()
 
-    headers = {
-        "Content-Type": "application/x-www-form-urlencoded",
-        'accept': 'application/json'
+
+def __new_user_data(
+        first_name: str = "Kilo",
+        last_name: str = "Kiloson",
+        email: str = "kilo@email.com",
+        password: str = "pass1",
+        gender_identity_id: int = 1,
+        date_of_birth: str = "1990-11-17T20:06:55.441841",
+        search_radius: int = 50,
+        matching_algorithm: int = 1,
+        gender_preference_ids: str = "[1, 2]",
+        interest_ids: str = "[1, 2, 3]",
+        latitude: int = 20,
+        longitude: int = 20,
+        bio: str = None,
+        job: str = None,
+        language_ids: str = None
+):
+    return {
+        "first_name": first_name,
+        "last_name": last_name,
+        "email": email,
+        "password": password,
+        "gender_identity_id": gender_identity_id,
+        "date_of_birth": date_of_birth,
+        "search_radius": search_radius,
+        "matching_algorithm": matching_algorithm,
+        "gender_preference_ids": gender_preference_ids,
+        "interest_ids": interest_ids,
+        "latitude": latitude,
+        "longitude": longitude,
+        "bio": bio,
+        "job": job,
+        "language_ids": language_ids
     }
 
-    response = client.post(
-        "/users/",
+
+def __post_request(client, route: str, headers: {str: str}, data: {str: str | int | None}):
+    return client.post(
+        route,
         headers=headers,
-        data={
-            "gender_identity_id": 1,
-            "first_name": "Stefan",
-            "last_name": "Müller",
-            "email": "stefan1.mueller@email.com",
-            "password": "pass1",
-            "bio": "Test subject",
-            "date_of_birth": "1990-11-17T20:06:55.441841",
-            "job": "Software Engineer",
-            "search_radius": 200,
-            "matching_algorithm": 1,
-            "swipes_left": 10,
-            "swipe_limit_reset_date": "2023-11-17T20:06:55.441841",
-            "gender_preference_ids": "[1, 2]",
-            "interest_ids": "[1, 2, 3]",
-            "language_ids": "[1]",
-            "latitude": 20,
-            "longitude": 20,
-        }
+        data=data
     )
-    print(f"created user: {response.json()}")
-    assert response.status_code == 200
+
+
+def __define_header(content_type: str = 'application/x-www-form-urlencoded', accept: str = 'application/json'):
+    return {
+        "Content-Type": content_type,
+        'accept': accept
+    }

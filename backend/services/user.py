@@ -110,10 +110,10 @@ def registration(
         latitude: Annotated[str, Form()],
         interest_ids: Annotated[str, Form()],
         matching_algorithm: Annotated[str, Form()],
-        profile_picture: Optional[UploadFile] = None,
-        bio: Optional[Annotated[str, Form()]] = None,
-        job: Optional[Annotated[str, Form()]] = None,
-        language_ids: Optional[Annotated[str, Form()]] = None,
+        profile_picture: Optional[UploadFile] = Form(default=None),
+        bio: Optional[Annotated[str, Form()]] = Form(default=None),
+        job: Optional[Annotated[str, Form()]] = Form(default=None),
+        language_ids: Optional[Annotated[str, Form()]] = Form(default=None),
 ) -> {}:
     """
     Create a user
