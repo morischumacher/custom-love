@@ -1,9 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter/services.dart';
 import 'package:frontend/src/app/model/gender_model.dart';
 import 'package:frontend/src/app/model/interest_model.dart';
+import 'package:frontend/src/app/presentation/utils/secure_storage_service.dart';
 import 'package:frontend/src/app/service/registration_service.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
@@ -14,9 +17,14 @@ import '../../../../config/app_state.dart';
 import '../../../model/language_model.dart';
 import '../../../model/user_model.dart';
 import '../../../service/user_service.dart';
+import '../../onboarding/pages/onboarding.dart';
+import '../../swipe/util/content.dart';
 
 class RegistrationController {
   var logger = Logger();
+
+  final SecureStorageService _secureStorageService = SecureStorageService();
+
 
 
   Future<bool> emailExists(BuildContext context, String email) async {
@@ -76,10 +84,41 @@ class RegistrationController {
       );
 
       var accessToken = registrationResult["access_token"];
-      await storeAccessToken(accessToken);
+      await _secureStorageService.storeAccessToken(accessToken);
 
       var userId = registrationResult["user"]["id"];
-      await storeUserId(userId.toString());
+      await _secureStorageService.storeUserId(userId.toString());
+
+      // for onboarding
+      String genderPreferenceString = "";
+
+      switch (genderPreferences[0].id) {
+        case 1:
+          genderPreferenceString = "male";
+          break;
+        case 2:
+          genderPreferenceString = "female";
+          break;
+        case 3:
+          genderPreferenceString = "divers";
+          break;
+        default:
+          genderPreferenceString = "male";
+          break;
+      }
+
+      String jsonString = await rootBundle.loadString("assets/exsys_trainings_users_$genderPreferenceString.json");
+      final userData = await json.decode(jsonString);
+      List<dynamic> users = userData["exsys_trainings_users_$genderPreferenceString"];
+
+      List<Content> usersContent = users.map((item) {
+        return Content(
+            name: item["name"],
+            gender: item["gender"],
+            age: item["age"],
+            bio: item["bio"],
+            interests: List<String>.from(item["interests"]));
+      }).toList();
 
       // If registration is successful, navigate to '/home/swipe'
       if (context.mounted) {
@@ -91,7 +130,12 @@ class RegistrationController {
         // save the user object and connect to a websocket
         Provider.of<StateManager>(context, listen: false).registerUser(User.fromJson(registrationResult['user']), context);
 
-        Navigator.pushNamed(context, '/home/swipe');
+        Navigator.of(context).popUntil((route) => route.isFirst);
+        //Navigator.of(context).pushReplacementNamed('/home/swipe');
+        Navigator.of(context).push(
+          MaterialPageRoute(
+              builder: (context) => OnboardingPage(userService: context.read<UserService>(), usersContent: usersContent)),
+        );
       }
     } catch (e) {
       logger.e('Entered exception: $e');
@@ -161,21 +205,4 @@ class RegistrationController {
     return languageStr.substring(0, languageStr.length - 2);
   }
 
-  // TODO: Duplicated code (included in login_controller)
-  Future<void> storeAccessToken(String accessToken) async {
-    const FlutterSecureStorage storage = FlutterSecureStorage();
-    await storage.write(key: "access_token", value: accessToken);
-  }
-
-  // TODO: Duplicated code (included in login_controller)
-  Future<String?> retrieveAccessToken() async {
-    const FlutterSecureStorage storage = FlutterSecureStorage();
-    return await storage.read(key: "access_token");
-  }
-
-  // TODO: Duplicated code (included in login_controller)
-  Future<void> storeUserId(String id) async {
-    const FlutterSecureStorage storage = FlutterSecureStorage();
-    await storage.write(key: "user_id", value: id);
-  }
 }

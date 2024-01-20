@@ -10,6 +10,7 @@ import '../../../service/image_service.dart';
 import '../../authentification/controller/login_controller.dart';
 import '../../registration/controller/registration_controller.dart';
 import '../../registration/pages/widgets/summary_textfield.dart';
+import '../../utils/secure_storage_service.dart';
 
 class Profile extends StatefulWidget {
   final UserService userService;
@@ -46,7 +47,7 @@ class _ProfileState extends State<Profile> {
   }
 
   void getUsers() async {
-    await _loginController.retrieveUserId().then((id) {
+    await _secureStorageService.retrieveUserId().then((id) {
       widget.userService.getUserProfile(int.parse(id!)).then((value) {
         setState(() {
           user = value;
@@ -55,7 +56,7 @@ class _ProfileState extends State<Profile> {
     });
   }
 
-  final LoginController _loginController = LoginController();
+  final SecureStorageService _secureStorageService = SecureStorageService();
   final RegistrationController _controller = RegistrationController();
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
   UserDetailed? user;
