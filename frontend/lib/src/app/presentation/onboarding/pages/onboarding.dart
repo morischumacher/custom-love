@@ -1,23 +1,19 @@
 import 'dart:convert';
 import 'dart:math';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:frontend/src/app/api/expert_sys_api.dart';
-import 'package:frontend/src/app/presentation/home/pages/home.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:frontend/src/app/service/expert_sys_service.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:provider/provider.dart';
-import 'package:swipe_cards/draggable_card.dart';
 import 'package:swipe_cards/draggable_card.dart';
 import 'package:swipe_cards/swipe_cards.dart';
 
 import '../../../../config/theme.dart';
-import '../../../service/swipe_status_service.dart';
 import '../../../service/user_service.dart';
-import '../../swipe/pages/swipe.dart';
 import '../../swipe/util/content.dart';
 import '../../utils/interests.dart';
 import '../../utils/secure_storage_service.dart';
@@ -256,7 +252,7 @@ class OnboardingPageState extends State<OnboardingPage> {
     return SafeArea(
       child: Container(
           alignment: Alignment.center,
-          height: 650,
+          height: !kIsWeb ? 650 : 800,
           width: !kIsWeb ? width * 0.90 : width * 0.65,
           child: Stack(children: [
             Card(
@@ -290,14 +286,8 @@ class OnboardingPageState extends State<OnboardingPage> {
                                                   swipeItems[index].content.name,
                                                   style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                                                 ),
-                                                swipeItems[index].content.gender == "Female" ? const Icon(Icons.female_sharp) : swipeItems[index].content.gender == "Male" ? const Icon(Icons.male_sharp) :
-                                                const Stack(
-                                                  alignment: Alignment.center,
-                                                  children: [
-                                                    Icon(Icons.female_sharp, size: 25),
-                                                    Positioned(top: -5.1, left: 1.89, child: Icon(Icons.male_sharp, size: 25)),
-                                                  ],
-                                                ),
+                                                swipeItems[index].content.gender == "Divers" ? SizedBox(width: width * 0.01) : const SizedBox(),
+                                                swipeItems[index].content.gender == "Female" ? SvgPicture.asset("lib/src/icons/svg/female.svg") : swipeItems[index].content.gender == "Male" ? SvgPicture.asset("lib/src/icons/svg/male.svg") : SvgPicture.asset("lib/src/icons/svg/diverse.svg"),
                                               ],
                                             ),
                                           ),
