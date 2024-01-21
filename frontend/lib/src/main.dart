@@ -107,6 +107,8 @@ class CustomLove extends StatelessWidget {
             update: (_, pictureApi, __) => ImageService(pictureApi))
       ],
       child: MaterialApp(
+        title: 'CustomLove',
+        debugShowCheckedModeBanner: false,
         scrollBehavior: CustomScrollBehaviour(),
         theme: _customLoveTheme.toThemeData(),
         initialRoute: '/',
