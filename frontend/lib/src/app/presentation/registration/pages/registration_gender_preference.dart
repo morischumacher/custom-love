@@ -1,17 +1,19 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/birthdate_field.dart';
+import 'package:frontend/src/app/presentation/registration/pages/widgets/dropdown_checkboxes/dropdown_checkbox.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/dropdown_list.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/footer/footer.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/page_title.dart';
 import 'package:frontend/src/app/service/gender_service.dart';
 import 'package:frontend/src/config/widgets/exception_widget.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:multi_dropdown/multiselect_dropdown.dart';
 
 import '../../../../config/theme.dart';
 import '../../../model/gender_model.dart';
 import '../../../model/interest_model.dart';
+import '../../../model/language_model.dart';
 import '../enums/registration_page_enum.dart';
 
 class RegistrationGenderPreference extends StatefulWidget {
@@ -29,7 +31,8 @@ class RegistrationGenderPreference extends StatefulWidget {
     required this.location,
     required this.searchRadius,
     required this.job,
-    required this.bio
+    required this.bio,
+    required this.languages
   });
 
   final String? firstName;
@@ -37,14 +40,15 @@ class RegistrationGenderPreference extends StatefulWidget {
   final String? email;
   final String? password;
   final Gender? gender;
-  final Gender? preference;
+  final List<Gender> preference;
   final String? birthdate;
-  final Uint8List? profilePicture;
+  final XFile? profilePicture;
   final List<Interest> userInterestIdList;
   final Position? location;
   final double? searchRadius;
   final String? job;
   final String? bio;
+  final List<Language> languages;
 
   @override
   State<RegistrationGenderPreference> createState() => _RegistrationGenderPreferenceState();
@@ -55,7 +59,6 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
   void initState() {
     super.initState();
     gender = widget.gender;
-    genderPreference = widget.preference;
     birthdate = widget.birthdate;
     getGenders();
   }
@@ -65,6 +68,16 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
       await _genderService.getGenders().then((value) {
         setState(() {
           genderDto = value;
+          for (Gender gender in genderDto) {
+            genderPreferences.options.add(
+                ValueItem(label: gender.name, value: gender)
+            );
+          }
+          for (Gender preference in widget.preference) {
+            genderPreferences.addSelectedOption(
+                ValueItem<Gender>(label: preference.name, value: preference)
+            );
+          }
         });
       });
     } catch (e) {
@@ -77,10 +90,10 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
   final GenderService _genderService = GenderService();
   Gender? gender;
-  Gender? genderPreference;
   String? birthdate;
 
   late List<Gender> genderDto = [];
+  MultiSelectController<Gender> genderPreferences = MultiSelectController<Gender>();
   late bool httpError = false;
 
   @override
@@ -128,12 +141,10 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
                           callback: (val) => setState(() => gender = val),
                         ),
                         const SizedBox(height: 19.0),
-                        DropDownList(
-                          labelText: "Preference",
-                          value: genderPreference,
-                          options: genderDto,
-                          callback: (val) => setState(() => genderPreference = val),
-                        ),
+                          DropdownCheckbox(
+                            pickedGenderPreferences: genderPreferences,
+                            callback: (val) => setState(() {}),
+                          ),
                         const SizedBox(height: 19.0),
                         BirthdateField(
                           controller: birthdate,
@@ -149,7 +160,7 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
                           email: widget.email,
                           password: widget.password,
                           gender: gender,
-                          genderPreference: genderPreference,
+                          genderPreference: listValuesToGenderList(genderPreferences.selectedOptions),
                           birthdate: birthdate,
                           profilePicture: widget.profilePicture,
                           userInterestIdList: widget.userInterestIdList,
@@ -157,6 +168,7 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
                           searchRadius: widget.searchRadius,
                           job: widget.job,
                           bio: widget.bio,
+                          languages: widget.languages,
                       )
                     ],
                   ),
@@ -165,6 +177,16 @@ class _RegistrationGenderPreferenceState extends State<RegistrationGenderPrefere
                 ),
             ),
           ),
-        ));
+        )
+    );
+  }
+  List<Gender> listValuesToGenderList(List<ValueItem<Gender>> valueItems) {
+    List<Gender> extractedGenders = [];
+    for (ValueItem<Gender> item in valueItems) {
+      if (item.value != null) {
+        extractedGenders.add(item.value!);
+      }
+    }
+    return extractedGenders;
   }
 }

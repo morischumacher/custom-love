@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/src/app/api/expert_sys_api.dart';
 import 'package:frontend/src/app/api/picture_api.dart';
 import 'package:frontend/src/app/presentation/authentification/pages/logout_page.dart';
 import 'package:frontend/src/app/presentation/registration/pages/registration_location.dart';
@@ -6,6 +7,7 @@ import 'package:frontend/src/app/presentation/swipe/util/swipe_state_notifier.da
 import 'package:frontend/src/app/presentation/swipe/util/algo_id_notifier.dart';
 import 'package:frontend/src/app/presentation/utils/CustomScrollBehaviour.dart';
 import 'package:frontend/src/app/service/conversation_service.dart';
+import 'package:frontend/src/app/service/expert_sys_service.dart';
 import 'package:frontend/src/app/service/image_service.dart';
 import 'package:frontend/src/app/service/match_service.dart';
 import 'package:frontend/src/app/service/message_service.dart';
@@ -104,7 +106,13 @@ class CustomLove extends StatelessWidget {
         ProxyProvider<http.Client, PictureApi>(
             update: (_, httpClient, __) => PictureApi(httpClient)),
         ProxyProvider<PictureApi, ImageService>(
-            update: (_, pictureApi, __) => ImageService(pictureApi))
+            update: (_, pictureApi, __) => ImageService(pictureApi)),
+        ProxyProvider<http.Client, ExpertSysApi>(
+          update: (_, httpClient, __) => ExpertSysApi(httpClient: httpClient),
+        ),
+        ProxyProvider<ExpertSysApi, ExpertSysService>(
+          update: (_, expertSysApi, __) => ExpertSysService(expertSysApi),
+        ),
       ],
       child: MaterialApp(
         scrollBehavior: CustomScrollBehaviour(),
@@ -160,13 +168,15 @@ class CustomLove extends StatelessWidget {
                 password: null,
                 birthdate: null,
                 gender: null,
-                preference: null,
+                preference: [],
                 profilePicture: null,
                 userInterestIdList: [],
                 location: null,
                 searchRadius: null,
                 job: null,
-                bio: null);
+                bio: null,
+                languages: [],
+            );
           }
         },
       ),

@@ -1,16 +1,16 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/model/gender_model.dart';
 import 'package:frontend/src/app/model/interest_model.dart';
 import 'package:frontend/src/app/presentation/registration/enums/registration_page_enum.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../../../../config/theme.dart';
+import '../../../../../model/language_model.dart';
 import 'navigation_button.dart';
 
 class Footer extends StatefulWidget {
-  const Footer({
+  Footer({
     super.key,
     required this.pageSection,
     required this.firstName,
@@ -25,7 +25,8 @@ class Footer extends StatefulWidget {
     required this.location,
     required this.searchRadius,
     required this.job,
-    required this.bio
+    required this.bio,
+    required this.languages
   });
 
   final RegistrationPageSection pageSection;
@@ -34,14 +35,17 @@ class Footer extends StatefulWidget {
   final String? email;
   final String? password;
   final Gender? gender;
-  final Gender? genderPreference;
+  final List<Gender> genderPreference;
   final String? birthdate;
-  final Uint8List? profilePicture;
+  final XFile? profilePicture;
   final List<Interest> userInterestIdList;
   final Position? location;
   final double? searchRadius;
   final String? job;
   final String? bio;
+  final List<Language> languages;
+  late bool nextButtonAllowed = true;
+  late String warningMsg;
 
   @override
   State<Footer> createState() => _FooterState();
@@ -54,6 +58,18 @@ class _FooterState extends State<Footer> {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        if (!widget.nextButtonAllowed)
+          Text(
+            widget.warningMsg,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                color: _customLoveTheme.redColor,
+                fontSize: 16,
+                fontWeight: FontWeight.bold
+            ),
+          ),
+          const SizedBox(height: 30.0),
+
         Center(
           child: Row(
             children: [
@@ -72,7 +88,12 @@ class _FooterState extends State<Footer> {
                   location: widget.location,
                   searchRadius: widget.searchRadius,
                   job: widget.job,
-                  bio: widget.bio
+                  bio: widget.bio,
+                  languages: widget.languages,
+                  callback: (val, msg) => setState(() {
+                    widget.nextButtonAllowed = val;
+                    widget.warningMsg = msg;
+                  })
               ),
               const Spacer(),
               if (evaluateBtnAccessibility())
@@ -91,7 +112,12 @@ class _FooterState extends State<Footer> {
                     location: widget.location,
                     searchRadius: widget.searchRadius,
                     job: widget.job,
-                    bio: widget.bio
+                    bio: widget.bio,
+                    languages: widget.languages,
+                    callback: (val, msg) => setState(() {
+                      widget.nextButtonAllowed = val;
+                      widget.warningMsg = msg;
+                    })
                 ),
               if (!evaluateBtnAccessibility())
                 TextButton(
@@ -118,8 +144,10 @@ class _FooterState extends State<Footer> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  onTap: () {
-                    Navigator.pushNamed(context, "/");
+                  onTap: () async {
+                    if (await _onLoginButtonPressed(context)) {
+                      Navigator.pushNamed(context, "/");
+                    }
                   },
                 ),
                 const SizedBox(height: 30)
@@ -128,7 +156,6 @@ class _FooterState extends State<Footer> {
         )
       ],
     );
-
   }
   
   bool evaluateBtnAccessibility() {
@@ -146,16 +173,14 @@ class _FooterState extends State<Footer> {
             widget.email != null &&
             widget.email!.trim().isNotEmpty &&
             widget.password != null &&
-            widget.password!.trim().isNotEmpty;
+            widget.password!.trim().isNotEmpty &&
+            widget.nextButtonAllowed;
       case RegistrationPageSection.genderPreference:
         return widget.gender != null && 
-            widget.genderPreference != null && 
+            widget.genderPreference.isNotEmpty &&
             widget.birthdate != null;
       case RegistrationPageSection.pictures:
-        // TODO: Make profilePicture mandatory once implemented in backend
-        // return widget.profilePicture != null;
-        return true;
-        // TODO: Are interests required?
+        return widget.profilePicture != null;
       case RegistrationPageSection.interests:
         return widget.userInterestIdList.length >= 3 &&
             widget.userInterestIdList.length <= 5;
@@ -167,5 +192,42 @@ class _FooterState extends State<Footer> {
       default:
         return false;
     }
+  }
+  
+  Future<bool> _onLoginButtonPressed(BuildContext context) async {
+    bool returnToLogin = await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("Return to login"),
+            content: const Text("Are you sure you want to return to login? All your progress will be lost"),
+            actions: <Widget>[
+              TextButton(
+                  onPressed: () => Navigator.of(context).pop(false), 
+                  child: Text(
+                    "No",
+                    style: TextStyle(
+                        color: _customLoveTheme.primaryColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16.0
+                    )
+                  )
+              ),
+              TextButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: Text(
+                      "Yes",
+                      style: TextStyle(
+                          color: _customLoveTheme.primaryColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16.0
+                      )
+                  )
+              )
+            ],
+          );
+        }
+    );
+    return returnToLogin;
   }
 }

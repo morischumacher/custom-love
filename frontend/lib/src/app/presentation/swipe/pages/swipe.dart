@@ -20,8 +20,9 @@ import 'package:frontend/src/app/presentation/authentification/controller/login_
 
 import '../../../service/location_service.dart';
 import '../../../service/user_service.dart';
+import '../../utils/secure_storage_service.dart';
 import '../util/algo_id_notifier.dart';
-import '../util/interests.dart';
+import '../../utils/interests.dart';
 import '../util/swipes_left.dart';
 
 class Swipe extends StatefulWidget {
@@ -39,7 +40,7 @@ class _SwipeState extends State<Swipe>{
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
 
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
-  final LoginController _controller = LoginController();
+  final SecureStorageService _secureStorageService = SecureStorageService();
   final LocationService _locationService = LocationService();
 
   SwipeStateNotifier? swipeStateNotifier;
@@ -64,6 +65,8 @@ class _SwipeState extends State<Swipe>{
   @override
   void initState() {
     super.initState();
+
+    print("init swipe");
 
     _fetchInitData();
   }
@@ -102,7 +105,7 @@ class _SwipeState extends State<Swipe>{
   Future<void> _algoIdListener() async {
     if(swipingAlgoId != algoIdNotifier!.algoId) {
       swipingAlgoId = algoIdNotifier!.algoId;
-      String accessToken = await _controller.retrieveAccessToken() as String;
+      String accessToken = await _secureStorageService.retrieveAccessToken() as String;
       if (!context.mounted) return;
       await MatchingAlgorithm.updateMatchingAlgorithm(accessToken, context.read<UserService>(), swipingAlgoId);
     }
@@ -151,8 +154,6 @@ class _SwipeState extends State<Swipe>{
           matchEngine: _matchEngine,
           customLoveTheme: _customLoveTheme,
           swipeItem: _swipeItem,
-          swipeable: swipeable,
-          controller: _controller,
           userService: widget.userService,
           swipeStatusService: widget.swipeStatusService,
           userId: userId,
@@ -211,8 +212,9 @@ class _SwipeState extends State<Swipe>{
   }
 
   Future<void> _getUserId() async {
-    var userIdString = await _controller.retrieveUserId() as String;
+    var userIdString = await _secureStorageService.retrieveUserId() as String;
     userId = int.parse(userIdString);
+    print("hello user id: " + userId.toString());
   }
 
   Future<void> _getMatchingAlgorithm() async {
@@ -235,7 +237,7 @@ class _SwipeState extends State<Swipe>{
       });
     }
 
-    String accessToken = await _controller.retrieveAccessToken() as String;
+    String accessToken = await _secureStorageService.retrieveAccessToken() as String;
 
     String city = "";
     await widget.userService
@@ -307,7 +309,7 @@ class _SwipeState extends State<Swipe>{
   }
 
   void _swipeActionTaken(bool hasLiked) async {
-    String accessToken = await _controller.retrieveAccessToken() as String;
+    String accessToken = await _secureStorageService.retrieveAccessToken() as String;
     if (hasLiked) {
       await widget.swipeStatusService.postLike(accessToken, int.parse(_swipeItem.content.id));
     } else {
@@ -322,6 +324,25 @@ class _SwipeState extends State<Swipe>{
     var id = user.id;
     var firstName = user.firstName;
     var distance = user.distance;
+    var genderIdentityId = user.gender_identity_id;
+
+    String gender = "";
+
+    switch (genderIdentityId) {
+      case 1:
+        gender = "Male";
+        break;
+      case 2:
+        gender = "Female";
+        break;
+      case 3:
+        gender = "Divers";
+        break;
+      default:
+        gender = "Male";
+        break;
+    }
+
     List<dynamic>? interests = [];
     if (user.interests != null) {
       interests = user.interests;
@@ -340,7 +361,8 @@ class _SwipeState extends State<Swipe>{
 
     return Content(
         id: id.toString(),
-        firstName: firstName,
+        name: firstName,
+        gender: gender,
         age: age,
         city: city,
         bio: user.bio,
@@ -491,7 +513,7 @@ class _SwipeState extends State<Swipe>{
   }
 
   Future<void> _updateSwipesLeft() async {
-    String accessToken = await _controller.retrieveAccessToken() as String;
+    String accessToken = await _secureStorageService.retrieveAccessToken() as String;
     int currentSwipesLeft = await SwipesLeft.updateSwipeLeft(accessToken, widget.userService);
 
     if (currentSwipesLeft > 0) {
