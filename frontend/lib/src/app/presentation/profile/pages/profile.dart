@@ -1,7 +1,10 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/model/user_detailed.dart';
 import 'package:frontend/src/app/presentation/authentification/components/sign_in_button.dart';
 import 'package:frontend/src/app/service/user_service.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../config/app_state.dart';
@@ -40,7 +43,6 @@ class _ProfileState extends State<Profile> {
         return;
       }
 
-      // var tmp = await _service!.getImage("profile-picture/${widget.imageId}");
       var tmp = await _service!.getImage("profile-picture/${user!.id}");
       _storage!.load(user!.profilePictureId, tmp);
     }
@@ -61,6 +63,22 @@ class _ProfileState extends State<Profile> {
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
   UserDetailed? user;
 
+  XFile? profileImageNewXFile;
+  Uint8List? profileImageNewUint;
+
+  Future<Uint8List?> galleryImagePicker(ImageSource imageSource) async {
+    ImagePicker picker = ImagePicker();
+
+    XFile? file = await picker.pickImage(
+      source: imageSource,
+      imageQuality: 90,
+    );
+    profileImageNewXFile = file;
+
+    if (file != null) return await file.readAsBytes(); // convert into Uint8List.
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     _service = Provider.of<ImageService>(context);
@@ -76,10 +94,61 @@ class _ProfileState extends State<Profile> {
           return const Icon(Icons.downloading);
         }
 
-        return ClipRRect(
-            borderRadius:
-                BorderRadius.circular(_customLoveTheme.universalPadding),
-            child: Image.memory(storage.getBytes(id)!));
+        return Stack(
+          children: [
+            Container(
+              width: 200,
+              height: 200,
+              decoration: BoxDecoration(
+                border: Border.all(width: 4, color: _customLoveTheme.whiteColor),
+                boxShadow: [
+                  BoxShadow(
+                    spreadRadius: 2,
+                    blurRadius: 10,
+                    color: Colors.black.withOpacity(0.1)
+                  )
+                ],
+                shape: BoxShape.circle,
+                image: DecorationImage(
+                  fit: BoxFit.cover,
+                  image: Image.memory(
+                    profileImageNewUint == null ? storage.getBytes(id)! : profileImageNewUint!,
+                    width: 200,
+                    height: 200,
+                    fit: BoxFit.cover,
+                  ).image
+                )
+              ),
+            ),
+            Positioned(
+                bottom: 10,
+                right: 10,
+                child: ElevatedButton(
+                  onPressed: ()  async {
+                    // await galleryImagePicker(ImageSource.gallery);
+                    final Uint8List? image = await galleryImagePicker(ImageSource.gallery);
+
+                    if (image != null) {
+                      _service?.putImage(profileImageNewXFile!, 'profile-picture');
+                      _storage!.load(user!.profilePictureId, image);
+                      setState(() {
+                        profileImageNewUint = image;
+                      });
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    shape: const CircleBorder(),
+                    backgroundColor: _customLoveTheme.primaryColor,
+                    minimumSize: const Size(40, 40)
+                  ),
+                  child: Icon(
+                    Icons.edit,
+                    color: _customLoveTheme.whiteColor,
+                  ),
+                )
+            )
+          ],
+        );
       },
     );
 
