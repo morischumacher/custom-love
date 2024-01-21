@@ -20,14 +20,14 @@ class SwipingCard extends StatefulWidget {
 
   SwipingCard(
       {super.key,
-      required MatchEngine? matchEngine,
-      required CustomLoveTheme customLoveTheme,
-      required SwipeItem swipeItem,
-      required this.swipeable,
-      userId,
-      required this.controller,
-      required this.userService,
-      required this.swipeStatusService})
+        required MatchEngine? matchEngine,
+        required CustomLoveTheme customLoveTheme,
+        required SwipeItem swipeItem,
+        required this.swipeable,
+        userId,
+        required this.controller,
+        required this.userService,
+        required this.swipeStatusService})
       : _matchEngine = matchEngine,
         _customLoveTheme = customLoveTheme,
         _swipeItem = swipeItem,
@@ -45,7 +45,7 @@ class SwipingCard extends StatefulWidget {
 
 class _SwipingCardState extends State<SwipingCard> {
   Color _cardBackgroundColor =
-      const CustomLoveTheme().neutralBackgroundColor.withOpacity(0.80);
+  const CustomLoveTheme().neutralColor.withOpacity(0.80);
   final Duration _timerduration = const Duration(seconds: 10);
   final Curve _animationCurve = Curves.linear;
   bool swipeableTimer = true;
@@ -59,7 +59,7 @@ class _SwipingCardState extends State<SwipingCard> {
       Future.delayed(const Duration(milliseconds: 50), () {
         if (mounted) {
           setState(() {
-            _cardBackgroundColor = widget._customLoveTheme.neutralColor;
+            _cardBackgroundColor = widget._customLoveTheme.neutralBackgroundColor;
           });
         }
       });
