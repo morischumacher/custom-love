@@ -125,16 +125,55 @@ class _ProfileState extends State<Profile> {
                 right: 10,
                 child: ElevatedButton(
                   onPressed: ()  async {
-                    // await galleryImagePicker(ImageSource.gallery);
-                    final Uint8List? image = await galleryImagePicker(ImageSource.gallery);
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text('Upload image'),
+                            content: const SingleChildScrollView(
+                              child: ListBody(
+                                children: <Widget>[
+                                  Text("Choose the upload source"),
+                                ],
+                              ),
+                            ),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () async {
+                                  Navigator.pop(context);
+                                  final Uint8List? image = await galleryImagePicker(ImageSource.gallery);
 
-                    if (image != null) {
-                      _service?.putImage(profileImageNewXFile!, 'profile-picture');
-                      _storage!.load(user!.profilePictureId, image);
-                      setState(() {
-                        profileImageNewUint = image;
-                      });
-                    }
+                                  if (image != null) {
+                                    _service?.putImage(profileImageNewXFile!, 'profile-picture');
+                                    _storage!.load(user!.profilePictureId, image);
+                                    setState(() {
+                                      profileImageNewUint = image;
+                                    });
+                                  }
+                                },
+                                child: Text(
+                                  "From Gallery"
+                                )
+                              ),
+                              TextButton(
+                                  onPressed: () async {
+                                    Navigator.pop(context);
+                                    final Uint8List? image = await galleryImagePicker(ImageSource.camera);
+
+                                    if (image != null) {
+                                      _service?.putImage(profileImageNewXFile!, 'profile-picture');
+                                      _storage!.load(user!.profilePictureId, image);
+                                      setState(() {
+                                        profileImageNewUint = image;
+                                      });
+                                    }
+                                  },
+                                  child: Text(
+                                      "From Camera"
+                                  )
+                              ),
+                            ]);
+                        });
                   },
                   style: ElevatedButton.styleFrom(
                     shape: const CircleBorder(),
