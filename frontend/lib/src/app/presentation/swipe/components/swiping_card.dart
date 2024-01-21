@@ -11,13 +11,14 @@ import '../../../service/swipe_status_service.dart';
 import '../../utils/interests.dart';
 
 import '../../../service/user_service.dart';
+import '../../utils/secure_storage_service.dart';
 import '../util/swipes_left.dart';
 
 class SwipingCard extends StatefulWidget {
   final UserService userService;
   final SwipeStatusService swipeStatusService;
 
-  const SwipingCard(
+  SwipingCard(
       {super.key,
       required MatchEngine? matchEngine,
       required CustomLoveTheme customLoveTheme,
@@ -34,6 +35,7 @@ class SwipingCard extends StatefulWidget {
   final CustomLoveTheme _customLoveTheme;
   final SwipeItem _swipeItem;
   final int _userId;
+  final SecureStorageService _secureStorageService = SecureStorageService();
 
   @override
   State<SwipingCard> createState() => _SwipingCardState();
@@ -290,8 +292,9 @@ class _SwipingCardState extends State<SwipingCard> {
           child: ElevatedButton(
               onPressed: () async {
                 if (swipeableTimer) {
+                  String accessToken = await widget._secureStorageService.retrieveAccessToken() as String;
                   int tmpSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(
-                      widget._userId, widget.userService);
+                      accessToken, widget._userId, widget.userService);
                   if (tmpSwipesLeft > 0) {
                     widget._matchEngine!.currentItem?.nope();
                   }
@@ -312,8 +315,9 @@ class _SwipingCardState extends State<SwipingCard> {
           child: ElevatedButton(
               onPressed: () async {
                 if (swipeableTimer) {
+                  String accessToken = await widget._secureStorageService.retrieveAccessToken() as String;
                   int tmpSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(
-                      widget._userId, widget.userService);
+                      accessToken, widget._userId, widget.userService);
                   if (tmpSwipesLeft > 0) {
                     widget._matchEngine!.currentItem?.like();
                   }

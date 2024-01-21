@@ -16,28 +16,25 @@ import 'package:provider/provider.dart';
 import 'package:swipe_cards/draggable_card.dart';
 import 'package:swipe_cards/swipe_cards.dart';
 import 'package:frontend/src/config/theme.dart';
-import 'package:frontend/src/app/presentation/authentification/controller/login_controller.dart';
 
 import '../../../service/location_service.dart';
 import '../../../service/user_service.dart';
 import '../../utils/secure_storage_service.dart';
 import '../util/algo_id_notifier.dart';
-import '../../utils/interests.dart';
 import '../util/swipes_left.dart';
 
 class Swipe extends StatefulWidget {
   final UserService userService;
   final SwipeStatusService swipeStatusService;
 
-  const Swipe(
-      {Key? key, required this.userService, required this.swipeStatusService})
-      : super(key: key);
+  const Swipe({Key? key, required this.userService, required this.swipeStatusService}) : super(key: key);
 
   @override
   _SwipeState createState() => _SwipeState();
+
 }
 
-class _SwipeState extends State<Swipe> {
+class _SwipeState extends State<Swipe>{
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
 
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
@@ -67,8 +64,6 @@ class _SwipeState extends State<Swipe> {
   void initState() {
     super.initState();
 
-    print("init swipe");
-
     _fetchInitData();
   }
 
@@ -85,7 +80,7 @@ class _SwipeState extends State<Swipe> {
       }
     });
 
-    if (!_didChangeDependenciesCalled) {
+    if(!_didChangeDependenciesCalled) {
       _didChangeDependenciesCalled = true;
 
       swipeStateNotifier ??= Provider.of<SwipeStateNotifier>(context);
@@ -98,24 +93,22 @@ class _SwipeState extends State<Swipe> {
         _listenerAdded = true;
       }
     }
+
   }
 
   Future<void> _algoIdListener() async {
-    if (swipingAlgoId != algoIdNotifier!.algoId) {
+    if(swipingAlgoId != algoIdNotifier!.algoId) {
       swipingAlgoId = algoIdNotifier!.algoId;
-      String accessToken =
-          await _secureStorageService.retrieveAccessToken() as String;
+      String accessToken = await _secureStorageService.retrieveAccessToken() as String;
       if (!context.mounted) return;
-      await MatchingAlgorithm.updateMatchingAlgorithm(
-          accessToken, context.read<UserService>(), swipingAlgoId);
+      await MatchingAlgorithm.updateMatchingAlgorithm(accessToken, context.read<UserService>(), swipingAlgoId);
     }
 
     if (mounted) {
       setState(() {
-        if (swipeStateNotifier!.swipeState == SwipeState.OKAY) {
+        if(swipeStateNotifier!.swipeState == SwipeState.OKAY) {
           _loadNextUser();
-        } else if (swipeStateNotifier!.swipeState !=
-            SwipeState.NO_SURROUNDING_USERS) {
+        } else if (swipeStateNotifier!.swipeState != SwipeState.NO_SURROUNDING_USERS) {
           _swipeItemLoaded = true;
         }
       });
@@ -125,11 +118,13 @@ class _SwipeState extends State<Swipe> {
   void _swipeStateListener() {
     if (mounted) {
       setState(() {
-        if (swipeStateNotifier!.swipeState == SwipeState.OKAY) {
+
+        if(swipeStateNotifier!.swipeState == SwipeState.OKAY) {
           _loadNextUser();
         } else {
           _swipeItemLoaded = true;
         }
+
       });
     }
   }
@@ -139,10 +134,10 @@ class _SwipeState extends State<Swipe> {
     return SafeArea(
       child: Container(
           alignment: Alignment.center,
-          height:
-              height - kToolbarHeight > 0 ? height - kToolbarHeight : height,
+          height: height - kToolbarHeight > 0 ? height - kToolbarHeight : height,
           width: !kIsWeb ? width * 0.90 : width * 0.65,
-          child: Stack(children: [getSwipeCardSwitch(state)])),
+          child: Stack(
+              children: [getSwipeCardSwitch(state)])),
     );
   }
 
@@ -199,8 +194,9 @@ class _SwipeState extends State<Swipe> {
   }
 
   Future<int> _checkSwipesLeft() async {
-    int currentSwipesLeft =
-        await SwipesLeft.getCurrentSwipesLeft(userId, widget.userService);
+    String accessToken = await _secureStorageService.retrieveAccessToken() as String;
+    int currentSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(
+        accessToken, userId, widget.userService);
     if (currentSwipesLeft > 0) {
       SharedSwipeableEvent.swipeable.changeSwipeable(true);
     } else {
@@ -212,13 +208,11 @@ class _SwipeState extends State<Swipe> {
   Future<void> _getUserId() async {
     var userIdString = await _secureStorageService.retrieveUserId() as String;
     userId = int.parse(userIdString);
-    print("hello user id: " + userId.toString());
   }
 
   Future<void> _getMatchingAlgorithm() async {
-    await MatchingAlgorithm.getCurrentMatchingAlgorithm(
-            userId, widget.userService)
-        .then((matchingAlgorithm) {
+    String accessToken = await _secureStorageService.retrieveAccessToken() as String;
+    await MatchingAlgorithm.getCurrentMatchingAlgorithm(accessToken, userId, widget.userService).then((matchingAlgorithm){
       if (matchingAlgorithm != swipingAlgoId) {
         swipingAlgoId = matchingAlgorithm;
         algoIdNotifier?.setAlgoId(swipingAlgoId);
@@ -236,21 +230,22 @@ class _SwipeState extends State<Swipe> {
       });
     }
 
-    String accessToken =
-        await _secureStorageService.retrieveAccessToken() as String;
+    String accessToken = await _secureStorageService.retrieveAccessToken() as String;
 
     String city = "";
     await widget.userService
         .getAlgoUser(accessToken, swipingAlgoId)
         .then((User? user) async {
-      if (user != null) {
-        city = await _locationService.getCurrentLocation(
-            user.latitude, user.longitude);
-      } else {
-        city = "noCity";
-      }
 
-      _setUserSwipingCard(user, city);
+          if (user != null) {
+            city = await _locationService.getCurrentLocation(
+                user.latitude, user.longitude);
+          } else {
+            city = "noCity";
+          }
+
+          _setUserSwipingCard(user, city);
+
     }).whenComplete(() {
       if (mounted) {
         setState(() {
@@ -267,6 +262,7 @@ class _SwipeState extends State<Swipe> {
 
   void _setUserSwipingCard(User? user, String? city) {
     if (user == null) {
+
     } else {
       if (mounted) {
         setState(() {
@@ -283,36 +279,34 @@ class _SwipeState extends State<Swipe> {
             },
           );
           _matchEngine = MatchEngine(swipeItems: [_swipeItem]);
-        });
+        }
+        );
       }
     }
   }
 
   _onSlideUpdate(SlideRegion? region) async {
-    //ignore the swipe left check if the card is just be tapped
-    if (region != null) {
-      //ensure that after a swipe attempt the api call happens only once
-      if (!swiped) {
-        swiped = true;
-        await _checkSwipesLeft();
+      //ignore the swipe left check if the card is just be tapped
+      if (region != null) {
+        //ensure that after a swipe attempt the api call happens only once
+        if (!swiped) {
+          swiped = true;
+          await _checkSwipesLeft();
+        }
       }
-    }
 
-    //when swipe card is in the initial state (null position), it should be possible to make the api call
-    if (region == null) {
-      swiped = false;
-    }
+      //when swipe card is in the initial state (null position), it should be possible to make the api call
+      if (region == null) {
+        swiped = false;
+      }
   }
 
   void _swipeActionTaken(bool hasLiked) async {
-    String accessToken =
-        await _secureStorageService.retrieveAccessToken() as String;
+    String accessToken = await _secureStorageService.retrieveAccessToken() as String;
     if (hasLiked) {
-      await widget.swipeStatusService
-          .postLike(accessToken, int.parse(_swipeItem.content.id));
+      await widget.swipeStatusService.postLike(accessToken, int.parse(_swipeItem.content.id));
     } else {
-      await widget.swipeStatusService
-          .postView(accessToken, int.parse(_swipeItem.content.id));
+      await widget.swipeStatusService.postView(accessToken, int.parse(_swipeItem.content.id));
     }
     _didChangeDependenciesCalled = false;
 
@@ -353,7 +347,8 @@ class _SwipeState extends State<Swipe> {
     int age = todayDate.year - birthYear;
 
     if (birthDate.month > todayDate.month ||
-        (birthDate.month == todayDate.month && birthDate.day > todayDate.day)) {
+        (birthDate.month == todayDate.month &&
+            birthDate.day > todayDate.day)) {
       age--;
     }
 
@@ -378,7 +373,7 @@ class _SwipeState extends State<Swipe> {
       child: SwipeCards(
         matchEngine: _matchEngine = MatchEngine(swipeItems: [
           SwipeItem(
-            content: "No users in the area  :(",
+              content: "No users in the area  :(",
           ),
         ]),
         itemBuilder: (BuildContext context, int index) {
@@ -389,61 +384,53 @@ class _SwipeState extends State<Swipe> {
               color: _customLoveTheme.neutralBackgroundColor,
               child: ClipRect(
                 child: SingleChildScrollView(
-                  child: Stack(children: [
-                    SizedBox(height: height * 0.08),
-                    const Center(
-                      child: FittedBox(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 190, vertical: 190),
-                          child: ArcText(
-                            radius: 100,
-                            text: "No users in the area  :(",
-                            textStyle: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold),
-                            startAngle: 0,
-                            stretchAngle: 3,
-                            startAngleAlignment: StartAngleAlignment.center,
-                            placement: Placement.middle,
-                            direction: Direction.clockwise,
+                  child: Stack(
+                      children: [
+                        SizedBox(height: height * 0.08),
+                        const Center(
+                          child: FittedBox(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 190, vertical: 190),
+                              child: ArcText(
+                                radius: 100,
+                                text: "No users in the area  :(",
+                                textStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                                startAngle: 0,
+                                stretchAngle: 3,
+                                startAngleAlignment: StartAngleAlignment.center,
+                                placement: Placement.middle,
+                                direction: Direction.clockwise,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                    Center(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: kIsWeb ? 120 : 105,
-                            vertical: kIsWeb ? 120 : 105),
-                        child: Column(
-                          children: [
-                            Icon(Icons.travel_explore_rounded,
-                                size: 150, color: _customLoveTheme.textColor),
-                            SizedBox(height: height * 0.08),
-                          ],
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: kIsWeb ? 120 : 105, vertical: kIsWeb ? 120 : 105),
+                            child: Column(
+                              children: [
+                                Icon(Icons.travel_explore_rounded, size: 150, color: _customLoveTheme.textColor),
+                                SizedBox(height: height * 0.08),
+                              ],
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                    Align(
-                      alignment: Alignment.bottomCenter,
-                      child: Padding(
-                        padding: EdgeInsets.only(
-                            top: height * 0.4,
-                            left: kIsWeb ? 50 : 25,
-                            right: kIsWeb ? 50 : 25),
-                        child: Text(
-                          "Increase your search radius in your profile settings to find your perfect match!",
-                          style: TextStyle(
-                              fontSize: kIsWeb ? 16 : 14,
-                              fontWeight: FontWeight.bold,
-                              color: _customLoveTheme.textColor),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    )
-                  ]),
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: Padding(
+                            padding: EdgeInsets.only(top: height * 0.4, left: kIsWeb ? 50 : 25, right: kIsWeb ? 50 : 25),
+                            child: Text(
+                              "Increase your search radius in your profile settings to find your perfect match!",
+                              style: TextStyle(fontSize: kIsWeb ? 16 : 14, fontWeight: FontWeight.bold, color: _customLoveTheme.textColor),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        )
+                      ]
+                  ),
                 ),
-              ));
+              )
+          );
         },
         onStackFinished: () async {},
         leftSwipeAllowed: false,
@@ -451,6 +438,7 @@ class _SwipeState extends State<Swipe> {
         fillSpace: true,
       ),
     );
+
   }
 
   Widget noSwipesLeftCard() {
@@ -476,44 +464,38 @@ class _SwipeState extends State<Swipe> {
               color: _customLoveTheme.neutralBackgroundColor,
               child: ClipRect(
                 child: SingleChildScrollView(
-                  child: Stack(children: [
-                    SizedBox(height: height * 0.08),
-                    const FittedBox(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 190, vertical: 190),
-                        child: ArcText(
-                          radius: 100,
-                          text: "Sorry - No Swipes Left  :(",
-                          textStyle: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
-                          startAngle: 0,
-                          stretchAngle: 3,
-                          startAngleAlignment: StartAngleAlignment.center,
-                          placement: Placement.middle,
-                          direction: Direction.clockwise,
+                  child: Stack(
+                      children: [
+                        SizedBox(height: height * 0.08),
+                        const FittedBox(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 190, vertical: 190),
+                            child: ArcText(
+                              radius: 100,
+                              text: "Sorry - No Swipes Left  :(",
+                              textStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                              startAngle: 0,
+                              stretchAngle: 3,
+                              startAngleAlignment: StartAngleAlignment.center,
+                              placement: Placement.middle,
+                              direction: Direction.clockwise,
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: kIsWeb ? 120 : 105,
-                          vertical: kIsWeb ? 120 : 105),
-                      child: Stack(
-                        children: [
-                          Icon(Icons.amp_stories_rounded,
-                              size: 150, color: _customLoveTheme.textColor),
-                          Container(
-                              padding: const EdgeInsets.only(left: 52, top: 50),
-                              child: Icon(Icons.lock_clock_rounded,
-                                  size: 45,
-                                  color: _customLoveTheme.primaryColor)),
-                        ],
-                      ),
-                    )
-                  ]),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: kIsWeb ? 120 : 105, vertical: kIsWeb ? 120 : 105),
+                          child: Stack(
+                            children: [
+                              Icon(Icons.amp_stories_rounded, size: 150, color: _customLoveTheme.textColor),
+                              Container(padding: const EdgeInsets.only(left: 52, top: 50), child: Icon(Icons.lock_clock_rounded, size: 45, color: _customLoveTheme.primaryColor)),
+                            ],
+                          ),
+                        )
+                      ]
+                  ),
                 ),
-              ));
+              )
+          );
         },
         onStackFinished: () async {
           swipeStateNotifier!.setSwipeState(SwipeState.OKAY);
@@ -526,10 +508,8 @@ class _SwipeState extends State<Swipe> {
   }
 
   Future<void> _updateSwipesLeft() async {
-    String accessToken =
-        await _secureStorageService.retrieveAccessToken() as String;
-    int currentSwipesLeft =
-        await SwipesLeft.updateSwipeLeft(accessToken, widget.userService);
+    String accessToken = await _secureStorageService.retrieveAccessToken() as String;
+    int currentSwipesLeft = await SwipesLeft.updateSwipeLeft(accessToken, widget.userService);
 
     if (currentSwipesLeft > 0) {
       SharedSwipeableEvent.swipeable.changeSwipeable(true);
@@ -552,4 +532,5 @@ class _SwipeState extends State<Swipe> {
 
     super.dispose();
   }
+
 }
