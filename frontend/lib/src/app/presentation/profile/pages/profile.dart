@@ -1,18 +1,27 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:frontend/src/app/model/gender_model.dart';
+import 'package:frontend/src/app/model/interest_model.dart';
+import 'package:frontend/src/app/model/language_model.dart';
 import 'package:frontend/src/app/model/user_detailed.dart';
 import 'package:frontend/src/app/presentation/authentification/components/sign_in_button.dart';
+import 'package:frontend/src/app/presentation/profile/controller/profile_controller.dart';
+import 'package:frontend/src/app/presentation/registration/pages/widgets/dropdown_checkboxes/dropdown_checkbox.dart';
 import 'package:frontend/src/app/service/user_service.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:multi_dropdown/multiselect_dropdown.dart';
 
 import '../../../../config/app_state.dart';
 import '../../../../config/theme.dart';
 import '../../../service/image_service.dart';
 import '../../authentification/controller/login_controller.dart';
 import '../../registration/controller/registration_controller.dart';
+import '../../registration/pages/widgets/bio_textfield.dart';
+import '../../registration/pages/widgets/dropdown_checkboxes/language_dropdown_checkbox.dart';
 import '../../registration/pages/widgets/summary_textfield.dart';
+import '../../registration/pages/widgets/textfield.dart';
 import '../../utils/secure_storage_service.dart';
 
 class Profile extends StatefulWidget {
@@ -34,6 +43,7 @@ class _ProfileState extends State<Profile> {
   ImageService? _service;
   ProfileImageStorage? _storage;
   final LoginController _logoutController = LoginController();
+  final ProfileController _profileController = ProfileController();
 
   Future<void> getProfilePicture() async {
     if (user != null) {
@@ -52,7 +62,35 @@ class _ProfileState extends State<Profile> {
     await _secureStorageService.retrieveUserId().then((id) {
       widget.userService.getUserProfile(int.parse(id!)).then((value) {
         setState(() {
-          user = value;
+          user = value['user'];
+          genderDto = value['genders'];
+
+          for (Gender gender in genderDto) {
+            genderPreferences.options.add(
+                ValueItem(label: gender.name, value: gender)
+            );
+          }
+          for (Gender preference in user!.genderPreferences) {
+            genderPreferences.addSelectedOption(
+                ValueItem<Gender>(label: preference.name, value: preference)
+            );
+          }
+
+          interestDto = value['interests'];
+
+          languageDto = value['languages'];
+          for (Language language in languageDto) {
+            languages.options.add(
+                ValueItem(label: language.name, value: language)
+            );
+          }
+          for (Language language in user!.languages) {
+            languages.addSelectedOption(
+                ValueItem<Language>(label: language.name, value: language)
+            );
+          }
+          bio = user!.bio;
+          job = user!.job;
         });
       });
     });
@@ -62,6 +100,20 @@ class _ProfileState extends State<Profile> {
   final RegistrationController _controller = RegistrationController();
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
   UserDetailed? user;
+
+  // Property values
+  List<Gender> genderDto = [];
+  List<Interest> interestDto = [];
+  List<Language> languageDto = [];
+
+  // Editable attributes
+  bool editMode = false;
+  MultiSelectController<Gender> genderPreferences = MultiSelectController<Gender>();
+  int searchRadius = 5;
+  MultiSelectController<Interest> interests = MultiSelectController<Interest>();
+  String bio = "";
+  String job = "";
+  MultiSelectController<Language> languages = MultiSelectController<Language>();
 
   XFile? profileImageNewXFile;
   Uint8List? profileImageNewUint;
@@ -218,7 +270,7 @@ class _ProfileState extends State<Profile> {
                       if (user != null)
                         img,
 
-                      if (user != null)
+                      if (user != null && !editMode)
                       // registration_name_email
                         Column(children: [
                           SummaryTextfield(label: "First name", input: user!.firstName),
@@ -239,10 +291,71 @@ class _ProfileState extends State<Profile> {
                           // registration_job_bio
                           SummaryTextfield(label: "Job", input: user!.job),
                           SummaryTextfield(label: "Bio", input: user!.bio),
-                          SummaryTextfield(label: "Search Radius", input: user!.searchRadius.toString()),
-                          SummaryTextfield(label: "Swipes left", input: user!.swipesLeft.toString())
+                          SummaryTextfield(label: "Swipes left", input: user!.swipesLeft.toString()),
+
+                          ElevatedButton(
+                            onPressed: () {
+                              setState(() {
+                                editMode = true;
+                              });
+                            },
+                            child: const Text('Edit'),
+                          ),
                         ]),
-                      const SizedBox(height: 25.0),
+                      if (user != null && editMode)
+                        Column(children: [
+                          RegistrationBioTextfield(
+                              controller: bio,
+                              hintText: "Bio",
+                              characterLimit: 256,
+                              callback: (val) => setState(() => bio = val)
+                          ),
+                          const SizedBox(height: 25.0),
+                          RegistrationTextfield(
+                              controller: job,
+                              hintText: "Job",
+                              obscureText: false,
+                              callback: (val) => setState(() => job = val)
+                          ),
+                          const SizedBox(height: 19.0),
+                          DropdownCheckbox(
+                              pickedGenderPreferences: genderPreferences,
+                              callback: (val) => setState(() {})
+                          ),
+                          const SizedBox(height: 19.0),
+                          LanguageDropdownCheckbox(
+                              pickedLanguages: languages,
+                              callback: (val) => setState(() {})
+                          ),
+                          ElevatedButton(
+                            onPressed: () async {
+
+                              UserDetailed? result = await _profileController.updateUser(
+                                  context,
+                                  job,
+                                  bio,
+                                  listValuesToGenderList(genderPreferences.selectedOptions),
+                                  [],
+                                  listValuesToLanguageList(languages.selectedOptions)
+                              );
+                              setState(() {
+                                user = result;
+                                editMode = false;
+                              });
+                            },
+                            child: const Text('Confirm changes'),
+                          ),
+
+                          ElevatedButton(
+                            onPressed: () {
+                              setState(() {
+                                editMode = false;
+                              });
+                            },
+                            child: const Text('Discard changes'),
+                          ),
+                        ]),
+                        const SizedBox(height: 25.0),
                       Expanded(child: Container()),
                       LoginButton(
                           onTap: () {
@@ -261,5 +374,25 @@ class _ProfileState extends State<Profile> {
         ),
       ),
     );
+  }
+
+  List<int> listValuesToLanguageList(List<ValueItem<Language>> valueItems) {
+    List<int> extractedLanguages = [];
+    for (ValueItem<Language> item in valueItems) {
+      if (item.value != null) {
+        extractedLanguages.add(item.value!.id);
+      }
+    }
+    return extractedLanguages;
+  }
+
+  List<int> listValuesToGenderList(List<ValueItem<Gender>> valueItems) {
+    List<int> extractedGenders = [];
+    for (ValueItem<Gender> item in valueItems) {
+      if (item.value != null) {
+        extractedGenders.add(item.value!.id);
+      }
+    }
+    return extractedGenders;
   }
 }

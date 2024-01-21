@@ -10,6 +10,9 @@ import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
 
+import '../model/gender_model.dart';
+import '../model/interest_model.dart';
+import '../model/language_model.dart';
 import '../model/user_detailed.dart';
 import 'interfaces/paginated_api.dart';
 
@@ -41,14 +44,74 @@ class UserApi extends PaginatedApi<User> {
     }
   }
 
-  Future<UserDetailed> getUserProfile(int id) async {
+  Future<Map<String, dynamic>> getUserProfile(int id) async {
     final response =
     await super.client.get(Uri.parse('${ApiConfig.baseUrl}/users/profile/$id'));
 
     if (response.statusCode == 200) {
       var body = json.decode(response.body);
-      final UserDetailed user = UserDetailed.fromJson(body);
-      return user;
+
+      // Genders
+      var genderJson = jsonDecode(response.body)['genders'] as List;
+      List<Gender> genderObjs = genderJson.map((tagJson) => Gender.fromJson(tagJson)).toList();
+
+      // Languages
+      var languageJson = jsonDecode(response.body)['languages'] as List;
+      List<Language> languageObjs = languageJson.map((tagJson) => Language.fromJson(tagJson)).toList();
+
+      // Interests
+      var interestJson = jsonDecode(response.body)['interests'] as List;
+      List<Interest> interestObjs = interestJson.map((tagJson) => Interest.fromJson(tagJson)).toList();
+
+      return {
+        "user": UserDetailed.fromJson(body['user']),
+        "genders": genderObjs,
+        "interests": interestObjs,
+        "languages": languageObjs,
+      };
+    } else if (response.statusCode == 404) {
+      throw NotFoundException("User not found");
+    } else if (response.statusCode == 400) {
+      throw BadRequestException("Bad request");
+    } else {
+      throw Exception("Failed to load user");
+    }
+  }
+
+  Future<UserDetailed> updateUserProfile(
+      String? accessToken,
+      String bio,
+      String job,
+      List<int> genderPreferences,
+      List<int> interests,
+      List<int> languages
+      ) async {
+
+    if (accessToken == null) {
+      throw Exception("Token not registered!");
+    }
+
+    final Map<String, dynamic> body = {
+      "bio": bio,
+      "job": job,
+      "gender_preference_ids": genderPreferences,
+      "interest_ids": interests,
+      "language_ids": languages,
+    };
+    final response = await http.patch(
+      Uri.parse('${ApiConfig.baseUrl}/users/profile'),
+      headers: {
+        'Content-Type': 'application/json',
+        'accept': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+      body: jsonEncode(body),
+    );
+
+    if (response.statusCode == 200) {
+      var body = json.decode(response.body);
+
+      return UserDetailed.fromJson(body);
     } else if (response.statusCode == 404) {
       throw NotFoundException("User not found");
     } else if (response.statusCode == 400) {
@@ -77,7 +140,6 @@ class UserApi extends PaginatedApi<User> {
 
     if (response.statusCode == 200) {
       final dynamic jsonItem = json.decode(response.body);
-      print(jsonItem);
       final User user = User.fromJson(jsonItem);
       return user;
     } else if (response.statusCode == 404) {

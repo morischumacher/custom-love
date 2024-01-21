@@ -34,9 +34,32 @@ class UserService extends PaginatedService<User, UserApi> {
     }
   }
 
-  Future<UserDetailed> getUserProfile(int id) async {
+  Future<Map<String, dynamic>> getUserProfile(int id) async {
     try {
       final user = super.api.getUserProfile(id);
+      return user;
+    } on Exception {
+      rethrow;
+    }
+  }
+
+  Future<UserDetailed> updateUserProfile(
+      String accessToken,
+      String bio,
+      String job,
+      List<int> genderPreferences,
+      List<int> interests,
+      List<int> languages
+      ) async {
+    try {
+      final UserDetailed user = await super.api.updateUserProfile(
+        accessToken,
+        bio,
+        job,
+        genderPreferences,
+        interests,
+        languages
+      );
       return user;
     } on Exception {
       rethrow;

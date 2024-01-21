@@ -29,8 +29,10 @@ from backend.models.message import Message, message_factory
 from backend.models.swipe_status import SwipeStatus, SwipeStatusType
 from backend.models.user import User
 from backend.repository.repository import create_session
+from backend.requests.user_request import UserUpdateProfile
 from backend.responses.notification import Notification, NotificationType
-from backend.responses.user_response import UserResponseWithInterestsAndDistance, UserResponse, UserDetailedResponse
+from backend.responses.user_response import UserResponseWithInterestsAndDistance, UserResponse, UserDetailedResponse, \
+    ProfileResponse
 from backend.services.expert_system import get_expert_system_by_user_id
 from backend.services.message import _save_message
 from backend.services.validation.user_validation import validate_new_user
@@ -255,6 +257,48 @@ def patch_user(updated_user: UserUpdate, user: Annotated[User, Depends(get_curre
     return map_user_to_user_response(user)
 
 
+def patch_user_profile(
+        updated_user: UserUpdateProfile,
+        user: Annotated[User, Depends(get_current_user)],
+        db: Annotated[Session, Depends(create_session)]
+) -> UserDetailedResponse:
+    user_gender_preferences: [GenderIdentity] = []
+    user_interests: [Interest] = []
+    user_languages: [Language] = []
+
+    if updated_user.interest_ids is not None:
+        for interest_id in updated_user.interest_ids:
+            user_interests.append(db.exec(select(Interest).where(Interest.id == interest_id)).first())
+        user.interests = user_interests
+
+    if updated_user.language_ids is not None:
+        for language_id in updated_user.language_ids:
+            user_languages.append(db.exec(select(Language).where(Language.id == language_id)).first())
+        user.languages = user_languages
+
+    if updated_user.gender_preference_ids:
+        for gender_id in updated_user.gender_preference_ids:
+            user_gender_preferences.append(db.exec(select(GenderIdentity).where(GenderIdentity.id == gender_id)).first())
+        user.gender_preferences = user_gender_preferences
+
+    if updated_user.job is not None:
+        user.job = updated_user.job
+    if updated_user.bio is not None:
+        user.bio = updated_user.bio
+    if updated_user.search_radius is not None:
+        user.search_radius = updated_user.search_radius
+
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+
+    fetched_image = db.exec(select(ProfilePicture).where(ProfilePicture.user_id == user.id)).first()
+    if fetched_image is not None:
+        return __user_to_user_profile(get_user(user.id, db), fetched_image.id)
+    else:
+        return __user_to_user_profile(get_user(user.id, db), None)
+
+
 def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: Annotated[Session, Depends(create_session)]):
     user = db.exec(select(User).where(User.email == form_data.username)).first()
     if user is None:
@@ -378,18 +422,33 @@ async def websocket_connect(websocket: WebSocket, user_token: str, db: Annotated
         connection_manager.disconnect(websocket, user.id)
 
 
-def get_user_profile(user_id: int, db: Annotated[Session, Depends(create_session)]) -> UserDetailedResponse:
+def get_user_profile(user_id: int, db: Annotated[Session, Depends(create_session)]) -> ProfileResponse:
     """
     Return a specific user
     :param db: injected database
     :param user_id: user's id
     :return: a user object
     """
+    interests: [Interest] = db.exec(select(Interest)).all()
+    genders: [GenderIdentity] = db.exec(select(GenderIdentity)).all()
+    languages: [Language] = db.exec(select(Language)).all()
     fetched_image = db.exec(select(ProfilePicture).where(ProfilePicture.user_id == user_id)).first()
     if fetched_image is not None:
-        return __user_to_user_profile(get_user(user_id, db), fetched_image.id)
+        profile: UserDetailedResponse = __user_to_user_profile(get_user(user_id, db), fetched_image.id)
+        return ProfileResponse(
+            user=profile,
+            interests=interests,
+            genders=genders,
+            languages=languages
+        )
     else:
-        return __user_to_user_profile(get_user(user_id, db), None)
+        profile: UserDetailedResponse = __user_to_user_profile(get_user(user_id, db), None)
+        return ProfileResponse(
+            user=profile,
+            interests=interests,
+            genders=genders,
+            languages=languages
+        )
 
 
 def __user_to_user_profile(user: User, profile_picture_id: int | None) -> UserDetailedResponse:
