@@ -2,11 +2,13 @@ from starlette import status
 
 from backend.test.integration.fixtures import postgis_client_fixture as postgis_client, \
     postgis_session_fixture as postgis_session
-from backend.test.integration.test_utils import user_alfa, user_beta, user_theater, load_entities, RAW_PASSWORD, login, \
-    authorized_request, create_expert_system
+from backend.test.integration.test_utils import user_alfa, user_beta, load_entities, RAW_PASSWORD, login, \
+    authorized_request, create_expert_system, user_alex, user_bob, user_charlie, user_diana, user_emma, user_frank, \
+    user_george, clear_gender_cache
 
 
 def test_get_random_algo_user(postgis_client, postgis_session):
+    clear_gender_cache()
     user_a = user_alfa()
     user_b = user_beta()
 
@@ -20,11 +22,13 @@ def test_get_random_algo_user(postgis_client, postgis_session):
 
 
 def test_get_interest_based_user(postgis_client, postgis_session):
-    user_a = user_alfa()
-    user_b = user_beta()
-    user_t = user_theater()
+    clear_gender_cache()
+    user_a = user_alex()
+    user_b = user_bob()
+    user_c = user_charlie()
+    user_d = user_diana()
 
-    users = [user_a, user_b, user_t]
+    users = [user_a, user_b, user_c, user_d]
     load_entities(users, postgis_session)
 
     token = login(user_a.email, RAW_PASSWORD, postgis_client)
@@ -33,17 +37,18 @@ def test_get_interest_based_user(postgis_client, postgis_session):
     assert response.status_code == status.HTTP_200_OK
 
     actual_user_id = int(response.json()['id'])
-    expected_user_id = user_t.id
+    expected_user_id = user_d.id
 
     assert actual_user_id is expected_user_id
 
 
 def test_get_preference_based_user(postgis_client, postgis_session):
-    user_a = user_alfa()
-    user_b = user_beta()
-    user_t = user_theater()
+    clear_gender_cache()
+    user_a = user_emma()
+    user_b = user_frank()
+    user_c = user_george()
 
-    users = [user_a, user_t, user_b]
+    users = [user_a, user_b, user_c]
     load_entities(users, postgis_session)
     create_expert_system(user_a.id, postgis_session)
 

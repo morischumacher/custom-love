@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/src/app/model/interest_model.dart';
 
 import '../../../../../config/theme.dart';
-import '../../../swipe/util/interests.dart';
+import '../../../utils/interests.dart';
 
 class InterestButton extends StatefulWidget {
   const InterestButton({

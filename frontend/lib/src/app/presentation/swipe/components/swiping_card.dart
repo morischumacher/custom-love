@@ -2,19 +2,19 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/material.dart';
 import 'package:swipe_cards/swipe_cards.dart';
 import 'package:frontend/src/config/theme.dart';
 
 import '../../../service/swipe_status_service.dart';
-import '../util/interests.dart';
+import '../../utils/interests.dart';
 
 import '../../../service/user_service.dart';
-import '../../authentification/controller/login_controller.dart';
+import '../../utils/secure_storage_service.dart';
 import '../util/swipes_left.dart';
 
 class SwipingCard extends StatefulWidget {
-  final LoginController controller;
   final UserService userService;
   final SwipeStatusService swipeStatusService;
 
@@ -23,9 +23,7 @@ class SwipingCard extends StatefulWidget {
         required MatchEngine? matchEngine,
         required CustomLoveTheme customLoveTheme,
         required SwipeItem swipeItem,
-        required this.swipeable,
         userId,
-        required this.controller,
         required this.userService,
         required this.swipeStatusService})
       : _matchEngine = matchEngine,
@@ -36,8 +34,8 @@ class SwipingCard extends StatefulWidget {
   final MatchEngine? _matchEngine;
   final CustomLoveTheme _customLoveTheme;
   final SwipeItem _swipeItem;
-  bool swipeable = false;
   final int _userId;
+  final SecureStorageService _secureStorageService = SecureStorageService();
 
   @override
   State<SwipingCard> createState() => _SwipingCardState();
@@ -144,9 +142,15 @@ class _SwipingCardState extends State<SwipingCard> {
                           FittedBox(
                             child: Padding(
                               padding: const EdgeInsets.symmetric(horizontal: kIsWeb ? 50 : 40),
-                              child: Text(
-                                widget._swipeItem.content.firstName,
-                                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    widget._swipeItem.content.name,
+                                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                                  ),
+                                  widget._swipeItem.content.gender == "Divers" ? SizedBox(width: width * 0.01) : const SizedBox(),
+                                  widget._swipeItem.content.gender == "Female" ? SvgPicture.asset("lib/src/icons/svg/female.svg") : widget._swipeItem.content.gender == "Male" ? SvgPicture.asset("lib/src/icons/svg/male.svg") : SvgPicture.asset("lib/src/icons/svg/diverse.svg"),
+                                ],
                               ),
                             ),
                           ),
@@ -288,8 +292,9 @@ class _SwipingCardState extends State<SwipingCard> {
           child: ElevatedButton(
               onPressed: () async {
                 if (swipeableTimer) {
+                  String accessToken = await widget._secureStorageService.retrieveAccessToken() as String;
                   int tmpSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(
-                      widget._userId, widget.userService);
+                      accessToken, widget._userId, widget.userService);
                   if (tmpSwipesLeft > 0) {
                     widget._matchEngine!.currentItem?.nope();
                   }
@@ -310,8 +315,9 @@ class _SwipingCardState extends State<SwipingCard> {
           child: ElevatedButton(
               onPressed: () async {
                 if (swipeableTimer) {
+                  String accessToken = await widget._secureStorageService.retrieveAccessToken() as String;
                   int tmpSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(
-                      widget._userId, widget.userService);
+                      accessToken, widget._userId, widget.userService);
                   if (tmpSwipesLeft > 0) {
                     widget._matchEngine!.currentItem?.like();
                   }
