@@ -53,7 +53,7 @@ class UserUpdate(BaseModel):
     algo_id: int = Field(None, title="AlgoId")
 
 
-def get_user(user_id: int, db: Annotated[Session, Depends(create_session)]) -> User:
+def get_user(user_id: int, user: Annotated[User, Depends(get_current_user)], db: Annotated[Session, Depends(create_session)]) -> User:
     """
     Return a specific user
     :param db: injected database
@@ -339,7 +339,7 @@ def get_algo_user(algoId: int, user: Annotated[User, Depends(get_current_user)],
             # Get the model of the current user
             current_model = expert_system.model
 
-            # Initialize a Exsys for the current user and set the serialized model, retrieved from the database
+            # Initialize an Exsys for the current user and set the serialized model, retrieved from the database
             exsys = ExSys(None)
             exsys.deserialize_and_set_model(current_model)
 
@@ -391,7 +391,7 @@ async def websocket_connect(websocket: WebSocket, user_token: str, db: Annotated
         connection_manager.disconnect(websocket, user.id)
 
 
-def get_user_profile(user_id: int, db: Annotated[Session, Depends(create_session)]) -> UserDetailedResponse:
+def get_user_profile(user_id: int, user: Annotated[User, Depends(get_current_user)], db: Annotated[Session, Depends(create_session)]) -> UserDetailedResponse:
     """
     Return a specific user
     :param db: injected database
@@ -400,9 +400,9 @@ def get_user_profile(user_id: int, db: Annotated[Session, Depends(create_session
     """
     fetched_image = db.exec(select(ProfilePicture).where(ProfilePicture.user_id == user_id)).first()
     if fetched_image is not None:
-        return __user_to_user_profile(get_user(user_id, db), fetched_image.id)
+        return __user_to_user_profile(get_user(user_id, user, db), fetched_image.id)
     else:
-        return __user_to_user_profile(get_user(user_id, db), None)
+        return __user_to_user_profile(get_user(user_id, user, db), None)
 
 
 def __user_to_user_profile(user: User, profile_picture_id: int | None) -> UserDetailedResponse:
