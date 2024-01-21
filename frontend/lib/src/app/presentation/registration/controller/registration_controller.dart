@@ -89,27 +89,23 @@ class RegistrationController {
       var userId = registrationResult["user"]["id"];
       await _secureStorageService.storeUserId(userId.toString());
 
-      // for onboarding
-      String genderPreferenceString = "";
+      List<List<dynamic>> usersLists = List.generate(genderPreferences.length, (index) => []);
 
-      switch (genderPreferences[0].id) {
-        case 1:
-          genderPreferenceString = "male";
-          break;
-        case 2:
-          genderPreferenceString = "female";
-          break;
-        case 3:
-          genderPreferenceString = "divers";
-          break;
-        default:
-          genderPreferenceString = "male";
-          break;
+      for (int i = 0; i < genderPreferences.length; i++) {
+        String genderPreferenceString = genderPreferences[i].name.toLowerCase();
+        String jsonString = await rootBundle.loadString("assets/exsys_trainings_users_$genderPreferenceString.json");
+        final userData = await json.decode(jsonString);
+        usersLists[i] = userData["exsys_trainings_users_$genderPreferenceString"];
       }
 
-      String jsonString = await rootBundle.loadString("assets/exsys_trainings_users_$genderPreferenceString.json");
-      final userData = await json.decode(jsonString);
-      List<dynamic> users = userData["exsys_trainings_users_$genderPreferenceString"];
+      List<dynamic> users = [];
+      if (genderPreferences.length == 1) {
+        users = usersLists[0];
+      } else if (genderPreferences.length == 2) {
+        users = [...usersLists[0].take(7), ...usersLists[1].getRange(usersLists[1].length - 7, usersLists[1].length)];
+      } else {
+        users = [...usersLists[0].take(5), ...usersLists[1].getRange(usersLists[1].length - 9, usersLists[1].length - 4), ...usersLists[2].getRange(usersLists[2].length - 4, usersLists[2].length)];
+      }
 
       List<Content> usersContent = users.map((item) {
         return Content(
