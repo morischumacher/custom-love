@@ -47,9 +47,15 @@ class UserApi extends PaginatedApi<User> {
     }
   }
 
-  Future<UserDetailed> getUserProfile(int id) async {
+  Future<UserDetailed> getUserProfile(var accessToken, int id) async {
     final response =
-    await super.client.get(Uri.parse('${ApiConfig.baseUrl}/users/profile/$id'));
+    await super.client.get(Uri.parse('${ApiConfig.baseUrl}/users/profile/$id'),
+      headers: {
+      'Content-Type': 'application/json',
+      'accept': 'application/json',
+      'Authorization': 'Bearer $accessToken',
+      },
+    );
 
     if (response.statusCode == 200) {
       var body = json.decode(response.body);
