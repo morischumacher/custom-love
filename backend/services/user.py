@@ -328,7 +328,7 @@ def get_algo_user(algoId: int, user: Annotated[User, Depends(get_current_user)],
             # Get the model of the current user
             current_model = expert_system.model
 
-            # Initialize a Exsys for the current user and set the serialized model, retrieved from the database
+            # Initialize an Exsys for the current user and set the serialized model, retrieved from the database
             exsys = ExSys(None)
             exsys.deserialize_and_set_model(current_model)
 

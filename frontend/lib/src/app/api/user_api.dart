@@ -89,7 +89,6 @@ class UserApi extends PaginatedApi<User> {
 
     if (response.statusCode == 200) {
       final dynamic jsonItem = json.decode(response.body);
-      print(jsonItem);
       final User user = User.fromJson(jsonItem);
       return user;
     } else if (response.statusCode == 404) {

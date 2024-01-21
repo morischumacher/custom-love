@@ -64,8 +64,6 @@ class _SwipeState extends State<Swipe>{
   void initState() {
     super.initState();
 
-    print("init swipe");
-
     _fetchInitData();
   }
 
