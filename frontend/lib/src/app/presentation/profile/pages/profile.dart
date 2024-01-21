@@ -8,6 +8,7 @@ import 'package:frontend/src/app/model/user_detailed.dart';
 import 'package:frontend/src/app/presentation/authentification/components/sign_in_button.dart';
 import 'package:frontend/src/app/presentation/profile/controller/profile_controller.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/dropdown_checkboxes/dropdown_checkbox.dart';
+import 'package:frontend/src/app/presentation/registration/pages/widgets/dropdown_checkboxes/interest_dropdown_checkbox.dart';
 import 'package:frontend/src/app/service/user_service.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -64,7 +65,6 @@ class _ProfileState extends State<Profile> {
         setState(() {
           user = value['user'];
           genderDto = value['genders'];
-
           for (Gender gender in genderDto) {
             genderPreferences.options.add(
                 ValueItem(label: gender.name, value: gender)
@@ -77,6 +77,16 @@ class _ProfileState extends State<Profile> {
           }
 
           interestDto = value['interests'];
+          for (Interest interest in interestDto) {
+            interests.options.add(
+                ValueItem(label: interest.name, value: interest)
+            );
+          }
+          for (Interest interest in user!.interests) {
+            interests.addSelectedOption(
+                ValueItem<Interest>(label: interest.name, value: interest)
+            );
+          }
 
           languageDto = value['languages'];
           for (Language language in languageDto) {
@@ -108,6 +118,7 @@ class _ProfileState extends State<Profile> {
 
   // Editable attributes
   bool editMode = false;
+  bool warning = false;
   MultiSelectController<Gender> genderPreferences = MultiSelectController<Gender>();
   int searchRadius = 5;
   MultiSelectController<Interest> interests = MultiSelectController<Interest>();
@@ -327,25 +338,46 @@ class _ProfileState extends State<Profile> {
                               pickedLanguages: languages,
                               callback: (val) => setState(() {})
                           ),
+                          const SizedBox(height: 19.0),
+                          InterestDropdownCheckbox(
+                              pickedInterests: interests,
+                              callback: (val) => setState(() {})
+                          ),
+                          if (interests.selectedOptions.length < 3 || interests.selectedOptions.length > 5)
+                            Text(
+                              "You need to have 3 - 5 interests",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  color: _customLoveTheme.redColor,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold
+                              ),
+                            ),
+                          const SizedBox(height: 19.0),
                           ElevatedButton(
                             onPressed: () async {
-
-                              UserDetailed? result = await _profileController.updateUser(
-                                  context,
-                                  job,
-                                  bio,
-                                  listValuesToGenderList(genderPreferences.selectedOptions),
-                                  [],
-                                  listValuesToLanguageList(languages.selectedOptions)
-                              );
-                              setState(() {
-                                user = result;
-                                editMode = false;
-                              });
+                              if (interests.selectedOptions.length >= 3 && interests.selectedOptions.length <= 5) {
+                                UserDetailed? result = await _profileController
+                                    .updateUser(
+                                    context,
+                                    job,
+                                    bio,
+                                    listValuesToGenderList(
+                                        genderPreferences.selectedOptions),
+                                    listValuesToInterestList(
+                                        interests.selectedOptions),
+                                    listValuesToLanguageList(
+                                        languages.selectedOptions)
+                                );
+                                setState(() {
+                                  user = result;
+                                  editMode = false;
+                                });
+                              }
                             },
                             child: const Text('Confirm changes'),
                           ),
-
+                          const SizedBox(height: 19.0),
                           ElevatedButton(
                             onPressed: () {
                               setState(() {
@@ -394,5 +426,15 @@ class _ProfileState extends State<Profile> {
       }
     }
     return extractedGenders;
+  }
+
+  List<int> listValuesToInterestList(List<ValueItem<Interest>> valueItems) {
+    List<int> extractedInterests = [];
+    for (ValueItem<Interest> item in valueItems) {
+      if (item.value != null) {
+        extractedInterests.add(item.value!.id);
+      }
+    }
+    return extractedInterests;
   }
 }
