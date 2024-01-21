@@ -199,7 +199,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Text(
         titleText,
         style: TextStyle(
-          color: isMessagePage ? Colors.white : Color(0xFFE91E63),
+          color: Color(0xFFE91E63),
           fontWeight: FontWeight.bold,
         ),
       ),
