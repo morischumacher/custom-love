@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/model/gender_model.dart';
@@ -8,9 +6,11 @@ import 'package:frontend/src/app/presentation/registration/enums/registration_pa
 import 'package:frontend/src/app/presentation/registration/pages/widgets/footer/footer.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/page_title.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:logger/logger.dart';
 
 import '../../../../config/theme.dart';
+import '../../../model/language_model.dart';
 
 class RegistrationRadius extends StatefulWidget {
   const RegistrationRadius({Key? key,
@@ -26,7 +26,8 @@ class RegistrationRadius extends StatefulWidget {
       required this.location,
       required this.searchRadius,
       required this.job,
-      required this.bio
+      required this.bio,
+      required this.languages
   }) : super(key: key);
 
   final String? firstName;
@@ -34,14 +35,15 @@ class RegistrationRadius extends StatefulWidget {
   final String? email;
   final String? password;
   final Gender? gender;
-  final Gender? preference;
+  final List<Gender> preference;
   final String? birthdate;
-  final Uint8List? profilePicture;
+  final XFile? profilePicture;
   final List<Interest> userInterestIdList;
   final Position? location;
   final double? searchRadius;
   final String? job;
   final String? bio;
+  final List<Language> languages;
 
   @override
   State<RegistrationRadius> createState() => _RegistrationRadiusState();
@@ -51,7 +53,7 @@ class _RegistrationRadiusState extends State<RegistrationRadius> {
   @override
   void initState() {
     super.initState();
-    searchRadius = widget.searchRadius ?? 1;
+    searchRadius = widget.searchRadius ?? 5;
     searchRadiusMiles = searchRadius != null ? (searchRadius! * 0.621371).roundToDouble() : 1;
   }
 
@@ -100,7 +102,7 @@ class _RegistrationRadiusState extends State<RegistrationRadius> {
                                 children: <TextSpan>[
                                   TextSpan(text: searchRadius!.toString()),
                                   TextSpan(
-                                      text: searchRadius != 1 ? '  kilometers' : '  kilometer',
+                                      text: '  kilometers',
                                       style: TextStyle(
                                           color: _customLoveTheme.textColor)
                                   )
@@ -129,7 +131,7 @@ class _RegistrationRadiusState extends State<RegistrationRadius> {
                             ),
                             const SizedBox(height: 50.0),
                             Slider(
-                                min: 1,
+                                min: 5,
                                 max: 100,
                                 divisions: 99,
                                 label: searchRadius!.toString(),
@@ -159,7 +161,8 @@ class _RegistrationRadiusState extends State<RegistrationRadius> {
                             location: widget.location,
                             searchRadius: searchRadius,
                             job: widget.job,
-                            bio: widget.bio
+                            bio: widget.bio,
+                            languages: widget.languages,
                         )
                       ],
                     ),

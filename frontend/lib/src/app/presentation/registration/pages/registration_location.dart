@@ -1,14 +1,14 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/model/gender_model.dart';
 import 'package:frontend/src/app/model/interest_model.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/footer/footer.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/page_title.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:logger/logger.dart';
 
 import '../../../../config/theme.dart';
+import '../../../model/language_model.dart';
 import '../../../api/helpers/jwt_api.dart';
 import '../../../service/location_service.dart';
 import '../../loading_screen/loading_screen.dart';
@@ -30,6 +30,7 @@ class RegistrationLocation extends StatefulWidget {
     required this.searchRadius,
     required this.job,
     required this.bio,
+    required this.languages
   }) : super(key: key);
 
   final String? firstName;
@@ -37,14 +38,15 @@ class RegistrationLocation extends StatefulWidget {
   final String? email;
   final String? password;
   final Gender? gender;
-  final Gender? preference;
+  final List<Gender> preference;
   final String? birthdate;
-  final Uint8List? profilePicture;
+  final XFile? profilePicture;
   final List<Interest> userInterestIdList;
   final Position? location;
   final double? searchRadius;
   final String? job;
   final String? bio;
+  final List<Language> languages;
 
   @override
   State<RegistrationLocation> createState() => _RegistrationLocationState();
@@ -192,7 +194,8 @@ class _RegistrationLocationState extends State<RegistrationLocation> {
                             location: userLocation,
                             searchRadius: widget.searchRadius,
                             job: widget.job,
-                            bio: widget.bio
+                            bio: widget.bio,
+                            languages: widget.languages
                         )
                       ],
                     ),

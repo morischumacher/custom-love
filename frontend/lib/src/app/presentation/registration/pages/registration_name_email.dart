@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:frontend/src/app/model/gender_model.dart';
 import 'package:frontend/src/app/model/interest_model.dart';
@@ -8,7 +6,9 @@ import 'package:frontend/src/app/presentation/registration/pages/widgets/footer/
 import 'package:frontend/src/app/presentation/registration/pages/widgets/page_title.dart';
 import 'package:frontend/src/app/presentation/registration/pages/widgets/textfield.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../../../config/theme.dart';
+import '../../../model/language_model.dart';
 
 class RegistrationNameEmail extends StatefulWidget {
   const RegistrationNameEmail({
@@ -25,7 +25,8 @@ class RegistrationNameEmail extends StatefulWidget {
     required this.location,
     required this.searchRadius,
     required this.job,
-    required this.bio
+    required this.bio,
+    required this.languages
   });
 
   final String? firstName;
@@ -33,14 +34,15 @@ class RegistrationNameEmail extends StatefulWidget {
   final String? email;
   final String? password;
   final Gender? gender;
-  final Gender? preference;
+  final List<Gender> preference;
   final String? birthdate;
-  final Uint8List? profilePicture;
+  final XFile? profilePicture;
   final List<Interest> userInterestIdList;
   final Position? location;
   final double? searchRadius;
   final String? job;
   final String? bio;
+  final List<Language> languages;
 
   @override
   State<RegistrationNameEmail> createState() => _RegistrationNameEmailState();
@@ -131,7 +133,8 @@ class _RegistrationNameEmailState extends State<RegistrationNameEmail> {
                           location: widget.location,
                           searchRadius: widget.searchRadius,
                           job: widget.job,
-                          bio: widget.bio
+                          bio: widget.bio,
+                          languages: widget.languages,
                       )
                     ],
                   ),

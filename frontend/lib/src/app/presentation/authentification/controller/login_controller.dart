@@ -13,6 +13,7 @@ import 'package:provider/provider.dart';
 
 import '../../../model/user_model.dart';
 import '../../swipe/util/algo_id_notifier.dart';
+import '../../utils/secure_storage_service.dart';
 
 class LoginController {
   var logger = Logger();
@@ -20,26 +21,7 @@ class LoginController {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
-
-  Future<void> storeAccessToken(String accessToken) async {
-    const FlutterSecureStorage storage = FlutterSecureStorage();
-    await storage.write(key: "access_token", value: accessToken);
-  }
-
-  Future<String?> retrieveAccessToken() async {
-    const FlutterSecureStorage storage = FlutterSecureStorage();
-    return await storage.read(key: "access_token");
-  }
-
-  Future<void> storeUserId(String id) async {
-    const FlutterSecureStorage storage = FlutterSecureStorage();
-    await storage.write(key: "user_id", value: id);
-  }
-
-  Future<String?> retrieveUserId() async {
-    const FlutterSecureStorage storage = FlutterSecureStorage();
-    return await storage.read(key: "user_id");
-  }
+  final SecureStorageService _secureStorageService = SecureStorageService();
 
   Future<void> handleLogout(BuildContext context) async {
     const FlutterSecureStorage storage = FlutterSecureStorage();
@@ -62,17 +44,15 @@ class LoginController {
 
         var accessToken = loginResult["access_token"];
 
-        await storeAccessToken(accessToken);
+        await _secureStorageService.storeAccessToken(accessToken);
 
         var userId = loginResult["user"]["id"];
 
-        await storeUserId(userId.toString());
+        await _secureStorageService.storeUserId(userId.toString());
 
         var userMatchingAlgorithm = loginResult["user"]["matching_algorithm"];
         if(userMatchingAlgorithm != null || userMatchingAlgorithm != 0) {
           algoIdNotifier.setAlgoId(userMatchingAlgorithm);
-        } else {
-          //TODO Launch onboarding process
         }
 
         // If login is successful, navigate to '/home'

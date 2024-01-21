@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/src/app/model/user_model.dart';
+import 'package:frontend/src/app/model/user_detailed.dart';
 import 'package:frontend/src/app/presentation/authentification/components/sign_in_button.dart';
 import 'package:frontend/src/app/service/user_service.dart';
+import 'package:provider/provider.dart';
 
+import '../../../../config/app_state.dart';
 import '../../../../config/theme.dart';
+import '../../../service/image_service.dart';
 import '../../authentification/controller/login_controller.dart';
+import '../../registration/controller/registration_controller.dart';
 import '../../registration/pages/widgets/summary_textfield.dart';
+import '../../utils/secure_storage_service.dart';
 
 class Profile extends StatefulWidget {
   final UserService userService;
@@ -23,25 +28,61 @@ class _ProfileState extends State<Profile> {
     getUsers();
   }
 
+  ImageService? _service;
+  ProfileImageStorage? _storage;
+  final LoginController _logoutController = LoginController();
+
+  Future<void> getProfilePicture() async {
+    if (user != null) {
+      if (_service == null ||
+          _storage == null ||
+          _storage!.loaded(user!.profilePictureId)) {
+        return;
+      }
+
+      // var tmp = await _service!.getImage("profile-picture/${widget.imageId}");
+      var tmp = await _service!.getImage("profile-picture/${user!.id}");
+      _storage!.load(user!.profilePictureId, tmp);
+    }
+  }
+
   void getUsers() async {
-    await _loginController.retrieveUserId().then((id) {
-      widget.userService.getUser(id).then((value) {
-        if (this.mounted) {
-          setState(() {
-            user = value;
-          });
-        }
+    await _secureStorageService.retrieveUserId().then((id) {
+      widget.userService.getUserProfile(int.parse(id!)).then((value) {
+        setState(() {
+          user = value;
+        });
       });
     });
   }
 
-  final LoginController _loginController = LoginController();
+  final SecureStorageService _secureStorageService = SecureStorageService();
+  final RegistrationController _controller = RegistrationController();
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
-  final LoginController _logoutController = LoginController();
-  User? user;
+  UserDetailed? user;
 
   @override
   Widget build(BuildContext context) {
+    _service = Provider.of<ImageService>(context);
+    _storage = Provider.of<ProfileImageStorage>(context);
+    getProfilePicture();
+
+    Consumer<ProfileImageStorage> img = Consumer<ProfileImageStorage>(
+      builder:
+          (BuildContext context, ProfileImageStorage storage, Widget? child) {
+        int id = user!.profilePictureId;
+
+        if (!storage.loaded(id)) {
+          return const Icon(Icons.downloading);
+        }
+
+        return ClipRRect(
+            borderRadius:
+                BorderRadius.circular(_customLoveTheme.universalPadding),
+            child: Image.memory(storage.getBytes(id)!));
+      },
+    );
+
     return Scaffold(
       body: Center(
         child: Padding(
@@ -66,6 +107,8 @@ class _ProfileState extends State<Profile> {
                                 strokeWidth: 18
                             )
                         ),
+                      if (user != null)
+                        img,
 
                       if (user != null)
                       // registration_name_email
@@ -75,18 +118,21 @@ class _ProfileState extends State<Profile> {
                           SummaryTextfield(label: "Email", input: user!.email),
 
                           // registration_gender_preference
-                          SummaryTextfield(label: "Gender Identity", input: user!.gender_identity_id.toString()),
-                          SummaryTextfield(label: "Gender Preference", input: "TODO"),
-                          SummaryTextfield(label: "Birthdate", input: user!.date_of_birth.substring(0, 10)),
+                          SummaryTextfield(label: "Gender Identity", input: user!.genderIdentity.name),
+                          SummaryTextfield(label: "Gender Preference", input: _controller.genderListToString(user!.genderPreferences)),
+                          SummaryTextfield(label: "Birthdate", input: user!.dateOfBirth.substring(0, 10)),
 
                           // registration_radius
-                          SummaryTextfield(label: "Search Radius", input: "${user!.search_radius} km / ${(user!.search_radius * 0.621371).roundToDouble()} mi"),
+                          SummaryTextfield(label: "Search Radius", input: "${user!.searchRadius} km / ${(user!.searchRadius * 0.621371).roundToDouble()} mi"),
 
-                          SummaryTextfield(label: "Interests", input: "TODO"),
+                          SummaryTextfield(label: "Interests", input: _controller.interestsListToString(user!.interests)),
+                          SummaryTextfield(label: "Languages", input: _controller.languageListToString(user!.languages)),
 
                           // registration_job_bio
                           SummaryTextfield(label: "Job", input: user!.job),
                           SummaryTextfield(label: "Bio", input: user!.bio),
+                          SummaryTextfield(label: "Search Radius", input: user!.searchRadius.toString()),
+                          SummaryTextfield(label: "Swipes left", input: user!.swipesLeft.toString())
                         ]),
                       const SizedBox(height: 25.0),
                       Expanded(child: Container()),
