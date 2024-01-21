@@ -212,7 +212,6 @@ class _SwipeState extends State<Swipe>{
   Future<void> _getUserId() async {
     var userIdString = await _secureStorageService.retrieveUserId() as String;
     userId = int.parse(userIdString);
-    print("hello user id: " + userId.toString());
   }
 
   Future<void> _getMatchingAlgorithm() async {
