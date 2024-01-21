@@ -28,15 +28,14 @@ class Swipe extends StatefulWidget {
   final UserService userService;
   final SwipeStatusService swipeStatusService;
 
-  const Swipe(
-      {Key? key, required this.userService, required this.swipeStatusService})
-      : super(key: key);
+  const Swipe({Key? key, required this.userService, required this.swipeStatusService}) : super(key: key);
 
   @override
   _SwipeState createState() => _SwipeState();
+
 }
 
-class _SwipeState extends State<Swipe> {
+class _SwipeState extends State<Swipe>{
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
 
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
@@ -69,6 +68,8 @@ class _SwipeState extends State<Swipe> {
     _fetchInitData();
   }
 
+
+
   @override
   Future<void> didChangeDependencies() async {
     super.didChangeDependencies();
@@ -82,7 +83,7 @@ class _SwipeState extends State<Swipe> {
       }
     });
 
-    if (!_didChangeDependenciesCalled) {
+    if(!_didChangeDependenciesCalled) {
       _didChangeDependenciesCalled = true;
 
       swipeStateNotifier ??= Provider.of<SwipeStateNotifier>(context);
@@ -95,23 +96,22 @@ class _SwipeState extends State<Swipe> {
         _listenerAdded = true;
       }
     }
+
   }
 
   Future<void> _algoIdListener() async {
-    if (swipingAlgoId != algoIdNotifier!.algoId) {
+    if(swipingAlgoId != algoIdNotifier!.algoId) {
       swipingAlgoId = algoIdNotifier!.algoId;
       String accessToken = await _controller.retrieveAccessToken() as String;
       if (!context.mounted) return;
-      await MatchingAlgorithm.updateMatchingAlgorithm(
-          accessToken, context.read<UserService>(), swipingAlgoId);
+      await MatchingAlgorithm.updateMatchingAlgorithm(accessToken, context.read<UserService>(), swipingAlgoId);
     }
 
     if (mounted) {
       setState(() {
-        if (swipeStateNotifier!.swipeState == SwipeState.OKAY) {
+        if(swipeStateNotifier!.swipeState == SwipeState.OKAY) {
           _loadNextUser();
-        } else if (swipeStateNotifier!.swipeState !=
-            SwipeState.NO_SURROUNDING_USERS) {
+        } else if (swipeStateNotifier!.swipeState != SwipeState.NO_SURROUNDING_USERS) {
           _swipeItemLoaded = true;
         }
       });
@@ -121,11 +121,13 @@ class _SwipeState extends State<Swipe> {
   void _swipeStateListener() {
     if (mounted) {
       setState(() {
-        if (swipeStateNotifier!.swipeState == SwipeState.OKAY) {
+
+        if(swipeStateNotifier!.swipeState == SwipeState.OKAY) {
           _loadNextUser();
         } else {
           _swipeItemLoaded = true;
         }
+
       });
     }
   }
@@ -135,10 +137,10 @@ class _SwipeState extends State<Swipe> {
     return SafeArea(
       child: Container(
           alignment: Alignment.center,
-          height:
-              height - kToolbarHeight > 0 ? height - kToolbarHeight : height,
+          height: height - kToolbarHeight > 0 ? height - kToolbarHeight : height,
           width: !kIsWeb ? width * 0.90 : width * 0.65,
-          child: Stack(children: [getSwipeCardSwitch(state)])),
+          child: Stack(
+              children: [getSwipeCardSwitch(state)])),
     );
   }
 
@@ -197,8 +199,8 @@ class _SwipeState extends State<Swipe> {
   }
 
   Future<int> _checkSwipesLeft() async {
-    int currentSwipesLeft =
-        await SwipesLeft.getCurrentSwipesLeft(userId, widget.userService);
+    int currentSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(
+        userId, widget.userService);
     if (currentSwipesLeft > 0) {
       SharedSwipeableEvent.swipeable.changeSwipeable(true);
     } else {
@@ -213,9 +215,7 @@ class _SwipeState extends State<Swipe> {
   }
 
   Future<void> _getMatchingAlgorithm() async {
-    await MatchingAlgorithm.getCurrentMatchingAlgorithm(
-            userId, widget.userService)
-        .then((matchingAlgorithm) {
+    await MatchingAlgorithm.getCurrentMatchingAlgorithm(userId, widget.userService).then((matchingAlgorithm){
       if (matchingAlgorithm != swipingAlgoId) {
         swipingAlgoId = matchingAlgorithm;
         algoIdNotifier?.setAlgoId(swipingAlgoId);
@@ -239,14 +239,16 @@ class _SwipeState extends State<Swipe> {
     await widget.userService
         .getAlgoUser(accessToken, swipingAlgoId)
         .then((User? user) async {
-      if (user != null) {
-        city = await _locationService.getCurrentLocation(
-            user.latitude, user.longitude);
-      } else {
-        city = "noCity";
-      }
 
-      _setUserSwipingCard(user, city);
+          if (user != null) {
+            city = await _locationService.getCurrentLocation(
+                user.latitude, user.longitude);
+          } else {
+            city = "noCity";
+          }
+
+          _setUserSwipingCard(user, city);
+
     }).whenComplete(() {
       if (mounted) {
         setState(() {
@@ -263,6 +265,7 @@ class _SwipeState extends State<Swipe> {
 
   void _setUserSwipingCard(User? user, String? city) {
     if (user == null) {
+
     } else {
       if (mounted) {
         setState(() {
@@ -279,35 +282,34 @@ class _SwipeState extends State<Swipe> {
             },
           );
           _matchEngine = MatchEngine(swipeItems: [_swipeItem]);
-        });
+        }
+        );
       }
     }
   }
 
   _onSlideUpdate(SlideRegion? region) async {
-    //ignore the swipe left check if the card is just be tapped
-    if (region != null) {
-      //ensure that after a swipe attempt the api call happens only once
-      if (!swiped) {
-        swiped = true;
-        await _checkSwipesLeft();
+      //ignore the swipe left check if the card is just be tapped
+      if (region != null) {
+        //ensure that after a swipe attempt the api call happens only once
+        if (!swiped) {
+          swiped = true;
+          await _checkSwipesLeft();
+        }
       }
-    }
 
-    //when swipe card is in the initial state (null position), it should be possible to make the api call
-    if (region == null) {
-      swiped = false;
-    }
+      //when swipe card is in the initial state (null position), it should be possible to make the api call
+      if (region == null) {
+        swiped = false;
+      }
   }
 
   void _swipeActionTaken(bool hasLiked) async {
     String accessToken = await _controller.retrieveAccessToken() as String;
     if (hasLiked) {
-      await widget.swipeStatusService
-          .postLike(accessToken, int.parse(_swipeItem.content.id));
+      await widget.swipeStatusService.postLike(accessToken, int.parse(_swipeItem.content.id));
     } else {
-      await widget.swipeStatusService
-          .postView(accessToken, int.parse(_swipeItem.content.id));
+      await widget.swipeStatusService.postView(accessToken, int.parse(_swipeItem.content.id));
     }
     _didChangeDependenciesCalled = false;
 
@@ -329,7 +331,8 @@ class _SwipeState extends State<Swipe> {
     int age = todayDate.year - birthYear;
 
     if (birthDate.month > todayDate.month ||
-        (birthDate.month == todayDate.month && birthDate.day > todayDate.day)) {
+        (birthDate.month == todayDate.month &&
+            birthDate.day > todayDate.day)) {
       age--;
     }
 
@@ -352,7 +355,7 @@ class _SwipeState extends State<Swipe> {
       child: SwipeCards(
         matchEngine: _matchEngine = MatchEngine(swipeItems: [
           SwipeItem(
-            content: "No users in the area  :(",
+              content: "No users in the area  :(",
           ),
         ]),
         itemBuilder: (BuildContext context, int index) {

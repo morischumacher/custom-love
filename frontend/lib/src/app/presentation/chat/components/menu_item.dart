@@ -8,34 +8,31 @@ class MenuItem extends StatelessWidget {
 
   final CustomLoveTheme _theme = const CustomLoveTheme();
 
-  const MenuItem(
-      {required this.label, required this.icon, this.onTap, super.key});
+  const MenuItem({required this.label, required this.icon, this.onTap, super.key});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.symmetric(
-            vertical: _theme.universalPadding,
-            horizontal: _theme.universalPadding),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(_theme.universalPadding),
-        ),
-        child: Row(children: [
-          Icon(icon),
-          SizedBox(
-            width: _theme.universalPadding,
+          padding: EdgeInsets.symmetric(
+              vertical: _theme.universalPadding,
+              horizontal: _theme.universalPadding),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(_theme.universalPadding),
           ),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 16,
-              color: _theme.textColor,
+          child: Row(children: [
+            Icon(icon),
+            SizedBox(width: _theme.universalPadding,),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 16,
+                color: _theme.textColor,
+              ),
             ),
-          ),
-        ]),
-      ),
+          ]),
+        ),
     );
   }
 }
