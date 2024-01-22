@@ -297,9 +297,9 @@ def patch_user_profile(
 
     fetched_image = db.exec(select(ProfilePicture).where(ProfilePicture.user_id == user.id)).first()
     if fetched_image is not None:
-        return __user_to_user_profile(get_user(user.id, db), fetched_image.id)
+        return __user_to_user_profile(user, fetched_image.id)
     else:
-        return __user_to_user_profile(get_user(user.id, db), None)
+        return __user_to_user_profile(user, None)
 
 
 def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: Annotated[Session, Depends(create_session)]):
@@ -435,7 +435,11 @@ async def websocket_connect(websocket: WebSocket, user_token: str, db: Annotated
         connection_manager.disconnect(websocket, user.id)
 
 
-def get_user_profile(user_id: int, user: Annotated[User, Depends(get_current_user)], db: Annotated[Session, Depends(create_session)]) -> UserDetailedResponse:
+def get_user_profile(
+        user_id: int,
+        user: Annotated[User, Depends(get_current_user)],
+        db: Annotated[Session, Depends(create_session)]
+) -> ProfileResponse:
     """
     Return a specific user
     :param db: injected database
@@ -446,8 +450,10 @@ def get_user_profile(user_id: int, user: Annotated[User, Depends(get_current_use
     genders: [GenderIdentity] = db.exec(select(GenderIdentity)).all()
     languages: [Language] = db.exec(select(Language)).all()
     fetched_image = db.exec(select(ProfilePicture).where(ProfilePicture.user_id == user_id)).first()
+
     if fetched_image is not None:
-        profile: UserDetailedResponse = __user_to_user_profile(get_user(user_id, db), fetched_image.id)
+
+        profile: UserDetailedResponse = __user_to_user_profile(user, fetched_image.id)
         return ProfileResponse(
             user=profile,
             interests=interests,
@@ -455,7 +461,7 @@ def get_user_profile(user_id: int, user: Annotated[User, Depends(get_current_use
             languages=languages
         )
     else:
-        profile: UserDetailedResponse = __user_to_user_profile(get_user(user_id, db), None)
+        profile: UserDetailedResponse = __user_to_user_profile(user, None)
         return ProfileResponse(
             user=profile,
             interests=interests,
