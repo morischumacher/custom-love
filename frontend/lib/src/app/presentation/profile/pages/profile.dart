@@ -305,7 +305,7 @@ class _ProfileState extends State<Profile> {
                                       ),
                                       const SizedBox(height: 4.0),
                                       Text(
-                                        "Born ${user!.dateOfBirth.substring(0, 10)}",
+                                        "Born ${europeanDobFormat(user!.dateOfBirth)}",
                                         style: TextStyle(
                                             fontSize: 14,
                                             color: _customLoveTheme.textColor
@@ -583,5 +583,9 @@ class _ProfileState extends State<Profile> {
       }
     }
     return extractedInterests;
+  }
+
+  String europeanDobFormat(String input) {
+    return "${input.substring(8, 10)}.${input.substring(5, 7)}.${input.substring(0, 4)}";
   }
 }
