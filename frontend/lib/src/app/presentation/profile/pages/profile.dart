@@ -211,9 +211,7 @@ class _ProfileState extends State<Profile> {
                                     });
                                   }
                                 },
-                                child: Text(
-                                  "From Gallery"
-                                )
+                                child: const Text("From Gallery")
                               ),
                               TextButton(
                                   onPressed: () async {
@@ -228,9 +226,7 @@ class _ProfileState extends State<Profile> {
                                       });
                                     }
                                   },
-                                  child: Text(
-                                      "From Camera"
-                                  )
+                                  child: const Text("From Camera")
                               ),
                             ]);
                         });
@@ -275,193 +271,200 @@ class _ProfileState extends State<Profile> {
                                 strokeWidth: 18
                             )
                         ),
-                      if (user != null)
-                        img,
-
-                      if (user != null)
-                        Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: _customLoveTheme.neutralColor
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Column(children: [
-                              Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                  Text(
-                                    "${user!.firstName} ${user!.lastName}",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 36,
-                                        color: _customLoveTheme.primaryColor,
-                                    ),
-                                  ),
-                                  Text(
-                                    user!.email,
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14,
-                                        color: _customLoveTheme.textColor
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4.0),
-                                  Text(
-                                    "Born ${user!.dateOfBirth.substring(0, 10)}",
-                                    style: TextStyle(
-                                        fontSize: 14,
-                                        color: _customLoveTheme.textColor
-                                    ),
-                                  ),
-                                  const SizedBox(height: 2.0),
-                                  Text(
-                                    "Identifies as ${user!.genderIdentity.name}",
-                                    style: TextStyle(
-                                        fontSize: 14,
-                                        color: _customLoveTheme.textColor
-                                    ),
-                                  ),
-                                ],),
-                                Spacer(),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      "${user!.swipesLeft}",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 30,
-                                          color: _customLoveTheme.primaryColor
-                                      ),
-                                    ),
-                                    Text(
-                                      "Swipes remaining${user!.swipesLeft == 0 ? "\nResets ${user!.swipeLimitResetDate}" : ""}",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 14,
-                                          color: _customLoveTheme.textColor
-                                      ),
-                                    ),
-                                ],)
-                              ],
+                      const SizedBox(height: 120),
+                      Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          if (user != null)
+                            Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: _customLoveTheme.neutralColor
                               ),
-                              const SizedBox(height: 25.0),
-                              Column(
-                                // crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                      "Search radius: $searchRadius km, ${(searchRadius * 0.621371).roundToDouble()} mi",
-                                      textAlign: TextAlign.left
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Column(children: [
+                                  SizedBox(height: 80,),
+                                  Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
+                                    Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                      Text(
+                                        "${user!.firstName} ${user!.lastName}",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 36,
+                                          color: _customLoveTheme.primaryColor,
+                                        ),
+                                      ),
+                                      Text(
+                                        user!.email,
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 14,
+                                            color: _customLoveTheme.textColor
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4.0),
+                                      Text(
+                                        "Born ${user!.dateOfBirth.substring(0, 10)}",
+                                        style: TextStyle(
+                                            fontSize: 14,
+                                            color: _customLoveTheme.textColor
+                                        ),
+                                      ),
+                                      const SizedBox(height: 2.0),
+                                      Text(
+                                        "Identifies as ${user!.genderIdentity.name}",
+                                        style: TextStyle(
+                                            fontSize: 14,
+                                            color: _customLoveTheme.textColor
+                                        ),
+                                      ),
+                                    ],),
+                                    Spacer(),
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          "${user!.swipesLeft}",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 30,
+                                              color: _customLoveTheme.primaryColor
+                                          ),
+                                        ),
+                                        Text(
+                                          "Swipes remaining${user!.swipesLeft == 0 ? "\nResets ${user!.swipeLimitResetDate}" : ""}",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 14,
+                                              color: _customLoveTheme.textColor
+                                          ),
+                                        ),
+                                      ],)
+                                  ],
                                   ),
-                                  Slider(
-                                      min: 5,
-                                      max: 100,
-                                      divisions: 99,
-                                      label: searchRadius.toString(),
-                                      value: searchRadius.toDouble(),
-                                      activeColor: _customLoveTheme.primaryColor,
-                                      onChanged: (value) {
+                                  const SizedBox(height: 25.0),
+                                  Column(
+                                    // crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                          "Search radius: $searchRadius km, ${(searchRadius * 0.621371).roundToDouble()} mi",
+                                          textAlign: TextAlign.left
+                                      ),
+                                      Slider(
+                                          min: 5,
+                                          max: 100,
+                                          divisions: 99,
+                                          label: searchRadius.toString(),
+                                          value: searchRadius.toDouble(),
+                                          activeColor: _customLoveTheme.primaryColor,
+                                          onChanged: (value) {
+                                            setState(() {
+                                              searchRadius = value.toInt();
+                                            });
+                                          }),
+                                    ],
+                                  ),
+                                  RegistrationBioTextfield(
+                                      controller: bio,
+                                      hintText: "Bio",
+                                      characterLimit: 256,
+                                      callback: (val) => setState(() => bio = val)
+                                  ),
+                                  const SizedBox(height: 25.0),
+                                  RegistrationTextfield(
+                                      controller: job,
+                                      hintText: "Job",
+                                      obscureText: false,
+                                      callback: (val) => setState(() => job = val)
+                                  ),
+                                  const SizedBox(height: 19.0),
+                                  DropdownCheckbox(
+                                      pickedGenderPreferences: genderPreferences,
+                                      callback: (val) => setState(() {})
+                                  ),
+                                  const SizedBox(height: 19.0),
+                                  LanguageDropdownCheckbox(
+                                      pickedLanguages: languages,
+                                      callback: (val) => setState(() {})
+                                  ),
+                                  const SizedBox(height: 19.0),
+                                  InterestDropdownCheckbox(
+                                      pickedInterests: interests,
+                                      callback: (val) => setState(() {})
+                                  ),
+                                  if (interests.selectedOptions.length < 3 || interests.selectedOptions.length > 5)
+                                    Text(
+                                      "You need to have 3 - 5 interests",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          color: _customLoveTheme.redColor,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold
+                                      ),
+                                    ),
+                                    const SizedBox(height: 35.0),
+                                  Row(children: [
+                                    ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        padding: const EdgeInsets.all(25.0),
+                                        backgroundColor: _customLoveTheme.primaryColor,
+                                        foregroundColor: _customLoveTheme.whiteColor,
+                                        shape: StadiumBorder(
+                                            side: BorderSide(
+                                                width: 2,
+                                                color:  _customLoveTheme.whiteColor
+                                            )
+                                        ),
+                                      ),
+                                      onPressed: () async {
+                                        if (interests.selectedOptions.length >= 3 && interests.selectedOptions.length <= 5) {
+                                          UserDetailed? result = await _profileController.updateUser(
+                                              context,
+                                              job,
+                                              bio,
+                                              listValuesToGenderList(genderPreferences.selectedOptions),
+                                              listValuesToInterestList(interests.selectedOptions),
+                                              listValuesToLanguageList(languages.selectedOptions),
+                                              searchRadius
+                                          );
+                                          setState(() {
+                                            user = result;
+                                          });
+                                        }
+                                      },
+                                      child: const Text('Confirm changes'),
+                                    ),
+                                    const Spacer(),
+                                    ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        padding: const EdgeInsets.all(25.0),
+                                        backgroundColor: _customLoveTheme.whiteColor,
+                                        foregroundColor: _customLoveTheme.primaryColor,
+                                        shape: StadiumBorder(
+                                            side: BorderSide(
+                                                width: 2,
+                                                color:  _customLoveTheme.primaryColor
+                                            )
+                                        ),
+                                      ),
+                                      onPressed: () {
                                         setState(() {
-                                          searchRadius = value.toInt();
-                                        });
-                                      }),
-                                ],
-                              ),
-                              RegistrationBioTextfield(
-                                    controller: bio,
-                                    hintText: "Bio",
-                                    characterLimit: 256,
-                                    callback: (val) => setState(() => bio = val)
-                              ),
-                              const SizedBox(height: 25.0),
-                              RegistrationTextfield(
-                                  controller: job,
-                                  hintText: "Job",
-                                  obscureText: false,
-                                  callback: (val) => setState(() => job = val)
-                              ),
-                              const SizedBox(height: 19.0),
-                              DropdownCheckbox(
-                                  pickedGenderPreferences: genderPreferences,
-                                  callback: (val) => setState(() {})
-                              ),
-                              const SizedBox(height: 19.0),
-                              LanguageDropdownCheckbox(
-                                  pickedLanguages: languages,
-                                  callback: (val) => setState(() {})
-                              ),
-                              const SizedBox(height: 19.0),
-                              InterestDropdownCheckbox(
-                                  pickedInterests: interests,
-                                  callback: (val) => setState(() {})
-                              ),
-                              if (interests.selectedOptions.length < 3 || interests.selectedOptions.length > 5)
-                                Text(
-                                  "You need to have 3 - 5 interests",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      color: _customLoveTheme.redColor,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold
-                                  ),
-                                ),
-                              const SizedBox(height: 35.0),
-                              Row(children: [
-                                ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    padding: const EdgeInsets.all(25.0),
-                                    backgroundColor: _customLoveTheme.primaryColor,
-                                    foregroundColor: _customLoveTheme.whiteColor,
-                                    shape: StadiumBorder(
-                                        side: BorderSide(
-                                            width: 2,
-                                            color:  _customLoveTheme.whiteColor
-                                        )
-                                    ),
-                                  ),
-                                  onPressed: () async {
-                                    if (interests.selectedOptions.length >= 3 && interests.selectedOptions.length <= 5) {
-                                      UserDetailed? result = await _profileController.updateUser(
-                                          context,
-                                          job,
-                                          bio,
-                                          listValuesToGenderList(genderPreferences.selectedOptions),
-                                          listValuesToInterestList(interests.selectedOptions),
-                                          listValuesToLanguageList(languages.selectedOptions),
-                                          searchRadius
-                                      );
-                                      setState(() {
-                                        user = result;
-                                      });
-                                    }
-                                  },
-                                  child: const Text('Confirm changes'),
-                                ),
-                                const Spacer(),
-                                ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                      padding: const EdgeInsets.all(25.0),
-                                      backgroundColor: _customLoveTheme.whiteColor,
-                                      foregroundColor: _customLoveTheme.primaryColor,
-                                    shape: StadiumBorder(
-                                        side: BorderSide(
-                                            width: 2,
-                                            color:  _customLoveTheme.primaryColor
-                                        )
-                                    ),
-                                  ),
-                                  onPressed: () {
-                                    setState(() {
 
-                                    });
-                                  },
-                                  child: const Text('Discard changes'),
-                                ),
-                              ],)
-                            ]),
-                          ),
-                        ),
-                        const SizedBox(height: 25.0),
+                                        });
+                                      },
+                                      child: const Text('Discard changes'),
+                                    ),
+                                  ],)
+                                ]),
+                              ),
+                            ),
+                            const SizedBox(height: 25.0),
+                          if (user != null)
+                            Positioned(child: img, left: 150, top: -100,),
+                        ],
+                      ),
+                      
                       Expanded(child: Container()),
                       LoginButton(
                           onTap: () {
