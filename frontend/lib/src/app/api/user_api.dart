@@ -50,7 +50,7 @@ class UserApi extends PaginatedApi<User> {
     }
   }
 
-  Future<Map<String, dynamic>> getUserProfile(int id) async {
+    Future<Map<String, dynamic>> getUserProfile(String accessToken, int id) async {
     final response =
     await super.client.get(Uri.parse('${ApiConfig.baseUrl}/users/profile/$id'),
       headers: {
