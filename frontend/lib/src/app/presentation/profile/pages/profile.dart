@@ -369,6 +369,7 @@ class _ProfileState extends State<Profile> {
                                       controller: bio,
                                       hintText: "Bio",
                                       characterLimit: 256,
+                                      maxLines: 1,
                                       callback: (val) => setState(() => bio = val)
                                   ),
                                   const SizedBox(height: 25.0),
