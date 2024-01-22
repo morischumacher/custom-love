@@ -135,6 +135,7 @@ class _RegistrationJobBioState extends State<RegistrationJobBio> {
                                 controller: widget.bio,
                                 hintText: "Bio",
                                 characterLimit: 256,
+                                maxLines: null,
                                 callback: (val) => setState(() => widget.bio = val)
                             ),
                             const SizedBox(height: 25.0),
