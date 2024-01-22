@@ -49,7 +49,8 @@ class UserService extends PaginatedService<User, UserApi> {
       String job,
       List<int> genderPreferences,
       List<int> interests,
-      List<int> languages
+      List<int> languages,
+      int searchRadius
       ) async {
     try {
       final UserDetailed user = await super.api.updateUserProfile(
@@ -58,7 +59,8 @@ class UserService extends PaginatedService<User, UserApi> {
         job,
         genderPreferences,
         interests,
-        languages
+        languages,
+        searchRadius
       );
       return user;
     } on Exception {

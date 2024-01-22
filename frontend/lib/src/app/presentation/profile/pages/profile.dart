@@ -101,6 +101,7 @@ class _ProfileState extends State<Profile> {
           }
           bio = user!.bio;
           job = user!.job;
+          searchRadius = user!.searchRadius < 5 ? 5 : (user!.searchRadius > 100 ? 100 : user!.searchRadius);
         });
       });
     });
@@ -315,6 +316,27 @@ class _ProfileState extends State<Profile> {
                         ]),
                       if (user != null && editMode)
                         Column(children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                  "Search radius: $searchRadius km, ${(searchRadius * 0.621371).roundToDouble()} mi",
+                                  textAlign: TextAlign.left
+                              ),
+                              Slider(
+                                  min: 5,
+                                  max: 100,
+                                  divisions: 99,
+                                  label: searchRadius.toString(),
+                                  value: searchRadius.toDouble(),
+                                  activeColor: _customLoveTheme.primaryColor,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      searchRadius = value.toInt();
+                                    });
+                                  }),
+                            ],
+                          ),
                           RegistrationBioTextfield(
                               controller: bio,
                               hintText: "Bio",
@@ -357,17 +379,14 @@ class _ProfileState extends State<Profile> {
                           ElevatedButton(
                             onPressed: () async {
                               if (interests.selectedOptions.length >= 3 && interests.selectedOptions.length <= 5) {
-                                UserDetailed? result = await _profileController
-                                    .updateUser(
+                                UserDetailed? result = await _profileController.updateUser(
                                     context,
                                     job,
                                     bio,
-                                    listValuesToGenderList(
-                                        genderPreferences.selectedOptions),
-                                    listValuesToInterestList(
-                                        interests.selectedOptions),
-                                    listValuesToLanguageList(
-                                        languages.selectedOptions)
+                                    listValuesToGenderList(genderPreferences.selectedOptions),
+                                    listValuesToInterestList(interests.selectedOptions),
+                                    listValuesToLanguageList(languages.selectedOptions),
+                                    searchRadius
                                 );
                                 setState(() {
                                   user = result;

@@ -17,14 +17,22 @@ class ProfileController {
       String bio,
       List<int> genderPreferences,
       List<int> interests,
-      List<int> languages
+      List<int> languages,
+      int searchRadius
       ) async {
       UserService userService = context.read<UserService>();
     try {
       String? token = await storage.retrieveAccessToken();
 
-
-      return await userService.updateUserProfile(token!, bio, job, genderPreferences, interests, languages);
+      return await userService.updateUserProfile(
+          token!,
+          bio,
+          job,
+          genderPreferences,
+          interests,
+          languages,
+          searchRadius
+      );
 
     } catch (e) {
       logger.e("Error getting updated user: $e");

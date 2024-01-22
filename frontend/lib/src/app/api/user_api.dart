@@ -84,7 +84,8 @@ class UserApi extends PaginatedApi<User> {
       String job,
       List<int> genderPreferences,
       List<int> interests,
-      List<int> languages
+      List<int> languages,
+      int searchRadius
       ) async {
 
     if (accessToken == null) {
@@ -97,6 +98,7 @@ class UserApi extends PaginatedApi<User> {
       "gender_preference_ids": genderPreferences,
       "interest_ids": interests,
       "language_ids": languages,
+      "search_radius": searchRadius
     };
     final response = await http.patch(
       Uri.parse('${ApiConfig.baseUrl}/users/profile'),
