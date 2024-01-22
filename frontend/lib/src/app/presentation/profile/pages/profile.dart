@@ -288,7 +288,7 @@ class _ProfileState extends State<Profile> {
                                   Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
                                     Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                                       Text(
-                                        "${user!.firstName} ${user!.lastName}",
+                                        user!.firstName,
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 36,
@@ -529,10 +529,10 @@ class _ProfileState extends State<Profile> {
                             ),
                             const SizedBox(height: 25.0),
                           if (user != null)
-                            Positioned(child: img, left: 150, top: -100,),
+                            Positioned(child: img, left: MediaQuery.of(context).size.width >= 550 ? 150 : (MediaQuery.of(context).size.width/2) - 125, top: -100,),
                         ],
                       ),
-                      
+
                       Expanded(child: Container()),
                       SizedBox(height: 20,),
                       LoginButton(
