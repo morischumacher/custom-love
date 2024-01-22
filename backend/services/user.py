@@ -14,6 +14,7 @@ from sqlalchemy import or_, and_, exists, text
 from sqlmodel import Session, select
 from starlette.requests import Request
 from starlette.websockets import WebSocket, WebSocketDisconnect
+from typing import List, Annotated
 
 from backend.algo.exsys import ExSys
 from backend.exceptions.bad_request_exception import BadRequestException
@@ -25,6 +26,7 @@ from backend.models.gender_identity import GenderIdentity
 from backend.models.image import ProfilePicture
 from backend.models.interest import Interest
 from backend.models.language import Language
+from backend.models.connectors.user_has_gender_preference import UserHasGenderPreference
 from backend.models.message import Message, message_factory
 from backend.models.swipe_status import SwipeStatus, SwipeStatusType
 from backend.models.user import User
@@ -34,6 +36,7 @@ from backend.responses.notification import Notification, NotificationType
 from backend.responses.user_response import UserResponseWithInterestsAndDistance, UserResponse, UserDetailedResponse, \
     ProfileResponse
 from backend.services.expert_system import get_expert_system_by_user_id
+from backend.services.expert_system import update_expert_system
 from backend.services.message import _save_message
 from backend.services.validation.user_validation import validate_new_user
 from backend.utils import passwords
@@ -41,8 +44,8 @@ from backend.utils.connection_manager import connection_manager
 from backend.utils.logger import Logger
 from backend.utils.pagination import PaginationParams
 from backend.utils.passwords import hash_pwd
-from backend.services.expert_system import update_expert_system
 from backend.utils.token import create_access_token, get_current_user
+
 load_dotenv()
 
 class UserUpdate(BaseModel):
@@ -52,7 +55,7 @@ class UserUpdate(BaseModel):
     algo_id: int = Field(None, title="AlgoId")
 
 
-def get_user(user_id: int, db: Annotated[Session, Depends(create_session)]) -> User:
+def get_user(user_id: int, user: Annotated[User, Depends(get_current_user)], db: Annotated[Session, Depends(create_session)]) -> User:
     """
     Return a specific user
     :param db: injected database
@@ -91,11 +94,11 @@ def get_users(user: Annotated[User, Depends(get_current_user)], db: Annotated[Se
     """
     return paginate(db, select(User).join(SwipeStatus, onclause=and_(
         or_(SwipeStatus.user1_id == User.id, SwipeStatus.user2_id == User.id),
-                    SwipeStatus.status == SwipeStatusType.match))
-                .where(and_(User.id != user.id,
-                    or_(SwipeStatus.user1_id == user.id, SwipeStatus.user2_id == user.id))),
-                PaginationParams(size=request.query_params.get("size"),
-                    page=request.query_params.get("page")))
+        SwipeStatus.status == SwipeStatusType.match))
+                    .where(and_(User.id != user.id,
+                                or_(SwipeStatus.user1_id == user.id, SwipeStatus.user2_id == user.id))),
+                    PaginationParams(size=request.query_params.get("size"),
+                                     page=request.query_params.get("page")))
 
 
 def registration(
@@ -317,6 +320,11 @@ def get_swipeable_user(user, db):
         .where(User.id == user.id)
     ).alias("user_location")
 
+    user_gender_pref_subquery = (
+        select([UserHasGenderPreference.gender_identity_id])
+        .where(UserHasGenderPreference.user_id == user.id)
+    ).alias("user_gender_preference")
+
     query = (
         select([User])
         .where(
@@ -327,6 +335,9 @@ def get_swipeable_user(user, db):
             )
         )
         .where(User.id != user.id)
+        .where(
+            User.gender_identity_id == user_gender_pref_subquery.c.gender_identity_id
+        )
         .where(
             ~exists(
                 select([1])
@@ -372,7 +383,7 @@ def get_algo_user(algoId: int, user: Annotated[User, Depends(get_current_user)],
             # Get the model of the current user
             current_model = expert_system.model
 
-            # Initialize a Exsys for the current user and set the serialized model, retrieved from the database
+            # Initialize an Exsys for the current user and set the serialized model, retrieved from the database
             exsys = ExSys(None)
             exsys.deserialize_and_set_model(current_model)
 
@@ -382,7 +393,8 @@ def get_algo_user(algoId: int, user: Annotated[User, Depends(get_current_user)],
 
             swipeable_user_choice = [user for user in swipeable_user if user.id == user_id_with_highest_prediction][0]
             # return the user with the user.id = user_id_with_highest_prediction
-            return map_user_to_user_response_with_interests(swipeable_user_choice, get_distance(user, swipeable_user_choice, db))
+            return map_user_to_user_response_with_interests(swipeable_user_choice,
+                                                            get_distance(user, swipeable_user_choice, db))
         case _:
             return None
 
@@ -392,7 +404,8 @@ def get_user_with_common_interests(user, swipeable_user_list, db):
 
     most_common_user = max(swipeable_user_list, key=lambda su: len(set(user_interests).intersection(set(su.interests))),
                            default=None)
-    return map_user_to_user_response_with_interests(most_common_user, get_distance(user, most_common_user, db)) if most_common_user else None
+    return map_user_to_user_response_with_interests(most_common_user, get_distance(user, most_common_user,
+                                                                                   db)) if most_common_user else None
 
 
 async def websocket_connect(websocket: WebSocket, user_token: str, db: Annotated[Session, Depends(create_session)]):
@@ -422,7 +435,7 @@ async def websocket_connect(websocket: WebSocket, user_token: str, db: Annotated
         connection_manager.disconnect(websocket, user.id)
 
 
-def get_user_profile(user_id: int, db: Annotated[Session, Depends(create_session)]) -> ProfileResponse:
+def get_user_profile(user_id: int, user: Annotated[User, Depends(get_current_user)], db: Annotated[Session, Depends(create_session)]) -> UserDetailedResponse:
     """
     Return a specific user
     :param db: injected database

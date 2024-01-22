@@ -13,9 +13,9 @@ class SwipesLeft {
     return tmpSwipesLeft;
   }
 
-  static Future<int> getCurrentSwipesLeft(int userId, UserService userService) async {
+  static Future<int> getCurrentSwipesLeft(String accessToken, int userId, UserService userService) async {
     int tmpSwipesLeft = 0;
-    await userService.getUser(userId).then((User? user) {
+    await userService.getUser(accessToken, userId).then((User? user) {
       tmpSwipesLeft = user!.swipes_left;
     });
     return tmpSwipesLeft;

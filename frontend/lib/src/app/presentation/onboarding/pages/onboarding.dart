@@ -378,7 +378,6 @@ class OnboardingPageState extends State<OnboardingPage> {
                           });
                         }
 
-                        print("swipe decisions: " + swipeDecisions.toString());
                         String accessToken = await secureStorageService.retrieveAccessToken() as String;
                         await expertSysService.postExpertSys(accessToken, swipeDecisions);
                       },

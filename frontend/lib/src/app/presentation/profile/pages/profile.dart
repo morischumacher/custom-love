@@ -58,8 +58,9 @@ class _ProfileState extends State<Profile> {
   }
 
   void getUsers() async {
+    String accessToken = await _secureStorageService.retrieveAccessToken() as String;
     await _secureStorageService.retrieveUserId().then((id) {
-      widget.userService.getUserProfile(int.parse(id!)).then((value) {
+      widget.userService.getUserProfile(accessToken, int.parse(id!)).then((value) {
         setState(() {
           user = value['user'];
           genderDto = value['genders'];

@@ -16,13 +16,11 @@ import 'package:provider/provider.dart';
 import 'package:swipe_cards/draggable_card.dart';
 import 'package:swipe_cards/swipe_cards.dart';
 import 'package:frontend/src/config/theme.dart';
-import 'package:frontend/src/app/presentation/authentification/controller/login_controller.dart';
 
 import '../../../service/location_service.dart';
 import '../../../service/user_service.dart';
 import '../../utils/secure_storage_service.dart';
 import '../util/algo_id_notifier.dart';
-import '../../utils/interests.dart';
 import '../util/swipes_left.dart';
 
 class Swipe extends StatefulWidget {
@@ -65,8 +63,6 @@ class _SwipeState extends State<Swipe>{
   @override
   void initState() {
     super.initState();
-
-    print("init swipe");
 
     _fetchInitData();
   }
@@ -200,8 +196,9 @@ class _SwipeState extends State<Swipe>{
   }
 
   Future<int> _checkSwipesLeft() async {
+    String accessToken = await _secureStorageService.retrieveAccessToken() as String;
     int currentSwipesLeft = await SwipesLeft.getCurrentSwipesLeft(
-        userId, widget.userService);
+        accessToken, userId, widget.userService);
     if (currentSwipesLeft > 0) {
       SharedSwipeableEvent.swipeable.changeSwipeable(true);
     } else {
@@ -213,11 +210,11 @@ class _SwipeState extends State<Swipe>{
   Future<void> _getUserId() async {
     var userIdString = await _secureStorageService.retrieveUserId() as String;
     userId = int.parse(userIdString);
-    print("hello user id: " + userId.toString());
   }
 
   Future<void> _getMatchingAlgorithm() async {
-    await MatchingAlgorithm.getCurrentMatchingAlgorithm(userId, widget.userService).then((matchingAlgorithm){
+    String accessToken = await _secureStorageService.retrieveAccessToken() as String;
+    await MatchingAlgorithm.getCurrentMatchingAlgorithm(accessToken, userId, widget.userService).then((matchingAlgorithm){
       if (matchingAlgorithm != swipingAlgoId) {
         swipingAlgoId = matchingAlgorithm;
         algoIdNotifier?.setAlgoId(swipingAlgoId);
