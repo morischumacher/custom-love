@@ -315,97 +315,138 @@ class _ProfileState extends State<Profile> {
                           ),
                         ]),
                       if (user != null && editMode)
-                        Column(children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                  "Search radius: $searchRadius km, ${(searchRadius * 0.621371).roundToDouble()} mi",
-                                  textAlign: TextAlign.left
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: _customLoveTheme.neutralColor
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(children: [
+                              Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
+                                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                  Text(
+                                    "${user!.firstName} ${user!.lastName}",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 36,
+                                        color: _customLoveTheme.textColor
+                                    ),
+                                  ),
+                                  Text(
+                                    user!.email,
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                        color: _customLoveTheme.textColor
+                                    ),
+                                  ),
+                                  Text(
+                                    "Born: ${user!.dateOfBirth.substring(0, 10)}, Identifies as: ${user!.genderIdentity.name}",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                        color: _customLoveTheme.textColor
+                                    ),
+                                  ),
+                                ],),
+                                Spacer(),
+                                Text("11 swipes left")
+                              ],
                               ),
-                              Slider(
-                                  min: 5,
-                                  max: 100,
-                                  divisions: 99,
-                                  label: searchRadius.toString(),
-                                  value: searchRadius.toDouble(),
-                                  activeColor: _customLoveTheme.primaryColor,
-                                  onChanged: (value) {
+                              const SizedBox(height: 25.0),
+                              Column(
+                                // crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                      "Search radius: $searchRadius km, ${(searchRadius * 0.621371).roundToDouble()} mi",
+                                      textAlign: TextAlign.left
+                                  ),
+                                  Slider(
+                                      min: 5,
+                                      max: 100,
+                                      divisions: 99,
+                                      label: searchRadius.toString(),
+                                      value: searchRadius.toDouble(),
+                                      activeColor: _customLoveTheme.primaryColor,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          searchRadius = value.toInt();
+                                        });
+                                      }),
+                                ],
+                              ),
+                              RegistrationBioTextfield(
+                                    controller: bio,
+                                    hintText: "Bio",
+                                    characterLimit: 256,
+                                    callback: (val) => setState(() => bio = val)
+                              ),
+                              const SizedBox(height: 25.0),
+                              RegistrationTextfield(
+                                  controller: job,
+                                  hintText: "Job",
+                                  obscureText: false,
+                                  callback: (val) => setState(() => job = val)
+                              ),
+                              const SizedBox(height: 19.0),
+                              DropdownCheckbox(
+                                  pickedGenderPreferences: genderPreferences,
+                                  callback: (val) => setState(() {})
+                              ),
+                              const SizedBox(height: 19.0),
+                              LanguageDropdownCheckbox(
+                                  pickedLanguages: languages,
+                                  callback: (val) => setState(() {})
+                              ),
+                              const SizedBox(height: 19.0),
+                              InterestDropdownCheckbox(
+                                  pickedInterests: interests,
+                                  callback: (val) => setState(() {})
+                              ),
+                              if (interests.selectedOptions.length < 3 || interests.selectedOptions.length > 5)
+                                Text(
+                                  "You need to have 3 - 5 interests",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      color: _customLoveTheme.redColor,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold
+                                  ),
+                                ),
+                              const SizedBox(height: 19.0),
+                              ElevatedButton(
+                                onPressed: () async {
+                                  if (interests.selectedOptions.length >= 3 && interests.selectedOptions.length <= 5) {
+                                    UserDetailed? result = await _profileController.updateUser(
+                                        context,
+                                        job,
+                                        bio,
+                                        listValuesToGenderList(genderPreferences.selectedOptions),
+                                        listValuesToInterestList(interests.selectedOptions),
+                                        listValuesToLanguageList(languages.selectedOptions),
+                                        searchRadius
+                                    );
                                     setState(() {
-                                      searchRadius = value.toInt();
+                                      user = result;
+                                      editMode = false;
                                     });
-                                  }),
-                            ],
-                          ),
-                          RegistrationBioTextfield(
-                              controller: bio,
-                              hintText: "Bio",
-                              characterLimit: 256,
-                              callback: (val) => setState(() => bio = val)
-                          ),
-                          const SizedBox(height: 25.0),
-                          RegistrationTextfield(
-                              controller: job,
-                              hintText: "Job",
-                              obscureText: false,
-                              callback: (val) => setState(() => job = val)
-                          ),
-                          const SizedBox(height: 19.0),
-                          DropdownCheckbox(
-                              pickedGenderPreferences: genderPreferences,
-                              callback: (val) => setState(() {})
-                          ),
-                          const SizedBox(height: 19.0),
-                          LanguageDropdownCheckbox(
-                              pickedLanguages: languages,
-                              callback: (val) => setState(() {})
-                          ),
-                          const SizedBox(height: 19.0),
-                          InterestDropdownCheckbox(
-                              pickedInterests: interests,
-                              callback: (val) => setState(() {})
-                          ),
-                          if (interests.selectedOptions.length < 3 || interests.selectedOptions.length > 5)
-                            Text(
-                              "You need to have 3 - 5 interests",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  color: _customLoveTheme.redColor,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold
+                                  }
+                                },
+                                child: const Text('Confirm changes'),
                               ),
-                            ),
-                          const SizedBox(height: 19.0),
-                          ElevatedButton(
-                            onPressed: () async {
-                              if (interests.selectedOptions.length >= 3 && interests.selectedOptions.length <= 5) {
-                                UserDetailed? result = await _profileController.updateUser(
-                                    context,
-                                    job,
-                                    bio,
-                                    listValuesToGenderList(genderPreferences.selectedOptions),
-                                    listValuesToInterestList(interests.selectedOptions),
-                                    listValuesToLanguageList(languages.selectedOptions),
-                                    searchRadius
-                                );
-                                setState(() {
-                                  user = result;
-                                  editMode = false;
-                                });
-                              }
-                            },
-                            child: const Text('Confirm changes'),
+                              const SizedBox(height: 19.0),
+                              ElevatedButton(
+                                onPressed: () {
+                                  setState(() {
+                                    editMode = false;
+                                  });
+                                },
+                                child: const Text('Discard changes'),
+                              ),
+                            ]),
                           ),
-                          const SizedBox(height: 19.0),
-                          ElevatedButton(
-                            onPressed: () {
-                              setState(() {
-                                editMode = false;
-                              });
-                            },
-                            child: const Text('Discard changes'),
-                          ),
-                        ]),
+                        ),
                         const SizedBox(height: 25.0),
                       Expanded(child: Container()),
                       LoginButton(
