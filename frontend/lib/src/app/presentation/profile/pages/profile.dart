@@ -18,10 +18,8 @@ import '../../../../config/app_state.dart';
 import '../../../../config/theme.dart';
 import '../../../service/image_service.dart';
 import '../../authentification/controller/login_controller.dart';
-import '../../registration/controller/registration_controller.dart';
 import '../../registration/pages/widgets/bio_textfield.dart';
 import '../../registration/pages/widgets/dropdown_checkboxes/language_dropdown_checkbox.dart';
-import '../../registration/pages/widgets/summary_textfield.dart';
 import '../../registration/pages/widgets/textfield.dart';
 import '../../utils/secure_storage_service.dart';
 
@@ -108,7 +106,6 @@ class _ProfileState extends State<Profile> {
   }
 
   final SecureStorageService _secureStorageService = SecureStorageService();
-  final RegistrationController _controller = RegistrationController();
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
   UserDetailed? user;
 
@@ -118,7 +115,6 @@ class _ProfileState extends State<Profile> {
   List<Language> languageDto = [];
 
   // Editable attributes
-  bool editMode = false;
   bool warning = false;
   MultiSelectController<Gender> genderPreferences = MultiSelectController<Gender>();
   int searchRadius = 5;
@@ -282,39 +278,7 @@ class _ProfileState extends State<Profile> {
                       if (user != null)
                         img,
 
-                      if (user != null && !editMode)
-                      // registration_name_email
-                        Column(children: [
-                          SummaryTextfield(label: "First name", input: user!.firstName),
-                          SummaryTextfield(label: "Last name", input: user!.lastName),
-                          SummaryTextfield(label: "Email", input: user!.email),
-
-                          // registration_gender_preference
-                          SummaryTextfield(label: "Gender Identity", input: user!.genderIdentity.name),
-                          SummaryTextfield(label: "Gender Preference", input: _controller.genderListToString(user!.genderPreferences)),
-                          SummaryTextfield(label: "Birthdate", input: user!.dateOfBirth.substring(0, 10)),
-
-                          // registration_radius
-                          SummaryTextfield(label: "Search Radius", input: "${user!.searchRadius} km / ${(user!.searchRadius * 0.621371).roundToDouble()} mi"),
-
-                          SummaryTextfield(label: "Interests", input: _controller.interestsListToString(user!.interests)),
-                          SummaryTextfield(label: "Languages", input: _controller.languageListToString(user!.languages)),
-
-                          // registration_job_bio
-                          SummaryTextfield(label: "Job", input: user!.job),
-                          SummaryTextfield(label: "Bio", input: user!.bio),
-                          SummaryTextfield(label: "Swipes left", input: user!.swipesLeft.toString()),
-
-                          ElevatedButton(
-                            onPressed: () {
-                              setState(() {
-                                editMode = true;
-                              });
-                            },
-                            child: const Text('Edit'),
-                          ),
-                        ]),
-                      if (user != null && editMode)
+                      if (user != null)
                         Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
@@ -441,36 +405,59 @@ class _ProfileState extends State<Profile> {
                                       fontWeight: FontWeight.bold
                                   ),
                                 ),
-                              const SizedBox(height: 19.0),
-                              ElevatedButton(
-                                onPressed: () async {
-                                  if (interests.selectedOptions.length >= 3 && interests.selectedOptions.length <= 5) {
-                                    UserDetailed? result = await _profileController.updateUser(
-                                        context,
-                                        job,
-                                        bio,
-                                        listValuesToGenderList(genderPreferences.selectedOptions),
-                                        listValuesToInterestList(interests.selectedOptions),
-                                        listValuesToLanguageList(languages.selectedOptions),
-                                        searchRadius
-                                    );
+                              const SizedBox(height: 35.0),
+                              Row(children: [
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    padding: const EdgeInsets.all(25.0),
+                                    backgroundColor: _customLoveTheme.primaryColor,
+                                    foregroundColor: _customLoveTheme.whiteColor,
+                                    shape: StadiumBorder(
+                                        side: BorderSide(
+                                            width: 2,
+                                            color:  _customLoveTheme.whiteColor
+                                        )
+                                    ),
+                                  ),
+                                  onPressed: () async {
+                                    if (interests.selectedOptions.length >= 3 && interests.selectedOptions.length <= 5) {
+                                      UserDetailed? result = await _profileController.updateUser(
+                                          context,
+                                          job,
+                                          bio,
+                                          listValuesToGenderList(genderPreferences.selectedOptions),
+                                          listValuesToInterestList(interests.selectedOptions),
+                                          listValuesToLanguageList(languages.selectedOptions),
+                                          searchRadius
+                                      );
+                                      setState(() {
+                                        user = result;
+                                      });
+                                    }
+                                  },
+                                  child: const Text('Confirm changes'),
+                                ),
+                                const Spacer(),
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                      padding: const EdgeInsets.all(25.0),
+                                      backgroundColor: _customLoveTheme.whiteColor,
+                                      foregroundColor: _customLoveTheme.primaryColor,
+                                    shape: StadiumBorder(
+                                        side: BorderSide(
+                                            width: 2,
+                                            color:  _customLoveTheme.primaryColor
+                                        )
+                                    ),
+                                  ),
+                                  onPressed: () {
                                     setState(() {
-                                      user = result;
-                                      editMode = false;
+
                                     });
-                                  }
-                                },
-                                child: const Text('Confirm changes'),
-                              ),
-                              const SizedBox(height: 19.0),
-                              ElevatedButton(
-                                onPressed: () {
-                                  setState(() {
-                                    editMode = false;
-                                  });
-                                },
-                                child: const Text('Discard changes'),
-                              ),
+                                  },
+                                  child: const Text('Discard changes'),
+                                ),
+                              ],)
                             ]),
                           ),
                         ),
