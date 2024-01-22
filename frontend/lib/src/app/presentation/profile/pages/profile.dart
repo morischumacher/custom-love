@@ -330,7 +330,7 @@ class _ProfileState extends State<Profile> {
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 36,
-                                        color: _customLoveTheme.textColor
+                                        color: _customLoveTheme.primaryColor,
                                     ),
                                   ),
                                   Text(
@@ -341,17 +341,44 @@ class _ProfileState extends State<Profile> {
                                         color: _customLoveTheme.textColor
                                     ),
                                   ),
+                                  const SizedBox(height: 4.0),
                                   Text(
-                                    "Born: ${user!.dateOfBirth.substring(0, 10)}, Identifies as: ${user!.genderIdentity.name}",
+                                    "Born ${user!.dateOfBirth.substring(0, 10)}",
                                     style: TextStyle(
-                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                        color: _customLoveTheme.textColor
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2.0),
+                                  Text(
+                                    "Identifies as ${user!.genderIdentity.name}",
+                                    style: TextStyle(
                                         fontSize: 14,
                                         color: _customLoveTheme.textColor
                                     ),
                                   ),
                                 ],),
                                 Spacer(),
-                                Text("11 swipes left")
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      "${user!.swipesLeft}",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 30,
+                                          color: _customLoveTheme.primaryColor
+                                      ),
+                                    ),
+                                    Text(
+                                      "Swipes remaining${user!.swipesLeft == 0 ? "\nResets ${user!.swipeLimitResetDate}" : ""}",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                          color: _customLoveTheme.textColor
+                                      ),
+                                    ),
+                                ],)
                               ],
                               ),
                               const SizedBox(height: 25.0),
