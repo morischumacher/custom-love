@@ -376,7 +376,7 @@ class DataGenerator:
                 preferences=[preference_1, preference_2],
                 gender_preferences=[woman, man],
                 gender_identity=woman,
-                interests=[writing, photography, writing],
+                interests=[writing, photography, sports],
                 password=hash_pwd("pass1"),
                 latitude=48.220692,
                 longitude=16.376215
