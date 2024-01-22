@@ -320,7 +320,7 @@ class _ProfileState extends State<Profile> {
                                         ),
                                       ),
                                     ],),
-                                    Spacer(),
+                                    const Spacer(),
                                     Column(
                                       crossAxisAlignment: CrossAxisAlignment.center,
                                       children: [
@@ -393,6 +393,7 @@ class _ProfileState extends State<Profile> {
                                       pickedInterests: interests,
                                       callback: (val) => setState(() {})
                                   ),
+                                  const SizedBox(height: 25.0),
                                   if (interests.selectedOptions.length < 3 || interests.selectedOptions.length > 5)
                                     Text(
                                       "You need to have 3 - 5 interests",
@@ -403,7 +404,48 @@ class _ProfileState extends State<Profile> {
                                           fontWeight: FontWeight.bold
                                       ),
                                     ),
-                                    const SizedBox(height: 35.0),
+                                  if (genderPreferences.selectedOptions.isEmpty)
+                                    Text(
+                                      "You need to provide at least one gender preference",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          color: _customLoveTheme.redColor,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold
+                                      ),
+                                    ),
+                                  if (genderPreferences.selectedOptions.isNotEmpty && interests.selectedOptions.length >= 3 && interests.selectedOptions.length <=5)
+                                    ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      padding: const EdgeInsets.all(25.0),
+                                      backgroundColor: _customLoveTheme.primaryColor,
+                                      foregroundColor: _customLoveTheme.whiteColor,
+                                      shape: StadiumBorder(
+                                          side: BorderSide(
+                                              width: 2,
+                                              color:  _customLoveTheme.whiteColor
+                                          )
+                                      ),
+                                    ),
+                                    onPressed: () async {
+                                      if (interests.selectedOptions.length >= 3 && interests.selectedOptions.length <= 5) {
+                                        UserDetailed? result = await _profileController.updateUser(
+                                            context,
+                                            job,
+                                            bio,
+                                            listValuesToGenderList(genderPreferences.selectedOptions),
+                                            listValuesToInterestList(interests.selectedOptions),
+                                            listValuesToLanguageList(languages.selectedOptions),
+                                            searchRadius
+                                        );
+                                        setState(() {
+                                          user = result;
+                                        });
+                                      }
+                                    },
+                                    child: const Text('Confirm changes'),
+                                  ),
+                                  /*
                                   Row(children: [
                                     ElevatedButton(
                                       style: ElevatedButton.styleFrom(
@@ -450,12 +492,38 @@ class _ProfileState extends State<Profile> {
                                       ),
                                       onPressed: () {
                                         setState(() {
+                                          print("HERE");
+                                          print(job);
+                                          print(user!.job);
+                                          bio = user!.bio;
+                                          job = user!.job;
+                                          genderPreferences.selectedOptions.clear();
+                                          interests.selectedOptions.clear();
+                                          languages.selectedOptions.clear();
 
+                                          print(job);
+                                          for (Gender preference in user!.genderPreferences) {
+                                            genderPreferences.addSelectedOption(
+                                                ValueItem<Gender>(label: preference.name, value: preference)
+                                            );
+                                          }
+                                          for (Interest interest in user!.interests) {
+                                            interests.addSelectedOption(
+                                                ValueItem<Interest>(label: interest.name, value: interest)
+                                            );
+                                          }
+                                          for (Language language in user!.languages) {
+                                            languages.addSelectedOption(
+                                                ValueItem<Language>(label: language.name, value: language)
+                                            );
+                                          }
                                         });
                                       },
                                       child: const Text('Discard changes'),
                                     ),
+
                                   ],)
+                                  */
                                 ]),
                               ),
                             ),
@@ -466,6 +534,7 @@ class _ProfileState extends State<Profile> {
                       ),
                       
                       Expanded(child: Container()),
+                      SizedBox(height: 20,),
                       LoginButton(
                           onTap: () {
                             Future<void>.value(_logoutController.handleLogout(context));
