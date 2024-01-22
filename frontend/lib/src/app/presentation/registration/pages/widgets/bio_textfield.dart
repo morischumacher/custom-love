@@ -30,6 +30,14 @@ class _RegistrationBioTextfieldState extends State<RegistrationBioTextfield> {
   int characterCounter = 0;
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.controller != null) {
+      characterCounter = widget.controller!.length;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return TextFormField(
       onChanged: (text) {
