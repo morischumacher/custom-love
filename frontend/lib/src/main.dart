@@ -115,6 +115,8 @@ class CustomLove extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
+        title: 'CustomLove',
+        debugShowCheckedModeBanner: false,
         scrollBehavior: CustomScrollBehaviour(),
         theme: _customLoveTheme.toThemeData(),
         initialRoute: '/',
