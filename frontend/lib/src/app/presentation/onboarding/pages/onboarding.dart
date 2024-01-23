@@ -43,8 +43,6 @@ class OnboardingPageState extends State<OnboardingPage> {
 
   @override
   void initState() {
-    print("init");
-
     expertSysService = Provider.of<ExpertSysService>(context, listen: false);
 
     swipeDecisions = List.filled(widget.usersContent.length, 0);
@@ -245,8 +243,6 @@ class OnboardingPageState extends State<OnboardingPage> {
   Widget swipeCardsStack() {
     final height = MediaQuery.of(context).size.height;
     final width = min(MediaQuery.of(context).size.width, 750);
-
-    print("gender: " + swipeItems[1].content.gender.toString());
 
     return SafeArea(
       child: Container(

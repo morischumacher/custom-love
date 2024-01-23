@@ -10,13 +10,15 @@ class RegistrationBioTextfield extends StatefulWidget {
   final String? controller;
   final String? hintText;
   final int characterLimit;
+  final int? maxLines;
 
   const RegistrationBioTextfield({
     super.key,
     required this.callback,
     required this.controller,
     required this.hintText,
-    required this.characterLimit
+    required this.characterLimit,
+    required this.maxLines
   });
 
   @override
@@ -26,6 +28,14 @@ class RegistrationBioTextfield extends StatefulWidget {
 class _RegistrationBioTextfieldState extends State<RegistrationBioTextfield> {
   final CustomLoveTheme _customLoveTheme = const CustomLoveTheme();
   int characterCounter = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.controller != null) {
+      characterCounter = widget.controller!.length;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +50,7 @@ class _RegistrationBioTextfieldState extends State<RegistrationBioTextfield> {
         LengthLimitingTextInputFormatter(widget.characterLimit)
       ],
       keyboardType: TextInputType.multiline,
-      maxLines: null,
+      maxLines: widget.maxLines,
       initialValue: widget.controller,
       decoration: InputDecoration(
         labelText: widget.hintText,

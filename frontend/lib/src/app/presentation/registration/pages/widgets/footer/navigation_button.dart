@@ -77,7 +77,7 @@ class _NavigationButtonState extends State<NavigationButton> {
   Widget build(BuildContext context) {
     return OutlinedButton(
       style: OutlinedButton.styleFrom(
-          minimumSize: const Size(156, 56),
+          minimumSize: const Size(116, 50),
           backgroundColor: widget.nextPage != RegistrationPageSection.summary ? _customLoveTheme.primaryColor : (areSkippablePropertiesEmpty() ? _customLoveTheme.linkColor : _customLoveTheme.primaryColor),
           side: BorderSide.none
       ),

@@ -20,12 +20,12 @@ class SwipingCard extends StatefulWidget {
 
   SwipingCard(
       {super.key,
-        required MatchEngine? matchEngine,
-        required CustomLoveTheme customLoveTheme,
-        required SwipeItem swipeItem,
-        userId,
-        required this.userService,
-        required this.swipeStatusService})
+      required MatchEngine? matchEngine,
+      required CustomLoveTheme customLoveTheme,
+      required SwipeItem swipeItem,
+      userId,
+      required this.userService,
+      required this.swipeStatusService})
       : _matchEngine = matchEngine,
         _customLoveTheme = customLoveTheme,
         _swipeItem = swipeItem,
@@ -43,7 +43,7 @@ class SwipingCard extends StatefulWidget {
 
 class _SwipingCardState extends State<SwipingCard> {
   Color _cardBackgroundColor =
-  const CustomLoveTheme().neutralColor.withOpacity(0.80);
+      const CustomLoveTheme().neutralColor.withOpacity(0.80);
   final Duration _timerduration = const Duration(seconds: 10);
   final Curve _animationCurve = Curves.linear;
   bool swipeableTimer = true;
@@ -57,8 +57,7 @@ class _SwipingCardState extends State<SwipingCard> {
       Future.delayed(const Duration(milliseconds: 50), () {
         if (mounted) {
           setState(() {
-            _cardBackgroundColor =
-                widget._customLoveTheme.neutralBackgroundColor;
+            _cardBackgroundColor = widget._customLoveTheme.neutralBackgroundColor;
           });
         }
       });
@@ -104,6 +103,7 @@ class _SwipingCardState extends State<SwipingCard> {
           width: !kIsWeb ? width * 0.90 : width * 0.65,
           child: Stack(children: [
           Card(
+            elevation: 10,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       clipBehavior: Clip.hardEdge,
       color: widget._customLoveTheme.neutralBackgroundColor,
@@ -262,7 +262,7 @@ class _SwipingCardState extends State<SwipingCard> {
             ),
           ],
         ),
-       const SizedBox(height: 4),
+        const SizedBox(height: 4),
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
@@ -341,8 +341,7 @@ class _SwipingCardState extends State<SwipingCard> {
       padding: const EdgeInsets.all(3.0),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: widget._customLoveTheme.primaryColor)
-      ),
+          border: Border.all(color: widget._customLoveTheme.primaryColor)),
       child: Text(tagString),
     );
   }

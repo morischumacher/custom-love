@@ -16,7 +16,7 @@ from backend.utils.token import get_current_user
 from fastapi import Response
 
 
-def get_profile_picture(user: Annotated[User, Depends(get_current_user)], db: Annotated[Session, Depends(create_session)], user_id: int | None = None):
+def get_profile_picture(db: Annotated[Session, Depends(create_session)], user_id: int | None = None):
     if user_id is None:
         return [element.id for element in db.exec(select(ProfilePicture).where(ProfilePicture.user_id == user_id)).all()]
 
@@ -24,7 +24,6 @@ def get_profile_picture(user: Annotated[User, Depends(get_current_user)], db: An
 
     if image is None:
         raise NotFoundException(f"Image of user with Id: #{user_id} was not found")
-
 
     return Response(content=image.content, media_type=image.content_type)
 
@@ -41,5 +40,22 @@ def post_profile_picture(user: Annotated[User, Depends(get_current_user)],
     db.add(image)
     db.commit()
     db.refresh(image)
+
+    return {"description": "Success"}
+
+
+def put_profile_picture(
+        user: Annotated[User, Depends(get_current_user)],
+        db: Annotated[Session, Depends(create_session)],
+        file: UploadFile,
+):
+    profile_picture: ProfilePicture = db.exec(select(ProfilePicture).where(ProfilePicture.user_id == user.id)).first()
+    profile_picture.content = file.file.read()
+    profile_picture.filename = file.filename
+    profile_picture.content_type = file.content_type
+
+    db.add(profile_picture)
+    db.commit()
+    db.refresh(profile_picture)
 
     return {"description": "Success"}

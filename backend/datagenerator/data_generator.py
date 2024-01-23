@@ -136,7 +136,7 @@ class DataGenerator:
                 preferences=[preference_1],
                 gender_preferences=[woman],
                 gender_identity=man,
-                interests=[sports, movies],
+                interests=[sports, movies, travel],
                 password=hash_pwd("pass1"),
                 latitude=48.227982,
                 longitude=16.372316
@@ -196,7 +196,7 @@ class DataGenerator:
                 gender_preferences=[woman],
                 preferences=[preference_2],
                 gender_identity=divers,
-                interests=[science],
+                interests=[science, sports, books],
                 password=hash_pwd("pass1"),
                 latitude=48.172097,
                 longitude=16.294326
@@ -256,7 +256,7 @@ class DataGenerator:
                 preferences=[preference_1, preference_2],
                 gender_preferences=[woman, man],
                 gender_identity=woman,
-                interests=[food, fashion, photography],
+                interests=[food, fashion, photography, movies],
                 password=hash_pwd("pass1"),
                 latitude=48.200519,
                 longitude=16.369796
@@ -316,7 +316,7 @@ class DataGenerator:
                 preferences=[preference_1],
                 gender_preferences=[man],
                 gender_identity=man,
-                interests=[sports, travel],
+                interests=[sports, travel, movies],
                 password=hash_pwd("pass1"),
                 latitude=48.225241,
                 longitude=16.366003
@@ -346,7 +346,7 @@ class DataGenerator:
                 preferences=[preference_2],
                 gender_preferences=[woman],
                 gender_identity=woman,
-                interests=[travel, books, technology],
+                interests=[travel, books, technology, sports],
                 password=hash_pwd("pass1"),
                 latitude=48.214828,
                 longitude=16.371755
@@ -376,7 +376,7 @@ class DataGenerator:
                 preferences=[preference_1, preference_2],
                 gender_preferences=[woman, man],
                 gender_identity=woman,
-                interests=[writing, photography],
+                interests=[writing, photography, sports],
                 password=hash_pwd("pass1"),
                 latitude=48.220692,
                 longitude=16.376215
@@ -406,7 +406,7 @@ class DataGenerator:
                 preferences=[preference_1],
                 gender_preferences=[man],
                 gender_identity=man,
-                interests=[food, gardening],
+                interests=[food, gardening, travel],
                 password=hash_pwd("pass1"),
                 latitude=48.204692,
                 longitude=16.361950
@@ -436,7 +436,7 @@ class DataGenerator:
                 preferences=[preference_2],
                 gender_preferences=[woman],
                 gender_identity=woman,
-                interests=[nature, science],
+                interests=[nature, science, books],
                 password=hash_pwd("pass1"),
                 latitude=48.231217,
                 longitude=16.355386
@@ -496,7 +496,7 @@ class DataGenerator:
                 preferences=[preference_1, preference_2],
                 gender_preferences=[woman, man],
                 gender_identity=divers,
-                interests=[books, writing],
+                interests=[books, writing, movies],
                 password=hash_pwd("pass1"),
                 latitude=48.229243,
                 longitude=16.328042
@@ -526,7 +526,7 @@ class DataGenerator:
                 preferences=[preference_2],
                 gender_preferences=[man],
                 gender_identity=man,
-                interests=[science, gaming],
+                interests=[science, gaming, movies],
                 password=hash_pwd("pass1"),
                 latitude=48.215407,
                 longitude=16.383019
@@ -556,7 +556,7 @@ class DataGenerator:
                 preferences=[preference_1],
                 gender_preferences=[woman],
                 gender_identity=woman,
-                interests=[art, photography],
+                interests=[art, photography, movies],
                 password=hash_pwd("pass1"),
                 latitude=48.198285,
                 longitude=16.351907
@@ -586,7 +586,7 @@ class DataGenerator:
                 preferences=[preference_2],
                 gender_preferences=[woman],
                 gender_identity=woman,
-                interests=[books, philosophy],
+                interests=[books, philosophy, movies],
                 password=hash_pwd("pass1"),
                 latitude=48.221002,
                 longitude=16.364694
@@ -616,7 +616,7 @@ class DataGenerator:
                 preferences=[preference_1],
                 gender_preferences=[man],
                 gender_identity=man,
-                interests=[technology, coding],
+                interests=[technology, coding, books],
                 password=hash_pwd("pass1"),
                 latitude=48.212813,
                 longitude=16.339321
@@ -646,7 +646,7 @@ class DataGenerator:
                 preferences=[preference_2],
                 gender_preferences=[man],
                 gender_identity=man,
-                interests=[travel, nature],
+                interests=[travel, nature, coding],
                 password=hash_pwd("pass1"),
                 latitude=48.225899,
                 longitude=16.356740
@@ -736,7 +736,7 @@ class DataGenerator:
                 preferences=[preference_1],
                 gender_preferences=[woman],
                 gender_identity=woman,
-                interests=[philosophy, fitness],
+                interests=[philosophy, fitness, coding],
                 password=hash_pwd("pass1"),
                 latitude=48.223641,
                 longitude=16.341989
@@ -766,7 +766,7 @@ class DataGenerator:
                 preferences=[preference_2],
                 gender_preferences=[man],
                 gender_identity=man,
-                interests=[nature, photography],
+                interests=[nature, photography, coding],
                 password=hash_pwd("pass1"),
                 latitude=48.231890,
                 longitude=16.363775

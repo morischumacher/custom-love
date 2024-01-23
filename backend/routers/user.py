@@ -5,8 +5,8 @@ from starlette import status
 
 from backend.models.user import User
 from backend.responses.error_response import ErrorResponse
-from backend.services.user import get_user_profile, get_user_by_email
-from backend.responses.user_response import UserResponse, UserResponseWithInterestsAndDistance
+from backend.services.user import get_user_profile, get_user_by_email, patch_user_profile
+from backend.responses.user_response import UserResponse, UserResponseWithInterestsAndDistance, UserDetailedResponse
 from backend.requests.train_data_decisions import DecisionsRequest
 from backend.services.expert_system import post_expert_system
 from backend.services.user import patch_user, get_algo_user, UserUpdate, get_user, get_users, login, registration, \
@@ -69,7 +69,21 @@ def registration(commons: Annotated[dict, Depends(registration)]):
 def patch_user(commons: Annotated[UserUpdate, Depends(patch_user)]):
     """
     Update current user information.
-    :param db: Database session dependency.
+    :param commons: Database session dependency.
+    :return: Updated user.
+    """
+    return commons
+
+
+@router.patch('/profile', response_model=UserDetailedResponse, responses={
+    status.HTTP_404_NOT_FOUND: {"description": "User not found", "model": ErrorResponse},
+    status.HTTP_400_BAD_REQUEST: {"description": "Validation Error", "model": ErrorResponse},
+    status.HTTP_422_UNPROCESSABLE_ENTITY: {"description": "Validation Error", "model": ErrorResponse}
+})
+def patch_user_profile(commons: Annotated[UserUpdate, Depends(patch_user_profile)]):
+    """
+    Update current user information.
+    :param commons: Database session dependency.
     :return: Updated user.
     """
     return commons

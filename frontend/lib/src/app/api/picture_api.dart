@@ -41,4 +41,25 @@ class PictureApi extends BaseApi {
 
     return response.bodyBytes;
   }
+
+  Future<http.StreamedResponse> update(XFile image, String url) async {
+    var bytes = await image.readAsBytes();
+    var stream = http.ByteStream(DelegatingStream(image.openRead()));
+    var length = bytes.length;
+    var uri = Uri.parse(url);
+    var type = MimeTypeResolver().lookup(image.name);
+    var multipartFile = http.MultipartFile(
+        'file',
+        stream,
+        length,
+        filename: image.name,
+        contentType: type == null ? null : MediaType.parse(type)
+    );
+    var api = JWTApi();
+
+    http.MultipartRequest request = http.MultipartRequest('PUT', uri);
+    request.files.add(multipartFile);
+
+    return await api.handleRequest(client, request);
+  }
 }

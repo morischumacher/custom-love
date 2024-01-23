@@ -18,4 +18,8 @@ class ImageService {
   Future<Uint8List> getImage(String url) async {
     return await _pictureApi.download(url);
   }
+
+  Future<void> putImage(XFile image, String url) async {
+    await _pictureApi.update(image, "${ApiConfig.baseUrl}/$url");
+  }
 }
