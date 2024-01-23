@@ -59,6 +59,11 @@ class _ConversationsPageState extends State<ConversationsPage> {
                       }
 
                       User? user = userStorage.users.items[match.getOtherUserId(loggedInUser.id)];
+
+                      if (user == null){
+                        return const Text("");
+                      }
+
                       return GestureDetector(
                         child: Avatar(user),
                         onTap: () async {

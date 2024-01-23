@@ -121,7 +121,6 @@ class _RegistrationSummaryState extends State<RegistrationSummary> {
                         SummaryTextfield(label: "First name", input: firstName!),
                         SummaryTextfield(label: "Last name", input: lastName!),
                         SummaryTextfield(label: "Email", input: email!),
-                        SummaryTextfield(label: "Password", input: password!),
 
                         // registration_gender_preference
                         SummaryTextfield(label: "Gender Identity", input: gender!.name),

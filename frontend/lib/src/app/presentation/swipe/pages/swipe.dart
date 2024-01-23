@@ -67,8 +67,6 @@ class _SwipeState extends State<Swipe>{
     _fetchInitData();
   }
 
-
-
   @override
   Future<void> didChangeDependencies() async {
     super.didChangeDependencies();
@@ -171,7 +169,7 @@ class _SwipeState extends State<Swipe>{
       onWillPop: () async => false,
       child: Scaffold(
         key: _scaffoldKey,
-        backgroundColor: _customLoveTheme.neutralColor,
+        backgroundColor: _customLoveTheme.neutralBackgroundColor,
         body: Center(
             child: _swipeItemLoaded
                 ? getSwipeCard()
@@ -367,6 +365,7 @@ class _SwipeState extends State<Swipe>{
 
   Widget noSurroundingUsersCard() {
     return Card(
+      elevation: 10,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       clipBehavior: Clip.hardEdge,
       color: _customLoveTheme.neutralBackgroundColor,
@@ -444,6 +443,7 @@ class _SwipeState extends State<Swipe>{
 
   Widget noSwipesLeftCard() {
     return Card(
+      elevation: 10,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       clipBehavior: Clip.hardEdge,
       color: _customLoveTheme.neutralBackgroundColor,
