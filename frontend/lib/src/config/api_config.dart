@@ -1,7 +1,7 @@
-import 'package:frontend/src/config/connection.dart';
+// import 'package:frontend/src/config/connection.dart';
 
 // Comment out the above import and use this when running on emulator:
-// import 'package:frontend/src/config/connection_emulator.dart';
+import 'package:frontend/src/config/connection_emulator.dart';
 
 import 'package:flutter/material.dart';
 
